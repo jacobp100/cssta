@@ -67,7 +67,11 @@ export default () => (
 
 # Demo
 
-See the demo in `cssta-demo`. Use `npm run babel-cssta` for prod build, and see output in `styles.css` and `./cssta-dist`.
+See the demo in `cssta-demo`.
+
+Use `npm start` for dev mode.
+
+Use `npm run babel-cssta` for prod build, and see output in `styles.css` and `./cssta-dist`.
 
 # TODO
 
