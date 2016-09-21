@@ -65,13 +65,19 @@ export default () => (
 );
 ```
 
-# Demo
+# Demo and Building
 
-See the demo in `cssta-demo`.
+**It's not on npm, so you'll have to link some stuff up first**
 
-Use `npm start` for dev mode.
+In this order,
 
-Use `npm run babel-cssta` for prod build, and see output in `styles.css` and `./cssta-dist`.
+1. In `babel-plugin-cssta`, run `npm install ../cssta`
+2. In `cssta-demo`, run `npm install ../babel-plugin-cssta`
+
+In `cssta-demo` you can,
+
+* Run `npm start` for dev mode.
+* Run `npm run babel-cssta` for prod build, and see output in `styles.css` and `./cssta-dist`.
 
 # TODO
 
