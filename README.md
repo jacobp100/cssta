@@ -1,6 +1,8 @@
 # CSSTA
 
-Experimental project. Basically CSS Modules, but puts the CSS in the files, because that might be useful for some projects. **Can generate real CSS files for production** (with really tiny class names).
+Experimental project. Basically CSS Modules, but puts the CSS in the files, because that might be useful for some projects.
+
+**Can generate real CSS files for production** (with really tiny class names).
 
 Like CSS Modules, it
 
@@ -9,12 +11,14 @@ Like CSS Modules, it
 
 Unlike CSS Modules, it
 
-* Does not allow variables (except for CSS `var(--name)`)
-* Does not include `:global` and `:local`
+* Does not allow variables (except for CSS `var(--name)`, see note in *composition*)
+* Does not include `:global` and `:local` pseudos
 
 # Usage
 
 ```js
+import cssta from 'cssta';
+
 const styles = cssta(`
   .button {
     color: black;
@@ -83,13 +87,13 @@ export default () => (
 
 # Babel Plugin
 
-The cssta module was designed to work in a development environment, so you don't want to use it in production. You can use `babel-plugin-cssta` to transform the cssta call into an object mapping and extract the CSS.
+The cssta module was designed to work in a development environment, so you don't want to use it in production. You can use `babel-plugin-cssta` to transform the cssta call into an object mapping and extract the CSS (and remove the import).
 
 ```js
 {
   "plugins" [
     ["babel-plugin-cssta", {
-      "output": "dist/css"
+      "output": "dist/styles.css"
     }]
   ]
 }
