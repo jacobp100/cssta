@@ -20,6 +20,6 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "build-cssta": "rm dist/styles.css; babel src --out-dir dist"
+    "build-cssta": "rm dist/styles.css || :; babel src --out-dir dist"
   }
 }

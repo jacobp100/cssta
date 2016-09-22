@@ -1,6 +1,7 @@
 /* global document */
 const postcss = require('postcss');
 const selectorParser = require('postcss-selector-parser');
+const { transformClassNames } = require('postcss-transform-classes');
 
 let devId = 0;
 const getDevId = () => {
@@ -15,37 +16,25 @@ const createCssElement = (cssText) => {
   document.getElementsByTagName('head')[0].appendChild(styleElement);
 };
 
-/* eslint-disable no-param-reassign */
 const transformClassNames = (css, transformClassName) => {
   const classNameMap = {};
 
-  const transformClassNode = (classNode) => {
-    const { value } = classNode;
-
-    if (value in classNameMap) {
-      classNode.value = classNameMap[value];
-    } else {
-      const transformValue = transformClassName(value);
-      classNameMap[value] = transformValue;
-      classNode.value = transformValue;
-    }
-  };
-
-  const transformSelector = selector => selectorParser((node) => {
-    node.walkClasses(transformClassNode);
-  }).process(selector).result;
-
   const root = postcss.parse(css);
 
-  root.walkRules((rule) => {
-    rule.selectors = rule.selectors.map(transformSelector);
-  });
+  transformClassNames({
+    transform: value => {
+      if (value in classNameMap) return classNameMap[value];
+
+      const transformValue = transformClassName(value);
+      classNameMap[value] = transformValue;
+      return transformValue;
+    }
+  }, root);
 
   const output = root.toString();
 
   return { output, classNameMap };
 };
-/* eslint-enable */
 
 module.exports = (css, prefix = getDevId()) => {
   const { output, classNameMap } = transformClassNames(css, className => (
