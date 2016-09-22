@@ -1,8 +1,18 @@
 # CSSTA
 
-Experimental project. Basically CSS Modules, but puts the CSS in the files, because that might be useful for some projects. Can generate real CSS files for production.
+Experimental project. Basically CSS Modules, but puts the CSS in the files, because that might be useful for some projects. Can generate real CSS files for production (with really tiny class names).
 
 Not released on NPM yet.
+
+Like CSS Modules, it
+
+* Scopes class names
+* Scopes animation names
+
+Unline CSS Modules, it
+
+* Does not allow variables (except for CSS `var(--name)`)
+* Does not include `:global` and `:local`
 
 Usage,
 
@@ -18,6 +28,14 @@ const styles = cssta(`
 
   .button-large {
     font-size: 2em;
+  }
+
+  .fade {
+    animation: 1s scoped-animation;
+  }
+
+  @keyframes scoped-animation {
+    0% { opacity: 0 }
   }
 `);
 
@@ -99,6 +117,5 @@ In `cssta-demo` you can,
 
 # TODO
 
-* Scope animation names
 * Can we do better than forcing the user to delete the CSS file before every run?
 * Tests
