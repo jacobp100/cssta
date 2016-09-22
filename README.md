@@ -1,20 +1,18 @@
 # CSSTA
 
-Experimental project. Basically CSS Modules, but puts the CSS in the files, because that might be useful for some projects. Can generate real CSS files for production (with really tiny class names).
-
-Not released on NPM yet.
+Experimental project. Basically CSS Modules, but puts the CSS in the files, because that might be useful for some projects. **Can generate real CSS files for production** (with really tiny class names).
 
 Like CSS Modules, it
 
 * Scopes class names
 * Scopes animation names
 
-Unline CSS Modules, it
+Unlike CSS Modules, it
 
 * Does not allow variables (except for CSS `var(--name)`)
 * Does not include `:global` and `:local`
 
-Usage,
+# Usage
 
 ```js
 const styles = cssta(`
@@ -44,11 +42,11 @@ export default () => (
 );
 ```
 
-In dev, this will scope all class names and insert them into style elements. The `cssta(...)` call will return a mapping of name to a mangled non-conflict name.
+In dev, this will scope all class names and insert them into style elements. The `cssta(...)` call will return a mapping of class name to a mangled non-conflict name. Animation names are not exported.
 
-In production, we'll use a babel plugin that will scope all class names, generate a **real CSS file**, and replace the `cssta(...)` call with an object of the mapping.
+In production, we'll use a babel plugin that will scope all class names, generate a **real CSS file**, and replace the `cssta(...)` call with an object of the same mapping as before.
 
-## Composition
+# Composition
 
 If you're going to use babel to generate real CSS files, we can't interpolate strings. I.e.
 
@@ -103,19 +101,7 @@ The output is relative to your current working directory.
 
 # Demo and Building
 
-**It's not on npm, so you'll have to link some stuff up first**
-
-In this order,
-
-1. In `babel-plugin-cssta`, run `npm install ../cssta`
-2. In `cssta-demo`, run `npm install ../babel-plugin-cssta`
-
-In `cssta-demo` you can,
+See `cssta-demo`
 
 * Run `npm start` for dev mode.
 * Run `npm run build-cssta` for prod build, and see output JS and CSS files in `./dist`.
-
-# TODO
-
-* Can we do better than forcing the user to delete the CSS file before every run?
-* Tests

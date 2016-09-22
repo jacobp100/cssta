@@ -14,3 +14,5 @@ build
 npm-debug.log
 
 cssta-demo/dist
+cssta/README.md
+babel-plugin-cssta/README.md
