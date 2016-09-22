@@ -14,6 +14,11 @@ Unlike CSS Modules, it
 * Does not allow variables (except for CSS `var(--name)`, see note in *composition*)
 * Does not include `:global` and `:local` pseudos
 
+```
+npm install --save cssta
+npm install --save-dev babel-plugin-cssta
+```
+
 # Usage
 
 ```js
