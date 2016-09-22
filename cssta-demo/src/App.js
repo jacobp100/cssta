@@ -2,11 +2,7 @@ import React, { Component } from 'react';
 import Button from './Button';
 import cssta from 'cssta';
 
-cssta(`
-  body {
-    margin: 5em;
-  }
-`);
+cssta('body { margin: 5em; }');
 
 class App extends Component {
   render() {

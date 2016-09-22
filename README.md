@@ -43,7 +43,7 @@ cssta(`
 `);
 ```
 
-You should use CSS variables. Also, interpolation only allows scoped variables. But really, scoped variables make little sense in CSS anyway: if you have a value that you want shared, you want it shared in as many places as possible to add consistency to your design. Globals really do make sense here. */side-note*
+You should use CSS variables to achieve this. Sidenote: interpolation only allows scoped variables, but in design, consistency is global property. It only makes sense that your globals follow that.
 
 Calls to `cssta` return objects. This means your styles do not have to be in the same file as your components. It's perfectly fine to have a util file,
 
@@ -65,6 +65,24 @@ export default () => (
 );
 ```
 
+# Babel Plugin
+
+The cssta module was designed to work in a development environment, so you don't want to use it in production. You can use `babel-plugin-cssta` to transform the cssta call into an object mapping and extract the CSS.
+
+```js
+{
+  "plugins" [
+    ["babel-plugin-cssta", {
+      "output": "dist/css"
+    }]
+  ]
+}
+```
+
+The output is relative to your current working directory.
+
+**Before running babel, you must delete the existing CSS file**
+
 # Demo and Building
 
 **It's not on npm, so you'll have to link some stuff up first**
@@ -77,12 +95,10 @@ In this order,
 In `cssta-demo` you can,
 
 * Run `npm start` for dev mode.
-* Run `npm run babel-cssta` for prod build, and see output in `styles.css` and `./cssta-dist`.
+* Run `npm run build-cssta` for prod build, and see output JS and CSS files in `./dist`.
 
 # TODO
 
 * Scope animation names
-* Custom CSS output directory
 * Can we do better than forcing the user to delete the CSS file before every run?
-* Throw errors on interpolation
 * Tests

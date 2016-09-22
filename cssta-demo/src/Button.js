@@ -36,7 +36,7 @@ const styles = cssta(`
 
 
 export default ({ children, color }) => (
-  <button className={[styles.button, styles[color]].join(' ')}>
+  <button className={`${styles.button} ${styles[color]}`}>
     {children}
   </button>
 );

@@ -1,0 +1,8 @@
+{
+  "plugins": [
+    "syntax-jsx",
+    ["babel-plugin-cssta", {
+      "output": "dist/styles.css"
+    }]
+  ]
+}

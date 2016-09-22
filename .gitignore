@@ -13,4 +13,4 @@ build
 .DS_Store
 npm-debug.log
 
-cssta-demo/cssta-dist
+cssta-demo/dist
