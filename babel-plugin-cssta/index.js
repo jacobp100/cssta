@@ -5,8 +5,36 @@ const _ = require('lodash/fp');
 const cssta = require('cssta');
 const cssNameGenerator = require('css-class-generator');
 
-const classGenerator = cssNameGenerator();
+const animationKeywords = [
+  'alternate',
+  'alternate-reverse',
+  'backwards',
+  'both',
+  'ease',
+  'ease-in',
+  'ease-in-out',
+  'ease-out',
+  'forwards',
+  'infinite',
+  'linear',
+  'none',
+  'normal',
+  'paused',
+  'reverse',
+  'running',
+  'step-end',
+  'step-start',
+  'initial',
+  'inherit',
+  'unset',
+];
 
+const classGenerator = cssNameGenerator();
+const animationGenerator = (function* animationGenerator() {
+  for (const value of cssNameGenerator()) {
+    if (!_.includes(value, animationKeywords)) yield value;
+  }
+}());
 
 module.exports = () => ({
   visitor: {
@@ -38,14 +66,14 @@ module.exports = () => ({
       if (references.indexOf(callee.name) === -1) return;
 
       const [cssNode] = element.node.arguments;
-      let cssString = _.get(['quasis', 0, 'value', 'raw'], cssNode);
+      let css = _.get(['quasis', 0, 'value', 'raw'], cssNode);
 
-      if (cssString && cssNode.expressions.length > 0) {
-        throw new Error('You cannot use interpolation in template strings (i.e. `color: ${primary}`)');
+      if (css && cssNode.expressions.length > 0) {
+        throw new Error('You cannot use interpolation in template strings (i.e. `color: ${primary}`)'); // eslint-disable-line
       }
 
-      if (!cssString) cssString = _.get('value', cssNode);
-      if (!cssString) return;
+      if (!css) css = _.get('value', cssNode);
+      if (!css) return;
 
       state.outputIndexPerFile = _.update( // eslint-disable-line
         [filename],
@@ -73,9 +101,10 @@ module.exports = () => ({
         throw new Error('You must remove the existing CSS file before running files through babel');
       }
 
-      const { output, classNameMap } = cssta.transformClassNames(cssString, () => (
-        classGenerator.next().value
-      ));
+      const { output, classNameMap } = cssta.transform(css, {
+        transformClassName: () => classGenerator.next().value,
+        transformAnimationName: () => animationGenerator.next().value,
+      });
 
       const outputCss = `${existingCss}\n${commentMarker}\n${output}\n`;
 

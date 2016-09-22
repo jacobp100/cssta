@@ -11,7 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "postcss": "^5.2.0",
-    "postcss-selector-parser": "^2.2.1",
+    "postcss-transform-animations": "^1.0.0",
     "postcss-transform-classes": "^1.0.0"
   },
   "devDependencies": {
