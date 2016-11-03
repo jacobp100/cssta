@@ -1,8 +1,9 @@
 const fs = require('fs');
 const path = require('path');
 const mkdirp = require('mkdirp');
+const t = require('babel-types');
 const _ = require('lodash/fp');
-const cssta = require('cssta');
+const extractRules = require('cssta/src/extractRules');
 const cssNameGenerator = require('css-class-generator');
 
 const animationKeywords = [
@@ -36,6 +37,26 @@ const animationGenerator = (function* animationGenerator() {
   }
 }());
 
+const expressionTypes = {
+  CallExpression: element => [element.callee, element.arguments[0]],
+  MemberExpression: element => [
+    element.object,
+    element.computed ? element.property : t.stringLiteral(element.property.name),
+  ],
+};
+
+const jsonToNode = (object) => {
+  if (typeof object === 'string') {
+    return t.stringLiteral(object);
+  }
+  return t.objectExpression(Object.keys(object).map(key => (
+    t.objectProperty(
+      t.identifier(key),
+      jsonToNode(object[key])
+    )
+  )));
+};
+
 module.exports = () => ({
   visitor: {
     ImportDeclaration(element, state) {
@@ -53,11 +74,29 @@ module.exports = () => ({
           state.csstaReferencesPerFile || {}
         );
 
-        element.remove();
+        if (!_.get(['createComponentReferencePerFile', filename], state)) {
+          const reference = element.scope.generateUidIdentifier('csstaCreateComponent');
+          state.createComponentReferencePerFile = _.set( // eslint-disable-line
+            [filename],
+            reference,
+            state.createComponentReferencePerFile
+          );
+          const newImport = t.importDeclaration([
+            t.importDefaultSpecifier(reference),
+          ], t.stringLiteral('cssta/lib/createComponent'));
+          element.replaceWith(newImport);
+        } else {
+          element.remove();
+        }
       }
     },
-    CallExpression(element, state) {
-      const { callee } = element.node;
+    TaggedTemplateExpression(element, state) {
+      const { quasi, tag } = element.node;
+
+      if (!(tag.type in expressionTypes)) return;
+
+      const [callee, elementType] = expressionTypes[tag.type](tag);
+
       if (callee.type !== 'Identifier') return;
 
       const filename = state.file.opts.filename;
@@ -65,15 +104,11 @@ module.exports = () => ({
 
       if (references.indexOf(callee.name) === -1) return;
 
-      const [cssNode] = element.node.arguments;
-      let css = _.get(['quasis', 0, 'value', 'raw'], cssNode);
-
-      if (css && cssNode.expressions.length > 0) {
+      if (quasi.expressions.length > 0) {
         throw new Error('You cannot use interpolation in template strings (i.e. `color: ${primary}`)'); // eslint-disable-line
       }
 
-      if (!css) css = _.get('value', cssNode);
-      if (!css) return;
+      const css = _.get(['quasis', 0, 'value', 'raw'], quasi);
 
       state.outputIndexPerFile = _.update( // eslint-disable-line
         [filename],
@@ -101,9 +136,9 @@ module.exports = () => ({
         throw new Error('You must remove the existing CSS file before running files through babel');
       }
 
-      const { output, classNameMap } = cssta.transform(css, {
-        transformClassName: () => classGenerator.next().value,
-        transformAnimationName: () => animationGenerator.next().value,
+      const { css: output, baseClassName, classNameMap } = extractRules(css, {
+        generateClassName: () => classGenerator.next().value,
+        generateAnimationName: () => animationGenerator.next().value,
       });
 
       const outputCss = `${existingCss}\n${commentMarker}\n${output}\n`;
@@ -114,11 +149,13 @@ module.exports = () => ({
         flag: 'w+',
       });
 
-      if (_.isEmpty(classNameMap)) {
-        element.remove();
-      } else {
-        element.replaceWithSourceString(JSON.stringify(classNameMap));
-      }
+      const createElement = state.createComponentReferencePerFile[filename];
+      const newElement = t.callExpression(createElement, [
+        elementType,
+        t.stringLiteral(baseClassName),
+        jsonToNode(classNameMap),
+      ]);
+      element.replaceWith(newElement);
     },
   },
 });

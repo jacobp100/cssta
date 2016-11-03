@@ -13,6 +13,7 @@ build
 .DS_Store
 npm-debug.log
 
+cssta/dist
 cssta-demo/dist
 cssta/README.md
 babel-plugin-cssta/README.md

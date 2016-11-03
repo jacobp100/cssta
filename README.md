@@ -1,18 +1,8 @@
 # CSSTA
 
-Experimental project. Basically CSS Modules, but puts the CSS in the files, because that might be useful for some projects.
+Experimental project very similar to [styled components](https://styled-components.com), except that it can generate real CSS files, and gives more prop validation than styled components.
 
-**Can generate real CSS files for production** (with really tiny class names).
-
-Like CSS Modules, it
-
-* Scopes class names
-* Scopes animation names
-
-Unlike CSS Modules, it
-
-* Does not allow variables (except for CSS `var(--name)`, see note in *composition*)
-* Does not include `:global` and `:local` pseudos
+**Can generate real CSS files for production** (with really tiny class names). Scopes all declarations as well as keyframes.
 
 ```
 npm install --save cssta
@@ -21,75 +11,102 @@ npm install --save-dev babel-plugin-cssta
 
 # Usage
 
+The basic usage is identical to styled components.
+
 ```js
 import cssta from 'cssta';
 
-const styles = cssta(`
-  .button {
-    color: black;
-  }
+const Button = cssta.button`
+  color: black;
+`;
 
-  .button:hover {
+<Button>Test</Button>
+```
+
+Similar to styled components, you can use pseudo selectors. However, here, the nesting operator (`&`) is optional.
+
+
+```js
+const Button = cssta.button`
+  color: black;
+
+  :hover {
     color: red;
   }
+`;
 
-  .button-large {
+<Button>Hover Me</Button>
+```
+
+Where styled components uses `${template expressions}` to enable dynamic CSS, we use attribute selectors. These attribute selectors are mapped to React props, and are type checked using `propTypes`.
+
+You can have two types of property, `[booleanValue]` and `[stringValue="..."]`, but one property cannot be both.
+
+```js
+const Button = cssta.button`
+  color: black;
+
+  /* Boolean */
+  [large] {
     font-size: 2em;
   }
 
-  .fade {
-    animation: 1s scoped-animation;
+  /* String */
+  [color="red"] {
+    color: red;
   }
 
-  @keyframes scoped-animation {
-    0% { opacity: 0 }
+  [color="green"] {
+    color: green;
   }
-`);
+`;
 
-export default () => (
-  <button className={`${styles.button} ${styles['button-large']}`}>Test</button>
-);
+<Button>Regular Button</Button>
+<Button large>Large Button</Button>
+<Button color="red">Red Button</Button>
+<Button large color="green">Large Green Button</Button>
 ```
 
-In dev, this will scope all class names and insert them into style elements. The `cssta(...)` call will return a mapping of class name to a mangled non-conflict name. Animation names are not exported.
+Similar to styled components, we scope animation names to the component.
 
-In production, we'll use a babel plugin that will scope all class names, generate a **real CSS file**, and replace the `cssta(...)` call with an object of the same mapping as before.
+```js
+const Button = cssta.button`
+  animation: 1s scoped-animation;
 
-In dev mode, you can pass an optional second argument to use as a prefix for your class names to assist in debugging. In production, the second argument is ignored.
+  @keyframes scoped-animation {
+    0% { opacity: 0; }
+  }
+`;
+```
+
+Lastly, if you need to override the element tag for the component, you can set the `component` property.
+
+```js
+<Button component="span">I am a span</Button>
+```
+
+In dev, we generate a style element and insert it into the document.
+
+In production, we'll use a babel plugin that will generate a **real CSS file**. The `cssta` calls are replaced with `createComponent` calls, where the `createComponent` is ~1kb when minified (more when gzipped).
 
 # Composition
 
-If you're going to use babel to generate real CSS files, we can't interpolate strings. I.e.
+Like in styled components, you can compose components to style them.
 
 ```js
-// THIS WILL NOT WORK
-cssta(`
-  .button {
-    color: ${color};
-  }
-`);
+import { Link } from 'react-router';
+
+const StyledLink = cssta(Link)`
+  color: red;
+`;
 ```
 
-You should use CSS variables to achieve this. Sidenote: interpolation only allows scoped variables, but in design, consistency is global property. It only makes sense that your globals follow that.
-
-Calls to `cssta` return objects. This means your styles do not have to be in the same file as your components. It's perfectly fine to have a util file,
+**Note you cannot yet compose a styled components**. We'll probably do something a bit different to styled components.
 
 ```js
-// util.js
-export default cssta(`
-  .text-center {
-    text-align: center !important;
-  }
-`);
-
-// button.js
-import utilStyles from './util.js'
-
-const styles = cssta(...);
-
-export default () => (
-  <button className={`${styles.button} ${utilStyles['text-center']}`}>Test</button>
-);
+// NOT WORKING
+const Button = cssta.button`color: red;`;
+const LargeButton = cssta(Button)`font-size: large`;
 ```
 
 # Babel Plugin
@@ -113,19 +130,20 @@ The output is relative to your current working directory.
 ### In
 
 ```js
-const styles = cssta(`
-  .button {
-    color: black;
+const Button = cssta.button`
+  color: black;
+
+  [large] {
+    font-size: 18pt;
   }
-`);
+`;
 ```
 
 ### Out
 
 ```js
-const styles = {
-  "button": "A"
-};
+import createComponent from 'cssta/lib/createComponent';
+const Button = createComponent('button', '.A', {large:'.B'}); // Uses internal representation of class semantics
 ```
 
 ### CSS
@@ -135,6 +153,10 @@ const styles = {
 
 .A {
   color: black;
+}
+
+.B {
+  font-size: 18pt;
 }
 ```
 
