@@ -93,7 +93,7 @@ module.exports = (inputCss, { generateClassName, generateAnimationName }) => {
     },
   }, root);
 
-  iterateSiblings(root, (node) => {
+  const nodeTransformation = (node) => {
     switch (node.type) {
       case 'decl': {
         // Un-nest
@@ -112,10 +112,15 @@ module.exports = (inputCss, { generateClassName, generateAnimationName }) => {
         // Transform [attribute=value] to class names
         node.selector = selectorParser(transformSelectors).process(node.selector).result;
         break;
+      } case 'atrule': {
+        iterateSiblings(node, nodeTransformation);
+        break;
       } default:
         break;
     }
-  });
+  };
+
+  iterateSiblings(root, nodeTransformation);
 
   const css = root.toString();
 
