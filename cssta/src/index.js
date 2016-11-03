@@ -44,9 +44,3 @@ polygon polyline radialGradient rect stop svg text tspan`.split(/\s+/m).forEach(
 });
 
 module.exports = style;
-
-console.log(extractRules(`
-  :hover {
-    color: blue;
-  }
-`, opts));
