@@ -4,6 +4,18 @@ const selectorParser = require('postcss-selector-parser');
 const { transformAnimationNames } = require('postcss-transform-animations');
 
 
+// Don't use root.each, because when we remove nodes, we'll skip them
+const iterateSiblings = (root, callback) => {
+  const iterate = (node) => {
+    if (!node) return;
+    const nextNode = node.next();
+    callback(node);
+    iterate(nextNode);
+  };
+
+  iterate(root.first);
+};
+
 module.exports = (inputCss, { generateClassName, generateAnimationName }) => {
   const classNameMap = {};
   const animationNameMap = {};
@@ -81,15 +93,20 @@ module.exports = (inputCss, { generateClassName, generateAnimationName }) => {
     },
   }, root);
 
-  root.nodes.forEach((node) => {
+  iterateSiblings(root, (node) => {
     switch (node.type) {
       case 'decl': {
         // Un-nest
-        const ruleNode = postcss.rule({
-          selector: `.${getBaseClassName()}`,
-        });
-        ruleNode.append(node);
-        node.replaceWith(ruleNode);
+        const selector = `.${getBaseClassName()}`;
+        const prevNode = node.prev();
+        if (prevNode && prevNode.type === 'rule' && prevNode.selector === selector) {
+          prevNode.append(node);
+          node.remove();
+        } else {
+          const ruleNode = postcss.rule({ selector });
+          ruleNode.append(node);
+          node.replaceWith(ruleNode);
+        }
         break;
       } case 'rule': {
         // Transform [attribute=value] to class names

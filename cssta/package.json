@@ -16,8 +16,7 @@
     "postcss-safe-parser": "^2.0.0",
     "postcss-selector-parser": "^2.2.1",
     "postcss-transform-animations": "^1.0.1",
-    "postcss-transform-classes": "^1.0.0",
-    "react": "^15.3.2"
+    "postcss-transform-classes": "^1.0.0"
   },
   "devDependencies": {
     "babel-cli": "^6.18.0",
@@ -27,5 +26,8 @@
     "eslint-plugin-import": "^1.15.0",
     "eslint-plugin-jsx-a11y": "^2.2.2",
     "eslint-plugin-react": "^6.3.0"
+  },
+  "peerDependencies": {
+    "react": "^15.3.2"
   }
 }
