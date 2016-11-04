@@ -43,6 +43,10 @@ module.exports = (component, baseClassName, classNameMap) => {
 
     const className = classNames.join(' ');
 
+    if (process.env.NODE_ENV !== 'production' && Element.isCsstaStyledComponent) {
+      throw new Error('You cannot compose styled components yet');
+    }
+
     return React.createElement(
       Element,
       Object.assign({}, passedProps, { className })
@@ -50,6 +54,8 @@ module.exports = (component, baseClassName, classNameMap) => {
   };
 
   if (process.env.NODE_ENV !== 'production') {
+    Component.isCsstaStyledComponent = true;
+
     if (ownProps.indexOf('component') !== -1) {
       throw new Error('Cannot use attribute "component" for components');
     }
