@@ -72,7 +72,10 @@ module.exports = (inputCss, { generateClassName, generateAnimationName }) => {
       if (!didScopeNode) {
         const className = getBaseClassName();
         const newNode = selectorParser.className({ value: className });
-        selector.prepend(newNode);
+        // If they wrote `button {}`, then we want `button.scoped-class.name {}`
+        // This is so they can set custom styling if they override tags
+        // Note that is safe since we don't allow combinators.
+        selector.append(newNode);
       }
 
       container.walkCombinators(() => {
