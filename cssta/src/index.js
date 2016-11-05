@@ -8,11 +8,24 @@ const getDevId = name => () => {
   return `${name}-${devId}`;
 };
 
-const createCssElement = (cssText) => {
-  const styleElement = document.createElement('style');
-  const styleBody = document.createTextNode(cssText);
-  styleElement.appendChild(styleBody);
-  document.getElementsByTagName('head')[0].appendChild(styleElement);
+const assertNoTemplateParams = (otherAttributes) => {
+  if (otherAttributes.length) {
+    throw new Error('You cannot use string interpolation with cssta');
+  }
+};
+
+let styleElement = null;
+const updateCss = (cssText) => {
+  if (!styleElement) {
+    styleElement = document.createElement('style');
+    const styleBody = document.createTextNode(cssText);
+    styleElement.appendChild(styleBody);
+    document.getElementsByTagName('head')[0].appendChild(styleElement);
+  } else {
+    const existingStyleBody = styleElement.firstChild;
+    const newStyleBody = document.createTextNode(cssText);
+    styleElement.replaceChild(newStyleBody, existingStyleBody);
+  }
 };
 
 const opts = {
@@ -20,16 +33,29 @@ const opts = {
   generateAnimationName: getDevId('animation'),
 };
 
+let styleContents = '';
 const style = tagName => (cssText, ...otherAttributes) => {
-  if (otherAttributes.length) {
-    throw new Error('You cannot use string interpolation with cssta');
-  }
+  assertNoTemplateParams(otherAttributes);
 
   const { css, baseClassName, classNameMap } = extractRules(cssText, opts);
 
-  createCssElement(css);
+  styleContents += css;
+  updateCss(styleContents);
 
   return createComponent(tagName, baseClassName, classNameMap);
+};
+
+let didInjectGlobal = false;
+style.injectGlobal = (cssText, ...otherAttributes) => {
+  assertNoTemplateParams(otherAttributes);
+
+  if (didInjectGlobal) {
+    throw new Error('To help with consistency, you can only call injectGlobal once');
+  }
+
+  didInjectGlobal = true;
+  styleContents = cssText + styleContents;
+  updateCss(styleContents);
 };
 
 `a abbr address area article aside audio b base bdi bdo big blockquote body br button canvas

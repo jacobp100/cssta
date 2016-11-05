@@ -113,7 +113,7 @@ module.exports = (inputCss, { generateClassName, generateAnimationName }) => {
         node.selector = selectorParser(transformSelectors).process(node.selector).result;
         break;
       } case 'atrule': {
-        iterateSiblings(node, nodeTransformation);
+        if (!/keyframes$/i.test(node.name)) iterateSiblings(node, nodeTransformation);
         break;
       } default:
         break;

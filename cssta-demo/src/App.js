@@ -1,6 +1,12 @@
 import React from 'react';
 import cssta from 'cssta';
 
+cssta.injectGlobal(`
+  body {
+    margin: 10em;
+  }
+`);
+
 const Button = cssta.button`
   background: white;
   color: black;
