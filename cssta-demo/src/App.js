@@ -15,6 +15,16 @@ const Button = cssta.button`
   border-radius: 1000px;
   font-size: 1rem;
 
+  @media (max-width: 768px) {
+    font-size: 1.5rem;
+  }
+
+  @supports (background: linear-gradient(to bottom, red, green)) {
+    [christmas] {
+      background: linear-gradient(to bottom, red, green);
+    }
+  }
+
   :hover {
     background: lightgray;
   }
@@ -54,6 +64,7 @@ const App = () => (
     <Button color="red">Test</Button>
     <Button color="blue">Test</Button>
     <Button throb>Test</Button>
+    <Button christmas>Test</Button>
   </div>
 );
 
