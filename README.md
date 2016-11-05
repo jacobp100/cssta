@@ -79,6 +79,26 @@ const Button = cssta.button`
 `;
 ```
 
+Other than keyframes, all other `@`-rules work as usual.
+
+```js
+const Button = cssta.button`
+  font-size: 12pt;
+
+  @media (max-width: 768px) {
+    font-size: 12pt;
+  }
+
+  @supports (background: linear-gradient(to bottom, red, green)) {
+    [christmas] {
+      background: linear-gradient(to bottom, red, green);
+    }
+  }
+`
+```
+
+Like styled components, we also have [`cssta.injectGlobal`](https://github.com/styled-components/styled-components/blob/master/docs/css-we-support.md), which prepends CSS. However, you can only call this once.
+
 Lastly, if you need to override the element tag for the component, you can set the `component` property.
 
 ```js
@@ -101,7 +121,7 @@ const StyledLink = cssta(Link)`
 `;
 ```
 
-**Note you cannot yet compose a styled components**. We'll probably do something a bit different to styled components.
+**Note you cannot compose a styled components**. We'll probably expost a postCSS pipeline so you can use your own plugins, and get composition through that.
 
 ```js
 // NOT WORKING
