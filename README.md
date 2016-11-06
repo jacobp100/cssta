@@ -1,51 +1,65 @@
 # CSSTA
 
-Experimental project very similar to [styled components](https://styled-components.com), except that it can generate real CSS files, and gives more prop validation than styled components.
-
-**Can generate real CSS files for production** (with really tiny class names). Scopes all declarations as well as keyframes.
-
 ```
 npm install --save cssta
 npm install --save-dev babel-plugin-cssta
 ```
 
+Experimental project very similar in concept to [styled components](https://styled-components.com). The main difference is that we focus on generating a **real CSS file**. The API is mostly the same, but different compromises were made (see below).
+
+| | CSSTA | Styled Components |
+| --- | --- | --- |
+| Scopes class names | :white_check_mark: | :white_check_mark: |
+| Scopes animation names | :white_check_mark: | :white_check_mark: |
+| Other @-rules (@supports, @media) | :white_check_mark: | :white_check_mark: |
+| JS overhead | :white_check_mark: (manual setup required) | :white_check_mark: (built-in) |
+| Real CSS File | :white_check_mark: | :x: |
+| JS overhead | ~1kb | A lot |
+| Server rendering | :white_check_mark: | :white_check_mark: (at cost of file size) |
+| React Native | :x: | :white_check_mark: |
+
 # Usage
 
-The basic usage is identical to styled components.
+The API is very similar to styled components, so if things look similar, it's because they are.
+
+CSSTA provides factory methods to make styled elements. To make a styled button, it's very simple.
 
 ```js
 import cssta from 'cssta';
 
 const Button = cssta.button`
-  color: black;
+  background: blue;
+  color: white;
 `;
+```
 
+This returns a regular React component, than can be used normally.
+
+```js
 <Button>Test</Button>
 ```
 
-Similar to styled components, you can use pseudo selectors. However, here, the nesting operator (`&`) is optional.
-
+You can add pseudo-selectors by just writing a pseudo-selector class, which will be scoped only to the element you are creating. (You can also write `&:hover` if you prefer).
 
 ```js
 const Button = cssta.button`
-  color: black;
+  background: blue;
+  color: white;
 
   :hover {
-    color: red;
+    background: red;
   }
 `;
 
 <Button>Hover Me</Button>
 ```
 
-Where styled components uses `${template expressions}` to enable dynamic CSS, we use attribute selectors. These attribute selectors are mapped to React props, and are type checked using `propTypes`.
+A lot of your components will want variants: for example, being able to make a large button, or setting the colour of the button. To specify the variants, we use CSS attribute selectors: `[property="value"]` for string attributes and `[property]` and `:not([property])` for boolean values. The variants are exposed through props on the returned React component, and we allow the string and boolean values stated previously.
 
-You can have two types of property, `[booleanValue]` and `[stringValue="..."]`, but one property cannot be both.
+Note that one variant can either only be string values, or only be boolean (no mixing).
 
 ```js
 const Button = cssta.button`
-  color: black;
-
   /* Boolean */
   [large] {
     font-size: 2em;
@@ -55,7 +69,6 @@ const Button = cssta.button`
   [color="red"] {
     color: red;
   }
-
   [color="green"] {
     color: green;
   }
@@ -67,7 +80,9 @@ const Button = cssta.button`
 <Button large color="green">Large Green Button</Button>
 ```
 
-Similar to styled components, we scope animation names to the component.
+## @-Rules
+
+Animations defined within a component are scoped to the element you are creating.
 
 ```js
 const Button = cssta.button`
@@ -97,17 +112,25 @@ const Button = cssta.button`
 `
 ```
 
-Like styled components, we also have [`cssta.injectGlobal`](https://github.com/styled-components/styled-components/blob/master/docs/css-we-support.md), which prepends CSS. However, you can only call this once.
+## Globals
 
-Lastly, if you need to override the element tag for the component, you can set the `component` property.
+If you need to define some globals: be it default styling for tags (`body`, `h1` etc), CSS variables, or global animation keyframes, you can use `cssta.injectGlobal`, which prepends CSS. Note that you can only call this once.
 
 ```js
-<Button component="span">I am a span</Button>
+cssta.injectGlobal`
+  body {
+    margin: 1em;
+  }
+  
+  @keyframes fade-in {
+    0% { opacity: 0; }
+  }
+`;
+
+const Button = cssta.button`
+  animation: 1s fade-in;
+`;
 ```
-
-In dev, we generate a style element and insert it into the document.
-
-In production, we'll use a babel plugin that will generate a **real CSS file**. The `cssta` calls are replaced with `createComponent` calls, where the `createComponent` is ~1kb when minified (more when gzipped).
 
 # Composition
 
@@ -121,17 +144,34 @@ const StyledLink = cssta(Link)`
 `;
 ```
 
-**Note you cannot compose a styled components**. We'll probably expost a postCSS pipeline so you can use your own plugins, and get composition through that.
-
 ```js
 // NOT WORKING
 const Button = cssta.button`color: red;`;
 const LargeButton = cssta(Button)`font-size: large`;
 ```
 
+**Note you cannot compose a styled components**. We'll probably expost a postCSS pipeline so you can use your own plugins, and get composition through that.
+
+## Other Bits
+
+All properties except for the ones defined as variants in your CSS, and `component` are passed down to the component you are styling. This allows you to define `style` and `className`.
+
+However, note that `className` will add additional classes, but you cannot remove the classes otherwise set by the component. For classes, it is your responsibility to resolve the specifity: I recommend you only add util classes, and each declaration in those util classes uses `!important` for everything.
+
+```js
+<Button className="margin-right-1">Composing Classes</Button>
+<Button style={{ marginRight: 0 }}>Composing Styles</Button>
+```
+
+If you need to override the element tag for the component, you can set the `component` property.
+
+```js
+<Button component="span">I am a span</Button>
+```
+
 # Babel Plugin
 
-The cssta module was designed to work in a development environment, so you don't want to use it in production. You can use `babel-plugin-cssta` to transform the cssta call into an object mapping and extract the CSS (and remove the import).
+The cssta module was designed to work in a development environment, and you don't want to use it in production. You should use `babel-plugin-cssta` to extract the CSS from the cssta calls, add it to a CSS file, and replace the cssta call with a call that directly creates React components using the class names in the CSS file.
 
 You can transform multiple files, and the CSS will be concatenated. However, **before you run babel, you must delete the existing CSS file** so you don't end up with duplicate CSS.
 
