@@ -190,7 +190,7 @@ cssta.setPostCssPipeline([
 Using this plugin is otherwise straight-forward.
 
 ```js
-cssta.injectGlobal(`]
+cssta.injectGlobal(`
   @define-placeholder reset-button {
     background: none;
     border: none;
