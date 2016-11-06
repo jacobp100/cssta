@@ -112,6 +112,26 @@ const Button = cssta.button`
 `
 ```
 
+## Composition
+
+Like in styled components, you can compose components to style them.
+
+```js
+import { Link } from 'react-router';
+
+const StyledLink = cssta(Link)`
+  color: red;
+`;
+```
+
+**Note you cannot compose a styled components**. We'll probably expost a postCSS pipeline so you can use your own plugins, and get composition through that.
+
+```js
+// NOT WORKING
+const Button = cssta.button`color: red;`;
+const LargeButton = cssta(Button)`font-size: large`;
+```
+
 ## Globals
 
 If you need to define some globals: be it default styling for tags (`body`, `h1` etc), CSS variables, or global animation keyframes, you can use `cssta.injectGlobal`, which prepends CSS. Note that you can only call this once.
@@ -132,26 +152,6 @@ const Button = cssta.button`
 `;
 ```
 
-# Composition
-
-Like in styled components, you can compose components to style them.
-
-```js
-import { Link } from 'react-router';
-
-const StyledLink = cssta(Link)`
-  color: red;
-`;
-```
-
-```js
-// NOT WORKING
-const Button = cssta.button`color: red;`;
-const LargeButton = cssta(Button)`font-size: large`;
-```
-
-**Note you cannot compose a styled components**. We'll probably expost a postCSS pipeline so you can use your own plugins, and get composition through that.
-
 ## Other Bits
 
 All properties except for the ones defined as variants in your CSS, and `component` are passed down to the component you are styling. This allows you to define `style` and `className`.
@@ -167,6 +167,40 @@ If you need to override the element tag for the component, you can set the `comp
 
 ```js
 <Button component="span">I am a span</Button>
+```
+
+## PostCSS
+
+This was designed around the ida that you'll use postCSS to enhance your CSS. You'll almost certainly want to use autoprefixer. However, there are also plugins that will help you with composition, such as `postcss-simple-extend`.
+
+In development, you can call `cssta.setPostCssPipeline` for any plugins that you need for development, but make sure that you do not include these plugins or the `setPostCssPipeline` call in production!
+
+```js
+import postcssSimpleExtend from 'postcss-simple-extend';
+
+cssta.setPostCssPipeline([
+  postcssSimpleExtend(),
+]);
+```
+
+Using this plugin is otherwise straight-forward.
+
+```js
+cssta.injectGlobal(`]
+  @define-placeholder reset-button {
+    background: none;
+    border: none;
+    border: 0;
+    font-size: 1rem;
+  }
+`);
+
+const Button = cssta.button`
+  & {
+    /* We have to wrap the @extend in a & selector */
+    @extend reset-button;
+  }
+`;
 ```
 
 # Babel Plugin
