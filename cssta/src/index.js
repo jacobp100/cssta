@@ -1,4 +1,5 @@
 /* global document */
+const postcss = require('postcss');
 const extractRules = require('./extractRules');
 const createComponent = require('./createComponent');
 
@@ -15,17 +16,25 @@ const assertNoTemplateParams = (otherAttributes) => {
 };
 
 let styleElement = null;
-const updateCss = (cssText) => {
-  if (!styleElement) {
-    styleElement = document.createElement('style');
-    const styleBody = document.createTextNode(cssText);
-    styleElement.appendChild(styleBody);
-    document.getElementsByTagName('head')[0].appendChild(styleElement);
-  } else {
-    const existingStyleBody = styleElement.firstChild;
-    const newStyleBody = document.createTextNode(cssText);
-    styleElement.replaceChild(newStyleBody, existingStyleBody);
-  }
+let stylePipeline = [];
+let stylePromise = Promise.resolve();
+const updateCss = (inputCss) => {
+  stylePromise = stylePromise.then(() => (
+    postcss(stylePipeline).process(inputCss)
+  )).then((result) => {
+    const cssText = result.css;
+
+    if (!styleElement) {
+      styleElement = document.createElement('style');
+      const styleBody = document.createTextNode(cssText);
+      styleElement.appendChild(styleBody);
+      document.getElementsByTagName('head')[0].appendChild(styleElement);
+    } else {
+      const existingStyleBody = styleElement.firstChild;
+      const newStyleBody = document.createTextNode(cssText);
+      styleElement.replaceChild(newStyleBody, existingStyleBody);
+    }
+  });
 };
 
 const opts = {
@@ -55,6 +64,11 @@ style.injectGlobal = (cssText, ...otherAttributes) => {
 
   didInjectGlobal = true;
   styleContents = cssText + styleContents;
+  updateCss(styleContents);
+};
+
+style.setPostCssPipeline = (pipeline) => {
+  stylePipeline = pipeline;
   updateCss(styleContents);
 };
 
