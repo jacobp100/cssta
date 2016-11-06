@@ -12,7 +12,8 @@ Experimental project very similar in concept to [styled components](https://styl
 | Scopes class names | :white_check_mark: | :white_check_mark: |
 | Scopes animation names | :white_check_mark: | :white_check_mark: |
 | Other @-rules (@supports, @media) | :white_check_mark: | :white_check_mark: |
-| JS overhead | :white_check_mark: (manual setup required) | :white_check_mark: (built-in) |
+| Automatic prop validation | :white_check_mark: | :x: |
+| Autoprefixer | :white_check_mark: (manual setup required) | :white_check_mark: (built-in) |
 | Real CSS File | :white_check_mark: | :x: |
 | JS overhead | ~1kb | A lot |
 | Server rendering | :white_check_mark: | :white_check_mark: (at cost of file size) |
