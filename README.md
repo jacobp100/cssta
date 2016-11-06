@@ -173,9 +173,13 @@ If you need to override the element tag for the component, you can set the `comp
 
 This was designed around the ida that you'll use postCSS to enhance your CSS. You'll almost certainly want to use autoprefixer. However, there are also plugins that will help you with composition, such as `postcss-simple-extend`.
 
-In development, you can call `cssta.setPostCssPipeline` for any plugins that you need for development, but make sure that you do not include these plugins or the `setPostCssPipeline` call in production!
+In production, you'll have to run the CSS file from the babel-plugin through your own css pipeline.
+
+In development, you can call `cssta.setPostCssPipeline` for any plugins that you need for development, but **make sure that you do not include these plugins or the `setPostCssPipeline` call in production!** One way to do this is to put the stuff required to bootstrap in one file, and get webpack to ignore that file.
 
 ```js
+// bootstrap-cssta.js
+import cssta from 'cssta';
 import postcssSimpleExtend from 'postcss-simple-extend';
 
 cssta.setPostCssPipeline([
