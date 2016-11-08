@@ -1,20 +1,27 @@
 {
   "name": "babel-plugin-cssta",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "approve": "node ./index.test.js --approve"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "ava": "^0.16.0",
+    "babel-core": "^6.18.2",
     "eslint": "^3.5.0",
     "eslint-config-airbnb": "^11.1.0",
     "eslint-plugin-import": "^1.15.0",
     "eslint-plugin-jsx-a11y": "^2.2.2",
-    "eslint-plugin-react": "^6.3.0"
+    "eslint-plugin-react": "^6.3.0",
+    "glob": "^7.1.1",
+    "jest": "^17.0.0",
+    "tempfile": "^1.1.1"
   },
   "dependencies": {
     "babel-types": "^6.18.0",

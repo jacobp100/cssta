@@ -61,9 +61,10 @@ module.exports = (inputCss, { generateClassName, generateAnimationName }) => {
       });
 
       selector.walkAttributes((node) => {
+        const attribute = node.attribute.trim();
         const className = node.value
-          ? getStringClassNameFor(node.attribute, node.raws.unquoted)
-          : getBooleanClassNameFor(node.attribute);
+          ? getStringClassNameFor(attribute, node.raws.unquoted)
+          : getBooleanClassNameFor(attribute);
         const replacementNode = selectorParser.className({ value: className });
         node.replaceWith(replacementNode);
         didScopeNode = true;

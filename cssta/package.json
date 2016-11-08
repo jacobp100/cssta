@@ -1,10 +1,11 @@
 {
   "name": "cssta",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
+    "test:watch": "jest --watch",
     "build": "babel ./src --out-dir ./dist"
   },
   "keywords": [],
@@ -25,7 +26,10 @@
     "eslint-config-airbnb": "^11.1.0",
     "eslint-plugin-import": "^1.15.0",
     "eslint-plugin-jsx-a11y": "^2.2.2",
-    "eslint-plugin-react": "^6.3.0"
+    "eslint-plugin-react": "^6.3.0",
+    "jest": "^16.0.2",
+    "react-dom": "^15.3.2",
+    "react-test-renderer": "^15.3.2"
   },
   "peerDependencies": {
     "react": "^15.3.2"

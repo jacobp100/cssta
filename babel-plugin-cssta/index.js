@@ -30,12 +30,19 @@ const animationKeywords = [
   'unset',
 ];
 
-const classGenerator = cssNameGenerator();
-const animationGenerator = (function* animationGenerator() {
-  for (const value of cssNameGenerator()) {
-    if (!_.includes(value, animationKeywords)) yield value;
-  }
-}());
+let classGenerator = null;
+let animationGenerator = null;
+
+const resetGenerators = () => {
+  classGenerator = cssNameGenerator();
+  animationGenerator = (function* gen() {
+    for (const value of cssNameGenerator()) {
+      if (!_.includes(value, animationKeywords)) yield value;
+    }
+  }());
+};
+
+resetGenerators();
 
 const csstaConstructorExpressionTypes = {
   CallExpression: element => [element.callee, element.arguments[0]],
@@ -82,7 +89,8 @@ const transformCsstaCall = (element, state, node, stringArg) => {
   }
 
   let css = _.get(['quasis', 0, 'value', 'raw'], stringArg);
-  if (!css) css = _.get(['raw'], stringArg);
+  if (!css) css = _.get(['value'], stringArg);
+  if (css === undefined) throw new Error('Failed to read CSS');
 
   const cssFilename = path.resolve(
     process.cwd(),
@@ -127,17 +135,21 @@ const transformCsstaCall = (element, state, node, stringArg) => {
       generateAnimationName: () => animationGenerator.next().value,
     });
 
-    outputCss = `${existingCss}\n${commentMarker}\n${output}\n`;
+    outputCss = `${existingCss}\n${commentMarker}\n${output}`;
     writeCssToFile(outputCss, cssFilename);
 
     const createComponent = state.createComponentReferencePerFile[filename];
+    const baseClass = baseClassName ?
+      t.stringLiteral(baseClassName)
+      : t.nullLiteral();
+
     newElement = t.callExpression(createComponent, [
       elementType,
-      t.stringLiteral(baseClassName),
+      baseClass,
       jsonToNode(classNameMap),
     ]);
   } else {
-    outputCss = `${existingCss}\n${commentMarker}\n${css}\n`;
+    outputCss = `${existingCss}\n${commentMarker}\n${css}`;
   }
 
   writeCssToFile(outputCss, cssFilename);
@@ -195,3 +207,5 @@ module.exports = () => ({
     },
   },
 });
+
+module.exports.resetGenerators = resetGenerators;

@@ -41,27 +41,20 @@ module.exports = (component, baseClassName, classNameMap) => {
       passedProps: {},
     });
 
-    const className = classNames.join(' ');
+    const className = classNames.join(' ').trim();
 
-    if (process.env.NODE_ENV !== 'production' && Element.isCsstaStyledComponent) {
-      throw new Error('You cannot compose styled components yet');
-    }
+    if (className) passedProps.className = className;
 
-    return React.createElement(
-      Element,
-      Object.assign({}, passedProps, { className })
-    );
+    return React.createElement(Element, passedProps);
   };
 
   if (process.env.NODE_ENV !== 'production') {
-    Component.isCsstaStyledComponent = true;
-
     if (ownProps.indexOf('component') !== -1) {
       throw new Error('Cannot use attribute "component" for components');
     }
 
     Component.propTypes = ownProps.reduce((out, key) => {
-      const styleMap = ownProps[key];
+      const styleMap = classNameMap[key];
 
       if (typeof styleMap === 'string') {
         out[key] = PropTypes.bool;
