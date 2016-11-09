@@ -6,22 +6,16 @@
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
-    "build": "rm -rf ./dist || :; babel ./src --out-dir ./dist"
+    "build": "babel ./src --out-dir ./dist"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "babel-generator": "^6.18.0",
-    "babel-types": "^6.18.0",
-    "fbjs": "^0.8.5",
     "postcss": "^5.2.5",
     "postcss-nested": "^1.0.0",
     "postcss-safe-parser": "^2.0.0",
-    "postcss-selector-parser": "^2.2.1",
-    "postcss-transform-animations": "^1.0.1",
-    "postcss-transform-classes": "^1.0.0"
+    "postcss-selector-parser": "^2.2.1"
   },
   "devDependencies": {
     "babel-cli": "^6.18.0",
@@ -33,7 +27,6 @@
     "eslint-plugin-react": "^6.3.0",
     "jest": "^16.0.2",
     "react-dom": "^15.3.2",
-    "react-native": "^0.37.0",
     "react-test-renderer": "^15.3.2"
   },
   "peerDependencies": {

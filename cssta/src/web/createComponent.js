@@ -36,7 +36,7 @@ module.exports = (component, baseClassName, classNameMap) => {
 
       return accum;
     }, {
-      Element: null,
+      Element: component,
       classNames: [baseClassName],
       passedProps: {},
     });
@@ -49,10 +49,6 @@ module.exports = (component, baseClassName, classNameMap) => {
   };
 
   if (process.env.NODE_ENV !== 'production') {
-    if (ownProps.indexOf('component') !== -1) {
-      throw new Error('Cannot use attribute "component" for components');
-    }
-
     Component.propTypes = ownProps.reduce((out, key) => {
       const styleMap = classNameMap[key];
 
@@ -62,7 +58,6 @@ module.exports = (component, baseClassName, classNameMap) => {
         const allowedValues = Object.keys(styleMap);
         out[key] = PropTypes.oneOf(allowedValues);
       }
-      /* eslint-enable */
 
       return out;
     }, {
@@ -71,10 +66,6 @@ module.exports = (component, baseClassName, classNameMap) => {
         PropTypes.function,
       ]),
     });
-
-    Component.defaultProps = {
-      component,
-    };
   }
 
   return Component;
