@@ -66,8 +66,9 @@ const jsonToNode = (object) => {
   }
   return t.objectExpression(Object.keys(object).map(key => (
     t.objectProperty(
-      t.identifier(key),
-      jsonToNode(object[key])
+      t.stringLiteral(key),
+      jsonToNode(object[key]),
+      true
     )
   )));
 };
@@ -80,9 +81,9 @@ const transformCsstaCall = (element, state, node, stringArg) => {
   if (!t.isIdentifier(callee)) return;
 
   const filename = state.file.opts.filename;
-  const references = _.getOr([], [filename], state.csstaReferencesPerFile);
+  const csstaType = _.get([filename, callee.name], state.csstaReferenceTypesPerFile);
 
-  if (references.indexOf(callee.name) === -1) return;
+  if (!csstaType) return;
 
   if (t.isTemplateLiteral(stringArg) && stringArg.expressions.length > 0) {
     throw new Error('You cannot use interpolation in template strings (i.e. `color: ${primary}`)'); // eslint-disable-line
@@ -138,9 +139,9 @@ const transformCsstaCall = (element, state, node, stringArg) => {
     outputCss = `${existingCss}\n${commentMarker}\n${output}`;
     writeCssToFile(outputCss, cssFilename);
 
-    const createComponent = state.createComponentReferencePerFile[filename];
-    const baseClass = baseClassName ?
-      t.stringLiteral(baseClassName)
+    const createComponent = state.createComponentReferences[filename][csstaType];
+    const baseClass = baseClassName
+      ? t.stringLiteral(baseClassName)
       : t.nullLiteral();
 
     newElement = t.callExpression(createComponent, [
@@ -161,37 +162,59 @@ const transformCsstaCall = (element, state, node, stringArg) => {
   }
 };
 
+const createComponentLocations = {
+  web: 'cssta/lib/web/createComponent',
+  native: 'cssta/lib/native/createComponent',
+};
+
 module.exports = () => ({
   visitor: {
     ImportDeclaration(element, state) {
-      if (element.node.source.value === 'cssta') {
-        const defaultSpecifiers = _.flow(
-          _.filter({ type: 'ImportDefaultSpecifier' }),
-          _.map('local.name'),
-          _.compact
-        )(element.node.specifiers);
+      let csstaType;
 
-        const filename = state.file.opts.filename;
-        state.csstaReferencesPerFile = _.update( // eslint-disable-line
-          [filename],
-          existingRefereces => _.concat(existingRefereces || [], defaultSpecifiers),
-          state.csstaReferencesPerFile || {}
+      const dependency = element.node.source.value;
+      if (dependency === 'cssta' || dependency === 'cssta/web') {
+        csstaType = 'web';
+      } else if (dependency === 'cssta/native') {
+        csstaType = 'native';
+      }
+
+      if (!csstaType) return;
+
+      const defaultSpecifiers = _.flow(
+        _.filter({ type: 'ImportDefaultSpecifier' }),
+        _.map('local.name'),
+        _.compact
+      )(element.node.specifiers);
+
+      const specifierReferenceTypes = _.flow(
+        _.map(reference => [reference, csstaType]),
+        _.fromPairs
+      )(defaultSpecifiers);
+
+      const filename = state.file.opts.filename;
+
+      state.csstaReferenceTypesPerFile = _.update( // eslint-disable-line
+        [filename],
+        _.assign(specifierReferenceTypes),
+        state.csstaReferenceTypesPerFile || {}
+      );
+
+      const createComponentReferencePath = [filename, csstaType];
+      if (!_.get(createComponentReferencePath, state.createComponentReferences)) {
+        const reference = element.scope.generateUidIdentifier('csstaCreateComponent');
+
+        state.createComponentReferences = _.set( // eslint-disable-line
+          createComponentReferencePath,
+          reference,
+          state.createComponentReferences
         );
-
-        if (!_.get(['createComponentReferencePerFile', filename], state)) {
-          const reference = element.scope.generateUidIdentifier('csstaCreateComponent');
-          state.createComponentReferencePerFile = _.set( // eslint-disable-line
-            [filename],
-            reference,
-            state.createComponentReferencePerFile
-          );
-          const newImport = t.importDeclaration([
-            t.importDefaultSpecifier(reference),
-          ], t.stringLiteral('cssta/lib/createComponent'));
-          element.replaceWith(newImport);
-        } else {
-          element.remove();
-        }
+        const newImport = t.importDeclaration([
+          t.importDefaultSpecifier(reference),
+        ], t.stringLiteral(createComponentLocations[csstaType]));
+        element.replaceWith(newImport);
+      } else {
+        element.remove();
       }
     },
     CallExpression(element, state) {
