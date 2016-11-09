@@ -7,6 +7,7 @@ const tempfile = require('tempfile');
 const plugin = require('.');
 
 const approve = process.argv.includes('--approve');
+const skipTest = process.argv.includes('--skip-test');
 
 const normaliseCss = (str) => {
   let output = str;
@@ -44,6 +45,8 @@ glob.sync(path.join(__dirname, 'fixtures/*/')).forEach((testPath) => {
     const options = { flag: 'w+', encoding: 'utf8' };
     fs.writeFileSync(expectedJsPath, actualJs, options);
     fs.writeFileSync(expectedCssPath, actualCss, options);
+  } else if (skipTest) {
+    getActual(actualJsPath, tempCssPath);
   } else {
     it(`should work with ${testName}`, () => {
       const { actualJs, actualCss } = getActual(actualJsPath, tempCssPath);

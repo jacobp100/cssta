@@ -1,9 +1,12 @@
+/* eslint-disable no-param-reassign */
 const fs = require('fs');
 const path = require('path');
 const mkdirp = require('mkdirp');
 const t = require('babel-types');
 const _ = require('lodash/fp');
-const extractRules = require('cssta/src/extractRules');
+const webExtractRules = require('cssta/src/web/extractRules');
+const nativeExtractRules = require('cssta/src/native/extractRules');
+const { createValidatorNodeForSelector } = require('cssta/src/native/selectorTransform');
 const cssNameGenerator = require('css-class-generator');
 
 const animationKeywords = [
@@ -73,26 +76,8 @@ const jsonToNode = (object) => {
   )));
 };
 
-const transformCsstaCall = (element, state, node, stringArg) => {
-  if (!(node.type in csstaConstructorExpressionTypes)) return;
-
-  const [callee, elementType] = csstaConstructorExpressionTypes[node.type](node);
-
-  if (!t.isIdentifier(callee)) return;
-
+const transformWebCssta = (element, state, css, elementType) => {
   const filename = state.file.opts.filename;
-  const csstaType = _.get([filename, callee.name], state.csstaReferenceTypesPerFile);
-
-  if (!csstaType) return;
-
-  if (t.isTemplateLiteral(stringArg) && stringArg.expressions.length > 0) {
-    throw new Error('You cannot use interpolation in template strings (i.e. `color: ${primary}`)'); // eslint-disable-line
-  }
-
-  let css = _.get(['quasis', 0, 'value', 'raw'], stringArg);
-  if (!css) css = _.get(['value'], stringArg);
-  if (css === undefined) throw new Error('Failed to read CSS');
-
   const cssFilename = path.resolve(
     process.cwd(),
     _.getOr('styles.css', ['opts', 'output'], state)
@@ -131,7 +116,7 @@ const transformCsstaCall = (element, state, node, stringArg) => {
   let newElement = null;
 
   if (!isInjectGlobal) {
-    const { css: output, baseClassName, classNameMap } = extractRules(css, {
+    const { css: output, baseClassName, classNameMap } = webExtractRules(css, {
       generateClassName: () => classGenerator.next().value,
       generateAnimationName: () => animationGenerator.next().value,
     });
@@ -139,7 +124,7 @@ const transformCsstaCall = (element, state, node, stringArg) => {
     outputCss = `${existingCss}\n${commentMarker}\n${output}`;
     writeCssToFile(outputCss, cssFilename);
 
-    const createComponent = state.createComponentReferences[filename][csstaType];
+    const createComponent = state.createComponentReferences[filename].web;
     const baseClass = baseClassName
       ? t.stringLiteral(baseClassName)
       : t.nullLiteral();
@@ -162,9 +147,64 @@ const transformCsstaCall = (element, state, node, stringArg) => {
   }
 };
 
+const transformNativeCssta = (element, state, css, elementType) => {
+  const { rules, styleSheetBody, propTypes } = nativeExtractRules(css);
+  const styleSheetReference = element.scope.generateUidIdentifier('csstaStyle');
+  const validator = _.map(rule => (
+    t.objectLiteral([
+      t.objectProperty(
+        t.stringLiteral('validator'),
+        createValidatorNodeForSelector(rule.selector)
+      ),
+      t.objectProperty(
+        t.stringLiteral('style'),
+        t.memberExpression(
+          styleSheetReference,
+          t.stringLiteral(rule.styleName),
+          true
+        )
+      ),
+    ])
+  ), rules);
+  console.log(rules, validator);
+};
+
+const transformCsstaCall = (element, state, node, stringArg) => {
+  if (!(node.type in csstaConstructorExpressionTypes)) return;
+
+  const [callee, elementType] = csstaConstructorExpressionTypes[node.type](node);
+
+  if (!t.isIdentifier(callee)) return;
+
+  const filename = state.file.opts.filename;
+  const csstaType = _.get([filename, callee.name], state.csstaReferenceTypesPerFile);
+
+  if (!csstaType) return;
+
+  if (t.isTemplateLiteral(stringArg) && stringArg.expressions.length > 0) {
+    throw new Error('You cannot use interpolation in template strings (i.e. `color: ${primary}`)'); // eslint-disable-line
+  }
+
+  let css = _.get(['quasis', 0, 'value', 'raw'], stringArg);
+  if (!css) css = _.get(['value'], stringArg);
+  if (css === undefined) throw new Error('Failed to read CSS');
+
+  if (csstaType === 'web') {
+    transformWebCssta(element, state, css, elementType);
+  } else if (csstaType === 'native') {
+    transformNativeCssta(element, state, css, elementType);
+  }
+};
+
 const createComponentLocations = {
   web: 'cssta/lib/web/createComponent',
   native: 'cssta/lib/native/createComponent',
+};
+
+const externalReferences = {
+  'react-native': {
+    StyleSheet: 'stylesheet',
+  },
 };
 
 module.exports = () => ({
@@ -173,6 +213,33 @@ module.exports = () => ({
       let csstaType;
 
       const dependency = element.node.source.value;
+      const specifiers = element.node.specifiers;
+
+      const filename = state.file.opts.filename;
+
+      if (dependency in externalReferences) {
+        const referencesToRecord = externalReferences[dependency];
+
+        _.forEach((specifier) => {
+          let importName;
+          if (t.isImportSpecifier(specifier)) {
+            importName = specifier.imported.name;
+          } else if (t.isDefaultSpecifier(specifier)) {
+            importName = 'default';
+          }
+
+          if (importName && importName in referencesToRecord) {
+            state.externalReferencesPerFile = _.set(
+              [filename, referencesToRecord[importName]],
+              specifier.local,
+              state.externalReferencesPerFile
+            );
+          }
+        }, specifiers);
+
+        return;
+      }
+
       if (dependency === 'cssta' || dependency === 'cssta/web') {
         csstaType = 'web';
       } else if (dependency === 'cssta/native') {
@@ -185,16 +252,14 @@ module.exports = () => ({
         _.filter({ type: 'ImportDefaultSpecifier' }),
         _.map('local.name'),
         _.compact
-      )(element.node.specifiers);
+      )(specifiers);
 
       const specifierReferenceTypes = _.flow(
         _.map(reference => [reference, csstaType]),
         _.fromPairs
       )(defaultSpecifiers);
 
-      const filename = state.file.opts.filename;
-
-      state.csstaReferenceTypesPerFile = _.update( // eslint-disable-line
+      state.csstaReferenceTypesPerFile = _.update(
         [filename],
         _.assign(specifierReferenceTypes),
         state.csstaReferenceTypesPerFile || {}
@@ -204,7 +269,7 @@ module.exports = () => ({
       if (!_.get(createComponentReferencePath, state.createComponentReferences)) {
         const reference = element.scope.generateUidIdentifier('csstaCreateComponent');
 
-        state.createComponentReferences = _.set( // eslint-disable-line
+        state.createComponentReferences = _.set(
           createComponentReferencePath,
           reference,
           state.createComponentReferences
