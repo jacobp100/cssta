@@ -22,7 +22,7 @@ module.exports = (inputCss) => {
   });
 
   const styleSheetBody = baseRules.reduce((accum, rule) => {
-    accum[rule.stylename] = rule.body;
+    accum[rule.styleName] = rule.body;
     return accum;
   }, {});
 

@@ -44,7 +44,7 @@ glob.sync(path.join(__dirname, 'fixtures/*/')).forEach((testPath) => {
     const { actualJs, actualCss } = getActual(actualJsPath, tempCssPath);
     const options = { flag: 'w+', encoding: 'utf8' };
     fs.writeFileSync(expectedJsPath, actualJs, options);
-    fs.writeFileSync(expectedCssPath, actualCss, options);
+    if (actualCss) fs.writeFileSync(expectedCssPath, actualCss, options);
   } else if (skipTest) {
     getActual(actualJsPath, tempCssPath);
   } else {

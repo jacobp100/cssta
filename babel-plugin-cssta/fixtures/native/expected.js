@@ -1,0 +1,18 @@
+import _csstaCreateComponent from 'cssta/lib/native/createComponent';
+
+import { View } from 'react-native';
+
+import { StyleSheet as _StyleSheet } from 'react-native';
+
+var _csstaStyle = _StyleSheet.create({
+  'style5': {
+    'color': 'red'
+  }
+});
+
+_csstaCreateComponent(View, [{
+  'validator': function (p) {
+    return true;
+  },
+  'style': _csstaStyle['style5']
+}], {});
