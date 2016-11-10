@@ -2,13 +2,13 @@
 const bodyTransform = require('./bodyTransform');
 const getRoot = require('../util/getRoot');
 
-let i = 0;
-const getStyleName = () => {
-  i += 1;
-  return `style${i}`;
-};
-
 module.exports = (inputCss) => {
+  let i = 0;
+  const getStyleName = () => {
+    i += 1;
+    return `style${i}`;
+  };
+
   const { root, propTypes } = getRoot(inputCss);
 
   const baseRules = [];
@@ -32,8 +32,4 @@ module.exports = (inputCss) => {
   }));
 
   return { rules, styleSheetBody, propTypes };
-};
-
-module.exports.resetStyleNames = () => {
-  i = 0;
 };

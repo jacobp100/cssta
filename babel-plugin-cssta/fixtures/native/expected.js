@@ -5,7 +5,7 @@ import { View } from 'react-native';
 import { StyleSheet as _StyleSheet } from 'react-native';
 
 var _csstaStyle = _StyleSheet.create({
-  'style5': {
+  'style1': {
     'color': 'red'
   }
 });
@@ -14,5 +14,5 @@ _csstaCreateComponent(View, [{
   'validator': function (p) {
     return true;
   },
-  'style': _csstaStyle['style5']
+  'style': _csstaStyle['style1']
 }], {});
