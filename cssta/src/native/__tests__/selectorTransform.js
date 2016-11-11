@@ -1,7 +1,7 @@
 /* global jest it, expect */
 const {
   createValidatorNodeForSelector, createValidatorForSelector,
-} = require('./selectorTransform');
+} = require('../selectorTransform');
 const t = require('babel-types');
 
 const runTest = (selector, { valid = [], invalid = [] }) => {
