@@ -142,7 +142,7 @@ cssta.injectGlobal`
   body {
     margin: 1em;
   }
-  
+
   @keyframes fade-in {
     0% { opacity: 0; }
   }
@@ -242,7 +242,7 @@ const Button = cssta.button`
 
 ```js
 import createComponent from 'cssta/lib/createComponent';
-const Button = createComponent('button', '.A', {large:'.B'}); // Uses internal representation of class semantics
+const Button = createComponent('button', /* internal mapping object */);
 ```
 
 ### CSS

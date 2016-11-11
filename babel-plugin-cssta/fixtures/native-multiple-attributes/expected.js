@@ -19,7 +19,7 @@ var _csstaStyle = _StyleSheet.create({
   }
 });
 
-_csstaCreateComponent(View, [{
+_csstaCreateComponent(View, ['booleanAttribute', 'stringAttribute'], [{
   'validator': function (p) {
     return true;
   },
@@ -39,7 +39,4 @@ _csstaCreateComponent(View, [{
     return p['stringAttribute'] === '2';
   },
   'style': _csstaStyle['style4']
-}], {
-  'booleanAttribute': 'bool',
-  'stringAttribute': 'string'
-});
+}]);

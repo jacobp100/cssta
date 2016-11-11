@@ -5,7 +5,6 @@ const getRoot = require('../util/getRoot');
 const { isDirectChildOfKeyframes } = require('../util');
 
 
-
 module.exports = (inputCss, { generateClassName, generateAnimationName }) => {
   const classNameMap = {}; // { propName: { propValue: className } }
   const animationNameMap = {};

@@ -9,7 +9,7 @@ rules = {
 };
 */
 
-module.exports = createComponentFactory((ownProps, passedProps, defaultClassName, classNameMap) => {
+const factory = createComponentFactory((ownProps, passedProps, defaultClassName, classNameMap) => {
   const classNames = Object.keys(ownProps)
     .map(propName => classNameMap[propName][ownProps[propName]])
     .filter(Boolean); // remove undefined values
@@ -22,3 +22,7 @@ module.exports = createComponentFactory((ownProps, passedProps, defaultClassName
 
   return passedProps;
 });
+
+// Optimisation allows not passing propTypes on prod
+module.exports = (component, propTypes, defaultClassName, classNameMap) =>
+  factory(component, propTypes || Object.keys(classNameMap), defaultClassName, classNameMap);

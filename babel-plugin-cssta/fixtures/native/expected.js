@@ -10,9 +10,9 @@ var _csstaStyle = _StyleSheet.create({
   }
 });
 
-_csstaCreateComponent(View, [{
+_csstaCreateComponent(View, [], [{
   'validator': function (p) {
     return true;
   },
   'style': _csstaStyle['style1']
-}], {});
+}]);

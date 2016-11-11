@@ -71,6 +71,8 @@ const writeCssToFile = (outputCss, cssFilename) => {
 const jsonToNode = (object) => {
   if (typeof object === 'string') {
     return t.stringLiteral(object);
+  } else if (Array.isArray(object)) {
+    return t.arrayExpression(object.map(jsonToNode));
   }
   return t.objectExpression(Object.keys(object).map(key => (
     t.objectProperty(
@@ -158,6 +160,7 @@ const transformWebCssta = (element, state, css, component) => {
 
     newElement = t.callExpression(createComponent, [
       component,
+      t.nullLiteral(), // Gets replaced with Object.keys(classNameMap)
       baseClass,
       jsonToNode(classNameMap),
     ]);
@@ -200,8 +203,8 @@ const transformNativeCssta = (element, state, css, component) => {
   const createComponent = state.createComponentReferences[filename].native;
   const newElement = t.callExpression(createComponent, [
     component,
+    jsonToNode(Object.keys(propTypes)),
     rulesElement,
-    jsonToNode(propTypes),
   ]);
 
   element.replaceWith(newElement);

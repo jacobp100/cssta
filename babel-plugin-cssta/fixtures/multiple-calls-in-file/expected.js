@@ -1,8 +1,8 @@
 import _csstaCreateComponent from 'cssta/lib/web/createComponent';
 
 
-_csstaCreateComponent('button', 'A', {});
+_csstaCreateComponent('button', null, 'A', {});
 
-_csstaCreateComponent('span', 'B', {});
+_csstaCreateComponent('span', null, 'B', {});
 
-_csstaCreateComponent('div', 'C', {});
+_csstaCreateComponent('div', null, 'C', {});
