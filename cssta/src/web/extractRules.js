@@ -5,8 +5,9 @@ const getRoot = require('../util/getRoot');
 const { isDirectChildOfKeyframes } = require('../util');
 
 
+
 module.exports = (inputCss, { generateClassName, generateAnimationName }) => {
-  const classNameMap = {};
+  const classNameMap = {}; // { propName: { propValue: className } }
   const animationNameMap = {};
 
   let baseClassName = null;
@@ -15,14 +16,7 @@ module.exports = (inputCss, { generateClassName, generateAnimationName }) => {
     return baseClassName;
   };
 
-  const getBooleanClassNameFor = (attribute) => {
-    if (!classNameMap[attribute]) {
-      classNameMap[attribute] = generateClassName();
-    }
-    return classNameMap[attribute];
-  };
-
-  const getStringClassNameFor = (attribute, value) => {
+  const getClassNameFor = (attribute, value) => {
     if (!classNameMap[attribute]) {
       classNameMap[attribute] = {};
     }
@@ -44,16 +38,14 @@ module.exports = (inputCss, { generateClassName, generateAnimationName }) => {
 
       selector.walkAttributes((node) => {
         const attribute = node.attribute.trim();
-        const className = node.value
-          ? getStringClassNameFor(attribute, node.raws.unquoted)
-          : getBooleanClassNameFor(attribute);
+        const className = getClassNameFor(attribute, node.value ? node.raws.unquoted : 'true');
         const replacementNode = selectorParser.className({ value: className });
         node.replaceWith(replacementNode);
       });
     });
   });
 
-  const { root } = getRoot(inputCss);
+  const { root, propTypes } = getRoot(inputCss);
 
   transformAnimationNames({
     transform: (value) => {
@@ -73,5 +65,5 @@ module.exports = (inputCss, { generateClassName, generateAnimationName }) => {
 
   const css = root.toString();
 
-  return { css, baseClassName, classNameMap };
+  return { css, baseClassName, classNameMap, propTypes };
 };

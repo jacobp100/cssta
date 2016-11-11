@@ -11,14 +11,14 @@ const assertNoTemplateParams = (otherAttributes) => {
 module.exports = element => (cssText, ...otherAttributes) => {
   assertNoTemplateParams(otherAttributes);
 
-  const { rules, styleSheetBody } = extractRules(cssText);
+  const { rules: baseRules, styleSheetBody, propTypes } = extractRules(cssText);
 
   const styleSheet = StyleSheet.create(styleSheetBody);
 
-  const styles = rules.map(rule => ({
+  const rules = baseRules.map(rule => ({
     validator: createValidatorForSelector(rule.selector),
     style: styleSheet[rule.styleName],
   }));
 
-  return createComponent(element, styles);
+  return createComponent(element, propTypes, rules);
 };

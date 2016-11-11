@@ -62,7 +62,7 @@ it('scopes boolean attribute selectors', () => runTestFor(`
 `, {
   scopedClassNames: ['scoped-1'],
   classNameMap: {
-    booleanAttribute: 'scoped-1',
+    booleanAttribute: { true: 'scoped-1' },
   },
 }));
 
@@ -145,9 +145,9 @@ it('scopes different boolean attributes', () => runTestFor(`
 `, {
   scopedClassNames: ['scoped-1', 'scoped-2', 'scoped-3'],
   classNameMap: {
-    value1: 'scoped-1',
-    value2: 'scoped-2',
-    value3: 'scoped-3',
+    value1: { true: 'scoped-1' },
+    value2: { true: 'scoped-2' },
+    value3: { true: 'scoped-3' },
   },
 }));
 
@@ -207,7 +207,7 @@ it('only scopes boolean attributes once', () => runTestFor(`
 `, {
   scopedClassNames: ['scoped-1'],
   classNameMap: {
-    booleanAttribute: 'scoped-1',
+    booleanAttribute: { true: 'scoped-1' },
   },
 }));
 
@@ -255,7 +255,7 @@ it('mixes boolean and string attributes', () => runTestFor(`
 `, {
   scopedClassNames: ['scoped-1', 'scoped-2'],
   classNameMap: {
-    booleanAttribute: 'scoped-1',
+    booleanAttribute: { true: 'scoped-1' },
     stringAttribute: {
       value: 'scoped-2',
     },
@@ -281,8 +281,18 @@ it('scopes keyframes', () => runTestFor(`
 `, {
   scopedClassNames: ['animation', 'class'],
   classNameMap: {
-    class: 'class',
+    class: { true: 'class' },
   },
+}));
+
+it('does not scope global keyframes', () => runTestFor(`
+  animation: 1s test;
+`, `
+  .default {
+    animation: 1s test
+  }
+`, {
+  defaultClassName: 'default',
 }));
 
 it('allows @media for top-level declarations', () => runTestFor(`
@@ -314,7 +324,7 @@ it('allows @media for rules', () => runTestFor(`
 `, {
   scopedClassNames: ['scoped'],
   classNameMap: {
-    attribute: 'scoped',
+    attribute: { true: 'scoped' },
   },
 }));
 
@@ -347,7 +357,7 @@ it('allows @supports for rules', () => runTestFor(`
 `, {
   scopedClassNames: ['scoped'],
   classNameMap: {
-    attribute: 'scoped',
+    attribute: { true: 'scoped' },
   },
 }));
 
@@ -381,7 +391,7 @@ it('maintains order precedence', () => runTestFor(`
   defaultClassName: 'default',
   scopedClassNames: ['scoped-1'],
   classNameMap: {
-    attribute: 'scoped-1',
+    attribute: { true: 'scoped-1' },
   },
 }));
 

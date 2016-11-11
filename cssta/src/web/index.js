@@ -46,12 +46,12 @@ let styleContents = '';
 const style = tagName => (cssText, ...otherAttributes) => {
   assertNoTemplateParams(otherAttributes);
 
-  const { css, baseClassName, classNameMap } = extractRules(cssText, opts);
+  const { css, baseClassName, rules, propTypes } = extractRules(cssText, opts);
 
   styleContents += css;
   updateCss(styleContents);
 
-  return createComponent(tagName, baseClassName, classNameMap);
+  return createComponent(tagName, propTypes, baseClassName, rules);
 };
 
 let didInjectGlobal = false;

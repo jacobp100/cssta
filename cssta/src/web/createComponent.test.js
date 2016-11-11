@@ -7,7 +7,8 @@ const createComponent = require('./createComponent');
 const runTest = ({
   type = 'button',
   defaultClassName = null,
-  classNameMap = {},
+  classNameMap = [],
+  propTypes = Object.keys(classNameMap),
   inputProps = {},
   validProps = [],
   invalidProps = [],
@@ -15,7 +16,7 @@ const runTest = ({
   expectedProps = {},
   expectedChildren = null,
 } = {}) => {
-  const Element = createComponent(type, defaultClassName, classNameMap);
+  const Element = createComponent(type, propTypes, defaultClassName, classNameMap);
 
   const validator = Element.propTypes;
   Object.keys(inputProps).forEach((prop) => {
@@ -43,13 +44,13 @@ it('adds a default class', () => runTest({
 }));
 
 it('adds adds a boolean property', () => runTest({
-  classNameMap: { booleanAttribute: 'class' },
+  classNameMap: { booleanAttribute: { true: 'class' } },
   inputProps: { booleanAttribute: true },
   expectedProps: { className: 'class' },
 }));
 
 it('does not add boolean properties if they are not passed', () => runTest({
-  classNameMap: { booleanAttribute: 'class' },
+  classNameMap: { booleanAttribute: { true: 'class' } },
   inputProps: {},
 }));
 
@@ -65,7 +66,7 @@ it('does not add string properties if they are not passed', () => runTest({
 }));
 
 it('passes extraneous props down', () => runTest({
-  classNameMap: { booleanAttribute: 'class' },
+  classNameMap: { booleanAttribute: { true: 'class' } },
   inputProps: { type: 'button', booleanAttribute: true },
   expectedProps: { type: 'button', className: 'class' },
 }));
@@ -82,9 +83,9 @@ it('allows extending className with default class name', () => runTest({
 }));
 
 it('allows extending className with props', () => runTest({
-  classNameMap: { booleanAttribute: 'class' },
+  classNameMap: { booleanAttribute: { true: 'class' } },
   inputProps: { className: 'test', booleanAttribute: true },
-  expectedProps: { className: 'test class' },
+  expectedProps: { className: 'class test' },
 }));
 
 it('allows setting style', () => runTest({
@@ -103,7 +104,7 @@ it('allows overriding the component', () => runTest({
 }));
 
 it('adds boolean propTypes', () => runTest({
-  classNameMap: { booleanAttribute: 'class' },
+  classNameMap: { booleanAttribute: { true: 'class' } },
   validProps: [
     { booleanAttribute: true },
     { booleanAttribute: false },

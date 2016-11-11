@@ -59,13 +59,13 @@ module.exports = (inputCss) => {
 
       if (node.type === 'attribute') {
         const attribute = node.attribute.trim();
-        const propType = node.value ? 'string' : 'bool';
+        const propType = node.value ? 'oneOf' : 'bool';
 
-        if (propType === 'string' && node.operator !== '=') {
+        if (propType === 'oneOf' && node.operator !== '=') {
           throw new Error(`You cannot use operator ${node.operator} in an attribute selector`);
         }
 
-        if (propType === 'string' && node.raws.insensitive) {
+        if (propType === 'oneOf' && node.raws.insensitive) {
           throw new Error('You cannot use case-insensitive attribute selectors');
         }
 
@@ -74,9 +74,18 @@ module.exports = (inputCss) => {
         }
 
         if (!(attribute in propTypes)) {
-          propTypes[attribute] = propType;
-        } else if (propTypes[attribute] !== propType) {
+          propTypes[attribute] = { type: propType };
+        } else if (propTypes[attribute].type !== propType) {
           throw new Error(`Attribute "${attribute}" defined as both bool and a string`);
+        }
+
+        if (propType === 'oneOf') {
+          const value = node.raws.unquoted.trim();
+          propTypes[attribute].values = (propTypes[attribute].values || [])
+            .concat(value)
+            .reduce((accum, elem) => (
+              accum.indexOf(elem) === -1 ? accum.concat(elem) : accum
+            ), []);
         }
       }
     });

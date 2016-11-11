@@ -1,72 +1,24 @@
 /* eslint-disable no-param-reassign */
-const React = require('react');
-
-const { PropTypes } = React;
+const createComponentFactory = require('../util/createComponentFactory');
 
 /*
-classNameMap:
-{
-  stringAttributeName: {
-    stringAttributeValue1: 'class1',
-    stringAttributeValue2: 'class2',
+rules = {
+  prop: {
+    value: className
   },
-  booleanAttributeName: 'classWhenBooleanValueIsTrue',
-}
+};
 */
 
-module.exports = (component, baseClassName, classNameMap) => {
-  const ownProps = Object.keys(classNameMap);
+module.exports = createComponentFactory((ownProps, passedProps, defaultClassName, classNameMap) => {
+  const classNames = Object.keys(ownProps)
+    .map(propName => classNameMap[propName][ownProps[propName]])
+    .filter(Boolean); // remove undefined values
 
-  const Component = (props) => {
-    const { Element, classNames, passedProps } = Object.keys(props).reduce((accum, key) => {
-      const prop = props[key];
+  if (defaultClassName) classNames.push(defaultClassName);
+  if (passedProps.className) classNames.push(passedProps.className);
 
-      if (key === 'component') {
-        accum.Element = prop;
-      } else if (key === 'className') {
-        accum.classNames.push(prop);
-      } else if (ownProps.indexOf(key) !== -1) {
-        const className = typeof prop === 'boolean'
-          ? classNameMap[key]
-          : classNameMap[key][prop];
-        accum.classNames.push(className);
-      } else {
-        accum.passedProps[key] = prop;
-      }
+  const className = classNames.join(' ');
+  if (className) passedProps.className = className;
 
-      return accum;
-    }, {
-      Element: component,
-      classNames: [baseClassName],
-      passedProps: {},
-    });
-
-    const className = classNames.join(' ').trim();
-
-    if (className) passedProps.className = className;
-
-    return React.createElement(Element, passedProps);
-  };
-
-  if (process.env.NODE_ENV !== 'production') {
-    Component.propTypes = ownProps.reduce((out, key) => {
-      const styleMap = classNameMap[key];
-
-      if (typeof styleMap === 'string') {
-        out[key] = PropTypes.bool;
-      } else if (styleMap && typeof styleMap === 'object') {
-        const allowedValues = Object.keys(styleMap);
-        out[key] = PropTypes.oneOf(allowedValues);
-      }
-
-      return out;
-    }, {
-      component: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.function,
-      ]),
-    });
-  }
-
-  return Component;
-};
+  return passedProps;
+});
