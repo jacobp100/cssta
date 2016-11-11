@@ -1,6 +1,6 @@
 /* global jest it, expect */
 const postcss = require('postcss');
-const bodyTransform = require('./bodyTransform');
+const bodyTransform = require('../bodyTransform');
 
 const runTest = (inputCss, expectedStyles) => {
   const nodes = postcss.parse(inputCss).nodes;

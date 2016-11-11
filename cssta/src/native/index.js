@@ -1,6 +1,9 @@
+/* eslint-disable import/no-extraneous-dependencies */
 const { StyleSheet } = require('react-native');
+/* eslint-enable */
 const extractRules = require('./extractRules');
 const { createValidatorForSelector } = require('./selectorTransform');
+const createComponent = require('./createComponent');
 
 const assertNoTemplateParams = (otherAttributes) => {
   if (otherAttributes.length) {

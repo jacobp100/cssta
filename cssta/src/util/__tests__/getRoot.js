@@ -1,5 +1,5 @@
 /* global jest it, expect */
-const getRoot = require('./getRoot');
+const getRoot = require('../getRoot');
 
 const trim = str =>
   str.split('\n').map(line => line.trim()).filter(line => line !== '').join('\n');

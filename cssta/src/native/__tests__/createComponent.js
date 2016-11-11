@@ -1,7 +1,7 @@
 /* global jest it, expect */
 const React = require('react');
 const renderer = require('react-test-renderer'); // eslint-disable-line
-const createComponent = require('./createComponent');
+const createComponent = require('../createComponent');
 
 
 const runTest = ({

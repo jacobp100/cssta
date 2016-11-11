@@ -1,5 +1,5 @@
 /* global jest it, expect */
-const extractRules = require('./extractRules');
+const extractRules = require('../extractRules');
 
 const trim = str =>
   str.split('\n').map(line => line.trim()).filter(line => line !== '').join('\n');
