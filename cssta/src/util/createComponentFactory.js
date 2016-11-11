@@ -7,7 +7,7 @@ module.exports = transformProps => (component, propTypes, ...otherParams) => {
   const ownPropKeys = Array.isArray(propTypes) ? propTypes : Object.keys(propTypes);
 
   const Component = (props) => {
-    const { Element, passedProps, ownProps } = Object.keys(props).reduce((accum, key) => {
+    const { Element, ownProps, passedProps } = Object.keys(props).reduce((accum, key) => {
       const prop = props[key];
 
       if (key === 'component') {
@@ -21,8 +21,8 @@ module.exports = transformProps => (component, propTypes, ...otherParams) => {
       return accum;
     }, {
       Element: component,
-      passedProps: {},
       ownProps: {},
+      passedProps: {},
     });
 
     return React.createElement(Element, transformProps(ownProps, passedProps, ...otherParams));

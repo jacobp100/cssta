@@ -1,0 +1,98 @@
+/* global jest it, expect */
+const React = require('react');
+const renderer = require('react-test-renderer'); // eslint-disable-line
+const createComponent = require('./createComponent');
+
+
+const runTest = ({
+  type = 'button',
+  propTypes = {},
+  rules = [],
+  inputProps = {},
+  expectedType = type,
+  expectedProps = {},
+  expectedChildren = null,
+} = {}) => {
+  const Element = createComponent(type, propTypes, rules);
+
+  const component = renderer.create(React.createElement(Element, inputProps)).toJSON();
+
+  expect(component.type).toEqual(expectedType);
+  expect(component.props).toEqual(expectedProps);
+  expect(component.children).toEqual(expectedChildren);
+};
+
+it('renders an element', () => runTest());
+
+it('adds a boolean property', () => runTest({
+  propTypes: ['booleanAttribute'],
+  rules: [{
+    validate: p => !!p.booleanAttribute,
+    style: 0,
+  }],
+  inputProps: { booleanAttribute: true },
+  expectedProps: { style: [0] },
+}));
+
+it('does not add a boolean property', () => runTest({
+  propTypes: ['booleanAttribute'],
+  rules: [{
+    validate: p => !!p.booleanAttribute,
+    style: 0,
+  }],
+}));
+
+it('adds a string property', () => runTest({
+  propTypes: ['stringAttribute'],
+  rules: [{
+    validate: p => p.stringAttribute === 'test',
+    style: 0,
+  }],
+  inputProps: { stringAttribute: 'test' },
+  expectedProps: { style: [0] },
+}));
+
+it('does not add a boolean property', () => runTest({
+  propTypes: ['stringAttribute'],
+  rules: [{
+    validate: p => p.stringAttribute === 'test',
+    style: 0,
+  }],
+}));
+
+it('passes extraneous props down', () => runTest({
+  inputProps: { scrollingEnabled: false },
+  expectedProps: { scrollingEnabled: false },
+}));
+
+it('allows adding a class', () => runTest({
+  inputProps: { style: [0] },
+  expectedProps: { style: [0] },
+}));
+
+it('allows extending a class with a style array', () => runTest({
+  rules: [{
+    validate: () => true,
+    style: 0,
+  }],
+  inputProps: { style: [1] },
+  expectedProps: { style: [0, 1] },
+}));
+
+it('allows extending a class with a single value', () => runTest({
+  rules: [{
+    validate: () => true,
+    style: 0,
+  }],
+  inputProps: { style: 1 },
+  expectedProps: { style: [0, 1] },
+}));
+
+it('allows extending a class with an object', () => runTest({
+  rules: [{
+    validate: () => true,
+    style: 0,
+  }],
+  inputProps: { style: { color: 'red' } },
+  expectedProps: { style: [0, { color: 'red' }] },
+}));

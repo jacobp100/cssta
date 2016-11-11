@@ -10,24 +10,11 @@ const runTest = ({
   classNameMap = [],
   propTypes = Object.keys(classNameMap),
   inputProps = {},
-  validProps = [],
-  invalidProps = [],
   expectedType = type,
   expectedProps = {},
   expectedChildren = null,
 } = {}) => {
   const Element = createComponent(type, propTypes, defaultClassName, classNameMap);
-
-  const validator = Element.propTypes;
-  Object.keys(inputProps).forEach((prop) => {
-    validProps.forEach((value) => {
-      validator(inputProps, prop, value);
-    });
-
-    invalidProps.forEach((value) => {
-      expect(() => validator(inputProps, prop, value)).toThrow();
-    });
-  });
 
   const component = renderer.create(React.createElement(Element, inputProps)).toJSON();
 
@@ -91,42 +78,4 @@ it('allows extending className with props', () => runTest({
 it('allows setting style', () => runTest({
   inputProps: { style: { top: 5 } },
   expectedProps: { style: { top: 5 } },
-}));
-
-it('allows constructing with another component', () => runTest({
-  type: 'span',
-}));
-
-it('allows overriding the component', () => runTest({
-  inputProps: { component: 'span' },
-  expectedType: 'span',
-  expectedProps: {},
-}));
-
-it('adds boolean propTypes', () => runTest({
-  classNameMap: { booleanAttribute: { true: 'class' } },
-  validProps: [
-    { booleanAttribute: true },
-    { booleanAttribute: false },
-  ],
-  invalidProps: [
-    { booleanAttribute: 5 },
-    { booleanAttribute: 'string' },
-    { booleanAttribute: () => {} },
-  ],
-}));
-
-it('adds string propTypes', () => runTest({
-  classNameMap: { stringAttribute: { value1: 'a', value2: 'b' } },
-  validProps: [
-    { stringAttribute: 'value1' },
-    { stringAttribute: 'value2' },
-  ],
-  invalidProps: [
-    { stringAttribute: true },
-    { stringAttribute: false },
-    { stringAttribute: 5 },
-    { stringAttribute: 'other string' },
-    { stringAttribute: () => {} },
-  ],
 }));
