@@ -4,19 +4,19 @@ import { View } from 'react-native';
 
 const font = '10 "Helvetica"';
 
-import { default as _default } from 'css-to-react-native';
+import _cssToReactNative from 'css-to-react-native';
 import { StyleSheet as _StyleSheet } from 'react-native';
 
 var _csstaStyle = _StyleSheet.create({
   'style1': Object.assign({
     'marginTop': 10
-  }, _default([['font', `${ font }`]])),
-  'style2': Object.assign(_default([['font', `${ font }`]]), {
+  }, _cssToReactNative([['font', `${ font }`]])),
+  'style2': Object.assign(_cssToReactNative([['font', `${ font }`]]), {
     'marginTop': 10
   }),
   'style3': Object.assign({
     'marginTop': 10
-  }, _default([['font', `${ font }`]]), {
+  }, _cssToReactNative([['font', `${ font }`]]), {
     'marginBottom': 10
   })
 });

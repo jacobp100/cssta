@@ -23,21 +23,31 @@ module.exports.getOrCreateImportReference = (element, state, moduleName, importe
   const filename = state.file.opts.filename;
 
   const referencePath = [filename, moduleName, importedName];
-  let reference = _.get(referencePath, state.externalReferencesPerFile);
 
-  if (!reference) {
+  const existingReference = _.get(referencePath, state.externalReferencesPerFile);
+  if (existingReference) return existingReference;
+
+  let reference;
+  let importSpecifier;
+
+  if (importedName === 'default') {
+    reference = element.scope.generateUidIdentifier(moduleName);
+    importSpecifier = t.importDefaultSpecifier(reference);
+  } else {
     reference = element.scope.generateUidIdentifier(importedName);
-    element.insertBefore(
-      t.importDeclaration([
-        t.importSpecifier(reference, t.identifier(importedName)),
-      ], t.stringLiteral(moduleName))
-    );
-    state.externalReferencesPerFile = _.set(
-      referencePath,
-      reference,
-      state.externalReferencesPerFile
-    );
+    importSpecifier = t.importSpecifier(reference, t.identifier(importedName));
   }
+
+  element.insertBefore(
+    t.importDeclaration([
+      importSpecifier,
+    ], t.stringLiteral(moduleName))
+  );
+  state.externalReferencesPerFile = _.set(
+    referencePath,
+    reference,
+    state.externalReferencesPerFile
+  );
 
   return reference;
 };

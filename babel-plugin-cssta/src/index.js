@@ -88,7 +88,7 @@ module.exports = () => ({
           let importedName;
           if (t.isImportSpecifier(specifier)) {
             importedName = specifier.imported.name;
-          } else if (t.isDefaultSpecifier(specifier)) {
+          } else if (t.isImportDefaultSpecifier(specifier)) {
             importedName = 'default';
           }
 

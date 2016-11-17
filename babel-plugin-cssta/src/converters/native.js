@@ -8,12 +8,90 @@ const {
 } = require('css-to-react-native');
 const { getOrCreateImportReference, jsonToNode } = require('../util');
 
-const NO_INTERPOLATION = 0;
-const SIMPLE_INTERPOLATION = 1;
-const ADVANCED_INTERPOLATION = 2;
+const SIMPLE_OR_NO_INTERPOLATION = 0;
+const ADVANCED_INTERPOLATION = 1;
 
+const convertValue = transform => value => t.callExpression(t.identifier(transform), [value]);
+
+const stringInterpolation = value =>
+  t.callExpression(t.memberExpression(convertValue('String')(value), t.identifier('trim')), []);
+
+const numberInterpolation = convertValue('Number');
+
+/*
+All the values we can work out easily.
+
+E.g.
+fontSize: ${value} can only be a number -> { fontSize: Number(value) }
+position: ${value} can only be a string -> { position: String(value).trim() }
+
+Some values, like 'margin', have shorthands, so cannot be included.
+*/
 const simpleInterpolation = {
-  color: 'String',
+  /* View */
+  backfaceVisibility: stringInterpolation,
+  background: stringInterpolation,
+  backgroundColor: stringInterpolation,
+  borderBottomColor: stringInterpolation,
+  borderBottomLeftRadius: numberInterpolation,
+  borderBottomRightRadius: numberInterpolation,
+  borderBottomWidth: numberInterpolation,
+  borderLeftColor: stringInterpolation,
+  borderLeftWidth: numberInterpolation,
+  borderRightColor: stringInterpolation,
+  borderRightWidth: numberInterpolation,
+  borderTopColor: stringInterpolation,
+  borderTopLeftRadius: numberInterpolation,
+  borderTopRightRadius: numberInterpolation,
+  borderTopWidth: numberInterpolation,
+  opacity: numberInterpolation,
+  elevation: numberInterpolation,
+  /* Layout */
+  alignItems: stringInterpolation,
+  alignSelf: stringInterpolation,
+  bottom: numberInterpolation,
+  flexBasis: numberInterpolation,
+  flexDirection: stringInterpolation,
+  flexGrow: numberInterpolation,
+  flexShrink: numberInterpolation,
+  flexWrap: stringInterpolation,
+  height: numberInterpolation,
+  justifyContent: stringInterpolation,
+  left: numberInterpolation,
+  marginBottomWidth: numberInterpolation,
+  marginLeftWidth: numberInterpolation,
+  marginRightWidth: numberInterpolation,
+  marginTopWidth: numberInterpolation,
+  maxHeight: numberInterpolation,
+  maxWidth: numberInterpolation,
+  minHeight: numberInterpolation,
+  minWidth: numberInterpolation,
+  overflow: stringInterpolation,
+  paddingBottomWidth: numberInterpolation,
+  paddingLeftWidth: numberInterpolation,
+  paddingRightWidth: numberInterpolation,
+  paddingTopWidth: numberInterpolation,
+  position: stringInterpolation,
+  right: numberInterpolation,
+  top: numberInterpolation,
+  width: numberInterpolation,
+  zIndex: numberInterpolation,
+  /* Text */
+  color: stringInterpolation,
+  fontFamily: stringInterpolation, // Safe, since quotes aren't used for this
+  fontSize: numberInterpolation,
+  fontStyle: stringInterpolation,
+  fontWeight: stringInterpolation,
+  lineHeight: numberInterpolation,
+  textAlign: stringInterpolation,
+  textDecorationLine: stringInterpolation,
+  textShadowColor: stringInterpolation,
+  textShadowRadius: numberInterpolation,
+  textAlignVertical: stringInterpolation,
+  letterSpacing: numberInterpolation,
+  textDecorationColor: stringInterpolation,
+  textDecorationStyle: stringInterpolation,
+  writingDirection: stringInterpolation,
 };
 
 const extractRules = (element, state, inputCss, substitutionMap = {}) => {
@@ -23,9 +101,9 @@ const extractRules = (element, state, inputCss, substitutionMap = {}) => {
 
   const getInterpolationType = (decl) => {
     if (!_.some(value => _.includes(value, decl.value), substititionNames)) {
-      return NO_INTERPOLATION;
+      return SIMPLE_OR_NO_INTERPOLATION;
     } else if (getPropertyName(decl.prop) in simpleInterpolation) {
-      return SIMPLE_INTERPOLATION;
+      return SIMPLE_OR_NO_INTERPOLATION;
     }
     return ADVANCED_INTERPOLATION;
   };
@@ -62,23 +140,26 @@ const extractRules = (element, state, inputCss, substitutionMap = {}) => {
     }, [], nodes);
 
     const transformedGroups = _.map(({ decls, interpolationType }) => {
-      if (interpolationType === NO_INTERPOLATION) {
-        return jsonToNode(cssToReactNative(_.map(decl => [decl.prop, decl.value], decls)));
-      }
-
-      if (interpolationType === SIMPLE_INTERPOLATION) {
-        return t.objectExpression(_.map((decl) => {
+      if (interpolationType === SIMPLE_OR_NO_INTERPOLATION) {
+        const styleMap = _.reduce((accum, decl) => {
           const propertyName = getPropertyName(decl.prop);
-          const substitution = decl.value.match(substitionNamesRegExp)[0];
+          const substitutions = decl.value.match(substitionNamesRegExp);
 
-          return t.objectProperty(
-            t.stringLiteral(propertyName),
-            t.callExpression(
-              t.identifier(simpleInterpolation[propertyName]),
-              [substitutionMap[substitution]]
-            )
-          );
-        }, decls));
+          if (substitutions && substitutions > 2) {
+            throw new Error('Used two interpolated values on a property that accepts one');
+          } else if (substitutions && substitutions.length === 1) {
+            const substitution = substitutionMap[substitutions[0]];
+            return _.set(propertyName, simpleInterpolation[propertyName](substitution), accum);
+          }
+
+          const styles = cssToReactNative([[decl.prop, decl.value]]);
+          const styleToValue = _.mapValues(jsonToNode, styles);
+          return _.assign(accum, styleToValue);
+        }, {}, decls);
+
+        return t.objectExpression(_.map(([key, value]) => (
+          t.objectProperty(t.stringLiteral(key), value)
+        ), _.toPairs(styleMap)));
       }
 
       const cssToReactNativeReference = getOrCreateImportReference(
