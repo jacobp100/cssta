@@ -35,7 +35,7 @@ const getActual = (actualJsPath, tempCssPath) => {
 };
 
 glob.sync(path.join(baseDir, 'fixtures/*/')).forEach((testPath) => {
-  const testName = path.dirname(testPath);
+  const testName = path.relative(path.join(baseDir, 'fixtures'), testPath);
 
   const expectedJsPath = path.join(testPath, 'expected.js');
   const expectedCssPath = path.join(testPath, 'expected.css');

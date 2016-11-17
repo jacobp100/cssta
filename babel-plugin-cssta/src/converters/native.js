@@ -143,7 +143,9 @@ const extractRules = (element, state, inputCss, substitutionMap = {}) => {
       if (interpolationType === SIMPLE_OR_NO_INTERPOLATION) {
         const styleMap = _.reduce((accum, decl) => {
           const propertyName = getPropertyName(decl.prop);
-          const substitutions = decl.value.match(substitionNamesRegExp);
+          const substitutions = !_.isEmpty(substitutionMap)
+            ? decl.value.match(substitionNamesRegExp)
+            : null;
 
           if (substitutions && substitutions.length > 2) {
             throw new Error('Used two interpolated values on a property that accepts one');
@@ -152,7 +154,7 @@ const extractRules = (element, state, inputCss, substitutionMap = {}) => {
             return _.set(propertyName, simpleInterpolation[propertyName](substitution), accum);
           }
 
-          const styles = cssToReactNative([[decl.prop, decl.value]]);
+          const styles = cssToReactNative([[propertyName, decl.value]]);
           const styleToValue = _.mapValues(jsonToNode, styles);
           return _.assign(accum, styleToValue);
         }, {}, decls);
