@@ -96,11 +96,13 @@ const simpleInterpolation = {
 
 const extractRules = (element, state, inputCss, substitutionMap = {}) => {
   const substititionNames = Object.keys(substitutionMap);
-  const substitionNamesRegExpNoCapture = new RegExp(`(?:${substititionNames.join('|')})`, 'g');
   const substitionNamesRegExp = new RegExp(`(${substititionNames.join('|')})`, 'g');
 
+  const containsSubstitution = value =>
+    !_.isEmpty(substitutionMap) && substitionNamesRegExp.test(value);
+
   const getInterpolationType = (decl) => {
-    if (!_.some(value => _.includes(value, decl.value), substititionNames)) {
+    if (!containsSubstitution(decl.value)) {
       return SIMPLE_OR_NO_INTERPOLATION;
     } else if (getPropertyName(decl.prop) in simpleInterpolation) {
       return SIMPLE_OR_NO_INTERPOLATION;
@@ -110,15 +112,15 @@ const extractRules = (element, state, inputCss, substitutionMap = {}) => {
 
   const getTemplateString = (value) => {
     /* Don't attempt to optimise `${value}`: it converts to a string and we need that */
-    const quasiValues = value.split(substitionNamesRegExpNoCapture);
+    const allValues = _.chunk(2, value.split(substitionNamesRegExp));
+    const quasiValues = _.map(0, allValues);
+    const expressionValues = _.dropLast(1, _.map(1, allValues));
+
     const quasis = [].concat(
       _.map(raw => t.templateElement({ raw }), _.initial(quasiValues)),
       t.templateElement({ raw: _.last(quasiValues) }, true)
     );
-    const expressions = _.map(
-      _.propertyOf(substitutionMap),
-      value.match(substitionNamesRegExp)
-    );
+    const expressions = _.map(_.propertyOf(substitutionMap), expressionValues);
 
     return t.templateLiteral(quasis, expressions);
   };
@@ -143,20 +145,17 @@ const extractRules = (element, state, inputCss, substitutionMap = {}) => {
       if (interpolationType === SIMPLE_OR_NO_INTERPOLATION) {
         const styleMap = _.reduce((accum, decl) => {
           const propertyName = getPropertyName(decl.prop);
-          const substitutions = !_.isEmpty(substitutionMap)
-            ? decl.value.match(substitionNamesRegExp)
-            : null;
+          const substitution = substitutionMap[decl.value.trim()];
 
-          if (substitutions && substitutions.length > 2) {
-            throw new Error('Used two interpolated values on a property that accepts one');
-          } else if (substitutions && substitutions.length === 1) {
-            const substitution = substitutionMap[substitutions[0]];
+          if (substitution) {
             return _.set(propertyName, simpleInterpolation[propertyName](substitution), accum);
+          } else if (!containsSubstitution(decl.value)) {
+            const styles = cssToReactNative([[propertyName, decl.value]]);
+            const styleToValue = _.mapValues(jsonToNode, styles);
+            return _.assign(accum, styleToValue);
           }
 
-          const styles = cssToReactNative([[propertyName, decl.value]]);
-          const styleToValue = _.mapValues(jsonToNode, styles);
-          return _.assign(accum, styleToValue);
+          throw new Error(`Used multiple values ${propertyName}, which accepts one value`);
         }, {}, decls);
 
         return t.objectExpression(_.map(([key, value]) => (
