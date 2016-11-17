@@ -145,7 +145,7 @@ const extractRules = (element, state, inputCss, substitutionMap = {}) => {
           const propertyName = getPropertyName(decl.prop);
           const substitutions = decl.value.match(substitionNamesRegExp);
 
-          if (substitutions && substitutions > 2) {
+          if (substitutions && substitutions.length > 2) {
             throw new Error('Used two interpolated values on a property that accepts one');
           } else if (substitutions && substitutions.length === 1) {
             const substitution = substitutionMap[substitutions[0]];
