@@ -17,12 +17,6 @@ const simpleInterpolation = {
 };
 
 const extractRules = (element, state, inputCss, substitutionMap = {}) => {
-  let i = 0;
-  const getStyleName = () => {
-    i += 1;
-    return `style${i}`;
-  };
-
   const substititionNames = Object.keys(substitutionMap);
   const substitionNamesRegExpNoCapture = new RegExp(`(?:${substititionNames.join('|')})`, 'g');
   const substitionNamesRegExp = new RegExp(`(${substititionNames.join('|')})`, 'g');
