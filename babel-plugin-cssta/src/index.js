@@ -17,20 +17,6 @@ const csstaConstructorExpressionTypes = {
   ],
 };
 
-const jsonToNode = (object) => {
-  if (typeof object === 'string') {
-    return t.stringLiteral(object);
-  } else if (Array.isArray(object)) {
-    return t.arrayExpression(object.map(jsonToNode));
-  }
-  return t.objectExpression(Object.keys(object).map(key => (
-    t.objectProperty(
-      t.stringLiteral(key),
-      jsonToNode(object[key])
-    )
-  )));
-};
-
 const transformCsstaCall = (element, state, node, stringArg) => {
   if (!(node.type in csstaConstructorExpressionTypes)) return;
 
