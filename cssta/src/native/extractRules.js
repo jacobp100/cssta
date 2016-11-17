@@ -1,6 +1,11 @@
 /* eslint-disable no-param-reassign */
-const bodyTransform = require('./bodyTransform');
+const cssToReactNative = require('css-to-react-native').default;
 const getRoot = require('../util/getRoot');
+
+const bodyTransform = nodes => cssToReactNative(nodes
+  .filter(node => node.type === 'decl')
+  .map(node => [node.prop, node.value])
+);
 
 module.exports = (inputCss) => {
   let i = 0;
