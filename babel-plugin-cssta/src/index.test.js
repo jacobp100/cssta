@@ -9,11 +9,13 @@ const plugin = require('.');
 const approve = process.argv.includes('--approve');
 const skipTest = process.argv.includes('--skip-test');
 
+const baseDir = path.join(__dirname, '..');
+
 const normaliseCss = (str) => {
   let output = str;
   do {
-    output = output.replace(__dirname, '<dirname>');
-  } while (output.indexOf(__dirname) !== -1);
+    output = output.replace(baseDir, '<dirname>');
+  } while (output.indexOf(baseDir) !== -1);
   return output;
 };
 
@@ -32,7 +34,7 @@ const getActual = (actualJsPath, tempCssPath) => {
   return { actualJs, actualCss };
 };
 
-glob.sync(path.join(__dirname, 'fixtures/*/')).forEach((testPath) => {
+glob.sync(path.join(baseDir, 'fixtures/*/')).forEach((testPath) => {
   const testName = path.dirname(testPath);
 
   const expectedJsPath = path.join(testPath, 'expected.js');

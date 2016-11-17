@@ -5,16 +5,19 @@ const extractRules = require('./extractRules');
 const { createValidatorForSelector } = require('./selectorTransform');
 const createComponent = require('./createComponent');
 
-const assertNoTemplateParams = (otherAttributes) => {
-  if (otherAttributes.length) {
-    throw new Error('You cannot use string interpolation with cssta');
-  }
-};
+/* eslint-disable no-param-reassign */
+module.exports = element => (cssTextFragments, ...substitutions) => {
+  const substitutionNames = substitutions.map((value, index) => `__substitution-${index}__`);
+  const substitutionMap = substitutionNames.reduce((accum, name, index) => {
+    accum[name] = String(substitutions[index]);
+    return accum;
+  }, {});
 
-module.exports = element => (cssText, ...otherAttributes) => {
-  assertNoTemplateParams(otherAttributes);
+  const cssText =
+    cssTextFragments[0] +
+    substitutionNames.map((name, index) => name + cssTextFragments[index + 1]).join('');
 
-  const { rules: baseRules, styleSheetBody, propTypes } = extractRules(cssText);
+  const { rules: baseRules, styleSheetBody, propTypes } = extractRules(cssText, substitutionMap);
 
   const styleSheet = StyleSheet.create(styleSheetBody);
 

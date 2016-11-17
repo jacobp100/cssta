@@ -9,10 +9,11 @@ const getDevId = name => () => {
   return `${name}-${devId}`;
 };
 
-const assertNoTemplateParams = (otherAttributes) => {
-  if (otherAttributes.length) {
-    throw new Error('You cannot use string interpolation with cssta');
+const assertNoTemplateParams = (cssTextFragments) => {
+  if (cssTextFragments.length) {
+    throw new Error('You cannot use string interpolation with cssta for web');
   }
+  return cssTextFragments[0];
 };
 
 let styleElement = null;
@@ -43,8 +44,8 @@ const opts = {
 };
 
 let styleContents = '';
-const style = tagName => (cssText, ...otherAttributes) => {
-  assertNoTemplateParams(otherAttributes);
+const style = tagName => (cssTextFragments) => {
+  const cssText = assertNoTemplateParams(cssTextFragments);
 
   const { css, baseClassName, rules, propTypes } = extractRules(cssText, opts);
 
@@ -55,8 +56,8 @@ const style = tagName => (cssText, ...otherAttributes) => {
 };
 
 let didInjectGlobal = false;
-style.injectGlobal = (cssText, ...otherAttributes) => {
-  assertNoTemplateParams(otherAttributes);
+style.injectGlobal = (cssTextFragments) => {
+  const cssText = assertNoTemplateParams(cssTextFragments);
 
   if (didInjectGlobal) {
     throw new Error('To help with consistency, you can only call injectGlobal once');

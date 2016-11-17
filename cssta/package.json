@@ -17,6 +17,7 @@
     "babel-types": "^6.18.0",
     "css-to-react-native": "^1.0.1",
     "fbjs": "^0.8.5",
+    "lodash": "^4.17.2",
     "postcss": "^5.2.5",
     "postcss-nested": "^1.0.0",
     "postcss-safe-parser": "^2.0.0",
