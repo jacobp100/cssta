@@ -15,9 +15,6 @@ const iterateChildren = (root, callback) => {
   iterate(root.first);
 };
 
-const scopingTypes = ['nesting', 'attribute'];
-
-
 const nestNode = (node) => {
   switch (node.type) {
     case 'decl': {
@@ -40,6 +37,8 @@ const nestNode = (node) => {
       break;
   }
 };
+
+const scopingTypes = ['nesting', 'attribute'];
 
 module.exports = (inputCss, allowCombinators = false) => {
   const root = postcss.parse(inputCss);
