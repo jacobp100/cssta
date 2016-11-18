@@ -1,5 +1,5 @@
-import _csstaCreateComponent from 'cssta/lib/web/createComponent';
+import _csstaLibWebCreateComponent from 'cssta/lib/web/createComponent';
 
 import Link from 'react-router';
 
-_csstaCreateComponent(Link, null, 'A', {});
+_csstaLibWebCreateComponent(Link, null, 'A', {});

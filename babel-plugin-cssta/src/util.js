@@ -30,6 +30,8 @@ module.exports.getOrCreateImportReference = (element, state, moduleName, importe
   let reference;
   let importSpecifier;
 
+  const program = element.findParent(t.isProgram);
+
   if (importedName === 'default') {
     reference = element.scope.generateUidIdentifier(moduleName);
     importSpecifier = t.importDefaultSpecifier(reference);
@@ -38,11 +40,10 @@ module.exports.getOrCreateImportReference = (element, state, moduleName, importe
     importSpecifier = t.importSpecifier(reference, t.identifier(importedName));
   }
 
-  element.insertBefore(
-    t.importDeclaration([
-      importSpecifier,
-    ], t.stringLiteral(moduleName))
-  );
+  program.unshiftContainer('body', t.importDeclaration([
+    importSpecifier,
+  ], t.stringLiteral(moduleName)));
+
   state.externalReferencesPerFile = _.set(
     referencePath,
     reference,

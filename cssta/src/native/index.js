@@ -7,17 +7,11 @@ const createComponent = require('./createComponent');
 
 /* eslint-disable no-param-reassign */
 module.exports = element => (cssTextFragments, ...substitutions) => {
-  const substitutionNames = substitutions.map((value, index) => `__substitution-${index}__`);
-  const substitutionMap = substitutionNames.reduce((accum, name, index) => {
-    accum[name] = String(substitutions[index]);
-    return accum;
-  }, {});
-
   const cssText =
     cssTextFragments[0] +
-    substitutionNames.map((name, index) => name + cssTextFragments[index + 1]).join('');
+    substitutions.map((value, index) => String(value) + cssTextFragments[index + 1]).join('');
 
-  const { rules: baseRules, styleSheetBody, propTypes } = extractRules(cssText, substitutionMap);
+  const { rules: baseRules, styleSheetBody, propTypes } = extractRules(cssText);
 
   const styleSheet = StyleSheet.create(styleSheetBody);
 

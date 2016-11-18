@@ -4,9 +4,14 @@ const _ = require('lodash/fp');
 const transformWebCssta = require('./converters/web');
 const transformNativeCssta = require('./converters/native');
 
-const createComponentLocations = {
-  web: 'cssta/lib/web/createComponent',
-  native: 'cssta/lib/native/createComponent',
+const transformCsstaTypes = {
+  web: transformWebCssta,
+  native: transformNativeCssta,
+};
+
+const canInterpolate = {
+  web: false,
+  native: true,
 };
 
 const csstaConstructorExpressionTypes = {
@@ -25,14 +30,27 @@ const transformCsstaCall = (element, state, node, stringArg) => {
   if (!t.isIdentifier(callee)) return;
 
   const filename = state.file.opts.filename;
-  const csstaType = _.get([filename, callee.name], state.csstaReferenceTypesPerFile);
+  const reference = callee.name;
+  const csstaType = _.get([filename, reference], state.csstaReferenceTypesPerFile);
 
   if (!csstaType) return;
 
-  let cssText;
+  const interpolateValuesOnly = _.includes(
+    'interpolateValuesOnly',
+    _.get(['opts', 'optimisations'], state)
+  );
+
+  const hasInterpolation = t.isTemplateLiteral(stringArg) && !_.isEmpty(stringArg.expressions);
+
+  if (hasInterpolation && !canInterpolate[csstaType]) {
+    const ex = '`color: ${primary}`'; // eslint-disable-line
+    throw new Error(`You cannot interpolation in template strings for ${csstaType} (i.e. ${ex})`);
+  }
+
+  let cssText = null;
   let substitutionMap = {};
 
-  if (t.isTemplateLiteral(stringArg)) {
+  if (t.isTemplateLiteral(stringArg) && (!hasInterpolation || interpolateValuesOnly)) {
     const { quasis, expressions } = stringArg;
     const substitutionNames = expressions.map((value, index) => `__substitution-${index}__`);
     cssText =
@@ -41,27 +59,35 @@ const transformCsstaCall = (element, state, node, stringArg) => {
     substitutionMap = _.fromPairs(_.zip(substitutionNames, expressions));
   } else if (t.isStringLiteral(stringArg)) {
     cssText = stringArg.value;
-  } else {
-    throw new Error('Failed to read CSS');
   }
 
-  if (csstaType === 'web') {
-    transformWebCssta(element, state, cssText, substitutionMap, component);
-  } else if (csstaType === 'native') {
-    transformNativeCssta(element, state, cssText, substitutionMap, component);
+  if (cssText !== null) {
+    transformCsstaTypes[csstaType](element, state, cssText, substitutionMap, component);
+  } else {
+    state.requiredCsstaRefernceImportsPerFile = _.update(
+      [filename],
+      _.union([reference]),
+      state.requiredCsstaRefernceImportsPerFile || {}
+    );
   }
 };
 
 const externalReferencesToRecord = {
   'react-native': ['StyleSheet'],
   'css-to-react-native': ['default'],
+  'cssta/lib/web/createComponent': ['default'],
+  'cssta/lib/native/createComponent': ['default'],
+};
+
+const csstaModules = {
+  cssta: 'web',
+  'cssta/web': 'web',
+  'cssta/native': 'native',
 };
 
 module.exports = () => ({
   visitor: {
     ImportDeclaration(element, state) {
-      let csstaType;
-
       const moduleName = element.node.source.value;
       const specifiers = element.node.specifiers;
 
@@ -90,21 +116,17 @@ module.exports = () => ({
         return;
       }
 
-      if (moduleName === 'cssta' || moduleName === 'cssta/web') {
-        csstaType = 'web';
-      } else if (moduleName === 'cssta/native') {
-        csstaType = 'native';
-      }
-
+      const csstaType = csstaModules[moduleName];
       if (!csstaType) return;
 
-      const defaultSpecifiers = _.flow(
-        _.filter({ type: 'ImportDefaultSpecifier' }),
-        _.map('local.name'),
-        _.compact
-      )(specifiers);
+      const defaultSpecifiers = [].concat(
+        _.filter({ type: 'ImportDefaultSpecifier' }, specifiers),
+        _.filter({ type: 'ImportSpecifier', imported: { name: 'default' } }, specifiers)
+      );
+      if (_.isEmpty(defaultSpecifiers)) return;
 
       const specifierReferenceTypes = _.flow(
+        _.map('local.name'),
         _.map(reference => [reference, csstaType]),
         _.fromPairs
       )(defaultSpecifiers);
@@ -115,22 +137,31 @@ module.exports = () => ({
         state.csstaReferenceTypesPerFile || {}
       );
 
-      const createComponentReferencePath = [filename, csstaType];
-      if (!_.get(createComponentReferencePath, state.createComponentReferences)) {
-        const reference = element.scope.generateUidIdentifier('csstaCreateComponent');
+      const specifierReferenceImports = _.mapValues(_.constant(element), specifierReferenceTypes);
 
-        state.createComponentReferences = _.set(
-          createComponentReferencePath,
-          reference,
-          state.createComponentReferences
-        );
-        const newImport = t.importDeclaration([
-          t.importDefaultSpecifier(reference),
-        ], t.stringLiteral(createComponentLocations[csstaType]));
-        element.replaceWith(newImport);
-      } else {
-        element.remove();
-      }
+      state.csstaReferenceImportsPerFile = _.update(
+        [filename],
+        _.assign(specifierReferenceImports),
+        state.csstaReferenceImportsPerFile || {}
+      );
+    },
+    Program: {
+      exit(element, state) {
+        const filename = state.file.opts.filename;
+        const imports = _.getOr({}, [filename], state.csstaReferenceImportsPerFile);
+
+        const allImports = _.uniq(_.values(imports));
+        const requiredImports = _.flow(
+          _.getOr([], ['requiredCsstaRefernceImportsPerFile', filename]),
+          _.map(_.propertyOf(imports))
+        )(state);
+
+        const importsToRemove = _.without(requiredImports, allImports);
+
+        _.forEach((importElement) => {
+          importElement.remove();
+        }, importsToRemove);
+      },
     },
     CallExpression(element, state) {
       const { node } = element;

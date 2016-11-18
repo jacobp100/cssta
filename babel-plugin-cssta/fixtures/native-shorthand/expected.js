@@ -1,8 +1,7 @@
-import _csstaCreateComponent from 'cssta/lib/native/createComponent';
+import { StyleSheet as _StyleSheet } from 'react-native';
+import _csstaLibNativeCreateComponent from 'cssta/lib/native/createComponent';
 
 import { View } from 'react-native';
-
-import { StyleSheet as _StyleSheet } from 'react-native';
 
 var _csstaStyle = _StyleSheet.create({
   'style1': {
@@ -15,7 +14,7 @@ var _csstaStyle = _StyleSheet.create({
   }
 });
 
-_csstaCreateComponent(View, [], [{
+_csstaLibNativeCreateComponent(View, [], [{
   'validator': function (p) {
     return true;
   },

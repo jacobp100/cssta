@@ -1,11 +1,10 @@
-import _csstaCreateComponent from 'cssta/lib/native/createComponent';
+import { StyleSheet as _StyleSheet } from 'react-native';
+import _csstaLibNativeCreateComponent from 'cssta/lib/native/createComponent';
+import _cssToReactNative from 'css-to-react-native';
 
 import { View } from 'react-native';
 
 const font = '10 "Helvetica"';
-
-import _cssToReactNative from 'css-to-react-native';
-import { StyleSheet as _StyleSheet } from 'react-native';
 
 var _csstaStyle = _StyleSheet.create({
   'style1': Object.assign({
@@ -21,7 +20,7 @@ var _csstaStyle = _StyleSheet.create({
   })
 });
 
-_csstaCreateComponent(View, ['attr1', 'attr2', 'attr3'], [{
+_csstaLibNativeCreateComponent(View, ['attr1', 'attr2', 'attr3'], [{
   'validator': function (p) {
     return !!p['attr1'];
   },

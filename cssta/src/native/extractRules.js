@@ -2,30 +2,17 @@
 const cssToReactNative = require('css-to-react-native').default;
 const getRoot = require('../util/getRoot');
 
+const getBody = nodes => cssToReactNative(nodes
+  .filter(node => node.type === 'decl')
+  .map(node => [node.prop, node.value])
+);
 
-/* Note that the keys to substitutionMap should not contain RegExp characters!!! */
-/* Done like this to have consistent interpolation. See tests. */
-module.exports = (inputCss, substitutionMap = {}) => {
+module.exports = (inputCss) => {
   let i = 0;
   const getStyleName = () => {
     i += 1;
     return `style${i}`;
   };
-
-  const substitutions = Object.keys(substitutionMap);
-  const substitionRegExps = substitutions.reduce((accum, substitutionName) => {
-    accum[substitutionName] = new RegExp(substitutionName, 'g');
-    return accum;
-  }, {});
-
-  const getValue = value => substitutions.reduce((accum, substitutionName) => (
-    accum.replace(substitionRegExps[substitutionName], substitutionMap[substitutionName])
-  ), value);
-
-  const getBody = nodes => cssToReactNative(nodes
-    .filter(node => node.type === 'decl')
-    .map(node => [node.prop, getValue(node.value)])
-  );
 
   const { root, propTypes } = getRoot(inputCss);
 

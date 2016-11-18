@@ -19,11 +19,18 @@ const normaliseCss = (str) => {
   return output;
 };
 
-const getActual = (actualJsPath, tempCssPath) => {
+const getActual = (actualJsPath, tempCssPath, optionsPath) => {
   plugin.resetGenerators();
 
+  const options = { output: tempCssPath };
+
+  if (fs.existsSync(optionsPath)) {
+    const userOptions = JSON.parse(fs.readFileSync(optionsPath, 'utf8'));
+    Object.assign(options, userOptions);
+  }
+
   const actualJs = transformFileSync(actualJsPath, {
-    plugins: [[plugin, { output: tempCssPath }]],
+    plugins: [[plugin, options]],
   }).code;
 
   let actualCss = fs.existsSync(tempCssPath)
@@ -41,17 +48,18 @@ glob.sync(path.join(baseDir, 'fixtures/*/')).forEach((testPath) => {
   const expectedCssPath = path.join(testPath, 'expected.css');
   const actualJsPath = path.join(testPath, 'actual.js');
   const tempCssPath = tempfile('.css');
+  const optionsPath = path.join(testPath, 'options.json');
 
   if (approve) {
-    const { actualJs, actualCss } = getActual(actualJsPath, tempCssPath);
+    const { actualJs, actualCss } = getActual(actualJsPath, tempCssPath, optionsPath);
     const options = { flag: 'w+', encoding: 'utf8' };
     fs.writeFileSync(expectedJsPath, actualJs, options);
     if (actualCss) fs.writeFileSync(expectedCssPath, actualCss, options);
   } else if (skipTest) {
-    getActual(actualJsPath, tempCssPath);
+    getActual(actualJsPath, tempCssPath, optionsPath);
   } else {
     it(`should work with ${testName}`, () => {
-      const { actualJs, actualCss } = getActual(actualJsPath, tempCssPath);
+      const { actualJs, actualCss } = getActual(actualJsPath, tempCssPath, optionsPath);
       const expectedJs = fs.readFileSync(expectedJsPath, 'utf8');
       const expectedCss = fs.readFileSync(expectedCssPath, 'utf8');
 

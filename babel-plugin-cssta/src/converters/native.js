@@ -228,7 +228,12 @@ module.exports = (element, state, cssText, substitutionMap, component) => {
     ),
   ]), _.zip(styleNames, ruleNodes)));
 
-  const createComponent = state.createComponentReferences[filename].native;
+  const createComponent = getOrCreateImportReference(
+    element,
+    state,
+    'cssta/lib/native/createComponent',
+    'default'
+  );
   const newElement = t.callExpression(createComponent, [
     component,
     jsonToNode(Object.keys(propTypes)),

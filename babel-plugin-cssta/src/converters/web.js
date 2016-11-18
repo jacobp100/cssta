@@ -6,7 +6,7 @@ const t = require('babel-types');
 const _ = require('lodash/fp');
 const extractRules = require('cssta/src/web/extractRules');
 const cssNameGenerator = require('css-class-generator');
-const { jsonToNode } = require('../util');
+const { jsonToNode, getOrCreateImportReference } = require('../util');
 
 
 const animationKeywords = [
@@ -107,7 +107,12 @@ module.exports = (element, state, cssText, substititionMap, component) => {
     outputCss = `${existingCss}\n${commentMarker}\n${output}`;
     writeCssToFile(outputCss, cssFilename);
 
-    const createComponent = state.createComponentReferences[filename].web;
+    const createComponent = getOrCreateImportReference(
+      element,
+      state,
+      'cssta/lib/web/createComponent',
+      'default'
+    );
     const baseClass = baseClassName
       ? t.stringLiteral(baseClassName)
       : t.nullLiteral();

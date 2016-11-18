@@ -1,4 +1,4 @@
-import _csstaCreateComponent from 'cssta/lib/web/createComponent';
+import _csstaLibWebCreateComponent from 'cssta/lib/web/createComponent';
 
 
-_csstaCreateComponent('button', null, 'A', {});
+_csstaLibWebCreateComponent('button', null, 'A', {});
