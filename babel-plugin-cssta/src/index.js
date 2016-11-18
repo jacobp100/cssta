@@ -37,7 +37,7 @@ const transformCsstaCall = (element, state, node, stringArg) => {
 
   const interpolateValuesOnly = _.includes(
     'interpolateValuesOnly',
-    _.get(['opts', 'optimisations'], state)
+    _.get(['opts', 'optimizations'], state)
   );
 
   const hasInterpolation = t.isTemplateLiteral(stringArg) && !_.isEmpty(stringArg.expressions);

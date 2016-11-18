@@ -10,6 +10,7 @@ const runTest = ({
   type = 'button',
   propTypes = [],
   inputProps = {},
+  inputChildren = [],
   validProps = [],
   invalidProps = [],
   expectedType = type,
@@ -29,7 +30,8 @@ const runTest = ({
     });
   });
 
-  const component = renderer.create(React.createElement(Element, inputProps)).toJSON();
+  const component =
+    renderer.create(React.createElement(Element, inputProps, ...inputChildren)).toJSON();
 
   expect(component.type).toEqual(expectedType);
   expect(component.props).toEqual(expectedProps);
@@ -79,4 +81,9 @@ it('adds string propTypes', () => runTest({
     { stringAttribute: 'other string' },
     { stringAttribute: () => {} },
   ],
+}));
+
+it('allows children', () => runTest({
+  inputChildren: ['text'],
+  expectedChildren: ['text'],
 }));

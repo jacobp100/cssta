@@ -7,16 +7,17 @@ const createComponent = require('./createComponent');
 
 /* eslint-disable no-param-reassign */
 module.exports = element => (cssTextFragments, ...substitutions) => {
-  const cssText =
-    cssTextFragments[0] +
-    substitutions.map((value, index) => String(value) + cssTextFragments[index + 1]).join('');
+  const cssText = typeof cssTextFragments === 'string'
+    ? cssTextFragments
+    : cssTextFragments[0] +
+      substitutions.map((value, index) => String(value) + cssTextFragments[index + 1]).join('');
 
   const { rules: baseRules, styleSheetBody, propTypes } = extractRules(cssText);
 
   const styleSheet = StyleSheet.create(styleSheetBody);
 
   const rules = baseRules.map(rule => ({
-    validator: createValidatorForSelector(rule.selector),
+    validate: createValidatorForSelector(rule.selector),
     style: styleSheet[rule.styleName],
   }));
 

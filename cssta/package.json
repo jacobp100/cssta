@@ -34,9 +34,10 @@
     "eslint-plugin-jsx-a11y": "^2.2.2",
     "eslint-plugin-react": "^6.3.0",
     "jest": "^16.0.2",
+    "react": "^15.0.0",
     "react-dom": "^15.3.2",
     "react-native": "^0.37.0",
-    "react-test-renderer": "^15.3.2"
+    "react-test-renderer": "^15.0.0"
   },
   "peerDependencies": {
     "react": "^15.3.2"
