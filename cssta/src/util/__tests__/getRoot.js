@@ -113,14 +113,18 @@ it('does not nest nested rules', () => runTestFor(`
   }
 `));
 
-it('does not allow combinators', () => shouldThrow(`
-  & & {
+it('scopes pseudo-selectors', () => runTestFor(`
+  :hover {
+    color: red;
+  }
+`, `
+  :hover& {
     color: red;
   }
 `));
 
-it('enforces scoping', () => shouldThrow(`
-  h1 {
+it('does not allow combinators', () => shouldThrow(`
+  & & {
     color: red;
   }
 `));

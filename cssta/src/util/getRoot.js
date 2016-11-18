@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 const postcss = require('postcss');
 const selectorParser = require('postcss-selector-parser');
 const { keyframesRegExp, isDirectChildOfKeyframes } = require('.');
@@ -46,58 +47,60 @@ module.exports = (inputCss) => {
   iterateChildren(root, nestNode);
 
   const propTypes = {};
-  const validateSelectors = selectorParser((container) => {
-    let didScopeNode = false;
+  const validateAndTransformSelectors = selectorParser((container) => {
+    container.each((selector) => {
+      let didScopeNode = false;
 
-    container.walk((node) => {
-      if (node.type === 'combinator') {
-        throw new Error(`Invalid use of combinator: ${node.value}`);
-      }
-      if (scopingTypes.indexOf(node.type) !== -1) {
-        didScopeNode = true;
-      }
-
-      if (node.type === 'attribute') {
-        const attribute = node.attribute.trim();
-        const propType = node.value ? 'oneOf' : 'bool';
-
-        if (propType === 'oneOf' && node.operator !== '=') {
-          throw new Error(`You cannot use operator ${node.operator} in an attribute selector`);
+      selector.walk((node) => {
+        if (node.type === 'combinator') {
+          throw new Error(`Invalid use of combinator: ${node.value}`);
+        }
+        if (scopingTypes.indexOf(node.type) !== -1) {
+          didScopeNode = true;
         }
 
-        if (propType === 'oneOf' && node.raws.insensitive) {
-          throw new Error('You cannot use case-insensitive attribute selectors');
-        }
+        if (node.type === 'attribute') {
+          const attribute = node.attribute.trim();
+          const propType = node.value ? 'oneOf' : 'bool';
 
-        if (attribute === 'component') {
-          throw new Error('You cannot name an attribute "component"');
-        }
+          if (propType === 'oneOf' && node.operator !== '=') {
+            throw new Error(`You cannot use operator ${node.operator} in an attribute selector`);
+          }
 
-        if (!(attribute in propTypes)) {
-          propTypes[attribute] = { type: propType };
-        } else if (propTypes[attribute].type !== propType) {
-          throw new Error(`Attribute "${attribute}" defined as both bool and a string`);
-        }
+          if (propType === 'oneOf' && node.raws.insensitive) {
+            throw new Error('You cannot use case-insensitive attribute selectors');
+          }
 
-        if (propType === 'oneOf') {
-          const value = node.raws.unquoted.trim();
-          propTypes[attribute].values = (propTypes[attribute].values || [])
-            .concat(value)
-            .reduce((accum, elem) => (
-              accum.indexOf(elem) === -1 ? accum.concat(elem) : accum
-            ), []);
+          if (attribute === 'component') {
+            throw new Error('You cannot name an attribute "component"');
+          }
+
+          if (!(attribute in propTypes)) {
+            propTypes[attribute] = { type: propType };
+          } else if (propTypes[attribute].type !== propType) {
+            throw new Error(`Attribute "${attribute}" defined as both bool and a string`);
+          }
+
+          if (propType === 'oneOf') {
+            const value = node.raws.unquoted.trim();
+            propTypes[attribute].values = (propTypes[attribute].values || [])
+              .concat(value)
+              .reduce((accum, elem) => (
+                accum.indexOf(elem) === -1 ? accum.concat(elem) : accum
+              ), []);
+          }
         }
+      });
+
+      if (!didScopeNode) {
+        selector.append(selectorParser.nesting());
       }
     });
-
-    if (!didScopeNode) {
-      throw new Error('You must scope all selectors');
-    }
   });
 
   root.walkRules((rule) => {
     if (!isDirectChildOfKeyframes(rule)) {
-      validateSelectors.process(rule.selector);
+      rule.selector = validateAndTransformSelectors.process(rule.selector).result;
     }
   });
 
