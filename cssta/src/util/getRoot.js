@@ -41,7 +41,7 @@ const nestNode = (node) => {
   }
 };
 
-module.exports = (inputCss) => {
+module.exports = (inputCss, allowCombinators = false) => {
   const root = postcss.parse(inputCss);
 
   iterateChildren(root, nestNode);
@@ -52,8 +52,10 @@ module.exports = (inputCss) => {
       let didScopeNode = false;
 
       selector.walk((node) => {
-        if (node.type === 'combinator') {
-          throw new Error(`Invalid use of combinator: ${node.value}`);
+        if (node.type === 'combinator' && (!allowCombinators || didScopeNode)) {
+          /* Allow `:fullscreen &`, or `.ie9 &`, or even `:fullscreen :hover` */
+          /* But don't allow the reverse: `& .ie9`---that makes literally no sense */
+          throw new Error('Invalid use of combinator in selector');
         }
         if (scopingTypes.indexOf(node.type) !== -1) {
           didScopeNode = true;

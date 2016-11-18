@@ -45,7 +45,7 @@ module.exports = (inputCss, { generateClassName, generateAnimationName }) => {
     });
   });
 
-  const { root, propTypes } = getRoot(inputCss);
+  const { root, propTypes } = getRoot(inputCss, true);
 
   transformAnimationNames({
     transform: (value) => {

@@ -4,8 +4,8 @@ const getRoot = require('../getRoot');
 const trim = str =>
   str.split('\n').map(line => line.trim()).filter(line => line !== '').join('\n');
 
-const runTestFor = (inputCss, expectedCss = inputCss, expectedPropTypes = {}) => {
-  const { root, propTypes: actualPropTypes } = getRoot(inputCss);
+const runTestFor = (inputCss, expectedCss = inputCss, expectedPropTypes = {}, allowCombinators) => {
+  const { root, propTypes: actualPropTypes } = getRoot(inputCss, allowCombinators);
   const actualCss = root.toString();
 
   expect(trim(actualCss)).toBe(trim(expectedCss));
@@ -123,8 +123,44 @@ it('scopes pseudo-selectors', () => runTestFor(`
   }
 `));
 
-it('does not allow combinators', () => shouldThrow(`
+it('optionally allows combinators before scoping with &', () => runTestFor(`
+  :fullscreen & {
+    color: red;
+  }
+`, undefined, undefined, true));
+
+it('optionally allows combinators before scoping with attribute selectors', () => runTestFor(`
+  :fullscreen [attribute] {
+    color: red;
+  }
+`, undefined, {
+  attribute: { type: 'bool' },
+}, true));
+
+it('scopes the last selector part when allowing and using combinators', () => runTestFor(`
+  :fullscreen :hover {
+    color: red;
+  }
+`, `
+  :fullscreen :hover& {
+    color: red;
+  }
+`, undefined, true));
+
+it('does not allow combinators by default', () => shouldThrow(`
   & & {
+    color: red;
+  }
+`));
+
+it('does not allow combinators after scoping with &', () => shouldThrow(`
+  & :fullscreen {
+    color: red;
+  }
+`));
+
+it('does not allow combinators after scoping with attribute selectors', () => shouldThrow(`
+  [attribute] :fullscreen {
     color: red;
   }
 `));
