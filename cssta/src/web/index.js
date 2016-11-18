@@ -10,10 +10,12 @@ const getDevId = name => () => {
 };
 
 const assertNoTemplateParams = (cssTextFragments) => {
-  if (Array.isArray(cssTextFragments) && cssTextFragments.length > 1) {
-    throw new Error('You cannot use string interpolation with cssta for web');
+  if (!Array.isArray(cssTextFragments)) {
+    return cssTextFragments;
+  } else if (cssTextFragments.length === 1) {
+    return cssTextFragments[0];
   }
-  return cssTextFragments[0];
+  throw new Error('You cannot use string interpolation with cssta for web');
 };
 
 let styleElement = null;
