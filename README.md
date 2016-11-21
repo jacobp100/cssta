@@ -21,6 +21,13 @@ const Button = cssta.button`
 
 This returns a regular React component, which when used, will have the styling applied.
 
+You can install Cssta with,
+
+```bash
+npm install --save cssta
+npm install --save-dev babel-plugin-cssta
+```
+
 Note that while we are using template strings, interpolation (`${value}`) is not supported on web, but is supported for React Native. There are also other platform differences documented in the individual guides.
 
 ## 📝 CSS
