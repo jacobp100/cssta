@@ -1,13 +1,14 @@
 {
   "name": "cssta",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "build": "rm -rf ./dist || :; babel ./src --out-dir ./dist"
+    "build": "rm -rf ./dist || :; babel ./src --out-dir ./dist",
+    "prepublish": "npm run build; cp ../README.md ."
   },
   "keywords": [],
   "author": "",
