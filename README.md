@@ -16,7 +16,7 @@ const Button = cssta.button`
   color: white;
 `;
 
-<Button>I'm a blue button with white text</Button>
+<Button>I am a blue button with white text</Button>
 ```
 
 This returns a regular React component, which when used, will have the styling applied.
