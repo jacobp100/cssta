@@ -16,10 +16,17 @@ const Button = cssta.button`
   color: white;
 `;
 
-<Button>I'm a blue button with white text</Button>
+<Button>I am a blue button with white text</Button>
 ```
 
 This returns a regular React component, which when used, will have the styling applied.
+
+You can install Cssta with,
+
+```bash
+npm install --save cssta
+npm install --save-dev babel-plugin-cssta
+```
 
 Note that while we are using template strings, interpolation (`${value}`) is not supported on web, but is supported for React Native. There are also other platform differences documented in the individual guides.
 
@@ -150,3 +157,4 @@ const Div = cssta.div`
 <Div component="span">I am a span now</Div>
 ```
 
+# [Docs](https://jacobp100.gitbooks.io/cssta/content/)
