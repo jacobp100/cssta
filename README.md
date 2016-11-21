@@ -150,3 +150,4 @@ const Div = cssta.div`
 <Div component="span">I am a span now</Div>
 ```
 
+# [Docs](https://jacobp100.gitbooks.io/cssta/content/)
