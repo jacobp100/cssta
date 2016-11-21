@@ -1,6 +1,6 @@
 # CSSTA
 
-## [Docs](https://jacobp100.gitbooks.io/cssta/content/)
+## [Docs & Readme](https://jacobp100.gitbooks.io/cssta/content/)
 
 ```
 npm install --save cssta
