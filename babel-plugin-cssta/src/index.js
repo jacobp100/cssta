@@ -3,6 +3,8 @@ const t = require('babel-types');
 const _ = require('lodash/fp');
 const transformWebCssta = require('./converters/web');
 const transformNativeCssta = require('./converters/native');
+const removeSetPostCssPipeline = require('./optimizations/removeSetPostCssPipeline');
+const { hasOptimisation } = require('./util');
 
 const transformCsstaTypes = {
   web: transformWebCssta,
@@ -35,11 +37,7 @@ const transformCsstaCall = (element, state, node, stringArg) => {
 
   if (!csstaType) return;
 
-  const interpolateValuesOnly = _.includes(
-    'interpolateValuesOnly',
-    _.get(['opts', 'optimizations'], state)
-  );
-
+  const interpolateValuesOnly = hasOptimisation(state, 'interpolateValuesOnly');
   const hasInterpolation = t.isTemplateLiteral(stringArg) && !_.isEmpty(stringArg.expressions);
 
   if (hasInterpolation && !canInterpolate[csstaType]) {
@@ -72,13 +70,6 @@ const transformCsstaCall = (element, state, node, stringArg) => {
   }
 };
 
-const externalReferencesToRecord = {
-  'react-native': ['StyleSheet'],
-  'css-to-react-native': ['default'],
-  'cssta/dist/web/createComponent': ['default'],
-  'cssta/dist/native/createComponent': ['default'],
-};
-
 const csstaModules = {
   cssta: 'web',
   'cssta/web': 'web',
@@ -93,28 +84,27 @@ module.exports = () => ({
 
       const filename = state.file.opts.filename;
 
-      if (moduleName in externalReferencesToRecord) {
-        const referencesToRecord = externalReferencesToRecord[moduleName];
+      _.forEach((specifier) => {
+        let importedName;
+        if (t.isImportSpecifier(specifier)) {
+          importedName = specifier.imported.name;
+        } else if (t.isImportDefaultSpecifier(specifier)) {
+          importedName = 'default';
+        }
 
-        _.forEach((specifier) => {
-          let importedName;
-          if (t.isImportSpecifier(specifier)) {
-            importedName = specifier.imported.name;
-          } else if (t.isImportDefaultSpecifier(specifier)) {
-            importedName = 'default';
-          }
-
-          if (importedName && _.includes(importedName, referencesToRecord)) {
-            state.externalReferencesPerFile = _.set(
-              [filename, moduleName, importedName],
-              specifier.local,
-              state.externalReferencesPerFile
-            );
-          }
-        }, specifiers);
-
-        return;
-      }
+        if (importedName) {
+          state.importsPerFile = _.set(
+            [filename, moduleName, importedName],
+            specifier.local,
+            state.importsPerFile
+          );
+          state.identifiersFromImportsPerFile = _.set(
+            [filename, specifier.local.name],
+            element,
+            state.identifiersFromImportsPerFile
+          );
+        }
+      }, specifiers);
 
       const csstaType = csstaModules[moduleName];
       if (!csstaType) return;
@@ -164,11 +154,20 @@ module.exports = () => ({
       },
     },
     CallExpression(element, state) {
+      const filename = state.file.opts.filename;
       const { node } = element;
       const { callee } = node;
-      const [stringArg] = node.arguments;
-      if (!t.isTemplateLiteral(stringArg) && !t.isStringLiteral(stringArg)) return;
-      transformCsstaCall(element, state, callee, stringArg);
+      const [arg] = node.arguments;
+      if (t.isTemplateLiteral(arg) || t.isStringLiteral(arg)) {
+        transformCsstaCall(element, state, callee, arg);
+      } else if (
+        hasOptimisation(state, 'removeSetPostCssPipeline') &&
+        t.isMemberExpression(callee) &&
+        _.get('property.name', callee) === 'setPostCssPipeline' &&
+        _.get('object.name', callee) in state.csstaReferenceImportsPerFile[filename]
+      ) {
+        removeSetPostCssPipeline(element, state, arg);
+      }
     },
     TaggedTemplateExpression(element, state) {
       const { quasi, tag } = element.node;

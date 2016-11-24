@@ -10,7 +10,7 @@ var _csstaStyle = _StyleSheet.create({
 });
 
 _csstaDistNativeCreateComponent(View, [], [{
-  'validator': function (p) {
+  'validate': function (p) {
     return true;
   },
   'style': _csstaStyle['style1']

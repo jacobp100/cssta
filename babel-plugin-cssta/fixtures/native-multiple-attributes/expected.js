@@ -19,22 +19,22 @@ var _csstaStyle = _StyleSheet.create({
 });
 
 _csstaDistNativeCreateComponent(View, ['booleanAttribute', 'stringAttribute'], [{
-  'validator': function (p) {
+  'validate': function (p) {
     return true;
   },
   'style': _csstaStyle['style1']
 }, {
-  'validator': function (p) {
+  'validate': function (p) {
     return !!p['booleanAttribute'];
   },
   'style': _csstaStyle['style2']
 }, {
-  'validator': function (p) {
+  'validate': function (p) {
     return p['stringAttribute'] === '1';
   },
   'style': _csstaStyle['style3']
 }, {
-  'validator': function (p) {
+  'validate': function (p) {
     return p['stringAttribute'] === '2';
   },
   'style': _csstaStyle['style4']

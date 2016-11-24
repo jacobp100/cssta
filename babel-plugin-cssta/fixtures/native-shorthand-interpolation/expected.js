@@ -21,17 +21,17 @@ var _csstaStyle = _StyleSheet.create({
 });
 
 _csstaDistNativeCreateComponent(View, ['attr1', 'attr2', 'attr3'], [{
-  'validator': function (p) {
+  'validate': function (p) {
     return !!p['attr1'];
   },
   'style': _csstaStyle['style1']
 }, {
-  'validator': function (p) {
+  'validate': function (p) {
     return !!p['attr2'];
   },
   'style': _csstaStyle['style2']
 }, {
-  'validator': function (p) {
+  'validate': function (p) {
     return !!p['attr3'];
   },
   'style': _csstaStyle['style3']

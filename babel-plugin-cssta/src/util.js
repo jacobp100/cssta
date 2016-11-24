@@ -24,7 +24,7 @@ module.exports.getOrCreateImportReference = (element, state, moduleName, importe
 
   const referencePath = [filename, moduleName, importedName];
 
-  const existingReference = _.get(referencePath, state.externalReferencesPerFile);
+  const existingReference = _.get(referencePath, state.importsPerFile);
   if (existingReference) return existingReference;
 
   let reference;
@@ -44,11 +44,12 @@ module.exports.getOrCreateImportReference = (element, state, moduleName, importe
     importSpecifier,
   ], t.stringLiteral(moduleName)));
 
-  state.externalReferencesPerFile = _.set(
-    referencePath,
-    reference,
-    state.externalReferencesPerFile
-  );
+  state.importsPerFile = _.set(referencePath, reference, state.importsPerFile);
 
   return reference;
 };
+
+module.exports.hasOptimisation = (state, name) => _.overSome([
+  _.includes(name),
+  _.includes('all'),
+])(_.get(['opts', 'optimizations'], state));
