@@ -1,7 +1,7 @@
-import _csstaLibWebCreateComponent from 'cssta/lib/web/createComponent';
+import _csstaDistWebCreateComponent from 'cssta/dist/web/createComponent';
 
 
-_csstaLibWebCreateComponent('button', null, null, {
+_csstaDistWebCreateComponent('button', null, null, {
   'booleanAttribute': {
     'true': 'A'
   }
