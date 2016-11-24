@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-const postcss = require('postcss');
+const postcss = require('../../vendor/postcss');
 const selectorParser = require('postcss-selector-parser');
 const { keyframesRegExp, isDirectChildOfKeyframes } = require('.');
 

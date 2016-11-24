@@ -1,5 +1,5 @@
 /* global document */
-const postcss = require('postcss');
+const postcss = require('../../vendor/postcss');
 const extractRules = require('./extractRules');
 const createComponent = require('./createComponent');
 
