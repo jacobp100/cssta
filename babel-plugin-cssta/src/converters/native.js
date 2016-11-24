@@ -205,8 +205,6 @@ module.exports = (element, state, cssText, substitutionMap, component) => {
     return `style${i}`;
   };
 
-  const filename = state.file.opts.filename;
-
   const { ruleNodes, stylesheetBodies, propTypes } =
     extractRules(element, state, cssText, substitutionMap);
   const styleSheetReference = element.scope.generateUidIdentifier('csstaStyle');
@@ -219,7 +217,7 @@ module.exports = (element, state, cssText, substitutionMap, component) => {
 
   const rules = t.arrayExpression(_.map(([styleName, rule]) => t.objectExpression([
     t.objectProperty(
-      t.stringLiteral('validator'),
+      t.stringLiteral('validate'),
       createValidatorNodeForSelector(rule.selector)
     ),
     t.objectProperty(
