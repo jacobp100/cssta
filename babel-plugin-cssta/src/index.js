@@ -4,7 +4,7 @@ const _ = require('lodash/fp');
 const transformWebCssta = require('./converters/web');
 const transformNativeCssta = require('./converters/native');
 const removeSetPostCssPipeline = require('./optimizations/removeSetPostCssPipeline');
-const { hasOptimisation } = require('./util');
+const { hasOptimisation, removeReference, getReferenceCountForImport } = require('./util');
 
 const transformCsstaTypes = {
   web: transformWebCssta,
@@ -61,12 +61,7 @@ const transformCsstaCall = (element, state, node, stringArg) => {
 
   if (cssText !== null) {
     transformCsstaTypes[csstaType](element, state, cssText, substitutionMap, component);
-  } else {
-    state.requiredCsstaRefernceImportsPerFile = _.update(
-      [filename],
-      _.union([reference]),
-      state.requiredCsstaRefernceImportsPerFile || {}
-    );
+    removeReference(state, reference);
   }
 };
 
@@ -126,31 +121,29 @@ module.exports = () => ({
         _.assign(specifierReferenceTypes),
         state.csstaReferenceTypesPerFile || {}
       );
-
-      const specifierReferenceImports = _.mapValues(_.constant(element), specifierReferenceTypes);
-
-      state.csstaReferenceImportsPerFile = _.update(
-        [filename],
-        _.assign(specifierReferenceImports),
-        state.csstaReferenceImportsPerFile || {}
-      );
     },
     Program: {
       exit(element, state) {
         const filename = state.file.opts.filename;
-        const imports = _.getOr({}, [filename], state.csstaReferenceImportsPerFile);
-
-        const allImports = _.uniq(_.values(imports));
-        const requiredImports = _.flow(
-          _.getOr([], ['requiredCsstaRefernceImportsPerFile', filename]),
-          _.map(_.propertyOf(imports))
+        const importLocals = _.flow(
+          _.getOr({}, ['removedRefenceCountPerFile', filename]),
+          _.keys
         )(state);
-
-        const importsToRemove = _.without(requiredImports, allImports);
+        const importElements = _.flow(
+          _.map(_.propertyOf(state.identifiersFromImportsPerFile[filename])),
+          _.uniq
+        )(importLocals);
 
         _.forEach((importElement) => {
-          importElement.remove();
-        }, importsToRemove);
+          importElement.node.specifiers = _.filter((specifier) => {
+            const localName = specifier.local.name;
+            return getReferenceCountForImport(state, localName) > 0;
+          }, importElement.node.specifiers);
+
+          if (_.isEmpty(importElement.node.specifiers)) {
+            importElement.remove();
+          }
+        }, importElements);
       },
     },
     CallExpression(element, state) {
@@ -161,12 +154,11 @@ module.exports = () => ({
       if (t.isTemplateLiteral(arg) || t.isStringLiteral(arg)) {
         transformCsstaCall(element, state, callee, arg);
       } else if (
-        hasOptimisation(state, 'removeSetPostCssPipeline') &&
         t.isMemberExpression(callee) &&
         _.get('property.name', callee) === 'setPostCssPipeline' &&
-        _.get('object.name', callee) in state.csstaReferenceImportsPerFile[filename]
+        _.get('object.name', callee) in state.csstaReferenceTypesPerFile[filename]
       ) {
-        removeSetPostCssPipeline(element, state, arg);
+        removeSetPostCssPipeline(element, state, node);
       }
     },
     TaggedTemplateExpression(element, state) {

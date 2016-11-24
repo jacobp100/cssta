@@ -1,9 +1,10 @@
 /* eslint-disable no-param-reassign */
 const t = require('babel-types');
 const _ = require('lodash/fp');
+const { removeReference } = require('../util');
 
-module.exports = (element, state, arg) => {
-  const filename = state.file.opts.filename;
+module.exports = (element, state, node) => {
+  const { arguments: [arg], callee } = node;
 
   if (!t.isArrayExpression(arg)) {
     throw new Error('Expected argument to setPostCssPipeline to be an array');
@@ -14,16 +15,10 @@ module.exports = (element, state, arg) => {
     _.map('callee.name')
   )(arg.elements);
 
-  let identifiersFromImports = state.identifiersFromImportsPerFile[filename] || {};
   _.forEach((localName) => {
-    const importElement = identifiersFromImports[localName];
-    if (importElement) {
-      importElement.remove();
-      identifiersFromImports = _.unset(localName, identifiersFromImports);
-    }
+    removeReference(state, localName);
   }, localNames);
 
+  removeReference(state, callee.object.name);
   element.remove();
-
-  state.identifiersFromImportsPerFile[filename] = identifiersFromImports;
 };

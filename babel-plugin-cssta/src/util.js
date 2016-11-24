@@ -53,3 +53,20 @@ module.exports.hasOptimisation = (state, name) => _.overSome([
   _.includes(name),
   _.includes('all'),
 ])(_.get(['opts', 'optimizations'], state));
+
+module.exports.removeReference = (state, name) => {
+  const filename = state.file.opts.filename;
+  state.removedRefenceCountPerFile = _.update(
+    [filename, name],
+    _.add(1),
+    state.removedRefenceCountPerFile
+  );
+};
+
+module.exports.getReferenceCountForImport = (state, name) => {
+  const filename = state.file.opts.filename;
+  const importElement = _.get([filename, name], state.identifiersFromImportsPerFile);
+  const referenceCount = _.getOr(0, ['bindings', name, 'references'], importElement.scope);
+  const removedReferenceCount = _.getOr(0, [filename, name], state.removedRefenceCountPerFile);
+  return referenceCount - removedReferenceCount;
+};
