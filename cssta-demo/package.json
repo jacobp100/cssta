@@ -10,19 +10,21 @@
     "eslint-plugin-import": "^1.15.0",
     "eslint-plugin-jsx-a11y": "^2.2.2",
     "eslint-plugin-react": "^6.5.0",
-    "postcss-cli": "^2.6.0",
-    "react-scripts": "0.4.3"
+    "react-scripts": "^0.7.0"
   },
   "dependencies": {
-    "postcss-simple-extend": "^1.0.0",
+    "cssnano-cli": "^1.0.5",
+    "cssta": "^0.2.2",
     "react": "^15.3.2",
     "react-dom": "^15.3.2"
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "npm run branch-src; npm run build-cssta || :; react-scripts build || :; npm run restore-src",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "build-cssta": "rm dist/styles.css || :; babel src --out-dir dist; postcss --use postcss-simple-extend -o dist/styles.css dist/styles.css"
+    "branch-src": "cp -r src src-original",
+    "restore-src": "rm -rf src; mv src-original src",
+    "build-cssta": "rm public/styles.css || :; babel src --out-dir build/cssta-demo; cssnano public/styles.css public/styles.css"
   }
 }

@@ -75,8 +75,8 @@ const transformCsstaCall = (element, state, node, stringArg) => {
 const externalReferencesToRecord = {
   'react-native': ['StyleSheet'],
   'css-to-react-native': ['default'],
-  'cssta/lib/web/createComponent': ['default'],
-  'cssta/lib/native/createComponent': ['default'],
+  'cssta/dist/web/createComponent': ['default'],
+  'cssta/dist/native/createComponent': ['default'],
 };
 
 const csstaModules = {

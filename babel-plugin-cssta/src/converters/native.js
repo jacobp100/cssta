@@ -231,7 +231,7 @@ module.exports = (element, state, cssText, substitutionMap, component) => {
   const createComponent = getOrCreateImportReference(
     element,
     state,
-    'cssta/lib/native/createComponent',
+    'cssta/dist/native/createComponent',
     'default'
   );
   const newElement = t.callExpression(createComponent, [

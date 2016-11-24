@@ -2,7 +2,7 @@
   "plugins": [
     "syntax-jsx",
     ["babel-plugin-cssta", {
-      "output": "dist/styles.css"
+      "output": "public/styles.css"
     }]
   ]
 }

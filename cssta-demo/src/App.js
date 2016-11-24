@@ -1,17 +1,9 @@
-import 'dev-bootstrap';
 import React from 'react';
 import cssta from 'cssta';
 
 cssta.injectGlobal(`
   body {
     margin: 10em;
-  }
-
-  @define-placeholder reset-button {
-    background: none;
-    border: none;
-    border: 0;
-    font-size: 1rem;
   }
 `);
 
@@ -20,11 +12,6 @@ const Button = cssta.button`
   color: black;
   padding: 1rem 2rem;
   border-radius: 1000px;
-
-  & {
-    /* This has to be wrapped in a & selector, else it'll think that @extend is an at-rule */
-    @extend reset-button;
-  }
 
   @media (max-width: 768px) {
     font-size: 1.5rem;

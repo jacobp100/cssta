@@ -65,5 +65,5 @@ module.exports = (inputCss, { generateClassName, generateAnimationName }) => {
 
   const css = root.toString();
 
-  return { css, baseClassName, classNameMap, propTypes };
+  return { css, propTypes, baseClassName, classNameMap };
 };

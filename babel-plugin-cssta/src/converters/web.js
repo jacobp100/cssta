@@ -110,7 +110,7 @@ module.exports = (element, state, cssText, substititionMap, component) => {
     const createComponent = getOrCreateImportReference(
       element,
       state,
-      'cssta/lib/web/createComponent',
+      'cssta/dist/web/createComponent',
       'default'
     );
     const baseClass = baseClassName
