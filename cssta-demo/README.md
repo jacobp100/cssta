@@ -1,8 +1,8 @@
 # cssta-demo
 
-Uses [create-react-app](https://github.com/facebookincubator/create-react-app) with cssta.
+Uses [create-react-app](https://github.com/facebookincubator/create-react-app) with cssta. We have to force it to use our own babel. This is an awful hack, but an intermediate workaround until Facebook hopefully lets you use your own babel plugins. You can also eject your app, or use a different setup entirely.
 
-This was set up by adding the following `.babelrc`:
+Set up by adding the following `.babelrc`:
 
 ```json
 {
@@ -21,8 +21,10 @@ Then adding the following to `scripts` in `package.json`:
 {
   "scripts": {
     ...
-    "build": "npm run build-cssta; react-scripts build",
-    "build-cssta": "rm public/styles.css || :; babel src --out-dir $TMPDIR/cssta-demo"
+    "build": "npm run branch-src; npm run build-cssta || :; react-scripts build || :; npm run restore-src",
+    "branch-src": "cp -r src src-original",
+    "restore-src": "rm -rf src; mv src-original src",
+    "build-cssta": "rm public/styles.css || :; babel src --out-dir src"
   }
 }
 ```
@@ -33,12 +35,6 @@ Then the following in `index.html`:
 <link rel="stylesheet" href="%PUBLIC_URL%/styles.css">
 ```
 
-This puts the CSS file in the `public` directory, which will then be built with create-react-app. Because create-react-app does its own build, we're really only using babel to generate the CSS file: hence we disregard the JavaScript generated.
+This puts the CSS file in the `public` directory, which will then be built with create-react-app.
 
 You should probably link up a minifier afterwards. See `package.json` for an example.
-
-## Limitations with Create-React-App
-
-The postCSS setup described [https://jacobp100.gitbooks.io/cssta/content/web.html](here) does not work too well. You can follow the instructions, and it will work. However, there is no way to ignore the bootstrap file, so you will end up including postCSS among other dependencies.
-
-postCSS plugins that are for backwards compatability of features that work in your browser will work (autoprefixer, css-next etc.).

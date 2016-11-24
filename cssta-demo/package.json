@@ -25,6 +25,6 @@
     "eject": "react-scripts eject",
     "branch-src": "cp -r src src-original",
     "restore-src": "rm -rf src; mv src-original src",
-    "build-cssta": "rm public/styles.css || :; babel src --out-dir build/cssta-demo; cssnano public/styles.css public/styles.css"
+    "build-cssta": "rm public/styles.css || :; babel src --out-dir src; cssnano public/styles.css public/styles.css"
   }
 }
