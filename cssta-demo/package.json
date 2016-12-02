@@ -4,12 +4,14 @@
   "private": true,
   "devDependencies": {
     "babel-eslint": "^6.1.2",
-    "babel-plugin-syntax-jsx": "^6.13.0",
+    "babel-plugin-cssta": "^0.2.4",
+    "cssta": "^0.2.3",
     "eslint": "^3.5.0",
     "eslint-config-airbnb": "^11.1.0",
     "eslint-plugin-import": "^1.15.0",
     "eslint-plugin-jsx-a11y": "^2.2.2",
     "eslint-plugin-react": "^6.5.0",
+    "react-app-rewired": "^0.1.0",
     "react-scripts": "^0.7.0"
   },
   "dependencies": {
@@ -19,12 +21,9 @@
     "react-dom": "^15.3.2"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "npm run branch-src; npm run build-cssta || :; react-scripts build || :; npm run restore-src",
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired build; cssnano build/styles.css build/styles.css",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject",
-    "branch-src": "cp -r src src-original",
-    "restore-src": "rm -rf src; mv src-original src",
-    "build-cssta": "rm public/styles.css || :; babel src --out-dir src; cssnano public/styles.css public/styles.css"
+    "eject": "react-scripts eject"
   }
 }
