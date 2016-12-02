@@ -2,7 +2,13 @@
 
 Uses [create-react-app](https://github.com/facebookincubator/create-react-app) with cssta. Also uses [react-app-rewired](https://github.com/timarney/react-app-rewired) to override config.
 
-Set up by adding the following `config-overrides.js`:
+Set up by first,
+
+```bash
+npm install --save-dev react-app-rewired
+```
+
+Then adding the following `<project-root>/config-overrides.js`:
 
 ```js
 module.exports = (config) => {
@@ -17,12 +23,23 @@ module.exports = (config) => {
 };
 ```
 
-Then the following in `index.html`:
+Then change `scripts` in `package.json`:
+
+```json
+{
+  "scripts": {
+    ...
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired build",
+    ...
+  }
+}
+```
+
+Then add the following to `index.html`:
 
 ```html
 <link rel="stylesheet" href="%PUBLIC_URL%/styles.css">
 ```
-
-This puts the CSS file in the `public` directory, which will then be built with create-react-app.
 
 You should probably link up a minifier afterwards. See `package.json` for an example.
