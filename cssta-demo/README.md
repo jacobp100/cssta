@@ -17,18 +17,6 @@ module.exports = (config) => {
 };
 ```
 
-Then adding the following to `scripts` in `package.json`:
-
-```json
-{
-  "scripts": {
-    ...
-    "build": "rm public/styles.css || :; react-scripts build"
-    ...
-  }
-}
-```
-
 Then the following in `index.html`:
 
 ```html
