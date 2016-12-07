@@ -1,5 +1,5 @@
 import { StyleSheet as _StyleSheet } from 'react-native';
-import _csstaDistNativeCreateComponent from 'cssta/dist/native/createComponent';
+import _csstaDistNativeStaticComponent from 'cssta/dist/native/staticComponent';
 
 import { View } from 'react-native';
 
@@ -18,7 +18,7 @@ var _csstaStyle = _StyleSheet.create({
   }
 });
 
-_csstaDistNativeCreateComponent(View, ['booleanAttribute', 'stringAttribute'], [{
+_csstaDistNativeStaticComponent(View, ['booleanAttribute', 'stringAttribute'], [{
   'validate': function (p) {
     return true;
   },
