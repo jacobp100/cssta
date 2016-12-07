@@ -10,10 +10,10 @@ const { getOrCreateImportReference, jsonToNode } = require('../util');
 
 const varRegExp = /var\s*\(\s*--([_a-z0-9-]+)\s*(?:,\s*([^)]+))?\)/ig;
 const varRegExpNonGlobal = /var\s*\(\s*--([_a-z0-9-]+)\s*(?:,\s*([^)]+))?\)/i;
+const isVariableDecl = decl => /^--/.test(decl.prop);
 
 const SIMPLE_OR_NO_INTERPOLATION = 0;
 const TEMPLATE_INTERPOLATION = 1;
-const VARIABLE_INTERPOLATION = 2;
 
 const convertValue = transform => value => t.callExpression(t.identifier(transform), [value]);
 
@@ -98,11 +98,6 @@ const simpleInterpolation = {
   writingDirection: stringInterpolation,
 };
 
-const containsVariable = value => /var\s*\(/.test(value);
-
-const isVariableDecl = decl => /^--/.test(decl.prop);
-
-
 const getSubstitutionRegExp = (substitutionMap) => {
   const substititionNames = Object.keys(substitutionMap);
   const substitionNamesRegExp = new RegExp(`(${substititionNames.join('|')})`, 'g');
@@ -114,16 +109,15 @@ const containsSubstitution = (substitutionMap, value) =>
 
 const getInterpolationType = (substitutionMap, decl) => {
   const { value, prop } = decl;
-  if (containsVariable(value)) {
-    return VARIABLE_INTERPOLATION;
-  } else if (containsSubstitution(substitutionMap, value) &&
-    !(getPropertyName(prop) in simpleInterpolation)) {
-    return TEMPLATE_INTERPOLATION;
+  if (!containsSubstitution(substitutionMap, value)) {
+    return SIMPLE_OR_NO_INTERPOLATION;
+  } else if (getPropertyName(prop) in simpleInterpolation) {
+    return SIMPLE_OR_NO_INTERPOLATION;
   }
-  return SIMPLE_OR_NO_INTERPOLATION;
+  return TEMPLATE_INTERPOLATION;
 };
 
-const getTemplateString = (substitutionMap, value) => {
+const getStringWithSubstitutedValues = (substitutionMap, value) => {
   /* Don't attempt to optimise `${value}`: it converts to a string and we need that */
   const allValues = !_.isEmpty(substitutionMap)
     ? _.chunk(2, value.split(getSubstitutionRegExp(substitutionMap)))
@@ -187,7 +181,7 @@ const createStyleSheetBody = (element, state, substitutionMap) => ({ styleDecls 
 
     const bodyPairs = t.arrayExpression(_.map(decl => t.arrayExpression([
       t.stringLiteral(getPropertyName(decl.prop)),
-      getTemplateString(substitutionMap, decl.value),
+      getStringWithSubstitutedValues(substitutionMap, decl.value),
     ]), decls));
 
     return t.callExpression(cssToReactNativeReference, [bodyPairs]);
@@ -211,8 +205,9 @@ const createStaticStyleSheet = (
 ) => {
   let i = 0;
   const getStyleName = () => {
+    const value = i;
     i += 1;
-    return `style${i}`;
+    return value;
   };
 
   const styleSheetReference = element.scope.generateUidIdentifier('csstaStyle');
@@ -221,7 +216,7 @@ const createStaticStyleSheet = (
   const styleBodies = _.map(createStyleSheetBody(element, state, substitutionMap), ruleBodies);
 
   const styleSheetBody = t.objectExpression(_.map(([styleName, body]) => (
-    t.objectProperty(t.stringLiteral(styleName), body)
+    t.objectProperty(t.numericLiteral(styleName), body)
   ), _.zip(styleNames, styleBodies)));
 
   const rules = t.arrayExpression(_.map(([styleName, { selector }]) => t.objectExpression([
@@ -231,7 +226,7 @@ const createStaticStyleSheet = (
     ),
     t.objectProperty(
       t.stringLiteral('style'),
-      t.memberExpression(styleSheetReference, t.stringLiteral(styleName), true)
+      t.memberExpression(styleSheetReference, t.numericLiteral(styleName), true)
     ),
   ]), _.zip(styleNames, ruleBodies)));
 
@@ -278,7 +273,7 @@ const createDynamicStylesheet = (
   const createStyleTuples = ({ styleDecls }) => t.arrayExpression(_.map(styleDecl => (
     t.arrayExpression([
       t.stringLiteral(getPropertyName(styleDecl.prop)),
-      getTemplateString(substitutionMap, styleDecl.value),
+      getStringWithSubstitutedValues(substitutionMap, styleDecl.value),
     ])
   ), styleDecls));
 

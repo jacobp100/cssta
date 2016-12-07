@@ -4,16 +4,16 @@ import _csstaDistNativeStaticComponent from 'cssta/dist/native/staticComponent';
 import { View } from 'react-native';
 
 var _csstaStyle = _StyleSheet.create({
-  'style1': {
+  0: {
     'color': 'red'
   },
-  'style2': {
+  1: {
     'color': 'green'
   },
-  'style3': {
+  2: {
     'color': 'blue'
   },
-  'style4': {
+  3: {
     'color': 'yellow'
   }
 });
@@ -22,20 +22,20 @@ _csstaDistNativeStaticComponent(View, ['booleanAttribute', 'stringAttribute'], [
   'validate': function (p) {
     return true;
   },
-  'style': _csstaStyle['style1']
+  'style': _csstaStyle[0]
 }, {
   'validate': function (p) {
     return !!p['booleanAttribute'];
   },
-  'style': _csstaStyle['style2']
+  'style': _csstaStyle[1]
 }, {
   'validate': function (p) {
     return p['stringAttribute'] === '1';
   },
-  'style': _csstaStyle['style3']
+  'style': _csstaStyle[2]
 }, {
   'validate': function (p) {
     return p['stringAttribute'] === '2';
   },
-  'style': _csstaStyle['style4']
+  'style': _csstaStyle[3]
 }]);

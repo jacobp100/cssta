@@ -4,7 +4,7 @@ import _csstaDistNativeStaticComponent from 'cssta/dist/native/staticComponent';
 import { View } from 'react-native';
 
 var _csstaStyle = _StyleSheet.create({
-  'style1': {
+  0: {
     'fontStyle': 'italic',
     'fontVariant': [],
     'fontWeight': 'bold',
@@ -18,5 +18,5 @@ _csstaDistNativeStaticComponent(View, [], [{
   'validate': function (p) {
     return true;
   },
-  'style': _csstaStyle['style1']
+  'style': _csstaStyle[0]
 }]);

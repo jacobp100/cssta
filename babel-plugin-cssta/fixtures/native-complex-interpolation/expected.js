@@ -8,13 +8,13 @@ const marginSmall = 10;
 const marginLarge = 10;
 
 var _csstaStyle = _StyleSheet.create({
-  'style1': Object.assign({
+  0: Object.assign({
     'paddingTop': 10
   }, _cssToReactNative([['margin', `${ marginLarge } ${ marginSmall }`]])),
-  'style2': Object.assign(_cssToReactNative([['margin', `${ marginLarge } ${ marginSmall }`]]), {
+  1: Object.assign(_cssToReactNative([['margin', `${ marginLarge } ${ marginSmall }`]]), {
     'paddingTop': 10
   }),
-  'style3': Object.assign({
+  2: Object.assign({
     'paddingTop': 10
   }, _cssToReactNative([['margin', `${ marginLarge } ${ marginSmall }`]]), {
     'paddingBottom': 10
@@ -25,15 +25,15 @@ _csstaDistNativeStaticComponent(View, ['attr1', 'attr2', 'attr3'], [{
   'validate': function (p) {
     return !!p['attr1'];
   },
-  'style': _csstaStyle['style1']
+  'style': _csstaStyle[0]
 }, {
   'validate': function (p) {
     return !!p['attr2'];
   },
-  'style': _csstaStyle['style2']
+  'style': _csstaStyle[1]
 }, {
   'validate': function (p) {
     return !!p['attr3'];
   },
-  'style': _csstaStyle['style3']
+  'style': _csstaStyle[2]
 }]);
