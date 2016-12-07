@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
-const createComponentFactory = require('../util/createComponentFactory');
+const staticComponentFactory = require('../factories/staticComponentFactory');
 
-module.exports = createComponentFactory((ownProps, passedProps, rules) => {
+module.exports = staticComponentFactory((ownProps, passedProps, rules) => {
   let style = rules
     .filter(rule => rule.validate(ownProps))
     .map(rule => rule.style);

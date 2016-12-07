@@ -6,7 +6,7 @@ const { PropTypes } = React;
 module.exports = transformProps => (component, propTypes, ...otherParams) => {
   const ownPropKeys = Array.isArray(propTypes) ? propTypes : Object.keys(propTypes);
 
-  const Component = (props) => {
+  const StaticComponent = (props) => {
     const { Element, ownProps, passedProps } = Object.keys(props).reduce((accum, key) => {
       const prop = props[key];
 
@@ -29,7 +29,7 @@ module.exports = transformProps => (component, propTypes, ...otherParams) => {
   };
 
   if (process.env.NODE_ENV !== 'production' && !Array.isArray(propTypes)) {
-    Component.propTypes = ownPropKeys.reduce((out, key) => {
+    StaticComponent.propTypes = ownPropKeys.reduce((out, key) => {
       const styleMap = propTypes[key];
       const propType = styleMap.type;
 
@@ -48,5 +48,5 @@ module.exports = transformProps => (component, propTypes, ...otherParams) => {
     });
   }
 
-  return Component;
+  return StaticComponent;
 };

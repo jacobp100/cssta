@@ -1,10 +1,10 @@
 /* global jest it, expect */
 const React = require('react');
 const renderer = require('react-test-renderer'); // eslint-disable-line
-const createComponentFactory = require('../createComponentFactory');
+const staticComponentFactory = require('../staticComponentFactory');
 
 
-const createComponent = createComponentFactory((ownProps, passedProps) => passedProps);
+const createComponent = staticComponentFactory((ownProps, passedProps) => passedProps);
 
 const runTest = ({
   type = 'button',

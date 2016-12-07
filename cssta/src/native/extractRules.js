@@ -1,40 +1,31 @@
 /* eslint-disable no-param-reassign */
-const cssToReactNative = require('css-to-react-native').default;
 const getRoot = require('../util/getRoot');
 
-const getBody = nodes => cssToReactNative(nodes
-  .filter(node => node.type === 'decl')
-  .map(node => [node.prop, node.value])
-);
+const variableRegExp = /^--/;
 
-module.exports = (inputCss) => {
-  let i = 0;
-  const getStyleName = () => {
-    i += 1;
-    return `style${i}`;
-  };
+const getStyleTuples = nodes => nodes
+  .filter(node => node.type === 'decl' && !variableRegExp.test(node.prop))
+  .map(node => [node.prop, node.value]);
 
-  const { root, propTypes } = getRoot(inputCss);
-
-  const baseRules = [];
-
-  root.walkRules((node) => {
-    baseRules.push({
-      selector: node.selector,
-      body: getBody(node.nodes),
-      styleName: getStyleName(),
-    });
-  });
-
-  const styleSheetBody = baseRules.reduce((accum, rule) => {
-    accum[rule.styleName] = rule.body;
+const getVariables = nodes => nodes
+  .filter(node => node.type === 'decl' && variableRegExp.test(node.prop))
+  .reduce((accum, node) => {
+    accum[node.prop.substring(2)] = node.value;
     return accum;
   }, {});
 
-  const rules = baseRules.map(rule => ({
-    selector: rule.selector,
-    styleName: rule.styleName,
-  }));
+module.exports = (inputCss) => {
+  const { root, propTypes } = getRoot(inputCss);
 
-  return { rules, styleSheetBody, propTypes };
+  const rules = [];
+
+  root.walkRules((node) => {
+    rules.push({
+      selector: node.selector,
+      styleTuples: getStyleTuples(node.nodes),
+      variables: getVariables(node.nodes),
+    });
+  });
+
+  return { rules, propTypes };
 };

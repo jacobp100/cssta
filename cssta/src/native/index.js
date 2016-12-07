@@ -1,9 +1,6 @@
-/* eslint-disable import/no-extraneous-dependencies */
-const { StyleSheet } = require('react-native');
-/* eslint-enable */
 const extractRules = require('./extractRules');
 const { createValidatorForSelector } = require('./selectorTransform');
-const createComponent = require('./createComponent');
+const dynamicComponent = require('./dynamicComponent');
 
 /* eslint-disable no-param-reassign */
 module.exports = element => (cssTextFragments, ...substitutions) => {
@@ -12,14 +9,13 @@ module.exports = element => (cssTextFragments, ...substitutions) => {
     : cssTextFragments[0] +
       substitutions.map((value, index) => String(value) + cssTextFragments[index + 1]).join('');
 
-  const { rules: baseRules, styleSheetBody, propTypes } = extractRules(cssText);
-
-  const styleSheet = StyleSheet.create(styleSheetBody);
+  const { rules: baseRules, propTypes } = extractRules(cssText);
 
   const rules = baseRules.map(rule => ({
     validate: createValidatorForSelector(rule.selector),
-    style: styleSheet[rule.styleName],
+    styleTuples: rule.styleTuples,
+    variables: rule.styleVariables,
   }));
 
-  return createComponent(element, propTypes, rules);
+  return dynamicComponent(element, propTypes, rules);
 };

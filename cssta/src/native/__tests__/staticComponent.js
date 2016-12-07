@@ -1,7 +1,7 @@
 /* global jest it, expect */
 const React = require('react');
 const renderer = require('react-test-renderer'); // eslint-disable-line
-const createComponent = require('../createComponent');
+const staticComponent = require('../staticComponent');
 
 
 const runTest = ({
@@ -13,7 +13,7 @@ const runTest = ({
   expectedProps = {},
   expectedChildren = null,
 } = {}) => {
-  const Element = createComponent(type, propTypes, rules);
+  const Element = staticComponent(type, propTypes, rules);
 
   const component = renderer.create(React.createElement(Element, inputProps)).toJSON();
 

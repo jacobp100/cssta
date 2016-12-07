@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-const createComponentFactory = require('../util/createComponentFactory');
+const staticComponentFactory = require('../factories/staticComponentFactory');
 
 /*
 rules = {
@@ -9,7 +9,7 @@ rules = {
 };
 */
 
-const factory = createComponentFactory((ownProps, passedProps, defaultClassName, classNameMap) => {
+const factory = staticComponentFactory((ownProps, passedProps, defaultClassName, classNameMap) => {
   const classNames = Object.keys(ownProps)
     .map(propName => classNameMap[propName][ownProps[propName]])
     .filter(Boolean); // remove undefined values
