@@ -17,5 +17,7 @@ module.exports = element => (cssTextFragments, ...substitutions) => {
     variables: rule.styleVariables,
   }));
 
-  return dynamicComponent(element, propTypes, rules);
+  const importedVariables = Object.keys(Object.assign(...rules.map(rule => rule.variables)));
+
+  return dynamicComponent(element, propTypes, importedVariables, rules);
 };

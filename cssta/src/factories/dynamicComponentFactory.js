@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
 const React = require('react');
 const EventEmitter = require('event-emitter');
+const { getOwnPropKeys, getComponentProps, getPropTypes } = require('../util');
 
 const { Component, PropTypes } = React;
 
@@ -13,42 +14,29 @@ module.exports = (
 ) => (
   component,
   propTypes,
+  importedVariables,
   ...otherParams
 ) => {
-  const ownPropKeys = Array.isArray(propTypes) ? propTypes : Object.keys(propTypes);
-
+  const ownPropKeys = getOwnPropKeys(propTypes);
   const styleCache = {};
 
   const getStyles = (state, props, context) => {
-    const { Element, ownProps, passedProps } = Object.keys(props).reduce((accum, key) => {
-      const prop = props[key];
-
-      if (key === 'component') {
-        accum.Element = prop;
-      } else if (ownPropKeys.indexOf(key) !== -1) {
-        accum.ownProps[key] = prop;
-      } else {
-        accum.passedProps[key] = prop;
-      }
-
-      return accum;
-    }, {
-      Element: component,
-      ownProps: {},
-      passedProps: {},
-    });
+    const { Element, ownProps, passedProps } = getComponentProps(ownPropKeys, component, props);
 
     const variablesFromScope = state.variablesFromScope || context.csstaInitialVariables || {};
     const exportedVariables = getExportedVariables(ownProps, variablesFromScope, ...otherParams);
     const appliedVariables = Object.assign({}, variablesFromScope, exportedVariables);
 
-    // FIXME: Get the consumed variables, and make the cache key dependent only upon those
-    const styleCacheKey = JSON.stringify(appliedVariables);
+    const ownAppliedVariables = importedVariables.reduce((accum, key) => {
+      accum[key] = appliedVariables[key];
+      return accum;
+    }, {});
+    const styleCacheKey = JSON.stringify(ownAppliedVariables);
     const styleCached = styleCacheKey in styleCache;
 
     const stylesheet = styleCached
       ? styleCache[styleCacheKey]
-      : generateStylesheet(appliedVariables, ...otherParams);
+      : generateStylesheet(ownAppliedVariables, ...otherParams);
 
     if (!styleCached) styleCache[styleCacheKey] = stylesheet;
 
@@ -108,23 +96,7 @@ module.exports = (
   DynamicComponent.childContextTypes = DynamicComponent.contextTypes;
 
   if (process.env.NODE_ENV !== 'production' && !Array.isArray(propTypes)) {
-    DynamicComponent.propTypes = ownPropKeys.reduce((out, key) => {
-      const styleMap = propTypes[key];
-      const propType = styleMap.type;
-
-      if (propType === 'oneOf') {
-        out[key] = PropTypes.oneOf(styleMap.values);
-      } else if (propType === 'bool') {
-        out[key] = PropTypes.bool;
-      }
-
-      return out;
-    }, {
-      component: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.function,
-      ]),
-    });
+    DynamicComponent.propTypes = getPropTypes(ownPropKeys, propTypes);
   }
 
   return DynamicComponent;

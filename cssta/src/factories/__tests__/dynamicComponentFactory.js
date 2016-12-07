@@ -10,6 +10,7 @@ const runTest = ({
   generateStylesheet = style => style,
   type = 'button',
   propTypes = [],
+  importedVariables = [],
   inputProps = {},
   inputChildren = [],
   validProps = [],
@@ -23,7 +24,7 @@ const runTest = ({
     generateStylesheet,
     (ownProps, passedProps) => passedProps
   );
-  const Element = createComponent(type, propTypes);
+  const Element = createComponent(type, propTypes, importedVariables);
 
   const validator = Element.propTypes;
   Object.keys(inputProps).forEach((prop) => {
@@ -101,7 +102,7 @@ it('should use variables from a higher scope', () => {
     generateStylesheet,
     assignStyle
   );
-  const ChildElement = createChildComponent('div', {});
+  const ChildElement = createChildComponent('div', {}, ['color']);
 
   runTest({
     getExportedVariables: () => ({ color: 'red' }),
@@ -124,7 +125,7 @@ it('should make own styles take precedence', () => {
     generateStylesheet,
     assignStyle
   );
-  const ChildElement = createChildComponent('div', {});
+  const ChildElement = createChildComponent('div', {}, ['color']);
 
   runTest({
     getExportedVariables: () => ({ color: 'red' }),
@@ -140,18 +141,18 @@ it('should make own styles take precedence', () => {
   expect(generateStylesheet.mock.calls[0][0]).toEqual({ color: 'blue' });
 });
 
-it.only('updates styles in reaction to prop changes', () => {
+it('updates styles in reaction to prop changes', () => {
   const ParentElement = dynamicComponentFactory(
     ownProps => (ownProps.blue ? { color: 'blue' } : { color: 'red' }),
     style => style,
     (ownProps, passedProps) => passedProps
-  )('div', ['blue']);
+  )('div', ['blue'], []);
 
   const ChildElement = dynamicComponentFactory(
     () => ({}),
     style => style,
     assignStyle
-  )('div', {});
+  )('div', {}, ['color']);
 
   const instance = renderer.create(
     React.createElement(ParentElement, {},
