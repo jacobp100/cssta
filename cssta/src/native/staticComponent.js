@@ -1,6 +1,13 @@
 /* eslint-disable no-param-reassign */
 const staticComponentFactory = require('../factories/staticComponentFactory');
 
+/*
+type Rule = {
+  validate: Props => boolean,
+  style: Style,
+};
+*/
+
 module.exports = staticComponentFactory((ownProps, passedProps, rules) => {
   let style = rules
     .filter(rule => rule.validate(ownProps))

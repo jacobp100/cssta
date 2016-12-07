@@ -61,10 +61,10 @@ glob.sync(path.join(baseDir, 'fixtures/*/')).forEach((testPath) => {
     it(`should work with ${testName}`, () => {
       const { actualJs, actualCss } = getActual(actualJsPath, tempCssPath, optionsPath);
       const expectedJs = fs.readFileSync(expectedJsPath, 'utf8');
-      const expectedCss = fs.readFileSync(expectedCssPath, 'utf8');
+      const expectedCss = actualCss && fs.readFileSync(expectedCssPath, 'utf8');
 
       expect(actualJs.trim()).toEqual(expectedJs.trim());
-      expect(actualCss.trim()).toEqual(expectedCss.trim());
+      if (actualCss) expect(actualCss.trim()).toEqual(expectedCss.trim());
     });
   }
 });
