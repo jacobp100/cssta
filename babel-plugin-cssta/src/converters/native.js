@@ -1,7 +1,8 @@
 /* eslint-disable no-param-reassign */
 const t = require('babel-types');
+const { parse } = require('babylon');
 const _ = require('lodash/fp');
-const { createValidatorNodeForSelector } = require('cssta/src/native/selectorTransform');
+const { getValidatorSourceForSelector } = require('cssta/src/native/selectorTransform');
 const getRoot = require('cssta/src/util/getRoot');
 const {
   default: cssToReactNative, getPropertyName,
@@ -16,6 +17,9 @@ const SIMPLE_OR_NO_INTERPOLATION = 0;
 const TEMPLATE_INTERPOLATION = 1;
 
 const convertValue = transform => value => t.callExpression(t.identifier(transform), [value]);
+
+const createValidatorNodeForSelector = selector =>
+  parse(getValidatorSourceForSelector(selector)).program.body[0].expression;
 
 const stringInterpolation = value =>
   t.callExpression(t.memberExpression(convertValue('String')(value), t.identifier('trim')), []);
