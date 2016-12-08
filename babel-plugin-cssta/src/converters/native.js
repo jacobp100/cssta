@@ -3,15 +3,9 @@ const t = require('babel-types');
 const { parse } = require('babylon');
 const _ = require('lodash/fp');
 const { getValidatorSourceForSelector } = require('cssta/src/native/selectorTransform');
-const getRoot = require('cssta/src/util/getRoot');
-const {
-  default: cssToReactNative, getPropertyName,
-} = require('css-to-react-native');
+const extractRules = require('cssta/src/native/extractRules');
+const { default: cssToReactNative, getPropertyName } = require('css-to-react-native');
 const { getOrCreateImportReference, jsonToNode } = require('../util');
-
-const varRegExp = /var\s*\(\s*--([_a-z0-9-]+)\s*(?:,\s*([^)]+))?\)/ig;
-const varRegExpNonGlobal = /var\s*\(\s*--([_a-z0-9-]+)\s*(?:,\s*([^)]+))?\)/i;
-const isVariableDecl = decl => /^--/.test(decl.prop);
 
 const SIMPLE_OR_NO_INTERPOLATION = 0;
 const TEMPLATE_INTERPOLATION = 1;
@@ -111,8 +105,7 @@ const getSubstitutionRegExp = (substitutionMap) => {
 const containsSubstitution = (substitutionMap, value) =>
   !_.isEmpty(substitutionMap) && getSubstitutionRegExp(substitutionMap).test(value);
 
-const getInterpolationType = (substitutionMap, decl) => {
-  const { value, prop } = decl;
+const getInterpolationType = (substitutionMap, [prop, value]) => {
   if (!containsSubstitution(substitutionMap, value)) {
     return SIMPLE_OR_NO_INTERPOLATION;
   } else if (getPropertyName(prop) in simpleInterpolation) {
@@ -140,36 +133,36 @@ const getStringWithSubstitutedValues = (substitutionMap, value) => {
   return t.templateLiteral(quasis, expressions);
 };
 
-const createStyleSheetBody = (element, state, substitutionMap) => ({ styleDecls }) => {
-  const styleGroups = _.reduce((groups, decl) => {
-    const interpolationType = getInterpolationType(substitutionMap, decl);
+const createStyleSheetBody = (element, state, substitutionMap) => (rule) => {
+  const styleGroups = _.reduce((groups, styleTuple) => {
+    const interpolationType = getInterpolationType(substitutionMap, styleTuple);
     const lastGroup = _.last(groups);
 
     if (_.get('interpolationType', lastGroup) === interpolationType) {
-      lastGroup.decls.push(decl);
+      lastGroup.styleTuples.push(styleTuple);
     } else {
-      groups.push({ interpolationType, decls: [decl] });
+      groups.push({ interpolationType, styleTuples: [styleTuple] });
     }
 
     return groups;
-  }, [], styleDecls);
+  }, [], rule.styleTuples);
 
-  const transformedGroups = _.map(({ decls, interpolationType }) => {
+  const transformedGroups = _.map(({ styleTuples, interpolationType }) => {
     if (interpolationType === SIMPLE_OR_NO_INTERPOLATION) {
-      const styleMap = _.reduce((accum, decl) => {
-        const propertyName = getPropertyName(decl.prop);
-        const substitution = substitutionMap[decl.value.trim()];
+      const styleMap = _.reduce((accum, [prop, value]) => {
+        const propertyName = getPropertyName(prop);
+        const substitution = substitutionMap[value.trim()];
 
         if (substitution) {
           return _.set(propertyName, simpleInterpolation[propertyName](substitution), accum);
-        } else if (!containsSubstitution(decl.value)) {
-          const styles = cssToReactNative([[propertyName, decl.value]]);
+        } else if (!containsSubstitution(value)) {
+          const styles = cssToReactNative([[propertyName, value]]);
           const styleToValue = _.mapValues(jsonToNode, styles);
           return _.assign(accum, styleToValue);
         }
 
         throw new Error(`Used multiple values ${propertyName}, which accepts one value`);
-      }, {}, decls);
+      }, {}, styleTuples);
 
       return t.objectExpression(_.map(([key, value]) => (
         t.objectProperty(t.stringLiteral(key), value)
@@ -183,10 +176,10 @@ const createStyleSheetBody = (element, state, substitutionMap) => ({ styleDecls 
       'default'
     );
 
-    const bodyPairs = t.arrayExpression(_.map(decl => t.arrayExpression([
-      t.stringLiteral(getPropertyName(decl.prop)),
-      getStringWithSubstitutedValues(substitutionMap, decl.value),
-    ]), decls));
+    const bodyPairs = t.arrayExpression(_.map(([prop, value]) => t.arrayExpression([
+      t.stringLiteral(getPropertyName(prop)),
+      getStringWithSubstitutedValues(substitutionMap, value),
+    ]), styleTuples));
 
     return t.callExpression(cssToReactNativeReference, [bodyPairs]);
   }, styleGroups);
@@ -204,7 +197,7 @@ const createStaticStyleSheet = (
   state,
   substitutionMap,
   component,
-  ruleBodies,
+  rules,
   propTypes
 ) => {
   let i = 0;
@@ -216,14 +209,14 @@ const createStaticStyleSheet = (
 
   const styleSheetReference = element.scope.generateUidIdentifier('csstaStyle');
 
-  const styleNames = _.map(getStyleName, ruleBodies);
-  const styleBodies = _.map(createStyleSheetBody(element, state, substitutionMap), ruleBodies);
+  const styleNames = _.map(getStyleName, rules);
+  const styleBodies = _.map(createStyleSheetBody(element, state, substitutionMap), rules);
 
   const styleSheetBody = t.objectExpression(_.map(([styleName, body]) => (
     t.objectProperty(t.numericLiteral(styleName), body)
   ), _.zip(styleNames, styleBodies)));
 
-  const rules = t.arrayExpression(_.map(([styleName, { selector }]) => t.objectExpression([
+  const rulesBody = t.arrayExpression(_.map(([styleName, { selector }]) => t.objectExpression([
     t.objectProperty(
       t.stringLiteral('validate'),
       createValidatorNodeForSelector(selector)
@@ -232,7 +225,7 @@ const createStaticStyleSheet = (
       t.stringLiteral('style'),
       t.memberExpression(styleSheetReference, t.numericLiteral(styleName), true)
     ),
-  ]), _.zip(styleNames, ruleBodies)));
+  ]), _.zip(styleNames, rules)));
 
   const staticComponent = getOrCreateImportReference(
     element,
@@ -243,7 +236,7 @@ const createStaticStyleSheet = (
   const newElement = t.callExpression(staticComponent, [
     component,
     jsonToNode(Object.keys(propTypes)),
-    rules,
+    rulesBody,
   ]);
 
   element.replaceWith(newElement);
@@ -270,18 +263,18 @@ const createDynamicStylesheet = (
   state,
   substitutionMap,
   component,
-  ruleBodies,
+  rules,
   propTypes,
   importedVariables
 ) => {
-  const createStyleTuples = ({ styleDecls }) => t.arrayExpression(_.map(styleDecl => (
+  const createStyleTuples = ({ styleTuples }) => t.arrayExpression(_.map(([prop, value]) => (
     t.arrayExpression([
-      t.stringLiteral(getPropertyName(styleDecl.prop)),
-      getStringWithSubstitutedValues(substitutionMap, styleDecl.value),
+      t.stringLiteral(getPropertyName(prop)),
+      getStringWithSubstitutedValues(substitutionMap, value),
     ])
-  ), styleDecls));
+  ), styleTuples));
 
-  const rules = t.arrayExpression(_.map(rule => t.objectExpression([
+  const rulesBody = t.arrayExpression(_.map(rule => t.objectExpression([
     t.objectProperty(
       t.stringLiteral('validate'),
       createValidatorNodeForSelector(rule.selector)
@@ -292,9 +285,9 @@ const createDynamicStylesheet = (
     ),
     t.objectProperty(
       t.stringLiteral('exportedVariables'),
-      jsonToNode(rule.variables)
+      jsonToNode(rule.exportedVariables)
     ),
-  ]), ruleBodies));
+  ]), rules));
 
   const dynamicComponent = getOrCreateImportReference(
     element,
@@ -307,52 +300,17 @@ const createDynamicStylesheet = (
     component,
     jsonToNode(Object.keys(propTypes)),
     jsonToNode(importedVariables),
-    rules,
+    rulesBody,
   ]);
 
   element.replaceWith(newElement);
 };
 
-const extractRules = (element, state, inputCss) => {
-  const { root, propTypes } = getRoot(inputCss);
-
-  const ruleNodes = [];
-  root.walkRules((node) => {
-    ruleNodes.push(node);
-  });
-
-  const ruleBodies = _.map(({ selector, nodes }) => {
-    const allDecls = _.filter({ type: 'decl' }, nodes);
-    const styleDecls = _.reject(isVariableDecl, allDecls);
-    const variableDecls = _.filter(isVariableDecl, allDecls);
-
-    const variables = _.flow(
-      _.keyBy('prop'),
-      _.mapValues('value'),
-      _.mapKeys(key => key.substring(2))
-    )(variableDecls);
-
-    const importedVariables = _.flow(
-      _.map('value'),
-      _.flatMap(value => value.match(varRegExp)),
-      _.compact,
-      _.map(match => match.match(varRegExpNonGlobal)[1])
-    )(styleDecls);
-
-    return { selector, styleDecls, variables, importedVariables };
-  }, ruleNodes);
-
-  const importedVariables = _.flatMap('importedVariables', ruleBodies);
-  const exportsVariables = _.some(ruleBody => !_.isEmpty(ruleBody.variables), ruleBodies);
-
-  return { ruleBodies, propTypes, importedVariables, exportsVariables };
-};
-
 module.exports = (element, state, cssText, substitutionMap, component) => {
-  const { ruleBodies, propTypes, importedVariables, exportsVariables } =
-    extractRules(element, state, cssText);
+  const { rules, propTypes, importedVariables } = extractRules(cssText);
+  const exportsVariables = _.some(rule => !_.isEmpty(rule.exportedVariables), rules);
 
-  const baseParams = [element, state, substitutionMap, component, ruleBodies, propTypes];
+  const baseParams = [element, state, substitutionMap, component, rules, propTypes];
   if (!exportsVariables && _.isEmpty(importedVariables)) {
     createStaticStyleSheet(...baseParams);
   } else {
