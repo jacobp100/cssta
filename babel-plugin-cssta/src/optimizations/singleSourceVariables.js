@@ -3,7 +3,9 @@ const { parse } = require('babylon');
 const { default: traverse } = require('babel-traverse');
 const _ = require('lodash/fp');
 const extractRules = require('cssta/src/native/extractRules'); // Is this really native-only?
-const { interpolationTypes, extractCsstaCallParts } = require('../transformUtil');
+const {
+  interpolationTypes, extractCsstaCallParts,
+} = require('../transformUtil/extractCsstaCallParts');
 
 
 const extractVariables = (stringArg) => {

@@ -1,31 +1,6 @@
 const t = require('babel-types');
 const _ = require('lodash/fp');
 
-const csstaConstructorExpressionTypes = {
-  CallExpression: element => [element.callee, element.arguments[0]],
-  MemberExpression: element => [
-    element.object,
-    element.computed ? element.property : t.stringLiteral(element.property.name),
-  ],
-};
-
-module.exports.getComponentAndReference = (element, state, node) => {
-  if (!(node.type in csstaConstructorExpressionTypes)) return null;
-
-  const [callee, component] = csstaConstructorExpressionTypes[node.type](node);
-
-  if (!t.isIdentifier(callee)) return null;
-  const reference = callee.name;
-
-  return { reference, component };
-};
-
-module.exports.getCsstaTypeFromReference = (element, state, reference) => {
-  const filename = state.file.opts.filename;
-  const csstaType = _.get([filename, reference], state.csstaReferenceTypesPerFile);
-  return csstaType;
-};
-
 const interpolationTypes = {
   ALLOW: 0,
   IGNORE: 1,

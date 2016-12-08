@@ -9,8 +9,8 @@ const removeSetPostCssPipeline = require('./optimizations/removeSetPostCssPipeli
 const singleSourceVariables = require('./optimizations/singleSourceVariables');
 const { removeReference, getReferenceCountForImport } = require('./util');
 const {
-  getComponentAndReference, getCsstaTypeFromReference, interpolationTypes, extractCsstaCallParts,
-} = require('./transformUtil');
+  interpolationTypes, extractCsstaCallParts,
+} = require('./transformUtil/extractCsstaCallParts');
 const { getOptimisationOpts } = require('./util');
 
 const canInterpolate = {
@@ -23,12 +23,24 @@ const transformCsstaTypes = {
   native: transformNativeCssta,
 };
 
-const transformCsstaCall = (element, state, node, stringArg) => {
-  const componentAndReference = getComponentAndReference(element, state, node);
-  if (!componentAndReference) return;
+const csstaConstructorExpressionTypes = {
+  CallExpression: element => [element.callee, element.arguments[0]],
+  MemberExpression: element => [
+    element.object,
+    element.computed ? element.property : t.stringLiteral(element.property.name),
+  ],
+};
 
-  const { reference, component } = componentAndReference;
-  const csstaType = getCsstaTypeFromReference(element, state, reference);
+const transformCsstaCall = (element, state, node, stringArg) => {
+  if (!(node.type in csstaConstructorExpressionTypes)) return;
+
+  const [callee, component] = csstaConstructorExpressionTypes[node.type](node);
+
+  if (!t.isIdentifier(callee)) return;
+  const reference = callee.name;
+
+  const filename = state.file.opts.filename;
+  const csstaType = _.get([filename, reference], state.csstaReferenceTypesPerFile);
   if (!csstaType) return;
 
   let interpolationType;
