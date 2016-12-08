@@ -82,7 +82,10 @@ module.exports = () => ({
         const singleSourceVariableOpts = getOptimisationOpts(state, 'singleSourceVariables');
 
         if (!state.singleSourceVariables && singleSourceVariableOpts) {
-          const fileContainingVariables = path.join(process.cwd(), singleSourceVariableOpts.in);
+          const fileContainingVariables = path.join(
+            state.opts.cwd || process.cwd(),
+            singleSourceVariableOpts.in
+          );
           const exportedVariables = singleSourceVariables(fileContainingVariables, state.file.opts);
           state.singleSourceVariables = exportedVariables;
         }

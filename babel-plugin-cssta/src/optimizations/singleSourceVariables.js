@@ -9,7 +9,7 @@ const {
 
 
 const extractVariables = (stringArg) => {
-  const callParts = extractCsstaCallParts(stringArg, interpolationTypes.DISALLOW);
+  const callParts = extractCsstaCallParts(stringArg, interpolationTypes.IGNORE);
   if (!callParts) return null;
 
   const { cssText } = callParts;

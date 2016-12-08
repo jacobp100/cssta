@@ -19,23 +19,19 @@ const normaliseCss = (str) => {
   return output;
 };
 
-const cwd = process.cwd();
-
 const getActual = (testPath, actualJsPath, tempCssPath, optionsPath) => {
   plugin.resetGenerators();
 
-  const options = { output: tempCssPath };
+  const options = { output: tempCssPath, cwd: testPath };
 
   if (fs.existsSync(optionsPath)) {
     const userOptions = JSON.parse(fs.readFileSync(optionsPath, 'utf8'));
     Object.assign(options, userOptions);
   }
 
-  process.chdir(testPath);
   const actualJs = transformFileSync(actualJsPath, {
     plugins: [[plugin, options]],
   }).code;
-  process.chdir(cwd);
 
   let actualCss = fs.existsSync(tempCssPath)
     ? fs.readFileSync(tempCssPath, 'utf8')
@@ -63,7 +59,7 @@ glob.sync(path.join(baseDir, 'fixtures/*/')).forEach((testPath) => {
     getActual(actualJsPath, tempCssPath, optionsPath);
   } else {
     it(`should work with ${testName}`, () => {
-      const { actualJs, actualCss } = getActual(actualJsPath, tempCssPath, optionsPath);
+      const { actualJs, actualCss } = getActual(testPath, actualJsPath, tempCssPath, optionsPath);
       const expectedJs = fs.readFileSync(expectedJsPath, 'utf8');
       const expectedCss = actualCss && fs.readFileSync(expectedCssPath, 'utf8');
 
