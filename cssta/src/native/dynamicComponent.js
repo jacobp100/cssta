@@ -1,4 +1,4 @@
-/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable */
 const { StyleSheet } = require('react-native');
 /* eslint-enable */
 /* eslint-disable no-param-reassign */
@@ -11,16 +11,15 @@ const { varRegExp } = require('../util');
 type Rule = {
   validate: Props => boolean,
   styleTuples: ([StyleProperty, string])[],
-  variables: { [key:StyleVariableName]: string },
+  exportedVariables: { [key:StyleVariableName]: string },
 };
 */
 
 module.exports = dynamicComponentFactory((ownProps, variablesFromScope, rules) => {
-  const definedVariables = Object.assign(
-    rules
-      .filter(rule => rule.validate(ownProps))
-      .map(rule => rule.variables)
-  );
+  const appliedRuleVariables = rules
+    .filter(rule => rule.validate(ownProps))
+    .map(rule => rule.exportedVariables);
+  const definedVariables = Object.assign({}, ...appliedRuleVariables);
   return resolveVariableDependencies(definedVariables, variablesFromScope);
 }, (appliedVariables, rules) => {
   const ruleStylesWithVariablesApplied = rules.map((rule) => {
@@ -34,12 +33,11 @@ module.exports = dynamicComponentFactory((ownProps, variablesFromScope, rules) =
     return style;
   });
 
-  const styleTuples = ruleStylesWithVariablesApplied.reduce((accum, style, index) => {
+  const styleBody = ruleStylesWithVariablesApplied.reduce((accum, style, index) => {
     accum[index] = style;
     return accum;
   }, {});
-
-  const styleSheet = StyleSheet.create(styleTuples);
+  const styleSheet = StyleSheet.create(styleBody);
 
   const rulesWithVariablesApplied = rules.map((rule, index) => ({
     validate: rule.validate,

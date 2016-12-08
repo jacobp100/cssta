@@ -291,7 +291,7 @@ const createDynamicStylesheet = (
       createStyleTuples(rule)
     ),
     t.objectProperty(
-      t.stringLiteral('variables'),
+      t.stringLiteral('exportedVariables'),
       jsonToNode(rule.variables)
     ),
   ]), ruleBodies));

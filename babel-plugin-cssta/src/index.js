@@ -123,6 +123,19 @@ module.exports = () => ({
       );
     },
     Program: {
+      enter(element, state) {
+        const filename = state.file.opts.filename;
+        state.identifiersFromImportsPerFile = _.set(
+          [filename],
+          {},
+          state.identifiersFromImportsPerFile
+        );
+        state.csstaReferenceTypesPerFile = _.set(
+          [filename],
+          {},
+          state.csstaReferenceTypesPerFile
+        );
+      },
       exit(element, state) {
         const filename = state.file.opts.filename;
         const importLocals = _.flow(

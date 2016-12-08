@@ -11,7 +11,8 @@ it('scopes top-level declarations', () => runTestFor(`
 `, [{
   selector: '&',
   styleTuples: [['color', 'red']],
-  variables: {},
+  exportedVariables: {},
+  importedVariables: [],
 }]));
 
 it('scopes multiple top-level declarations into one class', () => runTestFor(`
@@ -23,7 +24,8 @@ it('scopes multiple top-level declarations into one class', () => runTestFor(`
     ['color', 'red'],
     ['borderLeftColor', 'green'],
   ],
-  variables: {},
+  exportedVariables: {},
+  importedVariables: [],
 }]));
 
 it('scopes boolean attribute selectors', () => runTestFor(`
@@ -33,7 +35,8 @@ it('scopes boolean attribute selectors', () => runTestFor(`
 `, [{
   selector: '[attribute]',
   styleTuples: [['color', 'red']],
-  variables: {},
+  exportedVariables: {},
+  importedVariables: [],
 }]));
 
 it('scopes string attribute selectors', () => runTestFor(`
@@ -43,7 +46,8 @@ it('scopes string attribute selectors', () => runTestFor(`
 `, [{
   selector: '[stringAttribute = "red"]',
   styleTuples: [['color', 'red']],
-  variables: {},
+  exportedVariables: {},
+  importedVariables: [],
 }]));
 
 it('scopes attribute selectors', () => runTestFor(`
@@ -69,23 +73,28 @@ it('scopes attribute selectors', () => runTestFor(`
 `, [{
   selector: '[booleanValue1]',
   styleTuples: [['color', 'red']],
-  variables: {},
+  exportedVariables: {},
+  importedVariables: [],
 }, {
   selector: '[booleanValue2]',
   styleTuples: [['color', 'green']],
-  variables: {},
+  exportedVariables: {},
+  importedVariables: [],
 }, {
   selector: '[stringValue1 = "a"]',
   styleTuples: [['color', 'red']],
-  variables: {},
+  exportedVariables: {},
+  importedVariables: [],
 }, {
   selector: '[stringValue1 = "b"]',
   styleTuples: [['color', 'green']],
-  variables: {},
+  exportedVariables: {},
+  importedVariables: [],
 }, {
   selector: '[stringValue2 = "c"]',
   styleTuples: [['color', 'blue']],
-  variables: {},
+  exportedVariables: {},
+  importedVariables: [],
 }]));
 
 it('recognises variable declarations', () => runTestFor(`
@@ -93,9 +102,19 @@ it('recognises variable declarations', () => runTestFor(`
 `, [{
   selector: '&',
   styleTuples: [],
-  variables: {
+  exportedVariables: {
     color: 'red',
   },
+  importedVariables: [],
+}]));
+
+it('recognises variable imports', () => runTestFor(`
+  color: var(--color);
+`, [{
+  selector: '&',
+  styleTuples: [['color', 'var(--color)']],
+  exportedVariables: {},
+  importedVariables: ['color'],
 }]));
 
 it('recognises multiple variable declarations', () => runTestFor(`
@@ -105,10 +124,20 @@ it('recognises multiple variable declarations', () => runTestFor(`
 `, [{
   selector: '&',
   styleTuples: [],
-  variables: {
+  exportedVariables: {
     color: 'blue',
     other: 'green',
   },
+  importedVariables: [],
+}]));
+
+it('recognises multiple variable imports', () => runTestFor(`
+  margin: var(--large) var(--small);
+`, [{
+  selector: '&',
+  styleTuples: [['margin', 'var(--large) var(--small)']],
+  exportedVariables: {},
+  importedVariables: ['large', 'small'],
 }]));
 
 it('mixes variable and style declarations', () => runTestFor(`
@@ -117,7 +146,21 @@ it('mixes variable and style declarations', () => runTestFor(`
 `, [{
   selector: '&',
   styleTuples: [['color', 'var(--color)']],
-  variables: {
+  exportedVariables: {
     color: 'red',
   },
+  importedVariables: ['color'],
 }]));
+
+it('returns all imported variables without duplicates', () => {
+  const { importedVariables } = extractRules(`
+    color: var(--color);
+
+    [inverted] {
+      backgroundColor: var(--color);
+      color: var(--background);
+    }
+  `);
+
+  expect(importedVariables).toEqual(['color', 'background']);
+});

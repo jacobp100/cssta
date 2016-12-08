@@ -9,15 +9,13 @@ module.exports = element => (cssTextFragments, ...substitutions) => {
     : cssTextFragments[0] +
       substitutions.map((value, index) => String(value) + cssTextFragments[index + 1]).join('');
 
-  const { rules: baseRules, propTypes } = extractRules(cssText);
+  const { rules: baseRules, propTypes, importedVariables } = extractRules(cssText);
 
   const rules = baseRules.map(rule => ({
     validate: createValidatorForSelector(rule.selector),
     styleTuples: rule.styleTuples,
-    variables: rule.styleVariables,
+    exportedVariables: rule.exportedVariables,
   }));
-
-  const importedVariables = Object.keys(Object.assign(...rules.map(rule => rule.variables)));
 
   return dynamicComponent(element, propTypes, importedVariables, rules);
 };

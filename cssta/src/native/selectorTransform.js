@@ -61,7 +61,7 @@ const getBaseValidatorSourceForSelector = (selector) => {
   let selectorNode;
   selectorParser((node) => { selectorNode = node; }).process(selector);
   const validatorNode = createValidator(selectorNode) || 'true';
-  const returnNode = `return ${validatorNode}`;
+  const returnNode = `return ${validatorNode};`;
   return returnNode;
 };
 

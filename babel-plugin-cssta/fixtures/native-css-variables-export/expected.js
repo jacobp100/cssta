@@ -7,7 +7,7 @@ _csstaDistNativeDynamicComponent(View, ['blue'], [], [{
     return true;
   },
   'styleTuples': [],
-  'variables': {
+  'exportedVariables': {
     'color': 'red'
   }
 }, {
@@ -15,7 +15,7 @@ _csstaDistNativeDynamicComponent(View, ['blue'], [], [{
     return !!p['blue'];
   },
   'styleTuples': [],
-  'variables': {
+  'exportedVariables': {
     'color': 'blue'
   }
 }]);

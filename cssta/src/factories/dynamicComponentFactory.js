@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 const React = require('react');
-const EventEmitter = require('event-emitter');
-const { getOwnPropKeys, getComponentProps, getPropTypes } = require('../util');
+const { EventEmitter } = require('events');
+const { shallowEqual, getOwnPropKeys, getComponentProps, getPropTypes } = require('../util');
 
 const { Component, PropTypes } = React;
 
@@ -40,7 +40,7 @@ module.exports = (
 
     if (!styleCached) styleCache[styleCacheKey] = stylesheet;
 
-    return { Element, stylesheet, ownProps, passedProps, exportedVariables, appliedVariables };
+    return { Element, stylesheet, ownProps, passedProps, variablesFromScope, appliedVariables };
   };
 
   class DynamicComponent extends Component {
@@ -68,12 +68,12 @@ module.exports = (
         if (nextState.cssta) nextState.cssta.on(STYLES_UPDATED, this.styleUpdateHandler);
       }
 
-      // FIXME: Shallow equal
-      if (this.props !== nextProps) {
+      if (!shallowEqual(this.props, nextProps) ||
+        !shallowEqual(this.state.variablesFromScope, nextState.variablesFromScope)) {
         this.setState(getStyles(nextState, nextProps, nextContext));
       }
 
-      if (this.state.appliedVariables !== nextState.appliedVariables) {
+      if (!shallowEqual(this.state.appliedVariables, nextState.appliedVariables)) {
         this.styleEmitter.emit(STYLES_UPDATED, nextState.appliedVariables);
       }
     }
