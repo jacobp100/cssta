@@ -12,26 +12,26 @@ const runTest = (csstaFactory) => {
   expect(component.children).toEqual(null);
 };
 
-it.skip('creates a component', () => runTest(() => (
+it('creates a component', () => runTest(() => (
   cssta('dummy')`
     color: red;
   `
 )));
 
-it.skip('allows value interpolation', () => runTest(() => {
+it('allows value interpolation', () => runTest(() => {
   const color = 'red';
   return cssta('dummy')`
     color: ${color};
   `;
 }));
 
-it.skip('allows rule interpolation', () => runTest(() => {
+it('allows rule interpolation', () => runTest(() => {
   const rule = 'color: red;';
   return cssta('dummy')`
     ${rule}
   `;
 }));
 
-it.skip('non-template-literals', () => runTest(() => (
+it('non-template-literals', () => runTest(() => (
   cssta('dummy')('color: red;')
 )));

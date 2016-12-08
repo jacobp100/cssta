@@ -65,7 +65,7 @@ module.exports = (
     componentWillUpdate(nextProps, nextState, nextContext) {
       if (this.context.cssta !== nextContext.cssta) {
         if (this.context.cssta) this.context.cssta.off(STYLES_UPDATED, this.styleUpdateHandler);
-        if (nextState.cssta) nextState.cssta.on(STYLES_UPDATED, this.styleUpdateHandler);
+        if (nextContext.cssta) nextContext.cssta.on(STYLES_UPDATED, this.styleUpdateHandler);
       }
 
       if (!shallowEqual(this.props, nextProps) ||

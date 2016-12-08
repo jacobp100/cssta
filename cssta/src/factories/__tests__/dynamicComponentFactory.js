@@ -170,3 +170,81 @@ it('updates styles in reaction to prop changes', () => {
 
   expect(instance.toJSON().children[0].props.style).toEqual({ color: 'blue' });
 });
+
+it('removes listener on unmounting', () => {
+  const cssta = {
+    on: () => {},
+    off: jest.fn(),
+  };
+
+  class ProvidesContext extends React.Component {
+    getChildContext() { return { cssta, csstaInitialVariables: {} }; } // eslint-disable-line
+    render() { return this.props.children; }
+  }
+  ProvidesContext.contextTypes = {
+    cssta: React.PropTypes.object,
+    csstaInitialVariables: React.PropTypes.object,
+  };
+  ProvidesContext.childContextTypes = ProvidesContext.contextTypes;
+
+  const ChildElement = dynamicComponentFactory(
+    () => ({}),
+    style => style,
+    assignStyle
+  )('div', {}, []);
+
+  const instance = renderer.create(
+    React.createElement(ProvidesContext, {},
+      React.createElement(ChildElement, {})
+    )
+  );
+
+  expect(cssta.off.mock.calls.length).toBe(0);
+
+  instance.unmount();
+
+  expect(cssta.off.mock.calls.length).toBe(1);
+});
+
+it('reesets listener on when changing cssta context', () => {
+  const cssta1 = { on: jest.fn(), off: jest.fn() };
+  const cssta2 = { on: jest.fn(), off: jest.fn() };
+
+  class ProvidesContext extends React.Component {
+    getChildContext() { return { cssta: this.props.cssta, csstaInitialVariables: {} }; }
+    render() { return this.props.children; }
+  }
+  ProvidesContext.contextTypes = {
+    cssta: React.PropTypes.object,
+    csstaInitialVariables: React.PropTypes.object,
+  };
+  ProvidesContext.childContextTypes = ProvidesContext.contextTypes;
+
+  const ChildElement = dynamicComponentFactory(
+    () => ({}),
+    style => style,
+    assignStyle
+  )('div', {}, []);
+
+  const instance = renderer.create(
+    React.createElement(ProvidesContext, { cssta: cssta1 },
+      React.createElement(ChildElement, {})
+    )
+  );
+
+  expect(cssta1.on.mock.calls.length).toBe(1);
+  expect(cssta1.off.mock.calls.length).toBe(0);
+  expect(cssta2.on.mock.calls.length).toBe(0);
+  expect(cssta2.off.mock.calls.length).toBe(0);
+
+  instance.update(
+    React.createElement(ProvidesContext, { cssta: cssta2 },
+      React.createElement(ChildElement, {})
+    )
+  );
+
+  expect(cssta1.on.mock.calls.length).toBe(1);
+  expect(cssta1.off.mock.calls.length).toBe(1);
+  expect(cssta2.on.mock.calls.length).toBe(1);
+  expect(cssta2.off.mock.calls.length).toBe(0);
+});

@@ -1,19 +1,20 @@
 /* global jest it, expect */
 const React = require('react');
 const renderer = require('react-test-renderer'); // eslint-disable-line
-const staticComponent = require('../staticComponent');
+const dynamicComponent = require('../dynamicComponent');
 
 
 const runTest = ({
   type = 'button',
   propTypes = {},
+  importedVariables = [],
   rules = [],
   inputProps = {},
   expectedType = type,
   expectedProps = {},
   expectedChildren = null,
 } = {}) => {
-  const Element = staticComponent(type, propTypes, rules);
+  const Element = dynamicComponent(type, propTypes, importedVariables, rules);
 
   const component = renderer.create(React.createElement(Element, inputProps)).toJSON();
 
@@ -28,17 +29,17 @@ it('adds a boolean property if it is equal to the expected value', () => runTest
   propTypes: ['booleanAttribute'],
   rules: [{
     validate: p => !!p.booleanAttribute,
-    style: 0,
+    styleTuples: [['color', 'red']],
   }],
   inputProps: { booleanAttribute: true },
-  expectedProps: { style: [0] },
+  expectedProps: { style: [{ color: 'red' }] },
 }));
 
 it('does not add a boolean property if it is not equal to the expected value', () => runTest({
   propTypes: ['booleanAttribute'],
   rules: [{
     validate: p => !!p.booleanAttribute,
-    style: 0,
+    styleTuples: [['color', 'red']],
   }],
 }));
 
@@ -46,16 +47,25 @@ it('adds a string property if it is equal to the expected value', () => runTest(
   propTypes: ['stringAttribute'],
   rules: [{
     validate: p => p.stringAttribute === 'test',
-    style: 0,
+    styleTuples: [['color', 'red']],
   }],
   inputProps: { stringAttribute: 'test' },
-  expectedProps: { style: [0] },
+  expectedProps: { style: [{ color: 'red' }] },
 }));
 
 it('does not add a string property if it is not equal to the expected value', () => runTest({
   propTypes: ['stringAttribute'],
   rules: [{
     validate: p => p.stringAttribute === 'test',
-    style: 0,
+    styleTuples: [['color', 'red']],
   }],
+}));
+
+it('uses fallback for variable if not defined within scope', () => runTest({
+  importedVariables: ['color'],
+  rules: [{
+    validate: () => true,
+    styleTuples: [['color', 'var(--color, red)']],
+  }],
+  expectedProps: { style: [{ color: 'red' }] },
 }));

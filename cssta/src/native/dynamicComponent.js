@@ -6,6 +6,7 @@ const cssToReactNative = require('css-to-react-native').default;
 const dynamicComponentFactory = require('../factories/dynamicComponentFactory');
 const resolveVariableDependencies = require('../util/resolveVariableDependencies');
 const { varRegExp } = require('../util');
+const staticComponentTransform = require('./staticComponentTransform');
 
 /*
 type Rule = {
@@ -45,13 +46,4 @@ module.exports = dynamicComponentFactory((ownProps, variablesFromScope, rules) =
   }));
 
   return rulesWithVariablesApplied;
-}, (ownProps, passedProps, rulesWithVariablesApplied) => {
-  let style = rulesWithVariablesApplied
-    .filter(rule => rule.validate(ownProps))
-    .map(rule => rule.style);
-
-  if ('style' in passedProps) style = style.concat(passedProps.style);
-  if (style.length > 0) passedProps.style = style;
-
-  return passedProps;
-});
+}, staticComponentTransform);
