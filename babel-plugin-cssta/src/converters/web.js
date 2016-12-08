@@ -39,7 +39,7 @@ let animationGenerator = null;
 const resetGenerators = () => {
   classGenerator = cssNameGenerator();
   animationGenerator = (function* gen() {
-    for (const value of cssNameGenerator()) {
+    for (const value of cssNameGenerator()) { // eslint-disable-line
       if (!_.includes(value, animationKeywords)) yield value;
     }
   }());
@@ -55,7 +55,7 @@ const writeCssToFile = (outputCss, cssFilename) => {
   });
 };
 
-module.exports = (element, state, cssText, substititionMap, component) => {
+module.exports = (element, state, component, cssText, substititionMap) => {
   if (!_.isEmpty(substititionMap)) {
     throw new Error('You cannot use interpolation in template strings (i.e. `color: ${primary}`)'); // eslint-disable-line
   }

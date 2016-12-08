@@ -49,10 +49,18 @@ module.exports.getOrCreateImportReference = (element, state, moduleName, importe
   return reference;
 };
 
-module.exports.hasOptimisation = (state, name) => _.overSome([
-  _.includes(name),
-  _.includes('all'),
-])(_.get(['opts', 'optimizations'], state));
+const findOptionsForKey = (optimisations, name) => {
+  const optimisation = _.find(optimisationName => (
+    Array.isArray(optimisationName) ? optimisationName[0] === name : optimisationName === name
+  ), optimisations);
+  if (Array.isArray(optimisation)) return optimisation[1];
+  if (optimisation) return {};
+  return null;
+};
+module.exports.getOptimisationOpts = (state, name) => {
+  const optimisations = state.opts.optimizations;
+  return findOptionsForKey(optimisations, name) || findOptionsForKey(optimisations, 'all');
+};
 
 module.exports.removeReference = (state, name) => {
   const filename = state.file.opts.filename;

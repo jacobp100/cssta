@@ -1,68 +1,60 @@
 /* eslint-disable no-param-reassign */
+const path = require('path');
 const t = require('babel-types');
 const _ = require('lodash/fp');
+const { varRegExp } = require('cssta/dist/util');
 const transformWebCssta = require('./converters/web');
 const transformNativeCssta = require('./converters/native');
 const removeSetPostCssPipeline = require('./optimizations/removeSetPostCssPipeline');
-const { hasOptimisation, removeReference, getReferenceCountForImport } = require('./util');
-
-const transformCsstaTypes = {
-  web: transformWebCssta,
-  native: transformNativeCssta,
-};
+const singleSourceVariables = require('./optimizations/singleSourceVariables');
+const { removeReference, getReferenceCountForImport } = require('./util');
+const {
+  getComponentAndReference, getCsstaTypeFromReference, interpolationTypes, extractCsstaCallParts,
+} = require('./transformUtil');
+const { getOptimisationOpts } = require('./util');
 
 const canInterpolate = {
   web: false,
   native: true,
 };
 
-const csstaConstructorExpressionTypes = {
-  CallExpression: element => [element.callee, element.arguments[0]],
-  MemberExpression: element => [
-    element.object,
-    element.computed ? element.property : t.stringLiteral(element.property.name),
-  ],
+const transformCsstaTypes = {
+  web: transformWebCssta,
+  native: transformNativeCssta,
 };
 
 const transformCsstaCall = (element, state, node, stringArg) => {
-  if (!(node.type in csstaConstructorExpressionTypes)) return;
+  const componentAndReference = getComponentAndReference(element, state, node);
+  if (!componentAndReference) return;
 
-  const [callee, component] = csstaConstructorExpressionTypes[node.type](node);
-
-  if (!t.isIdentifier(callee)) return;
-
-  const filename = state.file.opts.filename;
-  const reference = callee.name;
-  const csstaType = _.get([filename, reference], state.csstaReferenceTypesPerFile);
-
+  const { reference, component } = componentAndReference;
+  const csstaType = getCsstaTypeFromReference(element, state, reference);
   if (!csstaType) return;
 
-  const interpolateValuesOnly = hasOptimisation(state, 'interpolateValuesOnly');
-  const hasInterpolation = t.isTemplateLiteral(stringArg) && !_.isEmpty(stringArg.expressions);
+  let interpolationType;
+  const interpolateValuesOnly = Boolean(getOptimisationOpts(state, 'interpolateValuesOnly'));
 
-  if (hasInterpolation && !canInterpolate[csstaType]) {
-    const ex = '`color: ${primary}`'; // eslint-disable-line
-    throw new Error(`You cannot interpolation in template strings for ${csstaType} (i.e. ${ex})`);
+  if (!canInterpolate[csstaType]) {
+    interpolationType = interpolationTypes.DISALLOW;
+  } else if (!interpolateValuesOnly) {
+    interpolationType = interpolationTypes.IGNORE;
+  } else {
+    interpolationType = interpolationTypes.ALLOW;
   }
 
-  let cssText = null;
-  let substitutionMap = {};
+  const callParts = extractCsstaCallParts(stringArg, interpolationType);
+  if (!callParts) return;
 
-  if (t.isTemplateLiteral(stringArg) && (!hasInterpolation || interpolateValuesOnly)) {
-    const { quasis, expressions } = stringArg;
-    const substitutionNames = expressions.map((value, index) => `__substitution-${index}__`);
-    cssText =
-      quasis[0].value.cooked +
-      substitutionNames.map((name, index) => name + quasis[index + 1].value.cooked).join('');
-    substitutionMap = _.fromPairs(_.zip(substitutionNames, expressions));
-  } else if (t.isStringLiteral(stringArg)) {
-    cssText = stringArg.value;
+  let { cssText, substitutionMap } = callParts; // eslint-disable-line
+
+  if (state.singleSourceVariables) {
+    cssText = cssText.replace(varRegExp, (m, variableName, fallback) => (
+      state.singleSourceVariables[variableName] || fallback
+    ));
   }
 
-  if (cssText !== null) {
-    transformCsstaTypes[csstaType](element, state, cssText, substitutionMap, component);
-    removeReference(state, reference);
-  }
+  transformCsstaTypes[csstaType](element, state, component, cssText, substitutionMap);
+  removeReference(state, reference);
 };
 
 const csstaModules = {
@@ -73,6 +65,51 @@ const csstaModules = {
 
 module.exports = () => ({
   visitor: {
+    Program: {
+      enter(element, state) {
+        const singleSourceVariableOpts = getOptimisationOpts(state, 'singleSourceVariables');
+
+        if (!state.singleSourceVariables && singleSourceVariableOpts) {
+          const fileContainingVariables = path.join(process.cwd(), singleSourceVariableOpts.in);
+          const exportedVariables = singleSourceVariables(fileContainingVariables, state.file.opts);
+          state.singleSourceVariables = exportedVariables;
+        }
+
+        const filename = state.file.opts.filename;
+        state.identifiersFromImportsPerFile = _.set(
+          [filename],
+          {},
+          state.identifiersFromImportsPerFile
+        );
+        state.csstaReferenceTypesPerFile = _.set(
+          [filename],
+          {},
+          state.csstaReferenceTypesPerFile
+        );
+      },
+      exit(element, state) {
+        const filename = state.file.opts.filename;
+        const importLocals = _.flow(
+          _.getOr({}, ['removedRefenceCountPerFile', filename]),
+          _.keys
+        )(state);
+        const importElements = _.flow(
+          _.map(_.propertyOf(state.identifiersFromImportsPerFile[filename])),
+          _.uniq
+        )(importLocals);
+
+        _.forEach((importElement) => {
+          importElement.node.specifiers = _.filter((specifier) => {
+            const localName = specifier.local.name;
+            return getReferenceCountForImport(state, localName) > 0;
+          }, importElement.node.specifiers);
+
+          if (_.isEmpty(importElement.node.specifiers)) {
+            importElement.remove();
+          }
+        }, importElements);
+      },
+    },
     ImportDeclaration(element, state) {
       const moduleName = element.node.source.value;
       const specifiers = element.node.specifiers;
@@ -122,56 +159,19 @@ module.exports = () => ({
         state.csstaReferenceTypesPerFile || {}
       );
     },
-    Program: {
-      enter(element, state) {
-        const filename = state.file.opts.filename;
-        state.identifiersFromImportsPerFile = _.set(
-          [filename],
-          {},
-          state.identifiersFromImportsPerFile
-        );
-        state.csstaReferenceTypesPerFile = _.set(
-          [filename],
-          {},
-          state.csstaReferenceTypesPerFile
-        );
-      },
-      exit(element, state) {
-        const filename = state.file.opts.filename;
-        const importLocals = _.flow(
-          _.getOr({}, ['removedRefenceCountPerFile', filename]),
-          _.keys
-        )(state);
-        const importElements = _.flow(
-          _.map(_.propertyOf(state.identifiersFromImportsPerFile[filename])),
-          _.uniq
-        )(importLocals);
-
-        _.forEach((importElement) => {
-          importElement.node.specifiers = _.filter((specifier) => {
-            const localName = specifier.local.name;
-            return getReferenceCountForImport(state, localName) > 0;
-          }, importElement.node.specifiers);
-
-          if (_.isEmpty(importElement.node.specifiers)) {
-            importElement.remove();
-          }
-        }, importElements);
-      },
-    },
     CallExpression(element, state) {
       const filename = state.file.opts.filename;
       const { node } = element;
       const { callee } = node;
       const [arg] = node.arguments;
-      if (t.isTemplateLiteral(arg) || t.isStringLiteral(arg)) {
-        transformCsstaCall(element, state, callee, arg);
-      } else if (
+      if (
         t.isMemberExpression(callee) &&
         _.get('property.name', callee) === 'setPostCssPipeline' &&
         _.get('object.name', callee) in state.csstaReferenceTypesPerFile[filename]
       ) {
         removeSetPostCssPipeline(element, state, node);
+      } else {
+        transformCsstaCall(element, state, callee, arg);
       }
     },
     TaggedTemplateExpression(element, state) {

@@ -1,0 +1,5 @@
+{
+  "optimizations": [
+    ["singleSourceVariables", { "in": "actual.js" }]
+  ]
+}

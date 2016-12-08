@@ -306,9 +306,10 @@ const createDynamicStylesheet = (
   element.replaceWith(newElement);
 };
 
-module.exports = (element, state, cssText, substitutionMap, component) => {
+module.exports = (element, state, component, cssText, substitutionMap) => {
   const { rules, propTypes, importedVariables } = extractRules(cssText);
-  const exportsVariables = _.some(rule => !_.isEmpty(rule.exportedVariables), rules);
+  const exportsVariables =
+    !state.singleSourceVariables && _.some(rule => !_.isEmpty(rule.exportedVariables), rules);
 
   const baseParams = [element, state, substitutionMap, component, rules, propTypes];
   if (!exportsVariables && _.isEmpty(importedVariables)) {

@@ -1,7 +1,7 @@
 /* global document */
 const postcss = require('../../vendor/postcss');
 const extractRules = require('./extractRules');
-const createComponent = require('./createComponent');
+const staticComponent = require('./staticComponent');
 
 let devId = 0;
 const getDevId = name => () => {
@@ -54,7 +54,7 @@ const style = tagName => (cssTextFragments) => {
   styleContents += css;
   updateCss(styleContents);
 
-  return createComponent(tagName, propTypes, baseClassName, classNameMap);
+  return staticComponent(tagName, propTypes, baseClassName, classNameMap);
 };
 
 let didInjectGlobal = false;
