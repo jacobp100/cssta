@@ -9,14 +9,30 @@
     "approve": "node ./src/index.test.js --approve",
     "prepublish": "cp ../README.md ."
   },
-  "keywords": [],
+  "keywords": [
+    "postcss",
+    "modules",
+    "css-modules",
+    "css",
+    "minify",
+    "min",
+    "class",
+    "className",
+    "react",
+    "css-in-js"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jacobp100/cssta"
+  },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "babel-core": "^6.18.2",
     "eslint": "^3.11.1",
     "eslint-config-airbnb": "^11.1.0",
-    "eslint-plugin-import": "^1.15.0",
+    "eslint-config-airbnb-base": "^10.0.1",
+    "eslint-plugin-import": "^1.16.0",
     "eslint-plugin-jsx-a11y": "^2.2.2",
     "eslint-plugin-react": "^6.8.0",
     "glob": "^7.1.1",

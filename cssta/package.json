@@ -13,7 +13,22 @@
     "build:vendor": "webpack --config ./webpack.config.js",
     "prepublish": "npm run build; cp ../README.md ."
   },
-  "keywords": [],
+  "keywords": [
+    "postcss",
+    "modules",
+    "css-modules",
+    "css",
+    "minify",
+    "min",
+    "class",
+    "className",
+    "react",
+    "css-in-js"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jacobp100/cssta"
+  },
   "author": "",
   "license": "ISC",
   "dependencies": {
