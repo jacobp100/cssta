@@ -125,6 +125,31 @@ const BlueButton = cssta(OutlineButton)`
 
 **Note that for the moment, this only works when the components get defined in the same file!**
 
+## 🏳️‍🌈 Theming
+
+The best way to do theming in Cssta is by using [CSS custom properties](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_variables). **We provide polyfills for React Native**, so these will just work. On the web, you can either rely on native browser support, or [a postCSS plugin](https://github.com/MadLittleMods/postcss-css-variables#differences-from-postcss-custom-properties).
+
+```js
+const LightBox = cssta.div`
+  background-color: black;
+  --primary: white;
+`;
+
+const Button = cssta.button`
+  color: var(--primary);
+  border: 1px solid var(--primary);
+  padding: 0.5rem 1rem;
+`;
+
+const Example = (
+  <LightBox>
+    <Button>I am white on black!</Button>
+  </LightBox>
+);
+```
+
+There's a few extra examples in [theming](https://jacobp100.gitbooks.io/cssta/content/theming.md).
+
 ## 🖌 Overriding Styles
 
 The properties `className` on web, and `style` on React Native have special behavior. They append styles to those already defined by the component.
