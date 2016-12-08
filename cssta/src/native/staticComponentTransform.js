@@ -1,7 +1,13 @@
 /* eslint-disable no-param-reassign */
-const createComponentFactory = require('../util/createComponentFactory');
 
-module.exports = createComponentFactory((ownProps, passedProps, rules) => {
+/*
+type Rule = {
+  validate: Props => boolean,
+  style: Style,
+};
+*/
+
+module.exports = (ownProps, passedProps, rules) => {
   let style = rules
     .filter(rule => rule.validate(ownProps))
     .map(rule => rule.style);
@@ -10,4 +16,4 @@ module.exports = createComponentFactory((ownProps, passedProps, rules) => {
   if (style.length > 0) passedProps.style = style;
 
   return passedProps;
-});
+};

@@ -1,7 +1,7 @@
 /* global jest it, expect */
 const React = require('react');
 const renderer = require('react-test-renderer'); // eslint-disable-line
-const createComponent = require('../createComponent');
+const staticComponent = require('../staticComponent');
 
 
 const runTest = ({
@@ -13,7 +13,7 @@ const runTest = ({
   expectedProps = {},
   expectedChildren = null,
 } = {}) => {
-  const Element = createComponent(type, propTypes, rules);
+  const Element = staticComponent(type, propTypes, rules);
 
   const component = renderer.create(React.createElement(Element, inputProps)).toJSON();
 
@@ -24,7 +24,7 @@ const runTest = ({
 
 it('renders an element', () => runTest());
 
-it('adds a boolean property', () => runTest({
+it('adds a boolean property if it is equal to the expected value', () => runTest({
   propTypes: ['booleanAttribute'],
   rules: [{
     validate: p => !!p.booleanAttribute,
@@ -34,7 +34,7 @@ it('adds a boolean property', () => runTest({
   expectedProps: { style: [0] },
 }));
 
-it('does not add a boolean property', () => runTest({
+it('does not add a boolean property if it is not equal to the expected value', () => runTest({
   propTypes: ['booleanAttribute'],
   rules: [{
     validate: p => !!p.booleanAttribute,
@@ -42,7 +42,7 @@ it('does not add a boolean property', () => runTest({
   }],
 }));
 
-it('adds a string property', () => runTest({
+it('adds a string property if it is equal to the expected value', () => runTest({
   propTypes: ['stringAttribute'],
   rules: [{
     validate: p => p.stringAttribute === 'test',
@@ -52,47 +52,10 @@ it('adds a string property', () => runTest({
   expectedProps: { style: [0] },
 }));
 
-it('does not add a boolean property', () => runTest({
+it('does not add a string property if it is not equal to the expected value', () => runTest({
   propTypes: ['stringAttribute'],
   rules: [{
     validate: p => p.stringAttribute === 'test',
     style: 0,
   }],
-}));
-
-it('passes extraneous props down', () => runTest({
-  inputProps: { scrollingEnabled: false },
-  expectedProps: { scrollingEnabled: false },
-}));
-
-it('allows adding a class', () => runTest({
-  inputProps: { style: [0] },
-  expectedProps: { style: [0] },
-}));
-
-it('allows extending a class with a style array', () => runTest({
-  rules: [{
-    validate: () => true,
-    style: 0,
-  }],
-  inputProps: { style: [1] },
-  expectedProps: { style: [0, 1] },
-}));
-
-it('allows extending a class with a single value', () => runTest({
-  rules: [{
-    validate: () => true,
-    style: 0,
-  }],
-  inputProps: { style: 1 },
-  expectedProps: { style: [0, 1] },
-}));
-
-it('allows extending a class with an object', () => runTest({
-  rules: [{
-    validate: () => true,
-    style: 0,
-  }],
-  inputProps: { style: { color: 'red' } },
-  expectedProps: { style: [0, { color: 'red' }] },
 }));

@@ -1,40 +1,54 @@
 /* eslint-disable no-param-reassign */
-const cssToReactNative = require('css-to-react-native').default;
 const getRoot = require('../util/getRoot');
+const { varRegExp, varRegExpNonGlobal } = require('../util');
 
-const getBody = nodes => cssToReactNative(nodes
-  .filter(node => node.type === 'decl')
-  .map(node => [node.prop, node.value])
-);
+const variableRegExp = /^--/;
 
-module.exports = (inputCss) => {
-  let i = 0;
-  const getStyleName = () => {
-    i += 1;
-    return `style${i}`;
-  };
+const getStyleDeclarations = nodes => nodes
+  .filter(node => node.type === 'decl' && !variableRegExp.test(node.prop));
 
-  const { root, propTypes } = getRoot(inputCss);
+const getStyleTuples = nodes => getStyleDeclarations(nodes)
+  .map(node => [node.prop, node.value]);
 
-  const baseRules = [];
-
-  root.walkRules((node) => {
-    baseRules.push({
-      selector: node.selector,
-      body: getBody(node.nodes),
-      styleName: getStyleName(),
-    });
-  });
-
-  const styleSheetBody = baseRules.reduce((accum, rule) => {
-    accum[rule.styleName] = rule.body;
+const getExportedVariables = nodes => nodes
+  .filter(node => node.type === 'decl' && variableRegExp.test(node.prop))
+  .reduce((accum, node) => {
+    accum[node.prop.substring(2)] = node.value;
     return accum;
   }, {});
 
-  const rules = baseRules.map(rule => ({
-    selector: rule.selector,
-    styleName: rule.styleName,
-  }));
+const getImportedVariables = nodes => getStyleDeclarations(nodes)
+  .reduce((accum, decl) => {
+    const referencedVariableMatches = decl.value.match(varRegExp);
+    if (!referencedVariableMatches) return accum;
 
-  return { rules, styleSheetBody, propTypes };
+    const referencedVariables = referencedVariableMatches
+      .map(match => match.match(varRegExpNonGlobal)[1]);
+
+    return accum.concat(referencedVariables);
+  }, []);
+
+module.exports = (inputCss) => {
+  const { root, propTypes } = getRoot(inputCss);
+
+  const rules = [];
+
+  root.walkRules((node) => {
+    rules.push({
+      selector: node.selector,
+      styleTuples: getStyleTuples(node.nodes),
+      exportedVariables: getExportedVariables(node.nodes),
+      importedVariables: getImportedVariables(node.nodes),
+    });
+  });
+
+  const importedVariables = rules.reduce((outerAccum, rule) => (
+    rule.importedVariables.reduce((innerAccum, importedVariable) => (
+      innerAccum.indexOf(importedVariable) === -1
+        ? innerAccum.concat([importedVariable])
+        : innerAccum
+    ), outerAccum)
+  ), []);
+
+  return { rules, propTypes, importedVariables };
 };

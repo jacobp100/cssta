@@ -1,39 +1,39 @@
 import { StyleSheet as _StyleSheet } from 'react-native';
-import _csstaDistNativeCreateComponent from 'cssta/dist/native/createComponent';
+import _csstaDistNativeStaticComponent from 'cssta/dist/native/staticComponent';
 
 import { View } from 'react-native';
 
 const color = 'red';
 
 var _csstaStyle = _StyleSheet.create({
-  'style1': {
+  0: {
     'marginTop': 10,
     'color': String(color).trim()
   },
-  'style2': {
+  1: {
     'color': String(color).trim(),
     'marginTop': 10
   },
-  'style3': {
+  2: {
     'marginTop': 10,
     'color': String(color).trim(),
     'marginBottom': 10
   }
 });
 
-_csstaDistNativeCreateComponent(View, ['attr1', 'attr2', 'attr3'], [{
+_csstaDistNativeStaticComponent(View, ['attr1', 'attr2', 'attr3'], [{
   'validate': function (p) {
     return !!p['attr1'];
   },
-  'style': _csstaStyle['style1']
+  'style': _csstaStyle[0]
 }, {
   'validate': function (p) {
     return !!p['attr2'];
   },
-  'style': _csstaStyle['style2']
+  'style': _csstaStyle[1]
 }, {
   'validate': function (p) {
     return !!p['attr3'];
   },
-  'style': _csstaStyle['style3']
+  'style': _csstaStyle[2]
 }]);

@@ -1,8 +1,7 @@
 /* global jest it, expect */
 const {
-  createValidatorNodeForSelector, createValidatorForSelector,
+  getValidatorSourceForSelector, createValidatorForSelector,
 } = require('../selectorTransform');
-const t = require('babel-types');
 
 const runTest = (selector, { valid = [], invalid = [] }) => {
   const validator = createValidatorForSelector(selector);
@@ -69,17 +68,7 @@ it('does not allow other pseudo selectors', () => {
   expect(() => createValidatorForSelector(':first-child')).toThrow();
 });
 
-it('creates a babel function node', () => {
-  const node = createValidatorNodeForSelector('&');
-  expect(node).toEqual(
-    t.functionExpression(
-      null,
-      [t.identifier('p')],
-      t.blockStatement([
-        t.returnStatement(
-          t.booleanLiteral(true)
-        ),
-      ])
-    )
-  );
+it('creates function source for node', () => {
+  const node = getValidatorSourceForSelector('&');
+  expect(node).toEqual('(function(p) {return true;})');
 });

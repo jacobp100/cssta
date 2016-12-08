@@ -107,17 +107,17 @@ module.exports = (element, state, cssText, substititionMap, component) => {
     outputCss = `${existingCss}\n${commentMarker}\n${output}`;
     writeCssToFile(outputCss, cssFilename);
 
-    const createComponent = getOrCreateImportReference(
+    const staticComponent = getOrCreateImportReference(
       element,
       state,
-      'cssta/dist/web/createComponent',
+      'cssta/dist/web/staticComponent',
       'default'
     );
     const baseClass = baseClassName
       ? t.stringLiteral(baseClassName)
       : t.nullLiteral();
 
-    newElement = t.callExpression(createComponent, [
+    newElement = t.callExpression(staticComponent, [
       component,
       t.nullLiteral(), // Gets replaced with Object.keys(classNameMap)
       baseClass,

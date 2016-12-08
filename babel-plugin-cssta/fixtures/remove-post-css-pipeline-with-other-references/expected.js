@@ -1,7 +1,7 @@
-import _csstaDistWebCreateComponent from 'cssta/dist/web/createComponent';
+import _csstaDistWebStaticComponent from 'cssta/dist/web/staticComponent';
 
 import simpleExtend from 'postcss-simple-extend';
 
-_csstaDistWebCreateComponent('button', null, 'A', {});
+_csstaDistWebStaticComponent('button', null, 'A', {});
 
 doSomethingWith(simpleExtend);
