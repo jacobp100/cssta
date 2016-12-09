@@ -21,7 +21,7 @@
     "react-dom": "^15.3.2"
   },
   "scripts": {
-    "start": "react-app-rewired start",
+    "start": "react-scripts start",
     "build": "react-app-rewired build; cssnano build/styles.css build/styles.css",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"

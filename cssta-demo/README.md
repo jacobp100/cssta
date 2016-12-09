@@ -23,13 +23,12 @@ module.exports = (config) => {
 };
 ```
 
-Then change `scripts` in `package.json`:
+Then change your `build` script in `package.json` to use `react-app-rewired`. Leave the `start` script as-is.
 
 ```json
 {
   "scripts": {
     ...
-    "start": "react-app-rewired start",
     "build": "react-app-rewired build",
     ...
   }

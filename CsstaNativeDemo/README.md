@@ -20,4 +20,4 @@ Add following to `.babelrc`:
 }
 ```
 
-That's all! You probably want to enable [optimisations](https://jacobp100.gitbooks.io/cssta/content/production_builds.html) if you use string interpolation.
+That's all! You probably want to enable some [optimisations](https://jacobp100.gitbooks.io/cssta/content/production_builds.html) if you use template interpolation.
