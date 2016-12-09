@@ -11,8 +11,7 @@ const {
   getCsstaReferences, interpolationTypes, extractCsstaCallParts,
 } = require('./transformUtil/extractCsstaCallParts');
 const {
-  csstaModules, getImportReferences, getCsstaTypeForCallee,
-  getOptimisationOpts,
+  csstaModules, getImportReferences, getCsstaTypeForCallee, getOptimisationOpts,
 } = require('./util');
 
 const canInterpolate = {
@@ -63,15 +62,17 @@ module.exports = () => ({
   visitor: {
     Program: {
       enter(path, state) {
-        const singleSourceVariableOpts = getOptimisationOpts(state, 'singleSourceOfVariables');
+        const singleSourceVariableOpts = !state.singleSourceOfVariables
+          ? getOptimisationOpts(state, 'singleSourceOfVariables')
+          : null;
 
-        if (!state.singleSourceOfVariables && singleSourceVariableOpts) {
-          if (!singleSourceVariableOpts.sourceFilename) {
-            throw new Error(
-              'You must provide `sourceFilename` in the options for singleSourceOfVariables'
-            );
-          }
+        if (singleSourceVariableOpts && !singleSourceVariableOpts.sourceFilename) {
+          throw new Error(
+            'You must provide `sourceFilename` in the options for singleSourceOfVariables'
+          );
+        }
 
+        if (singleSourceVariableOpts) {
           const fileContainingVariables = p.join(
             state.opts.cwd || process.cwd(),
             singleSourceVariableOpts.sourceFilename
@@ -81,9 +82,9 @@ module.exports = () => ({
           state.singleSourceOfVariables = exportedVariables;
         }
       },
-      exit(path, state) {
+      exit(path) {
         const allCsstaImportRefences = _.flatMap(moduleName => (
-          getImportReferences(path, state, moduleName, 'default')
+          getImportReferences(path, moduleName, 'default')
         ), _.keys(csstaModules));
         const unreferencedCsstaImportReferences = _.filter(csstaPath => (
           csstaPath.references === 0

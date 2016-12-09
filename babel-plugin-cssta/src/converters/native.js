@@ -126,7 +126,7 @@ const getStringWithSubstitutedValues = (substitutionMap, value) => {
   return t.templateLiteral(quasis, expressions);
 };
 
-const createStyleSheetBody = (path, state, substitutionMap) => (rule) => {
+const createStyleSheetBody = (path, substitutionMap) => (rule) => {
   const styleGroups = _.reduce((groups, styleTuple) => {
     const interpolationType = getInterpolationType(substitutionMap, styleTuple);
     const lastGroup = _.last(groups);
@@ -164,7 +164,6 @@ const createStyleSheetBody = (path, state, substitutionMap) => (rule) => {
 
     const cssToReactNativeReference = getOrCreateImportReference(
       path,
-      state,
       'css-to-react-native',
       'default'
     );
@@ -187,7 +186,6 @@ const createStyleSheetBody = (path, state, substitutionMap) => (rule) => {
 
 const createStaticStyleSheet = (
   path,
-  state,
   component,
   substitutionMap,
   rules,
@@ -203,7 +201,7 @@ const createStaticStyleSheet = (
   const styleSheetReference = path.scope.generateUidIdentifier('csstaStyle');
 
   const styleNames = _.map(getStyleName, rules);
-  const styleBodies = _.map(createStyleSheetBody(path, state, substitutionMap), rules);
+  const styleBodies = _.map(createStyleSheetBody(path, substitutionMap), rules);
 
   const styleSheetBody = t.objectExpression(_.map(([styleName, body]) => (
     t.objectProperty(t.numericLiteral(styleName), body)
@@ -222,7 +220,6 @@ const createStaticStyleSheet = (
 
   const staticComponent = getOrCreateImportReference(
     path,
-    state,
     'cssta/dist/native/staticComponent',
     'default'
   );
@@ -236,7 +233,6 @@ const createStaticStyleSheet = (
 
   const reactNativeStyleSheetRef = getOrCreateImportReference(
     path,
-    state,
     'react-native',
     'StyleSheet'
   );
@@ -253,7 +249,6 @@ const createStaticStyleSheet = (
 
 const createDynamicStylesheet = (
   path,
-  state,
   component,
   substitutionMap,
   rules,
@@ -284,7 +279,6 @@ const createDynamicStylesheet = (
 
   const dynamicComponent = getOrCreateImportReference(
     path,
-    state,
     'cssta/dist/native/dynamicComponent',
     'default'
   );
@@ -304,7 +298,7 @@ module.exports = (path, state, component, cssText, substitutionMap) => {
   const exportsVariables =
     !state.singleSourceOfVariables && _.some(rule => !_.isEmpty(rule.exportedVariables), rules);
 
-  const baseParams = [path, state, component, substitutionMap, rules, propTypes];
+  const baseParams = [path, component, substitutionMap, rules, propTypes];
   if (!exportsVariables && _.isEmpty(importedVariables)) {
     createStaticStyleSheet(...baseParams);
   } else {

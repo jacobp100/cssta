@@ -43,7 +43,7 @@ module.exports.getCsstaTypeForCallee = (path, callee) => {
   return { csstaType, importDeclaration };
 };
 
-const getImportReferences = (path, state, moduleName, importedName) => {
+const getImportReferences = (path, moduleName, importedName) => {
   const allBindings = _.values(path.scope.bindings);
   // console.log(_.map('path.node', allBindings));
   const allImportBindings = (importedName === 'default')
@@ -66,8 +66,8 @@ const getImportReference = _.flow(
 );
 module.exports.getImportReference = getImportReference;
 
-module.exports.getOrCreateImportReference = (path, state, moduleName, importedName) => {
-  const existingReference = getImportReference(path, state, moduleName, importedName);
+module.exports.getOrCreateImportReference = (path, moduleName, importedName) => {
+  const existingReference = getImportReference(path, moduleName, importedName);
   if (existingReference) return existingReference.path.node.local;
 
   let reference;

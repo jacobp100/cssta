@@ -21,10 +21,8 @@ module.exports = (path) => {
     const importDeclaration = importSpecifier.findParent(t.isImportDeclaration);
     if (importDeclaration.node.specifiers.length === 1) {
       importDeclaration.remove();
-      // importDeclaration.path.remove();
     } else {
       importSpecifier.remove();
-      // importDeclaration.path.remove();
     }
   }, bindingIdentifiers);
 

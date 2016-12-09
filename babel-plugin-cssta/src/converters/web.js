@@ -62,7 +62,7 @@ module.exports = (path, state, component, cssText, substititionMap) => {
 
   const filename = state.file.opts.filename;
   const cssFilename = p.resolve(
-    process.cwd(),
+    state.opts.cwd || process.cwd(),
     _.getOr('styles.css', ['opts', 'output'], state)
   );
   let existingCss;
@@ -109,7 +109,6 @@ module.exports = (path, state, component, cssText, substititionMap) => {
 
     const staticComponent = getOrCreateImportReference(
       path,
-      state,
       'cssta/dist/web/staticComponent',
       'default'
     );
