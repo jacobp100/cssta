@@ -1,9 +1,8 @@
 /* eslint-disable no-param-reassign */
 const t = require('babel-types');
 const _ = require('lodash/fp');
-const { removeReference } = require('../util');
 
-module.exports = (element, state, node) => {
+module.exports = (path, state, node) => {
   const { arguments: [arg], callee } = node;
 
   if (!t.isArrayExpression(arg)) {
@@ -13,7 +12,7 @@ module.exports = (element, state, node) => {
   const bindingIdentifiers = _.flow(
     _.filter(t.isCallExpression),
     _.map('callee.name'),
-    _.map(_.propertyOf(element.scope.bindings)),
+    _.map(_.propertyOf(path.scope.bindings)),
     _.filter({ references: 1 }),
     _.map('path')
   )(arg.elements);
@@ -22,11 +21,13 @@ module.exports = (element, state, node) => {
     const importDeclaration = importSpecifier.findParent(t.isImportDeclaration);
     if (importDeclaration.node.specifiers.length === 1) {
       importDeclaration.remove();
+      // importDeclaration.path.remove();
     } else {
       importSpecifier.remove();
+      // importDeclaration.path.remove();
     }
   }, bindingIdentifiers);
 
-  removeReference(state, callee.object.name);
-  element.remove();
+  // removeReference(state, callee.object.name);
+  path.remove();
 };

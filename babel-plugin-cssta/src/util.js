@@ -25,96 +25,71 @@ const csstaModules = {
   'cssta/web': 'web',
   'cssta/native': 'native',
 };
+module.exports.csstaModules = csstaModules;
 
-module.exports.getCsstaTypeForCallee = (element, callee) => {
+module.exports.getCsstaTypeForCallee = (path, callee) => {
   if (!t.isIdentifier(callee)) return null;
 
-  const definitionLocation = _.get([callee.name, 'path'], element.scope.bindings);
-  if (!definitionLocation || !t.isImportDefaultSpecifier(definitionLocation)) return null;
+  const importSpecifier = _.get([callee.name, 'path'], path.scope.bindings);
+  if (!importSpecifier || !t.isImportDefaultSpecifier(importSpecifier)) return null;
 
-  const importDeclaration = definitionLocation.findParent(t.isImportDeclaration);
+  const importDeclaration = importSpecifier.findParent(t.isImportDeclaration);
   if (!importDeclaration) return null;
 
   const source = importDeclaration.node.source.value;
   const csstaType = csstaModules[source];
   if (!csstaType) return null;
 
-  return csstaType;
+  return { csstaType, importDeclaration };
 };
 
-module.exports.recordImportReference = (element, state) => {
-  const moduleName = element.node.source.value;
-  const specifiers = element.node.specifiers;
-
-  const filename = state.file.opts.filename;
-
-  _.forEach((specifier) => {
-    let importedName;
-    if (t.isImportSpecifier(specifier)) {
-      importedName = specifier.imported.name;
-    } else if (t.isImportDefaultSpecifier(specifier)) {
-      importedName = 'default';
-    }
-
-    if (importedName) {
-      state.importsPerFile = _.set(
-        [filename, moduleName, importedName],
-        specifier.local,
-        state.importsPerFile
-      );
-      state.identifiersFromImportsPerFile = _.set(
-        [filename, specifier.local.name],
-        element,
-        state.identifiersFromImportsPerFile
-      );
-    }
-  }, specifiers);
+const getImportReferences = (path, state, moduleName, importedName) => {
+  const allBindings = _.values(path.scope.bindings);
+  // console.log(_.map('path.node', allBindings));
+  const allImportBindings = (importedName === 'default')
+    ? _.filter(reference => t.isImportDefaultSpecifier(reference.path.node), allBindings)
+    : _.filter(reference => (
+      t.isImportSpecifier(reference.path.node) &&
+      reference.path.node.imported.name === importedName
+    ), allBindings);
+  const importBindingsForModule = _.filter((reference) => {
+    const importDeclaration = reference.path.findParent(t.isImportDeclaration);
+    return _.get(['source', 'value'], importDeclaration.node) === moduleName;
+  }, allImportBindings);
+  return importBindingsForModule;
 };
+module.exports.getImportReferences = getImportReferences;
 
-module.exports.getOrCreateImportReference = (element, state, moduleName, importedName) => {
-  const filename = state.file.opts.filename;
+const getImportReference = _.flow(
+  getImportReferences,
+  _.first
+);
+module.exports.getImportReference = getImportReference;
 
-  const referencePath = [filename, moduleName, importedName];
-
-  const existingReference = _.get(referencePath, state.importsPerFile);
-  if (existingReference) return existingReference;
+module.exports.getOrCreateImportReference = (path, state, moduleName, importedName) => {
+  const existingReference = getImportReference(path, state, moduleName, importedName);
+  if (existingReference) return existingReference.path.node.local;
 
   let reference;
   let importSpecifier;
 
   if (importedName === 'default') {
-    reference = element.scope.generateUidIdentifier(moduleName);
+    reference = path.scope.generateUidIdentifier(moduleName);
     importSpecifier = t.importDefaultSpecifier(reference);
   } else {
-    reference = element.scope.generateUidIdentifier(importedName);
+    reference = path.scope.generateUidIdentifier(importedName);
     importSpecifier = t.importSpecifier(reference, t.identifier(importedName));
   }
 
-  const program = element.findParent(t.isProgram);
-  program.unshiftContainer('body', t.importDeclaration([
+  const importDeclaration = t.importDeclaration([
     importSpecifier,
-  ], t.stringLiteral(moduleName)));
+  ], t.stringLiteral(moduleName));
 
-  state.importsPerFile = _.set(referencePath, reference, state.importsPerFile);
+  const program = path.findParent(t.isProgram);
+  const [importDeclarationPath] = program.unshiftContainer('body', importDeclaration);
+  program.scope.registerDeclaration(importDeclarationPath);
 
   return reference;
-};
-
-module.exports.removeReference = (state, name) => {
-  const filename = state.file.opts.filename;
-  state.removedRefenceCountPerFile = _.update(
-    [filename, name],
-    _.add(1),
-    state.removedRefenceCountPerFile
-  );
-};
-
-module.exports.getReferenceCountForImport = (state, name) => {
-  const filename = state.file.opts.filename;
-  const importElement = _.get([filename, name], state.identifiersFromImportsPerFile);
-  const referenceCount = _.getOr(0, ['bindings', name, 'references'], importElement.scope);
-  const removedReferenceCount = _.getOr(0, [filename, name], state.removedRefenceCountPerFile);
-  return referenceCount - removedReferenceCount;
 };
 
 const findOptionsForKey = (optimisations, name) => {

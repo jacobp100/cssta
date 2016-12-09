@@ -126,7 +126,7 @@ const getStringWithSubstitutedValues = (substitutionMap, value) => {
   return t.templateLiteral(quasis, expressions);
 };
 
-const createStyleSheetBody = (element, state, substitutionMap) => (rule) => {
+const createStyleSheetBody = (path, state, substitutionMap) => (rule) => {
   const styleGroups = _.reduce((groups, styleTuple) => {
     const interpolationType = getInterpolationType(substitutionMap, styleTuple);
     const lastGroup = _.last(groups);
@@ -163,7 +163,7 @@ const createStyleSheetBody = (element, state, substitutionMap) => (rule) => {
     }
 
     const cssToReactNativeReference = getOrCreateImportReference(
-      element,
+      path,
       state,
       'css-to-react-native',
       'default'
@@ -186,10 +186,10 @@ const createStyleSheetBody = (element, state, substitutionMap) => (rule) => {
 };
 
 const createStaticStyleSheet = (
-  element,
+  path,
   state,
-  substitutionMap,
   component,
+  substitutionMap,
   rules,
   propTypes
 ) => {
@@ -200,10 +200,10 @@ const createStaticStyleSheet = (
     return value;
   };
 
-  const styleSheetReference = element.scope.generateUidIdentifier('csstaStyle');
+  const styleSheetReference = path.scope.generateUidIdentifier('csstaStyle');
 
   const styleNames = _.map(getStyleName, rules);
-  const styleBodies = _.map(createStyleSheetBody(element, state, substitutionMap), rules);
+  const styleBodies = _.map(createStyleSheetBody(path, state, substitutionMap), rules);
 
   const styleSheetBody = t.objectExpression(_.map(([styleName, body]) => (
     t.objectProperty(t.numericLiteral(styleName), body)
@@ -221,7 +221,7 @@ const createStaticStyleSheet = (
   ]), _.zip(styleNames, rules)));
 
   const staticComponent = getOrCreateImportReference(
-    element,
+    path,
     state,
     'cssta/dist/native/staticComponent',
     'default'
@@ -232,10 +232,10 @@ const createStaticStyleSheet = (
     rulesBody,
   ]);
 
-  element.replaceWith(newElement);
+  path.replaceWith(newElement);
 
   const reactNativeStyleSheetRef = getOrCreateImportReference(
-    element,
+    path,
     state,
     'react-native',
     'StyleSheet'
@@ -248,14 +248,14 @@ const createStaticStyleSheet = (
     )),
   ]);
 
-  element.insertBefore(styleSheetElement);
+  path.insertBefore(styleSheetElement);
 };
 
 const createDynamicStylesheet = (
-  element,
+  path,
   state,
-  substitutionMap,
   component,
+  substitutionMap,
   rules,
   propTypes,
   importedVariables
@@ -283,7 +283,7 @@ const createDynamicStylesheet = (
   ]), rules));
 
   const dynamicComponent = getOrCreateImportReference(
-    element,
+    path,
     state,
     'cssta/dist/native/dynamicComponent',
     'default'
@@ -296,15 +296,15 @@ const createDynamicStylesheet = (
     rulesBody,
   ]);
 
-  element.replaceWith(newElement);
+  path.replaceWith(newElement);
 };
 
-module.exports = (element, state, component, cssText, substitutionMap) => {
+module.exports = (path, state, component, cssText, substitutionMap) => {
   const { rules, propTypes, importedVariables } = extractRules(cssText);
   const exportsVariables =
     !state.singleSourceOfVariables && _.some(rule => !_.isEmpty(rule.exportedVariables), rules);
 
-  const baseParams = [element, state, substitutionMap, component, rules, propTypes];
+  const baseParams = [path, state, component, substitutionMap, rules, propTypes];
   if (!exportsVariables && _.isEmpty(importedVariables)) {
     createStaticStyleSheet(...baseParams);
   } else {

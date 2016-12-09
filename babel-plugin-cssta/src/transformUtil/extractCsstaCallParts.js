@@ -17,17 +17,17 @@ const csstaConstructorExpressionTypes = {
   ],
 };
 
-module.exports.getCsstaReferences = (element, state, node) => {
+module.exports.getCsstaReferences = (path, node) => {
   if (!(node.type in csstaConstructorExpressionTypes)) return null;
 
   const [callee, component] = csstaConstructorExpressionTypes[node.type](node);
 
-  const csstaType = getCsstaTypeForCallee(element, callee);
-  if (!csstaType) return null;
+  const csstaTypeParts = getCsstaTypeForCallee(path, callee);
+  if (!csstaTypeParts) return null;
 
-  const reference = callee.name;
+  const { csstaType, importBinding } = csstaTypeParts;
 
-  return { component, reference, csstaType };
+  return { callee, importBinding, component, csstaType };
 };
 
 module.exports.interpolationTypes = interpolationTypes;

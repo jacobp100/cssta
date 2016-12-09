@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-const path = require('path');
+const p = require('path');
 const t = require('babel-types');
 const _ = require('lodash/fp');
 const { varRegExp } = require('cssta/dist/util');
@@ -7,11 +7,13 @@ const transformWebCssta = require('./converters/web');
 const transformNativeCssta = require('./converters/native');
 const removeSetPostCssPipeline = require('./optimizations/removeSetPostCssPipeline');
 const singleSourceOfVariables = require('./optimizations/singleSourceOfVariables');
-const { removeReference, getReferenceCountForImport } = require('./util');
 const {
   getCsstaReferences, interpolationTypes, extractCsstaCallParts,
 } = require('./transformUtil/extractCsstaCallParts');
-const { getCsstaTypeForCallee, recordImportReference, getOptimisationOpts } = require('./util');
+const {
+  csstaModules, getImportReferences, getCsstaTypeForCallee,
+  getOptimisationOpts,
+} = require('./util');
 
 const canInterpolate = {
   web: false,
@@ -23,11 +25,11 @@ const transformCsstaTypes = {
   native: transformNativeCssta,
 };
 
-const transformCsstaCall = (element, state, node, stringArg) => {
-  const csstaReferenceParts = getCsstaReferences(element, state, node);
+const transformCsstaCall = (path, state, target, stringArg) => {
+  const csstaReferenceParts = getCsstaReferences(path, target);
   if (!csstaReferenceParts) return;
 
-  const { component, reference, csstaType } = csstaReferenceParts;
+  const { callee, component, csstaType } = csstaReferenceParts;
 
   let interpolationType;
   const interpolateValuesOnly = Boolean(getOptimisationOpts(state, 'interpolateValuesOnly'));
@@ -51,15 +53,16 @@ const transformCsstaCall = (element, state, node, stringArg) => {
     ));
   }
 
-  transformCsstaTypes[csstaType](element, state, component, cssText, substitutionMap);
-  removeReference(state, reference);
+  transformCsstaTypes[csstaType](path, state, component, cssText, substitutionMap);
+  const binding = path.scope.getBinding(callee.name);
+  binding.dereference();
 };
 
 
 module.exports = () => ({
   visitor: {
     Program: {
-      enter(element, state) {
+      enter(path, state) {
         const singleSourceVariableOpts = getOptimisationOpts(state, 'singleSourceOfVariables');
 
         if (!state.singleSourceOfVariables && singleSourceVariableOpts) {
@@ -69,7 +72,7 @@ module.exports = () => ({
             );
           }
 
-          const fileContainingVariables = path.join(
+          const fileContainingVariables = p.join(
             state.opts.cwd || process.cwd(),
             singleSourceVariableOpts.sourceFilename
           );
@@ -85,49 +88,37 @@ module.exports = () => ({
           state.identifiersFromImportsPerFile
         );
       },
-      exit(element, state) {
-        const filename = state.file.opts.filename;
-        const importLocals = _.flow(
-          _.getOr({}, ['removedRefenceCountPerFile', filename]),
-          _.keys
-        )(state);
-        const importElements = _.flow(
-          _.map(_.propertyOf(state.identifiersFromImportsPerFile[filename])),
-          _.uniq
-        )(importLocals);
+      exit(path, state) {
+        const allCsstaImportRefences = _.flatMap(moduleName => (
+          getImportReferences(path, state, moduleName, 'default')
+        ), _.keys(csstaModules));
+        const unreferencedCsstaImportReferences = _.filter(csstaPath => (
+          csstaPath.references === 0
+        ), allCsstaImportRefences);
 
-        _.forEach((importElement) => {
-          importElement.node.specifiers = _.filter((specifier) => {
-            const localName = specifier.local.name;
-            return getReferenceCountForImport(state, localName) > 0;
-          }, importElement.node.specifiers);
-
-          if (_.isEmpty(importElement.node.specifiers)) {
-            importElement.remove();
-          }
-        }, importElements);
+        _.forEach((reference) => {
+          const importDeclaration = reference.path.findParent(t.isImportDeclaration);
+          importDeclaration.remove();
+        }, unreferencedCsstaImportReferences);
       },
     },
-    ImportDeclaration(element, state) {
-      recordImportReference(element, state);
-    },
-    CallExpression(element, state) {
-      const { node } = element;
+    CallExpression(path, state) {
+      const { node } = path;
       const { callee } = node;
       const [arg] = node.arguments;
       if (
         t.isMemberExpression(callee) &&
         _.get('property.name', callee) === 'setPostCssPipeline' &&
-        getCsstaTypeForCallee(element, callee.object)
+        getCsstaTypeForCallee(path, callee.object)
       ) {
-        removeSetPostCssPipeline(element, state, node);
+        removeSetPostCssPipeline(path, state, node);
       } else {
-        transformCsstaCall(element, state, callee, arg);
+        transformCsstaCall(path, state, callee, arg);
       }
     },
-    TaggedTemplateExpression(element, state) {
-      const { quasi, tag } = element.node;
-      transformCsstaCall(element, state, tag, quasi);
+    TaggedTemplateExpression(path, state) {
+      const { quasi, tag } = path.node;
+      transformCsstaCall(path, state, tag, quasi);
     },
   },
 });

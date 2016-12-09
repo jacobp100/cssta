@@ -8,7 +8,9 @@ const plugin = require('.');
 
 const approve = process.argv.includes('--approve');
 const skipTest = process.argv.includes('--skip-test');
-
+const print = process.argv.includes('--print');
+const filterIndex = process.argv.indexOf('--filter');
+const filter = filterIndex === -1 ? '' : process.argv[filterIndex + 1];
 const baseDir = path.join(__dirname, '..');
 
 const normaliseCss = (str) => {
@@ -41,7 +43,9 @@ const getActual = (testPath, actualJsPath, tempCssPath, optionsPath) => {
   return { actualJs, actualCss };
 };
 
-glob.sync(path.join(baseDir, 'fixtures/*/')).forEach((testPath) => {
+glob.sync(path.join(baseDir, 'fixtures/*/')).filter(name => (
+  !filter || name.indexOf(filter) !== -1
+)).forEach((testPath) => {
   const testName = path.relative(path.join(baseDir, 'fixtures'), testPath);
 
   const expectedJsPath = path.join(testPath, 'expected.js');
@@ -56,7 +60,8 @@ glob.sync(path.join(baseDir, 'fixtures/*/')).forEach((testPath) => {
     fs.writeFileSync(expectedJsPath, actualJs, options);
     if (actualCss) fs.writeFileSync(expectedCssPath, actualCss, options);
   } else if (skipTest) {
-    getActual(actualJsPath, tempCssPath, optionsPath);
+    const { actualJs } = getActual(testPath, actualJsPath, tempCssPath, optionsPath);
+    if (print) console.log(actualJs); // eslint-disable-line
   } else {
     it(`should work with ${testName}`, () => {
       const { actualJs, actualCss } = getActual(testPath, actualJsPath, tempCssPath, optionsPath);

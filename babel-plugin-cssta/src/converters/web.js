@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 const fs = require('fs');
-const path = require('path');
+const p = require('path');
 const mkdirp = require('mkdirp');
 const t = require('babel-types');
 const _ = require('lodash/fp');
@@ -48,20 +48,20 @@ const resetGenerators = () => {
 resetGenerators();
 
 const writeCssToFile = (outputCss, cssFilename) => {
-  mkdirp.sync(path.dirname(cssFilename));
+  mkdirp.sync(p.dirname(cssFilename));
   fs.writeFileSync(cssFilename, outputCss, {
     encoding: 'utf-8',
     flag: 'w+',
   });
 };
 
-module.exports = (element, state, component, cssText, substititionMap) => {
+module.exports = (path, state, component, cssText, substititionMap) => {
   if (!_.isEmpty(substititionMap)) {
     throw new Error('You cannot use interpolation in template strings (i.e. `color: ${primary}`)'); // eslint-disable-line
   }
 
   const filename = state.file.opts.filename;
-  const cssFilename = path.resolve(
+  const cssFilename = p.resolve(
     process.cwd(),
     _.getOr('styles.css', ['opts', 'output'], state)
   );
@@ -108,7 +108,7 @@ module.exports = (element, state, component, cssText, substititionMap) => {
     writeCssToFile(outputCss, cssFilename);
 
     const staticComponent = getOrCreateImportReference(
-      element,
+      path,
       state,
       'cssta/dist/web/staticComponent',
       'default'
@@ -130,9 +130,9 @@ module.exports = (element, state, component, cssText, substititionMap) => {
   writeCssToFile(outputCss, cssFilename);
 
   if (newElement) {
-    element.replaceWith(newElement);
+    path.replaceWith(newElement);
   } else {
-    element.remove();
+    path.remove();
   }
 };
 
