@@ -80,13 +80,6 @@ module.exports = () => ({
             singleSourceOfVariables(fileContainingVariables, state.file.opts);
           state.singleSourceOfVariables = exportedVariables;
         }
-
-        const filename = state.file.opts.filename;
-        state.identifiersFromImportsPerFile = _.set(
-          [filename],
-          {},
-          state.identifiersFromImportsPerFile
-        );
       },
       exit(path, state) {
         const allCsstaImportRefences = _.flatMap(moduleName => (
@@ -111,7 +104,7 @@ module.exports = () => ({
         _.get('property.name', callee) === 'setPostCssPipeline' &&
         getCsstaTypeForCallee(path, callee.object)
       ) {
-        removeSetPostCssPipeline(path, state, node);
+        removeSetPostCssPipeline(path);
       } else {
         transformCsstaCall(path, state, callee, arg);
       }

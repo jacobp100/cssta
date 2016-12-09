@@ -9,8 +9,8 @@ const {
 const { containsSubstitution } = require('../util');
 
 
-const extractVariables = (path, state, node, stringArg) => {
-  const csstaReferenceParts = getCsstaReferences(path, state, node);
+const extractVariables = (path, target, stringArg) => {
+  const csstaReferenceParts = getCsstaReferences(path, target);
   if (!csstaReferenceParts) return null;
 
   const callParts = extractCsstaCallParts(stringArg, interpolationTypes.ALLOW);
@@ -51,8 +51,8 @@ module.exports = (filename, fileOpts) => {
   const ast = parse(source, fileOpts);
 
   let exportedVariables = null;
-  const doExtractVariables = (path, state, node, stringArg) => {
-    const newExportedVariables = extractVariables(path, state, node, stringArg);
+  const doExtractVariables = (path, node, stringArg) => {
+    const newExportedVariables = extractVariables(path, node, stringArg);
     if (exportedVariables && newExportedVariables) {
       throw new Error('When using singleSourceOfVariables, only one component can define variables');
     } else if (newExportedVariables) {
@@ -61,14 +61,14 @@ module.exports = (filename, fileOpts) => {
   };
 
   traverse(ast, {
-    CallExpression(path, state) {
+    CallExpression(path) {
       const { node } = path;
       const [arg] = node.arguments;
-      doExtractVariables(path, state, node, arg);
+      doExtractVariables(path, node, arg);
     },
-    TaggedTemplateExpression(path, state) {
+    TaggedTemplateExpression(path) {
       const { quasi, tag } = path.node;
-      doExtractVariables(path, state, tag, quasi);
+      doExtractVariables(path, tag, quasi);
     },
   }, null, {
     file: { opts: { filename: 'intermediate-file' } },

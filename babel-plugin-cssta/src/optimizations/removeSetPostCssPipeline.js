@@ -2,8 +2,8 @@
 const t = require('babel-types');
 const _ = require('lodash/fp');
 
-module.exports = (path, state, node) => {
-  const { arguments: [arg], callee } = node;
+module.exports = (path) => {
+  const { arguments: [arg], callee } = path.node;
 
   if (!t.isArrayExpression(arg)) {
     throw new Error('Expected argument to setPostCssPipeline to be an array');
@@ -28,6 +28,8 @@ module.exports = (path, state, node) => {
     }
   }, bindingIdentifiers);
 
-  // removeReference(state, callee.object.name);
+  const binding = path.scope.getBinding(callee.object.name);
+  binding.dereference();
+
   path.remove();
 };
