@@ -83,12 +83,10 @@ module.exports = () => ({
         }
       },
       exit(path) {
-        const allCsstaImportRefences = _.flatMap(moduleName => (
-          getImportReferences(path, moduleName, 'default')
-        ), _.keys(csstaModules));
-        const unreferencedCsstaImportReferences = _.filter(csstaPath => (
-          csstaPath.references === 0
-        ), allCsstaImportRefences);
+        const unreferencedCsstaImportReferences = _.flow(
+          _.flatMap(moduleName => getImportReferences(path, moduleName, 'default')),
+          _.filter({ references: 0 })
+        )(_.keys(csstaModules));
 
         _.forEach((reference) => {
           const importDeclaration = reference.path.findParent(t.isImportDeclaration);
