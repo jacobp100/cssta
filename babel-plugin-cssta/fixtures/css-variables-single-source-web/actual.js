@@ -1,11 +1,13 @@
 import cssta from 'cssta';
-import { View } from 'react-native';
 
 cssta.div`
-  --color: red;
-  color: var(--color);
+  --large: 100;
+  --small: 50;
+  --margin: var(--large) var(--small);
+
+  width: var(--large);
 `;
 
 cssta.div`
-  color: var(--color);
+  width: var(--small);
 `;

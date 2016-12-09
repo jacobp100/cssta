@@ -1,8 +1,8 @@
-import _csstaDistNativeDynamicComponent from 'cssta/dist/native/dynamicComponent';
+import _dynamicComponent from 'cssta/dist/native/dynamicComponent';
 
 import { View } from 'react-native';
 
-_csstaDistNativeDynamicComponent(View, [], ['color'], [{
+_dynamicComponent(View, [], ['color'], [{
   'validate': function (p) {
     return true;
   },

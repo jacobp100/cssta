@@ -1,7 +1,7 @@
-import _csstaDistWebStaticComponent from 'cssta/dist/web/staticComponent';
+import _staticComponent from 'cssta/dist/web/staticComponent';
 
 
-_csstaDistWebStaticComponent('button', null, null, {
+_staticComponent('button', null, null, {
   'stringAttribute': {
     '1': 'A',
     '2': 'B'

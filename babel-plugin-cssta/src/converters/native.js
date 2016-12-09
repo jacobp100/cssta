@@ -3,6 +3,7 @@ const t = require('babel-types');
 const { parse } = require('babylon');
 const _ = require('lodash/fp');
 const { getValidatorSourceForSelector } = require('cssta/src/native/selectorTransform');
+const resolveVariableDependencies = require('cssta/src/util/resolveVariableDependencies');
 const extractRules = require('cssta/src/native/extractRules');
 const { default: cssToReactNative, getPropertyName } = require('css-to-react-native');
 const {
@@ -126,7 +127,7 @@ const getStringWithSubstitutedValues = (substitutionMap, value) => {
   return t.templateLiteral(quasis, expressions);
 };
 
-const createStyleSheetBody = (path, substitutionMap) => (rule) => {
+const createStyleSheetBody = (path, substitutionMap, rule) => {
   const styleGroups = _.reduce((groups, styleTuple) => {
     const interpolationType = getInterpolationType(substitutionMap, styleTuple);
     const lastGroup = _.last(groups);
@@ -176,12 +177,15 @@ const createStyleSheetBody = (path, substitutionMap) => (rule) => {
     return t.callExpression(cssToReactNativeReference, [bodyPairs]);
   }, styleGroups);
 
-  return (transformedGroups.length === 1)
-    ? transformedGroups[0]
-    : t.callExpression(
-      t.memberExpression(t.identifier('Object'), t.identifier('assign')),
-      transformedGroups
-    );
+  if (_.isEmpty(transformedGroups)) {
+    return null;
+  } else if (transformedGroups.length === 1) {
+    return transformedGroups[0];
+  }
+  return t.callExpression(
+    t.memberExpression(t.identifier('Object'), t.identifier('assign')),
+    transformedGroups
+  );
 };
 
 const createStaticStyleSheet = (
@@ -200,14 +204,13 @@ const createStaticStyleSheet = (
 
   const styleSheetReference = path.scope.generateUidIdentifier('csstaStyle');
 
-  const styleNames = _.map(getStyleName, rules);
-  const styleBodies = _.map(createStyleSheetBody(path, substitutionMap), rules);
+  const ruleBases = _.flow(
+    _.map(rule => _.set('styleBody', createStyleSheetBody(path, substitutionMap, rule), rule)),
+    _.filter(rule => rule.styleBody),
+    _.map(_.update('styleName', getStyleName))
+  )(rules);
 
-  const styleSheetBody = t.objectExpression(_.map(([styleName, body]) => (
-    t.objectProperty(t.numericLiteral(styleName), body)
-  ), _.zip(styleNames, styleBodies)));
-
-  const rulesBody = t.arrayExpression(_.map(([styleName, { selector }]) => t.objectExpression([
+  const rulesBody = t.arrayExpression(_.map(({ selector, styleName }) => t.objectExpression([
     t.objectProperty(
       t.stringLiteral('validate'),
       createValidatorNodeForSelector(selector)
@@ -216,7 +219,7 @@ const createStaticStyleSheet = (
       t.stringLiteral('style'),
       t.memberExpression(styleSheetReference, t.numericLiteral(styleName), true)
     ),
-  ]), _.zip(styleNames, rules)));
+  ]), ruleBases));
 
   const staticComponent = getOrCreateImportReference(
     path,
@@ -237,14 +240,20 @@ const createStaticStyleSheet = (
     'StyleSheet'
   );
 
-  const styleSheetElement = t.variableDeclaration('var', [
-    t.variableDeclarator(styleSheetReference, t.callExpression(
-      t.memberExpression(reactNativeStyleSheetRef, t.identifier('create')),
-      [styleSheetBody]
-    )),
-  ]);
+  if (!_.isEmpty(ruleBases)) {
+    const styleSheetBody = t.objectExpression(_.map(({ styleName, styleBody }) => (
+      t.objectProperty(t.numericLiteral(styleName), styleBody)
+    ), ruleBases));
 
-  path.insertBefore(styleSheetElement);
+    const styleSheetElement = t.variableDeclaration('var', [
+      t.variableDeclarator(styleSheetReference, t.callExpression(
+        t.memberExpression(reactNativeStyleSheetRef, t.identifier('create')),
+        [styleSheetBody]
+      )),
+    ]);
+
+    path.insertBefore(styleSheetElement);
+  }
 };
 
 const createDynamicStylesheet = (
@@ -295,11 +304,19 @@ const createDynamicStylesheet = (
 
 module.exports = (path, state, component, cssText, substitutionMap) => {
   const { rules, propTypes, importedVariables } = extractRules(cssText);
-  const exportsVariables =
-    !state.singleSourceOfVariables && _.some(rule => !_.isEmpty(rule.exportedVariables), rules);
+  const exportedVariables = _.reduce(_.assign, {}, _.map('exportedVariables', rules));
+  const exportsVariables = !_.isEmpty(exportedVariables);
+
+  const { singleSourceOfVariables } = state;
+  const resolvedVariables = (singleSourceOfVariables && exportsVariables)
+    ? resolveVariableDependencies(exportedVariables, {})
+    : null;
+  if (resolvedVariables && !_.isEqual(resolvedVariables, singleSourceOfVariables)) {
+    throw new Error('When using singleSourceOfVariables, only one component can define variables');
+  }
 
   const baseParams = [path, component, substitutionMap, rules, propTypes];
-  if (!exportsVariables && _.isEmpty(importedVariables)) {
+  if (singleSourceOfVariables || (!exportsVariables && _.isEmpty(importedVariables))) {
     createStaticStyleSheet(...baseParams);
   } else {
     createDynamicStylesheet(...baseParams, importedVariables);

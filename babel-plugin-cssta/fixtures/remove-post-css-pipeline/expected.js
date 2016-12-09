@@ -1,4 +1,4 @@
-import _csstaDistWebStaticComponent from 'cssta/dist/web/staticComponent';
+import _staticComponent from 'cssta/dist/web/staticComponent';
 
 
-_csstaDistWebStaticComponent('button', null, 'A', {});
+_staticComponent('button', null, 'A', {});

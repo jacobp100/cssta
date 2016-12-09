@@ -1,15 +1,15 @@
 import { StyleSheet as _StyleSheet } from 'react-native';
-import _csstaDistNativeStaticComponent from 'cssta/dist/native/staticComponent';
+import _staticComponent from 'cssta/dist/native/staticComponent';
 
 import { View } from 'react-native';
 
 var _csstaStyle = _StyleSheet.create({
   0: {
-    'color': 'red'
+    'width': 100
   }
 });
 
-_csstaDistNativeStaticComponent(View, [], [{
+_staticComponent(View, [], [{
   'validate': function (p) {
     return true;
   },
@@ -18,11 +18,11 @@ _csstaDistNativeStaticComponent(View, [], [{
 
 var _csstaStyle2 = _StyleSheet.create({
   0: {
-    'color': 'red'
+    'width': 50
   }
 });
 
-_csstaDistNativeStaticComponent(View, [], [{
+_staticComponent(View, [], [{
   'validate': function (p) {
     return true;
   },

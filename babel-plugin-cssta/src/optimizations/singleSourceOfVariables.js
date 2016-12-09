@@ -3,6 +3,7 @@ const { parse } = require('babylon');
 const { default: traverse } = require('babel-traverse');
 const _ = require('lodash/fp');
 const extractRules = require('cssta/src/native/extractRules'); // Is this really native-only?
+const resolveVariableDependencies = require('cssta/src/util/resolveVariableDependencies');
 const {
   getCsstaReferences, interpolationTypes, extractCsstaCallParts,
 } = require('../transformUtil/extractCsstaCallParts');
@@ -78,5 +79,6 @@ module.exports = (filename, fileOpts) => {
     throw new Error('Expected given file to contain CSS variables for singleSourceOfVariables');
   }
 
-  return exportedVariables;
+  const resolvedVariables = resolveVariableDependencies(exportedVariables, {});
+  return resolvedVariables;
 };

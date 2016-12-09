@@ -65,7 +65,6 @@ const getImportReference = _.flow(
   _.first
 );
 module.exports.getImportReference = getImportReference;
-
 module.exports.getOrCreateImportReference = (path, moduleName, importedName) => {
   const existingReference = getImportReference(path, moduleName, importedName);
   if (existingReference) return existingReference.path.node.local;
@@ -74,7 +73,9 @@ module.exports.getOrCreateImportReference = (path, moduleName, importedName) => 
   let importSpecifier;
 
   if (importedName === 'default') {
-    reference = path.scope.generateUidIdentifier(moduleName);
+    const referenceMatch = moduleName.match(/(?:\/|^)([^/]+)$/);
+    const referenceName = referenceMatch ? referenceMatch[1] : moduleName;
+    reference = path.scope.generateUidIdentifier(referenceName);
     importSpecifier = t.importDefaultSpecifier(reference);
   } else {
     reference = path.scope.generateUidIdentifier(importedName);
