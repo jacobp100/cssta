@@ -26,6 +26,22 @@ const csstaModules = {
   'cssta/native': 'native',
 };
 
+module.exports.getCsstaTypeForCallee = (element, callee) => {
+  if (!t.isIdentifier(callee)) return null;
+
+  const definitionLocation = _.get([callee.name, 'path'], element.scope.bindings);
+  if (!definitionLocation || !t.isImportDefaultSpecifier(definitionLocation)) return null;
+
+  const importDeclaration = definitionLocation.findParent(t.isImportDeclaration);
+  if (!importDeclaration) return null;
+
+  const source = importDeclaration.node.source.value;
+  const csstaType = csstaModules[source];
+  if (!csstaType) return null;
+
+  return csstaType;
+};
+
 module.exports.recordImportReference = (element, state) => {
   const moduleName = element.node.source.value;
   const specifiers = element.node.specifiers;
@@ -53,34 +69,6 @@ module.exports.recordImportReference = (element, state) => {
       );
     }
   }, specifiers);
-};
-
-module.exports.recordCsstaReference = (element, state) => {
-  const moduleName = element.node.source.value;
-  const specifiers = element.node.specifiers;
-
-  const filename = state.file.opts.filename;
-
-  const csstaType = csstaModules[moduleName];
-  if (!csstaType) return;
-
-  const defaultSpecifiers = [].concat(
-    _.filter({ type: 'ImportDefaultSpecifier' }, specifiers),
-    _.filter({ type: 'ImportSpecifier', imported: { name: 'default' } }, specifiers)
-  );
-  if (_.isEmpty(defaultSpecifiers)) return;
-
-  const specifierReferenceTypes = _.flow(
-    _.map('local.name'),
-    _.map(reference => [reference, csstaType]),
-    _.fromPairs
-  )(defaultSpecifiers);
-
-  state.csstaReferenceTypesPerFile = _.update(
-    [filename],
-    _.assign(specifierReferenceTypes),
-    state.csstaReferenceTypesPerFile || {}
-  );
 };
 
 module.exports.getOrCreateImportReference = (element, state, moduleName, importedName) => {

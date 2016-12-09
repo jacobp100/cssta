@@ -11,7 +11,7 @@ const { removeReference, getReferenceCountForImport } = require('./util');
 const {
   getCsstaReferences, interpolationTypes, extractCsstaCallParts,
 } = require('./transformUtil/extractCsstaCallParts');
-const { recordImportReference, recordCsstaReference, getOptimisationOpts } = require('./util');
+const { getCsstaTypeForCallee, recordImportReference, getOptimisationOpts } = require('./util');
 
 const canInterpolate = {
   web: false,
@@ -84,11 +84,6 @@ module.exports = () => ({
           {},
           state.identifiersFromImportsPerFile
         );
-        state.csstaReferenceTypesPerFile = _.set(
-          [filename],
-          {},
-          state.csstaReferenceTypesPerFile
-        );
       },
       exit(element, state) {
         const filename = state.file.opts.filename;
@@ -115,17 +110,15 @@ module.exports = () => ({
     },
     ImportDeclaration(element, state) {
       recordImportReference(element, state);
-      recordCsstaReference(element, state);
     },
     CallExpression(element, state) {
-      const filename = state.file.opts.filename;
       const { node } = element;
       const { callee } = node;
       const [arg] = node.arguments;
       if (
         t.isMemberExpression(callee) &&
         _.get('property.name', callee) === 'setPostCssPipeline' &&
-        _.get('object.name', callee) in state.csstaReferenceTypesPerFile[filename]
+        getCsstaTypeForCallee(element, callee.object)
       ) {
         removeSetPostCssPipeline(element, state, node);
       } else {

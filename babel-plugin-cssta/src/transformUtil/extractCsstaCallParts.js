@@ -1,5 +1,7 @@
 const t = require('babel-types');
 const _ = require('lodash/fp');
+const { getCsstaTypeForCallee } = require('../util');
+
 
 const interpolationTypes = {
   ALLOW: 0,
@@ -8,10 +10,10 @@ const interpolationTypes = {
 };
 
 const csstaConstructorExpressionTypes = {
-  CallExpression: element => [element.callee, element.arguments[0]],
-  MemberExpression: element => [
-    element.object,
-    element.computed ? element.property : t.stringLiteral(element.property.name),
+  CallExpression: node => [node.callee, node.arguments[0]],
+  MemberExpression: node => [
+    node.object,
+    node.computed ? node.property : t.stringLiteral(node.property.name),
   ],
 };
 
@@ -20,12 +22,10 @@ module.exports.getCsstaReferences = (element, state, node) => {
 
   const [callee, component] = csstaConstructorExpressionTypes[node.type](node);
 
-  if (!t.isIdentifier(callee)) return null;
-  const reference = callee.name;
-
-  const filename = state.file.opts.filename;
-  const csstaType = _.get([filename, reference], state.csstaReferenceTypesPerFile);
+  const csstaType = getCsstaTypeForCallee(element, callee);
   if (!csstaType) return null;
+
+  const reference = callee.name;
 
   return { component, reference, csstaType };
 };

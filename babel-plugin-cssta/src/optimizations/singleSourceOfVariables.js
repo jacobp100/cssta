@@ -6,7 +6,7 @@ const extractRules = require('cssta/src/native/extractRules'); // Is this really
 const {
   getCsstaReferences, interpolationTypes, extractCsstaCallParts,
 } = require('../transformUtil/extractCsstaCallParts');
-const { recordCsstaReference, containsSubstitution } = require('../util');
+const { containsSubstitution } = require('../util');
 
 
 const extractVariables = (element, state, node, stringArg) => {
@@ -61,7 +61,6 @@ module.exports = (filename, fileOpts) => {
   };
 
   traverse(ast, {
-    ImportDeclaration: recordCsstaReference,
     CallExpression(element, state) {
       const { node } = element;
       const [arg] = node.arguments;
