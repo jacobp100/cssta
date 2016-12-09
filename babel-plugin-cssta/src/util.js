@@ -19,6 +19,70 @@ const jsonToNode = (object) => {
 };
 module.exports.jsonToNode = jsonToNode;
 
+
+const csstaModules = {
+  cssta: 'web',
+  'cssta/web': 'web',
+  'cssta/native': 'native',
+};
+
+module.exports.recordImportReference = (element, state) => {
+  const moduleName = element.node.source.value;
+  const specifiers = element.node.specifiers;
+
+  const filename = state.file.opts.filename;
+
+  _.forEach((specifier) => {
+    let importedName;
+    if (t.isImportSpecifier(specifier)) {
+      importedName = specifier.imported.name;
+    } else if (t.isImportDefaultSpecifier(specifier)) {
+      importedName = 'default';
+    }
+
+    if (importedName) {
+      state.importsPerFile = _.set(
+        [filename, moduleName, importedName],
+        specifier.local,
+        state.importsPerFile
+      );
+      state.identifiersFromImportsPerFile = _.set(
+        [filename, specifier.local.name],
+        element,
+        state.identifiersFromImportsPerFile
+      );
+    }
+  }, specifiers);
+};
+
+module.exports.recordCsstaReference = (element, state) => {
+  const moduleName = element.node.source.value;
+  const specifiers = element.node.specifiers;
+
+  const filename = state.file.opts.filename;
+
+  const csstaType = csstaModules[moduleName];
+  if (!csstaType) return;
+
+  const defaultSpecifiers = [].concat(
+    _.filter({ type: 'ImportDefaultSpecifier' }, specifiers),
+    _.filter({ type: 'ImportSpecifier', imported: { name: 'default' } }, specifiers)
+  );
+  if (_.isEmpty(defaultSpecifiers)) return;
+
+  const specifierReferenceTypes = _.flow(
+    _.map('local.name'),
+    _.map(reference => [reference, csstaType]),
+    _.fromPairs
+  )(defaultSpecifiers);
+
+  state.csstaReferenceTypesPerFile = _.update(
+    [filename],
+    _.assign(specifierReferenceTypes),
+    state.csstaReferenceTypesPerFile || {}
+  );
+};
+
 module.exports.getOrCreateImportReference = (element, state, moduleName, importedName) => {
   const filename = state.file.opts.filename;
 
@@ -48,19 +112,6 @@ module.exports.getOrCreateImportReference = (element, state, moduleName, importe
   return reference;
 };
 
-const findOptionsForKey = (optimisations, name) => {
-  const optimisation = _.find(optimisationName => (
-    Array.isArray(optimisationName) ? optimisationName[0] === name : optimisationName === name
-  ), optimisations);
-  if (Array.isArray(optimisation)) return optimisation[1];
-  if (optimisation) return {};
-  return null;
-};
-module.exports.getOptimisationOpts = (state, name) => {
-  const optimisations = state.opts.optimizations;
-  return findOptionsForKey(optimisations, name) || findOptionsForKey(optimisations, 'all');
-};
-
 module.exports.removeReference = (state, name) => {
   const filename = state.file.opts.filename;
   state.removedRefenceCountPerFile = _.update(
@@ -77,3 +128,27 @@ module.exports.getReferenceCountForImport = (state, name) => {
   const removedReferenceCount = _.getOr(0, [filename, name], state.removedRefenceCountPerFile);
   return referenceCount - removedReferenceCount;
 };
+
+const findOptionsForKey = (optimisations, name) => {
+  const optimisation = _.find(optimisationName => (
+    Array.isArray(optimisationName) ? optimisationName[0] === name : optimisationName === name
+  ), optimisations);
+  if (Array.isArray(optimisation)) return optimisation[1];
+  if (optimisation) return {};
+  return null;
+};
+module.exports.getOptimisationOpts = (state, name) => {
+  const optimisations = state.opts.optimizations;
+  return findOptionsForKey(optimisations, name) || findOptionsForKey(optimisations, 'all');
+};
+
+const getSubstitutionRegExp = (substitutionMap) => {
+  const substititionNames = Object.keys(substitutionMap);
+  const substitionNamesRegExp = new RegExp(`(${substititionNames.join('|')})`, 'g');
+  return substitionNamesRegExp;
+};
+module.exports.getSubstitutionRegExp = getSubstitutionRegExp;
+
+module.exports.containsSubstitution = _.curry((substitutionMap, value) => (
+  !_.isEmpty(substitutionMap) && getSubstitutionRegExp(substitutionMap).test(value)
+));

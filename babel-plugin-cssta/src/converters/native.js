@@ -5,7 +5,9 @@ const _ = require('lodash/fp');
 const { getValidatorSourceForSelector } = require('cssta/src/native/selectorTransform');
 const extractRules = require('cssta/src/native/extractRules');
 const { default: cssToReactNative, getPropertyName } = require('css-to-react-native');
-const { getOrCreateImportReference, jsonToNode } = require('../util');
+const {
+  getOrCreateImportReference, jsonToNode, containsSubstitution, getSubstitutionRegExp,
+} = require('../util');
 
 const SIMPLE_OR_NO_INTERPOLATION = 0;
 const TEMPLATE_INTERPOLATION = 1;
@@ -96,15 +98,6 @@ const simpleInterpolation = {
   writingDirection: stringInterpolation,
 };
 
-const getSubstitutionRegExp = (substitutionMap) => {
-  const substititionNames = Object.keys(substitutionMap);
-  const substitionNamesRegExp = new RegExp(`(${substititionNames.join('|')})`, 'g');
-  return substitionNamesRegExp;
-};
-
-const containsSubstitution = (substitutionMap, value) =>
-  !_.isEmpty(substitutionMap) && getSubstitutionRegExp(substitutionMap).test(value);
-
 const getInterpolationType = (substitutionMap, [prop, value]) => {
   if (!containsSubstitution(substitutionMap, value)) {
     return SIMPLE_OR_NO_INTERPOLATION;
@@ -155,7 +148,7 @@ const createStyleSheetBody = (element, state, substitutionMap) => (rule) => {
 
         if (substitution) {
           return _.set(propertyName, simpleInterpolation[propertyName](substitution), accum);
-        } else if (!containsSubstitution(value)) {
+        } else if (!containsSubstitution(substitutionMap, value)) {
           const styles = cssToReactNative([[propertyName, value]]);
           const styleToValue = _.mapValues(jsonToNode, styles);
           return _.assign(accum, styleToValue);
@@ -309,7 +302,7 @@ const createDynamicStylesheet = (
 module.exports = (element, state, component, cssText, substitutionMap) => {
   const { rules, propTypes, importedVariables } = extractRules(cssText);
   const exportsVariables =
-    !state.singleSourceVariables && _.some(rule => !_.isEmpty(rule.exportedVariables), rules);
+    !state.singleSourceOfVariables && _.some(rule => !_.isEmpty(rule.exportedVariables), rules);
 
   const baseParams = [element, state, substitutionMap, component, rules, propTypes];
   if (!exportsVariables && _.isEmpty(importedVariables)) {

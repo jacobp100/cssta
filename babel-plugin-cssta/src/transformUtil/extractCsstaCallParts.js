@@ -7,6 +7,29 @@ const interpolationTypes = {
   DISALLOW: 2,
 };
 
+const csstaConstructorExpressionTypes = {
+  CallExpression: element => [element.callee, element.arguments[0]],
+  MemberExpression: element => [
+    element.object,
+    element.computed ? element.property : t.stringLiteral(element.property.name),
+  ],
+};
+
+module.exports.getCsstaReferences = (element, state, node) => {
+  if (!(node.type in csstaConstructorExpressionTypes)) return null;
+
+  const [callee, component] = csstaConstructorExpressionTypes[node.type](node);
+
+  if (!t.isIdentifier(callee)) return null;
+  const reference = callee.name;
+
+  const filename = state.file.opts.filename;
+  const csstaType = _.get([filename, reference], state.csstaReferenceTypesPerFile);
+  if (!csstaType) return null;
+
+  return { component, reference, csstaType };
+};
+
 module.exports.interpolationTypes = interpolationTypes;
 module.exports.extractCsstaCallParts = (stringArg, interpolationType) => {
   if (!t.isTemplateLiteral(stringArg) && !t.isStringLiteral(stringArg)) return null;

@@ -6,12 +6,12 @@ const { varRegExp } = require('cssta/dist/util');
 const transformWebCssta = require('./converters/web');
 const transformNativeCssta = require('./converters/native');
 const removeSetPostCssPipeline = require('./optimizations/removeSetPostCssPipeline');
-const singleSourceVariables = require('./optimizations/singleSourceVariables');
+const singleSourceOfVariables = require('./optimizations/singleSourceOfVariables');
 const { removeReference, getReferenceCountForImport } = require('./util');
 const {
-  interpolationTypes, extractCsstaCallParts,
+  getCsstaReferences, interpolationTypes, extractCsstaCallParts,
 } = require('./transformUtil/extractCsstaCallParts');
-const { getOptimisationOpts } = require('./util');
+const { recordImportReference, recordCsstaReference, getOptimisationOpts } = require('./util');
 
 const canInterpolate = {
   web: false,
@@ -23,25 +23,11 @@ const transformCsstaTypes = {
   native: transformNativeCssta,
 };
 
-const csstaConstructorExpressionTypes = {
-  CallExpression: element => [element.callee, element.arguments[0]],
-  MemberExpression: element => [
-    element.object,
-    element.computed ? element.property : t.stringLiteral(element.property.name),
-  ],
-};
-
 const transformCsstaCall = (element, state, node, stringArg) => {
-  if (!(node.type in csstaConstructorExpressionTypes)) return;
+  const csstaReferenceParts = getCsstaReferences(element, state, node);
+  if (!csstaReferenceParts) return;
 
-  const [callee, component] = csstaConstructorExpressionTypes[node.type](node);
-
-  if (!t.isIdentifier(callee)) return;
-  const reference = callee.name;
-
-  const filename = state.file.opts.filename;
-  const csstaType = _.get([filename, reference], state.csstaReferenceTypesPerFile);
-  if (!csstaType) return;
+  const { component, reference, csstaType } = csstaReferenceParts;
 
   let interpolationType;
   const interpolateValuesOnly = Boolean(getOptimisationOpts(state, 'interpolateValuesOnly'));
@@ -59,9 +45,9 @@ const transformCsstaCall = (element, state, node, stringArg) => {
 
   let { cssText, substitutionMap } = callParts; // eslint-disable-line
 
-  if (state.singleSourceVariables) {
+  if (state.singleSourceOfVariables) {
     cssText = cssText.replace(varRegExp, (m, variableName, fallback) => (
-      state.singleSourceVariables[variableName] || fallback
+      state.singleSourceOfVariables[variableName] || fallback
     ));
   }
 
@@ -69,25 +55,27 @@ const transformCsstaCall = (element, state, node, stringArg) => {
   removeReference(state, reference);
 };
 
-const csstaModules = {
-  cssta: 'web',
-  'cssta/web': 'web',
-  'cssta/native': 'native',
-};
 
 module.exports = () => ({
   visitor: {
     Program: {
       enter(element, state) {
-        const singleSourceVariableOpts = getOptimisationOpts(state, 'singleSourceVariables');
+        const singleSourceVariableOpts = getOptimisationOpts(state, 'singleSourceOfVariables');
 
-        if (!state.singleSourceVariables && singleSourceVariableOpts) {
+        if (!state.singleSourceOfVariables && singleSourceVariableOpts) {
+          if (!singleSourceVariableOpts.sourceFilename) {
+            throw new Error(
+              'You must provide `sourceFilename` in the options for singleSourceOfVariables'
+            );
+          }
+
           const fileContainingVariables = path.join(
             state.opts.cwd || process.cwd(),
-            singleSourceVariableOpts.in
+            singleSourceVariableOpts.sourceFilename
           );
-          const exportedVariables = singleSourceVariables(fileContainingVariables, state.file.opts);
-          state.singleSourceVariables = exportedVariables;
+          const exportedVariables =
+            singleSourceOfVariables(fileContainingVariables, state.file.opts);
+          state.singleSourceOfVariables = exportedVariables;
         }
 
         const filename = state.file.opts.filename;
@@ -126,53 +114,8 @@ module.exports = () => ({
       },
     },
     ImportDeclaration(element, state) {
-      const moduleName = element.node.source.value;
-      const specifiers = element.node.specifiers;
-
-      const filename = state.file.opts.filename;
-
-      _.forEach((specifier) => {
-        let importedName;
-        if (t.isImportSpecifier(specifier)) {
-          importedName = specifier.imported.name;
-        } else if (t.isImportDefaultSpecifier(specifier)) {
-          importedName = 'default';
-        }
-
-        if (importedName) {
-          state.importsPerFile = _.set(
-            [filename, moduleName, importedName],
-            specifier.local,
-            state.importsPerFile
-          );
-          state.identifiersFromImportsPerFile = _.set(
-            [filename, specifier.local.name],
-            element,
-            state.identifiersFromImportsPerFile
-          );
-        }
-      }, specifiers);
-
-      const csstaType = csstaModules[moduleName];
-      if (!csstaType) return;
-
-      const defaultSpecifiers = [].concat(
-        _.filter({ type: 'ImportDefaultSpecifier' }, specifiers),
-        _.filter({ type: 'ImportSpecifier', imported: { name: 'default' } }, specifiers)
-      );
-      if (_.isEmpty(defaultSpecifiers)) return;
-
-      const specifierReferenceTypes = _.flow(
-        _.map('local.name'),
-        _.map(reference => [reference, csstaType]),
-        _.fromPairs
-      )(defaultSpecifiers);
-
-      state.csstaReferenceTypesPerFile = _.update(
-        [filename],
-        _.assign(specifierReferenceTypes),
-        state.csstaReferenceTypesPerFile || {}
-      );
+      recordImportReference(element, state);
+      recordCsstaReference(element, state);
     },
     CallExpression(element, state) {
       const filename = state.file.opts.filename;
