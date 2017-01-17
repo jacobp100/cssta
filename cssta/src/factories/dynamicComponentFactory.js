@@ -1,9 +1,8 @@
 /* eslint-disable no-param-reassign */
 const React = require('react');
 const VariablesProvider = require('../variablesProvider');
-const { shallowEqual, getOwnPropKeys, getComponentProps, getPropTypes } = require('../util');
+const { getOwnPropKeys, getComponentProps, getPropTypes } = require('../util');
 
-const { Component } = React;
 
 module.exports = (
   getExportedVariables,
@@ -18,20 +17,18 @@ module.exports = (
   const ownPropKeys = getOwnPropKeys(propTypes);
   const styleCache = {};
 
-  const getStyles = (props, variablesFromScope) => {
-    const { Element, ownProps, passedProps } = getComponentProps(ownPropKeys, component, props);
-    const exportedVariables =
-      getExportedVariables(ownProps, variablesFromScope, ...otherParams);
-    return { Element, ownProps, passedProps, variablesFromScope, exportedVariables };
-  };
+  const DynamicComponent = (props) => {
+    const { Element, ownProps, passedProps } =
+      getComponentProps(ownPropKeys, component, props);
 
-  class DynamicComponent extends Component {
-    constructor(props) {
-      super();
-      this.state = getStyles(props, {});
-
-      this.child = (appliedVariables) => {
-        const { Element, ownProps, passedProps } = this.state;
+    return React.createElement(
+      VariablesProvider,
+      {
+        exportedVariables: variablesFromScope => (
+          getExportedVariables(ownProps, variablesFromScope, ...otherParams)
+        ),
+      },
+      (appliedVariables) => {
         const ownAppliedVariables = importedVariables.reduce((accum, key) => {
           accum[key] = appliedVariables[key];
           return accum;
@@ -46,32 +43,9 @@ module.exports = (
         if (!styleCached) styleCache[styleCacheKey] = stylesheet;
 
         return React.createElement(Element, transformProps(ownProps, passedProps, stylesheet));
-      };
-
-      this.onParentVaribalesChanged = (variablesFromScope) => {
-        this.setState(getStyles(this.props, variablesFromScope));
-      };
-    }
-
-    componentWillUpdate(nextProps, nextState) {
-      if (!shallowEqual(this.props, nextProps)) {
-        this.setState(getStyles(nextProps, nextState.variablesFromScope));
       }
-    }
-
-    render() {
-      const { exportedVariables } = this.state;
-      return React.createElement(
-        VariablesProvider,
-        {
-          onParentVaribalesChanged: this.onParentVaribalesChanged,
-          onSetInitialParentVaribales: this.onParentVaribalesChanged,
-          exportedVariables,
-        },
-        this.child
-      );
-    }
-  }
+    );
+  };
 
   if (process.env.NODE_ENV !== 'production' && !Array.isArray(propTypes)) {
     DynamicComponent.propTypes = getPropTypes(ownPropKeys, propTypes);

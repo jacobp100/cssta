@@ -9,10 +9,10 @@ const STYLES_UPDATED = 'styles-updated';
 
 const getStyles = (state, props, context) => {
   const variablesFromScope = state.variablesFromScope || context.csstaInitialVariables || {};
-  const exportedVariables = props.exportedVariables || {};
+  const exportedVariables = props.exportedVariables || {}; // FIXME: Can be func
   const appliedVariables = Object.assign({}, variablesFromScope, exportedVariables);
 
-  return { variablesFromScope, appliedVariables };
+  return { variablesFromScope, exportedVariables, appliedVariables };
 };
 
 class VariablesProvider extends Component {
@@ -32,10 +32,6 @@ class VariablesProvider extends Component {
 
   componentDidMount() {
     if (this.context.cssta) this.context.cssta.on(STYLES_UPDATED, this.styleUpdateHandler);
-
-    if (this.props.onSetInitialParentVaribales) {
-      this.props.onSetInitialParentVaribales(this.state.variablesFromScope);
-    }
   }
 
   componentWillUpdate(nextProps, nextState, nextContext) {
@@ -44,22 +40,21 @@ class VariablesProvider extends Component {
       if (nextContext.cssta) nextContext.cssta.on(STYLES_UPDATED, this.styleUpdateHandler);
     }
 
-    const exportedVariablesChanged =
-      !shallowEqual(this.props.exportedVariables, nextProps.exportedVariables);
     const variablesFromScopeChanged =
       !shallowEqual(this.state.variablesFromScope, nextState.variablesFromScope);
-    const appliedVariablesChanged =
-      !shallowEqual(this.state.appliedVariables, nextState.appliedVariables);
-
-    if (variablesFromScopeChanged && this.props.onParentVaribalesChanged) {
-      this.props.onParentVaribalesChanged(nextState.variablesFromScope);
+    let nextExportedVariables = variablesFromScopeChanged
+      ? nextProps.exportedVariables
+      : null;
+    if (typeof nextExportedVariables === 'function') { // FIXME: Don't resolve here, do in getStyles
+      nextExportedVariables = nextExportedVariables(this.state.variablesFromScope);
     }
 
-    if (exportedVariablesChanged || variablesFromScopeChanged) {
+    if (variablesFromScopeChanged ||
+      !shallowEqual(this.state.exportedVariables, nextExportedVariables)) {
       this.setState(getStyles(nextState, nextProps, nextContext));
     }
 
-    if (appliedVariablesChanged) {
+    if (!shallowEqual(this.state.appliedVariables, nextState.appliedVariables)) {
       this.styleEmitter.emit(STYLES_UPDATED, nextState.appliedVariables);
     }
   }
