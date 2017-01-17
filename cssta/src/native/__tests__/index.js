@@ -32,6 +32,6 @@ it('allows rule interpolation', () => runTest(() => {
   `;
 }));
 
-it('non-template-literals', () => runTest(() => (
+it('allows non-template-literals', () => runTest(() => (
   cssta('dummy')('color: red;')
 )));
