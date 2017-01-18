@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 const React = require('react');
 const { EventEmitter } = require('events');
-const { shallowEqual } = require('./util');
+const { shallowEqual } = require('../util');
 
 const { Component, Children, PropTypes } = React;
 
@@ -87,5 +87,10 @@ VariablesProvider.contextTypes = {
 };
 
 VariablesProvider.childContextTypes = VariablesProvider.contextTypes;
+
+VariablesProvider.propTypes = {
+  exportedVariables: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
+  children: PropTypes.oneOfType([PropTypes.func, PropTypes.element]),
+};
 
 module.exports = VariablesProvider;

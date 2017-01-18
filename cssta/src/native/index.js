@@ -1,6 +1,7 @@
 const extractRules = require('./extractRules');
 const { createValidatorForSelector } = require('./selectorTransform');
 const dynamicComponent = require('./dynamicComponent');
+const VariablesProvider = require('./VariablesProvider');
 
 /* eslint-disable no-param-reassign */
 module.exports = element => (cssTextFragments, ...substitutions) => {
@@ -19,3 +20,5 @@ module.exports = element => (cssTextFragments, ...substitutions) => {
 
   return dynamicComponent(element, propTypes, importedVariables, rules);
 };
+
+module.exports.VariablesProvider = VariablesProvider;

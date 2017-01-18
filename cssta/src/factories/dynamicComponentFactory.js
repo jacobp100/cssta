@@ -1,10 +1,10 @@
 /* eslint-disable no-param-reassign */
 const React = require('react');
-const VariablesProvider = require('../variablesProvider');
 const { getOwnPropKeys, getComponentProps, getPropTypes } = require('../util');
 
 
 module.exports = (
+  VariablesProvider,
   getExportedVariables,
   generateStylesheet,
   transformProps
