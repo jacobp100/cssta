@@ -4,7 +4,7 @@
 
 CSSTA is a way to co-locate your CSS with your React components, and lets you define components using isolated units of style.
 
-It is available both for [React for web 🌍](https://jacobp100.gitbooks.io/cssta/content/web.html) and [React Native 📱](https://jacobp100.gitbooks.io/cssta/content/native.html). It generates **real CSS files** for web.
+It is available both for [React for web 🌍](https://jacobp100.gitbooks.io/cssta/content/web.html) and [React Native 📱](https://jacobp100.gitbooks.io/cssta/content/native.html). For web, it generates **real CSS files** with **<1kb JS overhead**.
 
 It is almost identical in concept to [styled-components](https://github.com/styled-components/styled-components), but makes different trade-offs.
 
