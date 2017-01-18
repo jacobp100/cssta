@@ -9,7 +9,6 @@ const PickerRow = cssta(View)`
 `;
 
 const DynamicContainer = cssta(View)`
-  padding: 20 50;
   --color: black;
 
   [color="red"] { --color: red; }

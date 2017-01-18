@@ -6,6 +6,7 @@ const cssToReactNative = require('css-to-react-native').default;
 const dynamicComponentFactory = require('../factories/dynamicComponentFactory');
 const resolveVariableDependencies = require('../util/resolveVariableDependencies');
 const { varRegExp } = require('../util');
+const VariablesProvider = require('./VariablesProvider');
 const staticComponentTransform = require('./staticComponentTransform');
 
 /*
@@ -16,13 +17,15 @@ type Rule = {
 };
 */
 
-module.exports = dynamicComponentFactory((ownProps, variablesFromScope, rules) => {
+const getExportedVariables = (ownProps, variablesFromScope, rules) => {
   const appliedRuleVariables = rules
     .filter(rule => rule.validate(ownProps))
     .map(rule => rule.exportedVariables);
   const definedVariables = Object.assign({}, ...appliedRuleVariables);
   return resolveVariableDependencies(definedVariables, variablesFromScope);
-}, (appliedVariables, rules) => {
+};
+
+const generateStylesheet = (appliedVariables, rules) => {
   const ruleStylesWithVariablesApplied = rules.map((rule) => {
     const styleTuples = rule.styleTuples.map(([property, value]) => {
       const valueWithVariablesApplied = value.replace(varRegExp, (m, variableName, fallback) => (
@@ -46,4 +49,11 @@ module.exports = dynamicComponentFactory((ownProps, variablesFromScope, rules) =
   }));
 
   return rulesWithVariablesApplied;
-}, staticComponentTransform);
+};
+
+module.exports = dynamicComponentFactory(
+  VariablesProvider,
+  getExportedVariables,
+  generateStylesheet,
+  staticComponentTransform
+);

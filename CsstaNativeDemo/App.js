@@ -1,24 +1,52 @@
 import React, { Component } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, ScrollView, PixelRatio } from 'react-native';
 import cssta from 'cssta/native';
-import DynamicDemo from './components/DynamicDemo';
+import Basic from './demos/Basic';
+import CSSVariables from './demos/CSSVariables';
+import VariablesProvider from './demos/VariablesProvider';
 
-const HeadingContainer = cssta(View)`
-  margin: 50 50 20;
-  padding: 10;
-  border-radius: 5;
-  border: 1 solid red;
+const App = cssta(ScrollView)`
+  padding: 20 0;
+  background: #ecf0f1;
 `;
 
-const HeadingText = cssta(Text)`
-  color: red;
+const DemoContainer = cssta(View)`
+  margin: 10 0;
 `;
+
+const DemoTitle = cssta(Text)`
+  padding: 5 20;
+  color: #7f8c8d;
+`;
+
+const DemoBody = cssta(View)`
+  padding: 20;
+  background-color: white;
+  border-color: #bdc3c7;
+  border-width: ${1 / PixelRatio.get()} 0;
+`;
+
+const Demo = ({ title, children }) => (
+  <DemoContainer>
+    <View>
+      <DemoTitle>{title}</DemoTitle>
+    </View>
+    <DemoBody>
+      {children}
+    </DemoBody>
+  </DemoContainer>
+);
 
 export default () => (
-  <View>
-    <HeadingContainer>
-      <HeadingText>Hello World!</HeadingText>
-    </HeadingContainer>
-    <DynamicDemo />
-  </View>
+  <App>
+    <Demo title="Basic">
+      <Basic />
+    </Demo>
+    <Demo title="CSS Variables">
+      <CSSVariables />
+    </Demo>
+    <Demo title="Injected Variables">
+      <VariablesProvider />
+    </Demo>
+  </App>
 );

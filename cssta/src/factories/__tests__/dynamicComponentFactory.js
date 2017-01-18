@@ -2,6 +2,8 @@
 const React = require('react');
 const renderer = require('react-test-renderer'); // eslint-disable-line
 const dynamicComponentFactory = require('../dynamicComponentFactory');
+// FIXME: Test VariablesProvider separately
+const VariablesProvider = require('../../native/VariablesProvider');
 
 const assignStyle = (ownProps, passedProps, style) => Object.assign({}, passedProps, { style });
 
@@ -20,6 +22,7 @@ const runTest = ({
   expectedChildren = null,
 } = {}) => {
   const createComponent = dynamicComponentFactory(
+    VariablesProvider,
     getExportedVariables,
     generateStylesheet,
     (ownProps, passedProps) => passedProps
@@ -98,6 +101,7 @@ it('allows children', () => runTest({
 it('should use variables from a higher scope', () => {
   const generateStylesheet = jest.fn(style => style);
   const createChildComponent = dynamicComponentFactory(
+    VariablesProvider,
     () => ({}),
     generateStylesheet,
     assignStyle
@@ -121,6 +125,7 @@ it('should use variables from a higher scope', () => {
 it('should make own styles take precedence', () => {
   const generateStylesheet = jest.fn(style => style);
   const createChildComponent = dynamicComponentFactory(
+    VariablesProvider,
     () => ({ color: 'blue' }),
     generateStylesheet,
     assignStyle
@@ -143,12 +148,14 @@ it('should make own styles take precedence', () => {
 
 it('updates styles in reaction to prop changes', () => {
   const ParentElement = dynamicComponentFactory(
+    VariablesProvider,
     ownProps => (ownProps.blue ? { color: 'blue' } : { color: 'red' }),
     style => style,
     (ownProps, passedProps) => passedProps
   )('div', ['blue'], []);
 
   const ChildElement = dynamicComponentFactory(
+    VariablesProvider,
     () => ({}),
     style => style,
     assignStyle
@@ -188,6 +195,7 @@ it('removes listener on unmounting', () => {
   ProvidesContext.childContextTypes = ProvidesContext.contextTypes;
 
   const ChildElement = dynamicComponentFactory(
+    VariablesProvider,
     () => ({}),
     style => style,
     assignStyle
@@ -221,6 +229,7 @@ it('reesets listener on when changing cssta context', () => {
   ProvidesContext.childContextTypes = ProvidesContext.contextTypes;
 
   const ChildElement = dynamicComponentFactory(
+    VariablesProvider,
     () => ({}),
     style => style,
     assignStyle
