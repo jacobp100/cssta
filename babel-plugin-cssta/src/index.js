@@ -24,6 +24,12 @@ const transformCsstaTypes = {
   native: transformNativeCssta,
 };
 
+const redirectImports = {
+  'cssta/native': {
+    VariablesProvider: 'cssta/dist/native/VariablesProvider',
+  },
+};
+
 const transformCsstaCall = (path, state, target, stringArg) => {
   const csstaReferenceParts = getCsstaReferences(path, target);
   if (!csstaReferenceParts) return;
@@ -93,6 +99,23 @@ module.exports = () => ({
           importDeclaration.remove();
         }, unreferencedCsstaImportReferences);
       },
+    },
+    ImportSpecifier(path) {
+      const importName = path.node.imported.name;
+      const importDeclaration = path.findParent(t.isImportDeclaration);
+      const moduleName = importDeclaration.node.source.value;
+      const redirect = _.get([moduleName, importName], redirectImports);
+      if (!redirect) return;
+      const redirectImport = t.importDeclaration([
+        t.importDefaultSpecifier(path.node.local),
+      ], t.stringLiteral(redirect));
+      importDeclaration.insertBefore(redirectImport);
+
+      if (importDeclaration.node.specifiers.length === 1) {
+        importDeclaration.remove();
+      } else {
+        path.remove();
+      }
     },
     CallExpression(path, state) {
       const { node } = path;
