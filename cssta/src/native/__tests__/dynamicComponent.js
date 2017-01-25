@@ -6,7 +6,7 @@ const dynamicComponent = require('../dynamicComponent');
 
 const runTest = ({
   type = 'button',
-  propTypes = {},
+  propTypes = [],
   importedVariables = [],
   rules = [],
   inputProps = {},
@@ -68,4 +68,12 @@ it('uses fallback for variable if not defined within scope', () => runTest({
     styleTuples: [['color', 'var(--color, red)']],
   }],
   expectedProps: { style: [{ color: 'red' }] },
+}));
+
+it('converts color-mod functions', () => runTest({
+  rules: [{
+    validate: () => true,
+    styleTuples: [['color', 'color(red tint(50%))']],
+  }],
+  expectedProps: { style: [{ color: 'rgb(255, 128, 128)' }] },
 }));

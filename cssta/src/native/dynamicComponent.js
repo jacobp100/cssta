@@ -5,9 +5,10 @@ const { StyleSheet } = require('react-native');
 const cssToReactNative = require('css-to-react-native').default;
 const dynamicComponentFactory = require('../factories/dynamicComponentFactory');
 const resolveVariableDependencies = require('../util/resolveVariableDependencies');
-const { varRegExp } = require('../util');
 const VariablesProvider = require('./VariablesProvider');
 const staticComponentTransform = require('./staticComponentTransform');
+const transformVariables = require('../css-transforms/variables');
+const transformColors = require('../css-transforms/colors');
 
 /*
 type Rule = {
@@ -28,10 +29,10 @@ const getExportedVariables = (ownProps, variablesFromScope, rules) => {
 const generateStylesheet = (appliedVariables, rules) => {
   const ruleStylesWithVariablesApplied = rules.map((rule) => {
     const styleTuples = rule.styleTuples.map(([property, value]) => {
-      const valueWithVariablesApplied = value.replace(varRegExp, (m, variableName, fallback) => (
-        appliedVariables[variableName] || fallback
-      ));
-      return [property, valueWithVariablesApplied];
+      let transformedValue = value;
+      transformedValue = transformVariables(transformedValue, appliedVariables);
+      transformedValue = transformColors(transformedValue);
+      return [property, transformedValue];
     });
     const style = cssToReactNative(styleTuples);
     return style;
