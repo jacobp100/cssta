@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, Button } from 'react-native';
 import cssta from 'cssta/native';
 
 const PickerRow = cssta(View)`
   flex-direction: row;
   justify-content: space-between;
-  margin-top: 20;
+  margin-top: 20px;
 `;
 
 const DynamicContainer = cssta(View)`
@@ -19,7 +19,7 @@ const DynamicContainer = cssta(View)`
 class DynamicPicker extends Component {
   constructor() {
     super();
-    this.state = { color: null };
+    this.state = { color: 'red' };
     this.setColor = (color) => this.setState({ color });
   }
 
@@ -30,18 +30,10 @@ class DynamicPicker extends Component {
       <DynamicContainer color={color}>
         {children}
         <PickerRow>
-          <TouchableOpacity onPress={() => { this.setColor(null); }}>
-            <Text>Default</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => { this.setColor('red'); }}>
-            <Text>Red</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => { this.setColor('green'); }}>
-            <Text>Green</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => { this.setColor('blue'); }}>
-            <Text>Blue</Text>
-          </TouchableOpacity>
+          <Button title="Default" color="black" onPress={() => { this.setColor(null); }} />
+          <Button title="Red" color="black" onPress={() => { this.setColor('red'); }} />
+          <Button title="Green" color="black" onPress={() => { this.setColor('green'); }} />
+          <Button title="Blue" color="black" onPress={() => { this.setColor('blue'); }} />
         </PickerRow>
       </DynamicContainer>
     );
@@ -50,6 +42,7 @@ class DynamicPicker extends Component {
 
 const DynamicText = cssta(Text)`
   color: var(--color);
+  font-size: 20px;
 `;
 
 export default () => (

@@ -3,18 +3,21 @@ import { View, Text } from 'react-native';
 import cssta from 'cssta/native';
 
 const HeadingContainer = cssta(View)`
-  margin: 10px 50px;
-  padding: 10px;
-  border-radius: 5px;
-  border: 1px solid #e67e22;
+  --color: red;
 `;
 
 const HeadingText = cssta(Text)`
-  color: #e67e22;
+  color: color(var(--color) tint(50%));
+`;
+
+const Code = cssta(Text)`
+  font-family: "courier";
+  background-color: #eee;
+  color: black;
 `;
 
 export default () => (
   <HeadingContainer>
-    <HeadingText>Hello World!</HeadingText>
+    <HeadingText>Text styled using CSS&rsquo;s <Code>color(...)</Code> function</HeadingText>
   </HeadingContainer>
 );
