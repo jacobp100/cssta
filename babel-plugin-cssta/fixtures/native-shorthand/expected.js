@@ -6,8 +6,8 @@ import { View } from 'react-native';
 var _csstaStyle = _StyleSheet.create({
   0: {
     'fontStyle': 'italic',
-    'fontVariant': [],
     'fontWeight': 'bold',
+    'fontVariant': [],
     'fontSize': 12,
     'fontFamily': 'Helvetica',
     'lineHeight': 18

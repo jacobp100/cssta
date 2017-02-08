@@ -30,7 +30,10 @@ module.exports.csstaModules = csstaModules;
 module.exports.getCsstaTypeForCallee = (path, callee) => {
   if (!t.isIdentifier(callee)) return null;
 
-  const importSpecifier = _.get([callee.name, 'path'], path.scope.bindings);
+  const importScopePath = path.findParent(_.has(['scope', 'bindings', callee.name]));
+  if (!importScopePath) return null;
+
+  const importSpecifier = _.get(['scope', 'bindings', callee.name, 'path'], importScopePath);
   if (!importSpecifier || !t.isImportDefaultSpecifier(importSpecifier)) return null;
 
   const importDeclaration = importSpecifier.findParent(t.isImportDeclaration);

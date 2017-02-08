@@ -4,7 +4,7 @@ import _cssToReactNative from 'css-to-react-native';
 
 import { View } from 'react-native';
 
-const font = '10 "Helvetica"';
+const font = '10px "Helvetica"';
 
 var _csstaStyle = _StyleSheet.create({
   0: Object.assign({

@@ -1,0 +1,4 @@
+{
+  "presets": [["latest", { "modules": false }], "react"],
+  "plugins": ["babel-plugin-cssta"]
+}
