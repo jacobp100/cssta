@@ -13,9 +13,6 @@ const Box = cssta(Animated.View)`
   background-color: #f39c12;
 `;
 
-const Description = cssta(Text)`
-  margin-top: 10px;
-`;
 export default class VariablesProviderDemo extends Component {
   constructor() {
     super();
