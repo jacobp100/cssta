@@ -88,13 +88,16 @@ const mergeTransformers = (StyleSheetManager, transforms) => {
 const managerCache = new Map();
 const LEAF = 'leaf';
 
-const mergeTransformersCached = (StyleSheetManager, transforms) => {
-  const path = [StyleSheetManager].concat(transforms);
+const nextCacheNode = (node, transform) => {
+  if (!node.has(transform)) node.set(transform, new Map());
+  return node.get(transform);
+};
 
-  const cacheEntry = path.reduce((node, transform) => {
-    if (!node.has(transform)) node.set(transform, new Map());
-    return node.get(transform);
-  }, managerCache);
+const mergeTransformersCached = (StyleSheetManager, transforms) => {
+  const cacheEntry = transforms.reduce(
+    nextCacheNode,
+    nextCacheNode(managerCache, StyleSheetManager)
+  );
 
   if (!cacheEntry.has(LEAF)) {
     cacheEntry.set(LEAF, mergeTransformers(StyleSheetManager, transforms));
