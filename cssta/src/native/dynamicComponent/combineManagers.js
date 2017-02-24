@@ -85,8 +85,25 @@ const mergeTransformers = (StyleSheetManager, transforms) => {
   );
 };
 
+const managerCache = new Map();
+const LEAF = 'leaf';
+
+const mergeTransformersCached = (StyleSheetManager, transforms) => {
+  const path = [StyleSheetManager].concat(transforms);
+
+  const cacheEntry = path.reduce((node, transform) => {
+    if (!node.has(transform)) node.set(transform, new Map());
+    return node.get(transform);
+  }, managerCache);
+
+  if (!cacheEntry.has(LEAF)) {
+    cacheEntry.set(LEAF, mergeTransformers(StyleSheetManager, transforms));
+  }
+  return cacheEntry.get(LEAF);
+};
+
 module.exports = (StyleSheetManager, transforms) => {
-  const RootComponent = mergeTransformers(StyleSheetManager, transforms);
+  const RootComponent = mergeTransformersCached(StyleSheetManager, transforms);
 
   return (component, propTypes, managerArgs, rules) => {
     const ownPropKeys = getOwnPropKeys(propTypes);

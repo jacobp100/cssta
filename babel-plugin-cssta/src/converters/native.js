@@ -13,13 +13,24 @@ const {
 const SIMPLE_OR_NO_INTERPOLATION = 0;
 const TEMPLATE_INTERPOLATION = 1;
 
-const convertValue = transform => value => t.callExpression(t.identifier(transform), [value]);
-
 const createValidatorNodeForSelector = selector =>
   parse(getValidatorSourceForSelector(selector)).program.body[0].expression;
 
-const stringInterpolation = value =>
-  t.callExpression(t.memberExpression(convertValue('String')(value), t.identifier('trim')), []);
+const convertValue = transform => (path, value) =>
+  t.callExpression(t.identifier(transform), [value]);
+
+const stringInterpolation = (path, value) =>
+  t.callExpression(t.memberExpression(convertValue('String')(path, value), t.identifier('trim')), []);
+
+const lengthInterpolation = (path, value) => {
+  const transformRawValue = getOrCreateImportReference(
+    path,
+    'css-to-react-native',
+    'transformRawValue'
+  );
+
+  return t.callExpression(transformRawValue, value);
+};
 
 const numberInterpolation = convertValue('Number');
 
@@ -38,62 +49,61 @@ const simpleInterpolation = {
   background: stringInterpolation,
   backgroundColor: stringInterpolation,
   borderBottomColor: stringInterpolation,
-  borderBottomLeftRadius: numberInterpolation,
-  borderBottomRightRadius: numberInterpolation,
-  borderBottomWidth: numberInterpolation,
+  borderBottomLeftRadius: lengthInterpolation,
+  borderBottomRightRadius: lengthInterpolation,
+  borderBottomWidth: lengthInterpolation,
   borderLeftColor: stringInterpolation,
-  borderLeftWidth: numberInterpolation,
+  borderLeftWidth: lengthInterpolation,
   borderRightColor: stringInterpolation,
-  borderRightWidth: numberInterpolation,
+  borderRightWidth: lengthInterpolation,
   borderTopColor: stringInterpolation,
-  borderTopLeftRadius: numberInterpolation,
-  borderTopRightRadius: numberInterpolation,
-  borderTopWidth: numberInterpolation,
+  borderTopLeftRadius: lengthInterpolation,
+  borderTopRightRadius: lengthInterpolation,
+  borderTopWidth: lengthInterpolation,
   opacity: numberInterpolation,
   elevation: numberInterpolation,
   /* Layout */
   alignItems: stringInterpolation,
   alignSelf: stringInterpolation,
-  bottom: numberInterpolation,
-  flexBasis: numberInterpolation,
+  bottom: lengthInterpolation,
+  flexBasis: lengthInterpolation,
   flexDirection: stringInterpolation,
   flexGrow: numberInterpolation,
   flexShrink: numberInterpolation,
   flexWrap: stringInterpolation,
-  height: numberInterpolation,
+  height: lengthInterpolation,
   justifyContent: stringInterpolation,
-  left: numberInterpolation,
-  marginBottomWidth: numberInterpolation,
-  marginLeftWidth: numberInterpolation,
-  marginRightWidth: numberInterpolation,
-  marginTopWidth: numberInterpolation,
-  maxHeight: numberInterpolation,
-  maxWidth: numberInterpolation,
-  minHeight: numberInterpolation,
-  minWidth: numberInterpolation,
+  left: lengthInterpolation,
+  marginBottomWidth: lengthInterpolation,
+  marginLeftWidth: lengthInterpolation,
+  marginRightWidth: lengthInterpolation,
+  marginTopWidth: lengthInterpolation,
+  maxHeight: lengthInterpolation,
+  maxWidth: lengthInterpolation,
+  minHeight: lengthInterpolation,
+  minWidth: lengthInterpolation,
   overflow: stringInterpolation,
-  paddingBottomWidth: numberInterpolation,
-  paddingLeftWidth: numberInterpolation,
-  paddingRightWidth: numberInterpolation,
-  paddingTopWidth: numberInterpolation,
+  paddingBottomWidth: lengthInterpolation,
+  paddingLeftWidth: lengthInterpolation,
+  paddingRightWidth: lengthInterpolation,
+  paddingTopWidth: lengthInterpolation,
   position: stringInterpolation,
-  right: numberInterpolation,
-  top: numberInterpolation,
-  width: numberInterpolation,
+  right: lengthInterpolation,
+  top: lengthInterpolation,
+  width: lengthInterpolation,
   zIndex: numberInterpolation,
   /* Text */
   color: stringInterpolation,
-  fontFamily: stringInterpolation, // Safe, since quotes aren't used for this
-  fontSize: numberInterpolation,
+  fontSize: lengthInterpolation,
   fontStyle: stringInterpolation,
   fontWeight: stringInterpolation,
-  lineHeight: numberInterpolation,
+  lineHeight: lengthInterpolation,
   textAlign: stringInterpolation,
   textDecorationLine: stringInterpolation,
   textShadowColor: stringInterpolation,
-  textShadowRadius: numberInterpolation,
+  textShadowRadius: lengthInterpolation,
   textAlignVertical: stringInterpolation,
-  letterSpacing: numberInterpolation,
+  letterSpacing: lengthInterpolation,
   textDecorationColor: stringInterpolation,
   textDecorationStyle: stringInterpolation,
   writingDirection: stringInterpolation,
@@ -148,7 +158,7 @@ const createStyleSheetBody = (path, substitutionMap, rule) => {
         const substitution = substitutionMap[value.trim()];
 
         if (substitution) {
-          return _.set(propertyName, simpleInterpolation[propertyName](substitution), accum);
+          return _.set(propertyName, simpleInterpolation[propertyName](path, substitution), accum);
         } else if (!containsSubstitution(substitutionMap, value)) {
           const styles = cssToReactNative([[propertyName, value]]);
           const styleToValue = _.mapValues(jsonToNode, styles);
@@ -262,7 +272,7 @@ const createDynamicStylesheet = (
   substitutionMap,
   rules,
   propTypes,
-  importedVariables
+  managerArgs
 ) => {
   const createStyleTuples = ({ styleTuples }) => t.arrayExpression(_.map(([prop, value]) => (
     t.arrayExpression([
@@ -270,6 +280,9 @@ const createDynamicStylesheet = (
       getStringWithSubstitutedValues(substitutionMap, value),
     ])
   ), styleTuples));
+
+  const hasVariables = !_.isEmpty(managerArgs.importedVariables);
+  const hasTransitions = !_.isEmpty(managerArgs.transitions);
 
   const rulesBody = t.arrayExpression(_.map(rule => t.objectExpression([
     t.objectProperty(
@@ -281,21 +294,50 @@ const createDynamicStylesheet = (
       createStyleTuples(rule)
     ),
     t.objectProperty(
+      t.stringLiteral('transitions'),
+      jsonToNode(rule.transitions)
+    ),
+    t.objectProperty(
       t.stringLiteral('exportedVariables'),
       jsonToNode(rule.exportedVariables)
     ),
   ]), rules));
 
-  const dynamicComponent = getOrCreateImportReference(
+  const combineManagers = getOrCreateImportReference(
     path,
-    'cssta/dist/native/dynamicComponent',
+    'cssta/dist/native/dynamicComponent/combineManagers',
     'default'
   );
+
+  const styleSheetManagerSource = hasVariables
+    ? 'VariablesStyleSheetManager'
+    : 'StaticStyleSheetManager';
+
+  const styleSheetManager = getOrCreateImportReference(
+    path,
+    `cssta/dist/native/dynamicComponent/${styleSheetManagerSource}`,
+    'default'
+  );
+
+  const transforms = [];
+  if (hasTransitions) {
+    const transitionTransform = getOrCreateImportReference(
+      path,
+      'cssta/dist/native/dynamicComponent/TransitionTransform',
+      'default'
+    );
+    transforms.push(transitionTransform);
+  }
+
+  const dynamicComponent = t.callExpression(combineManagers, [
+    styleSheetManager,
+    t.arrayExpression(transforms),
+  ]);
 
   const newElement = t.callExpression(dynamicComponent, [
     component,
     jsonToNode(Object.keys(propTypes)),
-    jsonToNode(importedVariables),
+    jsonToNode(managerArgs),
     rulesBody,
   ]);
 
@@ -303,7 +345,7 @@ const createDynamicStylesheet = (
 };
 
 module.exports = (path, state, component, cssText, substitutionMap) => {
-  const { rules, propTypes, importedVariables } = extractRules(cssText);
+  const { rules, propTypes, managerArgs } = extractRules(cssText);
   const exportedVariables = _.reduce(_.assign, {}, _.map('exportedVariables', rules));
   const exportsVariables = !_.isEmpty(exportedVariables);
 
@@ -316,9 +358,9 @@ module.exports = (path, state, component, cssText, substitutionMap) => {
   }
 
   const baseParams = [path, component, substitutionMap, rules, propTypes];
-  if (singleSourceOfVariables || (!exportsVariables && _.isEmpty(importedVariables))) {
+  if (singleSourceOfVariables || (!exportsVariables && _.every(_.isEmpty, managerArgs))) {
     createStaticStyleSheet(...baseParams);
   } else {
-    createDynamicStylesheet(...baseParams, importedVariables);
+    createDynamicStylesheet(...baseParams, managerArgs);
   }
 };

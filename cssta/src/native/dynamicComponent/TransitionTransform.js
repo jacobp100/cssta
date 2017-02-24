@@ -21,6 +21,35 @@ const getDurationInMs = (duration) => {
   return time * factor;
 };
 
+const interpolateValue = (currentValue, previousValue, animation) => {
+  if (typeof currentValue === 'number') return animation;
+
+  if (!Array.isArray(currentValue)) {
+    return animation.interpolate({
+      inputRange: [0, 1],
+      outputRange: [previousValue, currentValue],
+    });
+  }
+
+  // transforms
+  return currentValue.map((transform, index) => {
+    const previousTransform = previousValue[index];
+    const property = Object.keys(transform)[0];
+    console.log(property);
+
+    if (process.env.NODE_ENV !== 'production' && !(property in previousTransform)) {
+      throw new Error('Expected transforms to have same shape between transforms');
+    }
+
+    const interpolation = animation.interpolate({
+      inputRange: [0, 1],
+      outputRange: [previousTransform[property], transform[property]],
+    });
+
+    return { [property]: interpolation };
+  });
+};
+
 const easingFunctions = {
   linear: Easing.linear,
   ease: Easing.ease,
@@ -96,15 +125,11 @@ module.exports = class TransitionManager extends Component {
       const fixedAnimations = animationNames.reduce((accum, animationName) => {
         const animation = animationValues[animationName];
 
-        const targetValue = styles[animationName];
-        const value = typeof targetValue === 'number'
-          ? animation
-          : animation.interpolate({
-            inputRange: [0, 1],
-            outputRange: [previousStyles[animationName], targetValue],
-          });
-
-        accum[animationName] = value;
+        accum[animationName] = interpolateValue(
+          styles[animationName],
+          previousStyles[animationName],
+          animation
+        );
         return accum;
       }, {});
 
