@@ -1,11 +1,6 @@
 const React = require('react');
-/* eslint-disable */
-const { StyleSheet } = require('react-native');
-/* eslint-enable */
 const { getOwnPropKeys, getComponentProps, getPropTypes } = require('../../util');
 /* eslint-disable no-param-reassign */
-
-const { Component } = React;
 
 /*
 type Rule = {
@@ -63,7 +58,7 @@ type Transform = BaseProps =>
 */
 
 const ElementWrapper = ({ Element, passedProps, appliedRules }) => {
-  let style = appliedRules.map(rule => rule.style);
+  let style = appliedRules.map(rule => rule.styleSheetReference || rule.style);
 
   if ('style' in passedProps) style = style.concat(passedProps.style);
   if (style.length > 0) passedProps.style = style;
@@ -73,19 +68,25 @@ const ElementWrapper = ({ Element, passedProps, appliedRules }) => {
 
 // TODO: Cache the result of this
 const mergeTransformers = (StyleSheetManager, transforms) => {
-  const TransformWithAppliedRules = transforms.reduceRight((ChildElement, CurrentElement) => (
-    props => React.createElement(CurrentElement, props, ChildElement)
+  const TransformWithAppliedRules = transforms.reduceRight((NextElement, CurrentElement) => (
+    props => React.createElement(CurrentElement, Object.assign({ NextElement }, props))
   ), ElementWrapper);
 
-  return ({ Element, ownProps, passedProps, stylesheet, managerArgs }) => {
-    const appliedRules = stylesheet.filter(rule => rule.validate(ownProps));
+  const TransformStyleSheetManager = ({ Element, ownProps, passedProps, managerArgs, rules }) => {
+    const appliedRules = rules.filter(rule => rule.validate(ownProps));
+    // NextElement already handled
     const nextProps = { Element, ownProps, passedProps, appliedRules, managerArgs };
-    return React.createElement(StyleSheetManager, nextProps, TransformWithAppliedRules);
+    return React.createElement(TransformWithAppliedRules, nextProps);
   };
+
+  return props => React.createElement(
+    StyleSheetManager,
+    Object.assign({ NextElement: TransformStyleSheetManager }, props)
+  );
 };
 
 module.exports = (StyleSheetManager, transforms) => {
-  const RootComponent = mergeTransformers(StyleSheet, transforms);
+  const RootComponent = mergeTransformers(StyleSheetManager, transforms);
 
   return (component, propTypes, managerArgs, rules) => {
     const ownPropKeys = getOwnPropKeys(propTypes);

@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
-import { View, Text, Button, Slider } from 'react-native';
-import cssta, { VariablesProvider } from 'cssta/native';
+import { Animated, View, Button } from 'react-native';
+import cssta from 'cssta/native';
 
-const Palette = cssta(View)`
-  background-color: red;
+const Palette = cssta(Animated.View)`
+  background-color: #e74c3c;
   height: 20px;
   margin-bottom: 20px;
-  transition: background-color 1s linear;
+  transition: background-color 0.5s linear;
 
   [active] {
-    background-color: blue;
+    background-color: #1abc9c;
   }
 `;
 
@@ -18,7 +18,7 @@ export default class VariablesProviderDemo extends Component {
     super();
 
     this.state = { active: false };
-    this.toggleActive = ({ active }) => this.setState({ active: !active });
+    this.toggleActive = () => this.setState(({ active }) => ({ active: !active }));
   }
 
   render() {
@@ -27,8 +27,10 @@ export default class VariablesProviderDemo extends Component {
     return (
       <View>
         <Palette active={active} />
-        <Button title="Toggle colour" color="black" onPress={this.toggleActive} />
+        <Button title="Toggle Color" color="black" onPress={this.toggleActive} />
       </View>
-    )
+    );
   }
 }
+
+export const code = 'transition: background-color 0.5s linear;';

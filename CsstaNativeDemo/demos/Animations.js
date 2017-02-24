@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, Animated, Button } from 'react-native';
+import { View, Animated, Button } from 'react-native';
 import cssta from 'cssta/native';
 
 const Container = cssta(View)`
@@ -28,7 +28,7 @@ export default class VariablesProviderDemo extends Component {
         tension: -3,
         friction: 2,
       }).start();
-    }
+    };
   }
 
   render() {

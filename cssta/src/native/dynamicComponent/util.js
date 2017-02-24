@@ -25,29 +25,26 @@ TransformedStyles
   * Also user styles
 */
 
-module.exports.generateStylesheet = (appliedVariables, rules) => {
-  const ruleStylesWithVariablesApplied = rules.map((rule) => {
+module.exports.createRuleStylesUsingStylesheet = (appliedVariables, untransformedRules) => {
+  const styles = untransformedRules.map((rule) => {
     const styleTuples = rule.styleTuples.map(([property, value]) => {
       let transformedValue = value;
       transformedValue = transformVariables(transformedValue, appliedVariables);
       transformedValue = transformColors(transformedValue);
       return [property, transformedValue];
     });
-    const style = cssToReactNative(styleTuples);
-    return style;
+    return cssToReactNative(styleTuples);
   });
 
-  const styleBody = ruleStylesWithVariablesApplied.reduce((accum, style, index) => {
+  const styleBody = styles.reduce((accum, style, index) => {
     accum[index] = style;
     return accum;
   }, {});
-  const styleSheet = StyleSheet.create(styleBody);
+  const stylesheet = StyleSheet.create(styleBody);
 
-  const rulesWithVariablesApplied = rules.map((rule, index) => ({
-    validate: rule.validate,
-    style: styleSheet[index],
-    transitions: rule.transitions,
-  }));
+  const rules = untransformedRules.map((rule, index) => (
+    Object.assign({}, rule, { style: styles[index], styleSheetReference: stylesheet[index] })
+  ));
 
-  return rulesWithVariablesApplied;
+  return rules;
 };

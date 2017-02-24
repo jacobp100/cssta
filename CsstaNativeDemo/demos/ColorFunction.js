@@ -21,3 +21,5 @@ export default () => (
     <HeadingText>Text styled using CSS&rsquo;s <Code>color(...)</Code> function</HeadingText>
   </HeadingContainer>
 );
+
+export const code = 'color: color(red tint(50%));';

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { View, Text, Slider } from 'react-native';
-import cssta, { VariablesProvider } from 'cssta/native';
+import { View, Slider } from 'react-native';
+import cssta from 'cssta/native';
 
 const Palette = cssta(View)`
   height: 20px;
@@ -41,6 +41,8 @@ export default class VariablesProviderDemo extends Component {
           onValueChange={this.setColor('b')}
         />
       </View>
-    )
+    );
   }
 }
+
+export const code = "<Component style={{ backgroundColor: 'green' }} />";

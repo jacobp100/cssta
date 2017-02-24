@@ -1,20 +1,20 @@
 /* eslint-disable no-param-reassign */
 const React = require('react');
-const { generateStylesheet } = require('./util');
+const { createRuleStylesUsingStylesheet } = require('./util');
 
 const { Component } = React;
 
 module.exports = class StaticStyleSheetManager extends Component {
   constructor(props) {
     super();
-    this.stylesheet = generateStylesheet({}, props.rules);
+    this.rules = createRuleStylesUsingStylesheet({}, props.rules);
   }
 
   render() {
     const { Element, ownProps, passedProps, managerArgs } = this.props;
-    const { stylesheet } = this;
+    const { rules } = this;
 
-    const nextProps = { Element, ownProps, passedProps, stylesheet, managerArgs };
+    const nextProps = { Element, ownProps, passedProps, rules, managerArgs };
     return React.createElement(Element, nextProps);
   }
 };

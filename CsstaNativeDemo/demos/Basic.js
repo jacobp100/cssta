@@ -4,7 +4,7 @@ import cssta from 'cssta/native';
 
 const HeadingContainer = cssta(View)`
   margin: 10px 50px;
-  padding: 10px;
+  padding: 10px 15px;
   border-radius: 5px;
   border: 1px solid #e67e22;
 `;
@@ -18,3 +18,9 @@ export default () => (
     <HeadingText>Hello World!</HeadingText>
   </HeadingContainer>
 );
+
+export const code =
+`       margin: 10px 50px;
+      padding: 10px 15px;
+border-radius: 5px;
+       border: 1px solid #e67e22;`;

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, Button } from 'react-native';
+import { View, Button, Animated } from 'react-native';
 import cssta from 'cssta/native';
 
 const PickerRow = cssta(View)`
@@ -11,21 +11,22 @@ const PickerRow = cssta(View)`
 const DynamicContainer = cssta(View)`
   --color: black;
 
-  [color="red"] { --color: red; }
-  [color="green"] { --color: green; }
-  [color="blue"] { --color: blue; }
+  [color="red"] { --color: #e74c3c; }
+  [color="green"] { --color: #2ecc71; }
+  [color="blue"] { --color: #3498db; }
 `;
 
 class DynamicPicker extends Component {
   constructor() {
     super();
     this.state = { color: 'red' };
-    this.setColor = (color) => this.setState({ color });
+    this.setColor = color => this.setState({ color });
   }
 
   render() {
     const { color } = this.state;
     const { children } = this.props;
+
     return (
       <DynamicContainer color={color}>
         {children}
@@ -40,9 +41,12 @@ class DynamicPicker extends Component {
   }
 }
 
-const DynamicText = cssta(Text)`
+const DynamicText = cssta(Animated.Text)`
   color: var(--color);
   font-size: 20px;
+
+  /* You can animate CSS variables */
+  transition: color 0.1s;
 `;
 
 export default () => (
@@ -50,3 +54,7 @@ export default () => (
     <DynamicText>Text dynamically styled with CSS variables!</DynamicText>
   </DynamicPicker>
 );
+
+export const code =
+`--primary-color: red;
+          color: var(--primary-color);`;

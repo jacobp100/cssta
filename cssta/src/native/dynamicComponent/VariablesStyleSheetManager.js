@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 const React = require('react');
-const { generateStylesheet } = require('./util');
+const { createRuleStylesUsingStylesheet } = require('./util');
 const VariablesProvider = require('../VariablesProvider');
 const resolveVariableDependencies = require('../../util/resolveVariableDependencies');
 
@@ -21,7 +21,9 @@ module.exports = class VariablesStyleSheetManager extends Component {
   }
 
   render() {
-    const { NextElement, Element, ownProps, passedProps, rules, managerArgs } = this.props;
+    const {
+      NextElement, Element, ownProps, passedProps, rules: untransformedRules, managerArgs,
+    } = this.props;
     const { importedVariables } = managerArgs;
     const { styleCache } = this;
 
@@ -29,7 +31,7 @@ module.exports = class VariablesStyleSheetManager extends Component {
       VariablesProvider,
       {
         exportedVariables: variablesFromScope => (
-          getExportedVariables(ownProps, variablesFromScope, rules)
+          getExportedVariables(ownProps, variablesFromScope, untransformedRules)
         ),
       },
       (appliedVariables) => {
@@ -40,13 +42,13 @@ module.exports = class VariablesStyleSheetManager extends Component {
         const styleCacheKey = JSON.stringify(ownAppliedVariables);
         const styleCached = styleCacheKey in styleCache;
 
-        const stylesheet = styleCached
+        const rules = styleCached
           ? styleCache[styleCacheKey]
-          : generateStylesheet(ownAppliedVariables, rules);
+          : createRuleStylesUsingStylesheet(ownAppliedVariables, untransformedRules);
 
-        if (!styleCached) styleCache[styleCacheKey] = stylesheet;
+        if (!styleCached) styleCache[styleCacheKey] = rules;
 
-        const nextProps = { Element, ownProps, passedProps, stylesheet, managerArgs };
+        const nextProps = { Element, ownProps, passedProps, rules, managerArgs };
         return React.createElement(NextElement, nextProps);
       }
     );

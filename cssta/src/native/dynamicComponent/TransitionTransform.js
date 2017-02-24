@@ -3,6 +3,7 @@ const React = require('react');
 /* eslint-disable */
 const { Animated, Easing } = require('react-native');
 /* eslint-enable */
+const { shallowEqual } = require('../../util');
 
 const { Component } = React;
 
@@ -16,7 +17,7 @@ const mergeTransitions = props =>
 
 const getDurationInMs = (duration) => {
   const time = parseFloat(duration);
-  const factor = /ms$/i.test(duration) !== -1 ? 1 : 1000;
+  const factor = /ms$/i.test(duration) ? 1 : 1000;
   return time * factor;
 };
 
@@ -35,33 +36,52 @@ module.exports = class TransitionManager extends Component {
     const styles = mergeStyles(props);
     const { transitions } = props.managerArgs; // All transitions
 
+    this.state = { styles, previousStyles: styles };
+
     this.animationValues = transitions.reduce((animationValues, transitionName) => {
-      animationValues[transitionName] = new Animated.Value(styles[transitionName]);
+      const targetValue = styles[transitionName];
+      const initialValue = typeof targetValue === 'number' ? targetValue : 0;
+      animationValues[transitionName] = new Animated.Value(initialValue);
       return animationValues;
     }, {});
   }
 
-  componentDidUpdate() {
-    const styles = mergeStyles(this.props);
+  componentWillReceiveProps(nextProps) {
+    const previousStyles = this.state.styles;
+    const styles = mergeStyles(nextProps);
+    if (!shallowEqual(previousStyles, styles)) this.setState({ styles, previousStyles });
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const { styles } = this.state;
+
+    if (prevState.styles === styles) return;
+
+    const { animationValues } = this;
+
     const currentTransitions = mergeTransitions(this.props);
 
-    const animations = Object.keys(this.animationValues).map((transitionProperty) => {
-      const transitionValue = currentTransitions[transitionProperty] || '';
+    const animations = Object.keys(animationValues).map((transitionProperty) => {
+      const transitionValues = currentTransitions[transitionProperty] || [];
 
-      const durationMatch = transitionValue.match(/\b\d+m?s\b/i); // FIXME: Decimal points
-      const duration = durationMatch ? getDurationInMs(durationMatch[0]) : 0;
+      const durationMatch = transitionValues.find(value => /^\d/.test(value));
+      const duration = durationMatch ? getDurationInMs(durationMatch) : 0;
 
-      const easingMatch = transitionValue.match(/\b\b[a-z][a-z-]+\b/i);
-      const easing = easingMatch ? easingFunctions[easingMatch[0]] : easingFunctions.linear;
+      const easingMatch = transitionValues.find(value => /^[a-z]/.test(value));
+      const easing = easingMatch ? easingFunctions[easingMatch] : easingFunctions.linear;
 
-      return Animated.timing(this.animationValues[transitionProperty], {
-        toValue: styles[transitionProperty],
-        duration,
-        easing,
-      });
+      const animation = animationValues[transitionProperty];
+
+      const targetValue = styles[transitionProperty];
+      const needsInterpolation = typeof targetValue !== 'number';
+      const toValue = !needsInterpolation ? targetValue : 1;
+
+      if (needsInterpolation) animation.setValue(0);
+
+      return Animated.timing(animation, { toValue, duration, easing });
     });
 
-    Animated.sequence(animations).start();
+    Animated.parallel(animations).start();
   }
 
   render() {
@@ -69,7 +89,28 @@ module.exports = class TransitionManager extends Component {
     let { appliedRules } = this.props;
     const { animationValues } = this;
 
-    appliedRules = appliedRules.concat(animationValues);
+    const animationNames = Object.keys(animationValues);
+    if (animationNames.length > 0) {
+      const { styles, previousStyles } = this.state;
+
+      const fixedAnimations = animationNames.reduce((accum, animationName) => {
+        const animation = animationValues[animationName];
+
+        const targetValue = styles[animationName];
+        const value = typeof targetValue === 'number'
+          ? animation
+          : animation.interpolate({
+            inputRange: [0, 1],
+            outputRange: [previousStyles[animationName], targetValue],
+          });
+
+        accum[animationName] = value;
+        return accum;
+      }, {});
+
+      const newRule = { style: fixedAnimations };
+      appliedRules = appliedRules.concat(newRule);
+    }
 
     const nextProps = { Element, ownProps, passedProps, appliedRules, managerArgs };
     return React.createElement(NextElement, nextProps);

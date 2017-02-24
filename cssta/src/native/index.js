@@ -15,6 +15,7 @@ module.exports = element => (cssTextFragments, ...substitutions) => {
   const rules = baseRules.map(rule => ({
     validate: createValidatorForSelector(rule.selector),
     styleTuples: rule.styleTuples,
+    transitions: rule.transitions,
     exportedVariables: rule.exportedVariables,
   }));
 

@@ -1,4 +1,5 @@
 /* eslint-disable no-param-reassign */
+const { getPropertyName } = require('css-to-react-native');
 const getRoot = require('../util/getRoot');
 const { varRegExp, varRegExpNonGlobal } = require('../util');
 
@@ -32,14 +33,14 @@ const getImportedVariables = nodes => getStyleDeclarations(nodes)
   }, []);
 
 const getTransitions = declValue => declValue
-  .split('')
+  .split(',')
   .reduce((transitions, value) => {
     const parts = value.match(transitionPartRegExp);
     const property = parts
       ? parts.find(part => !nonTransitionPropertyRegExp.test(part))
       : null;
 
-    if (property) transitions[property] = parts.filter(part => part !== property);
+    if (property) transitions[getPropertyName(property)] = parts.filter(part => part !== property);
 
     return transitions;
   }, {});

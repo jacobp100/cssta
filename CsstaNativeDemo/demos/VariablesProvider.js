@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, Button, Slider } from 'react-native';
+import { View, Button } from 'react-native';
 import cssta, { VariablesProvider } from 'cssta/native';
 
 const Palette = cssta(View)`
@@ -33,6 +33,14 @@ export default class VariablesProviderDemo extends Component {
         </VariablesProvider>
         <Button title="Pick Random Color" color="black" onPress={this.setColor} />
       </View>
-    )
+    );
   }
 }
+
+export const code =
+`/* React */
+<VariablesProvider
+    exportedVariables={{ color: activeColor }}>
+
+/* CSS */
+background-color: var(--color);`;
