@@ -3,6 +3,9 @@ const getRoot = require('../util/getRoot');
 const { varRegExp, varRegExpNonGlobal } = require('../util');
 
 const variableRegExp = /^--/;
+// Matches whole words, or whole functions (i.e. `var(--hello, with spaces here)`)
+const transitionPartRegExp = /([^\s(]+(?:\([^)]*\))?)/g;
+const nonTransitionPropertyRegExp = /(?:ease(?:-in|-out)?|linear|^\d|\()/g;
 
 const getStyleDeclarations = nodes => nodes
   .filter(node => node.type === 'decl' && !variableRegExp.test(node.prop));
@@ -28,19 +31,45 @@ const getImportedVariables = nodes => getStyleDeclarations(nodes)
     return accum.concat(referencedVariables);
   }, []);
 
+const getTransitions = declValue => declValue
+  .split('')
+  .reduce((transitions, value) => {
+    const parts = value.match(transitionPartRegExp);
+    const property = parts
+      ? parts.find(part => !nonTransitionPropertyRegExp.test(part))
+      : null;
+
+    if (property) transitions[property] = parts.filter(part => part !== property);
+
+    return transitions;
+  }, {});
+
 module.exports = (inputCss) => {
   const { root, propTypes } = getRoot(inputCss);
 
   const rules = [];
 
   root.walkRules((node) => {
-    rules.push({
-      selector: node.selector,
-      styleTuples: getStyleTuples(node.nodes),
-      exportedVariables: getExportedVariables(node.nodes),
-      importedVariables: getImportedVariables(node.nodes),
-    });
+    const { selector } = node;
+    let styleTuples = getStyleTuples(node.nodes);
+
+    // findLast (not in spec)
+    const transitionDeclValue = styleTuples.reduce((currentValue, styleTuple) => (
+      styleTuple[0] === 'transition' ? styleTuple[1] : currentValue
+    ), null);
+    const transitions = transitionDeclValue
+      ? getTransitions(transitionDeclValue)
+      : {};
+
+    styleTuples = styleTuples.filter(styleTuple => styleTuple[0] !== 'transition');
+
+    const exportedVariables = getExportedVariables(node.nodes);
+    const importedVariables = getImportedVariables(node.nodes);
+
+    rules.push({ selector, styleTuples, transitions, exportedVariables, importedVariables });
   });
+
+  const transitions = Object.keys(Object.assign({}, ...rules.map(rule => rule.transitions)));
 
   const importedVariables = rules.reduce((outerAccum, rule) => (
     rule.importedVariables.reduce((innerAccum, importedVariable) => (
@@ -50,5 +79,7 @@ module.exports = (inputCss) => {
     ), outerAccum)
   ), []);
 
-  return { rules, propTypes, importedVariables };
+  const managerArgs = { transitions, importedVariables };
+
+  return { rules, propTypes, managerArgs };
 };

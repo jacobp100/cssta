@@ -3,12 +3,8 @@ const { StyleSheet } = require('react-native');
 /* eslint-enable */
 /* eslint-disable no-param-reassign */
 const cssToReactNative = require('css-to-react-native').default;
-const dynamicComponentFactory = require('../factories/dynamicComponentFactory');
-const resolveVariableDependencies = require('../util/resolveVariableDependencies');
-const VariablesProvider = require('./VariablesProvider');
-const staticComponentTransform = require('./staticComponentTransform');
-const transformVariables = require('../css-transforms/variables');
-const transformColors = require('../css-transforms/colors');
+const transformVariables = require('../../css-transforms/variables');
+const transformColors = require('../../css-transforms/colors');
 
 /*
 type Rule = {
@@ -18,15 +14,18 @@ type Rule = {
 };
 */
 
-const getExportedVariables = (ownProps, variablesFromScope, rules) => {
-  const appliedRuleVariables = rules
-    .filter(rule => rule.validate(ownProps))
-    .map(rule => rule.exportedVariables);
-  const definedVariables = Object.assign({}, ...appliedRuleVariables);
-  return resolveVariableDependencies(definedVariables, variablesFromScope);
-};
+/*
+UntransformedStyles
+  * Empty from variables manager
+  * `rules` from any other config
 
-const generateStylesheet = (appliedVariables, rules) => {
+TransformedStyles
+  * Stylesheet from variables manager
+  * Animated from transition manager
+  * Also user styles
+*/
+
+module.exports.generateStylesheet = (appliedVariables, rules) => {
   const ruleStylesWithVariablesApplied = rules.map((rule) => {
     const styleTuples = rule.styleTuples.map(([property, value]) => {
       let transformedValue = value;
@@ -47,14 +46,8 @@ const generateStylesheet = (appliedVariables, rules) => {
   const rulesWithVariablesApplied = rules.map((rule, index) => ({
     validate: rule.validate,
     style: styleSheet[index],
+    transitions: rule.transitions,
   }));
 
   return rulesWithVariablesApplied;
 };
-
-module.exports = dynamicComponentFactory(
-  VariablesProvider,
-  getExportedVariables,
-  generateStylesheet,
-  staticComponentTransform
-);

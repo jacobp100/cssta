@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text, Animated, Button } from 'react-native';
-import cssta, { VariablesProvider } from 'cssta/native';
+import cssta from 'cssta/native';
 
 const Container = cssta(View)`
   align-items: center;
@@ -13,9 +13,6 @@ const Box = cssta(Animated.View)`
   background-color: #f39c12;
 `;
 
-const Description = cssta(Text)`
-  margin-top: 10px;
-`;
 export default class VariablesProviderDemo extends Component {
   constructor() {
     super();
@@ -47,6 +44,6 @@ export default class VariablesProviderDemo extends Component {
         <Box style={{ transform: [{ rotate }] }} />
         <Button title="Trigger animation" color="black" onPress={this.triggerAnimation} />
       </Container>
-    )
+    );
   }
 }

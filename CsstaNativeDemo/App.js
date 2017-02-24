@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { View, Text, ScrollView, PixelRatio } from 'react-native';
 import cssta from 'cssta/native';
 import Basic from './demos/Basic';
+import Transitions from './demos/Transitions';
 import CSSVariables from './demos/CSSVariables';
 import VariablesProvider from './demos/VariablesProvider';
 import StyleOverrides from './demos/StyleOverrides';
@@ -44,6 +45,9 @@ export default () => (
   <App>
     <Demo title="Basic">
       <Basic />
+    </Demo>
+    <Demo title="Transitions">
+      <Transitions />
     </Demo>
     <Demo title="CSS Variables">
       <CSSVariables />
