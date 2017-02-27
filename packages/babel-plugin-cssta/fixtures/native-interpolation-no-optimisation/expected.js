@@ -6,17 +6,17 @@ const color = 'red';
 cssta(View)`
   [attr1] {
     margin-top: 10;
-    color: ${ color };
+    color: ${color};
   }
 
   [attr2] {
-    color: ${ color };
+    color: ${color};
     margin-top: 10;
   }
 
   [attr3] {
     margin-top: 10;
-    color: ${ color };
+    color: ${color};
     margin-bottom: 10;
   }
 `;

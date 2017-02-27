@@ -1,6 +1,6 @@
 import { StyleSheet as _StyleSheet } from 'react-native';
 import _staticComponent from 'cssta/dist/native/staticComponent';
-import _cssToReactNative from 'css-to-react-native';
+import _cssToReactNative from 'cssta/dist/packages/css-to-react-native';
 
 import { View } from 'react-native';
 
@@ -10,13 +10,13 @@ const marginLarge = 10;
 var _csstaStyle = _StyleSheet.create({
   0: Object.assign({
     'paddingTop': 10
-  }, _cssToReactNative([['margin', `${ marginLarge } ${ marginSmall }`]])),
-  1: Object.assign(_cssToReactNative([['margin', `${ marginLarge } ${ marginSmall }`]]), {
+  }, _cssToReactNative([['margin', `${marginLarge} ${marginSmall}`]])),
+  1: Object.assign(_cssToReactNative([['margin', `${marginLarge} ${marginSmall}`]]), {
     'paddingTop': 10
   }),
   2: Object.assign({
     'paddingTop': 10
-  }, _cssToReactNative([['margin', `${ marginLarge } ${ marginSmall }`]]), {
+  }, _cssToReactNative([['margin', `${marginLarge} ${marginSmall}`]]), {
     'paddingBottom': 10
   })
 });

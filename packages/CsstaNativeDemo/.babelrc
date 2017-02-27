@@ -1,4 +1,6 @@
 {
   "presets": ["react-native"],
-  "plugins": ["babel-plugin-cssta"]
+  "plugins": [
+    ["babel-plugin-cssta", { "optimizations": ["interpolateValuesOnly"] }]
+  ]
 }

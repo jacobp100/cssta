@@ -25,11 +25,11 @@ const stringInterpolation = (path, value) =>
 const lengthInterpolation = (path, value) => {
   const transformRawValue = getOrCreateImportReference(
     path,
-    'css-to-react-native',
+    'cssta/dist/packages/css-to-react-native',
     'transformRawValue'
   );
 
-  return t.callExpression(transformRawValue, value);
+  return t.callExpression(transformRawValue, [value]);
 };
 
 const numberInterpolation = convertValue('Number');
@@ -118,6 +118,11 @@ const getInterpolationType = (substitutionMap, [prop, value]) => {
   return TEMPLATE_INTERPOLATION;
 };
 
+const getTemplateValues = cooked => ({
+  cooked,
+  raw: JSON.stringify(cooked).slice(1, -1),
+});
+
 const getStringWithSubstitutedValues = (substitutionMap, value) => {
   /* Don't attempt to optimise `${value}`: it converts to a string and we need that */
   const allValues = !_.isEmpty(substitutionMap)
@@ -129,8 +134,8 @@ const getStringWithSubstitutedValues = (substitutionMap, value) => {
   if (_.isEmpty(expressionValues)) return t.stringLiteral(quasiValues[0]);
 
   const quasis = [].concat(
-    _.map(raw => t.templateElement({ raw }), _.initial(quasiValues)),
-    t.templateElement({ raw: _.last(quasiValues) }, true)
+    _.map(cooked => t.templateElement(getTemplateValues(cooked)), _.initial(quasiValues)),
+    t.templateElement(getTemplateValues(_.last(quasiValues)), true)
   );
   const expressions = _.map(_.propertyOf(substitutionMap), expressionValues);
 
@@ -153,16 +158,30 @@ const createStyleSheetBody = (path, substitutionMap, rule) => {
 
   const transformedGroups = _.map(({ styleTuples, interpolationType }) => {
     if (interpolationType === SIMPLE_OR_NO_INTERPOLATION) {
+      const substitutionRegExp = !_.isEmpty(substitutionMap)
+        ? getSubstitutionRegExp(substitutionMap)
+        : null;
+
       const styleMap = _.reduce((accum, [prop, value]) => {
         const propertyName = getPropertyName(prop);
-        const substitution = substitutionMap[value.trim()];
+        const substitutionMatches = substitutionRegExp
+          ? value.match(substitutionRegExp)
+          : null;
 
-        if (substitution) {
-          return _.set(propertyName, simpleInterpolation[propertyName](path, substitution), accum);
-        } else if (!containsSubstitution(substitutionMap, value)) {
+        if (!substitutionMatches) {
           const styles = cssToReactNative([[propertyName, value]]);
           const styleToValue = _.mapValues(jsonToNode, styles);
           return _.assign(accum, styleToValue);
+        } else if (substitutionMatches.length === 1) {
+          const substitutionNode = substitutionMatches[0] === value.trim()
+            ? substitutionMap[value]
+            : getStringWithSubstitutedValues(substitutionMap, value);
+
+          return _.set(
+            propertyName,
+            simpleInterpolation[propertyName](path, substitutionNode),
+            accum
+          );
         }
 
         throw new Error(`Used multiple values ${propertyName}, which accepts one value`);
@@ -175,7 +194,7 @@ const createStyleSheetBody = (path, substitutionMap, rule) => {
 
     const cssToReactNativeReference = getOrCreateImportReference(
       path,
-      'css-to-react-native',
+      'cssta/dist/packages/css-to-react-native',
       'default'
     );
 

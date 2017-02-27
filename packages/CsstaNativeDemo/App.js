@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, ScrollView, PixelRatio } from 'react-native';
+import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import cssta from 'cssta/native';
 import Basic, { code as basicCode } from './demos/Basic';
 import Transitions, { code as transitionsCode } from './demos/Transitions';
@@ -27,10 +27,10 @@ const DemoBody = cssta(View)`
   padding: 20px;
   background-color: white;
   border-color: #bdc3c7;
-  border-top-width: ${1 / PixelRatio.get()}px;
+  border-top-width: ${StyleSheet.hairlineWidth}px;
 
   [noCode] {
-    border-bottom-width: ${1 / PixelRatio.get()}px;
+    border-bottom-width: ${StyleSheet.hairlineWidth}px;
   }
 `;
 

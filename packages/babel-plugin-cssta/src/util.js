@@ -48,7 +48,6 @@ module.exports.getCsstaTypeForCallee = (path, callee) => {
 
 const getImportReferences = (path, moduleName, importedName) => {
   const allBindings = _.values(path.scope.bindings);
-  // console.log(_.map('path.node', allBindings));
   const allImportBindings = (importedName === 'default')
     ? _.filter(reference => t.isImportDefaultSpecifier(reference.path.node), allBindings)
     : _.filter(reference => (
