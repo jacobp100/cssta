@@ -1,26 +1,37 @@
-import _TransitionTransform from 'cssta/dist/native/dynamicComponent/TransitionTransform';
-import _StaticStyleSheetManager from 'cssta/dist/native/dynamicComponent/StaticStyleSheetManager';
-import _combineManagers from 'cssta/dist/native/dynamicComponent/combineManagers';
+import _dynamicComponent from 'cssta/dist/native/dynamicComponent';
+import _Transition from 'cssta/dist/native/dynamicComponentEnhancers/Transition';
+import { StyleSheet as _StyleSheet } from 'react-native';
 
 import { Animated } from 'react-native';
 
-_combineManagers(_StaticStyleSheetManager, [_TransitionTransform])(Animated.View, ['boolAttr'], {
+const _style = {
+  'color': 'red'
+};
+const _style2 = {
+  'color': 'blue'
+};
+
+var _csstaStyle = _StyleSheet.create({
+  0: _style,
+  1: _style2
+});
+
+_dynamicComponent(Animated.View, ['boolAttr'], [_Transition], {
+  'rules': [{
+    'validate': function (p) {
+      return true;
+    },
+    'exportedVariables': {},
+    'style': _style,
+    'styleSheetReference': _csstaStyle[0]
+  }, {
+    'validate': function (p) {
+      return !!p['boolAttr'];
+    },
+    'exportedVariables': {},
+    'style': _style2,
+    'styleSheetReference': _csstaStyle[1]
+  }],
   'transitions': ['color'],
   'importedVariables': []
-}, [{
-  'validate': function (p) {
-    return true;
-  },
-  'styleTuples': [['color', 'red']],
-  'transitions': {
-    'color': ['1s', 'linear']
-  },
-  'exportedVariables': {}
-}, {
-  'validate': function (p) {
-    return !!p['boolAttr'];
-  },
-  'styleTuples': [['color', 'blue']],
-  'transitions': {},
-  'exportedVariables': {}
-}]);
+});

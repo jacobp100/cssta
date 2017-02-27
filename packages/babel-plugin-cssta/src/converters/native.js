@@ -142,7 +142,7 @@ const getStringWithSubstitutedValues = (substitutionMap, value) => {
   return t.templateLiteral(quasis, expressions);
 };
 
-const createStyleSheetBody = (path, substitutionMap, rule) => {
+const createStyleSheetBody = _.curry((path, substitutionMap, rule) => {
   const styleGroups = _.reduce((groups, styleTuple) => {
     const interpolationType = getInterpolationType(substitutionMap, styleTuple);
     const lastGroup = _.last(groups);
@@ -215,63 +215,67 @@ const createStyleSheetBody = (path, substitutionMap, rule) => {
     t.memberExpression(t.identifier('Object'), t.identifier('assign')),
     transformedGroups
   );
-};
+});
 
-const createStaticStyleSheet = (
+const baseRuleElements = rule => [
+  t.objectProperty(
+    t.stringLiteral('validate'),
+    createValidatorNodeForSelector(rule.selector)
+  ),
+  t.objectProperty(
+    t.stringLiteral('exportedVariables'),
+    jsonToNode(rule.exportedVariables)
+  ),
+];
+
+const createStaticStylesheet = (
   path,
   component,
   substitutionMap,
-  rules,
-  propTypes
+  rules
 ) => {
+  const statementPath = path.getStatementParent();
+  const styleSheetReference = statementPath.scope.generateUidIdentifier('csstaStyle');
+  const getStyleVariableName = () => statementPath.scope.generateUidIdentifier('style');
+
   let i = 0;
-  const getStyleName = () => {
+  const getStyleSheetReference = () => {
     const value = i;
     i += 1;
-    return value;
+    return t.numericLiteral(value);
   };
 
-  const styleSheetReference = path.scope.generateUidIdentifier('csstaStyle');
-
+  const createStyleBodyForRule = createStyleSheetBody(statementPath, substitutionMap);
   const ruleBases = _.flow(
-    _.map(rule => _.set('styleBody', createStyleSheetBody(path, substitutionMap, rule), rule)),
+    _.map(rule => _.set('styleBody', createStyleBodyForRule(rule), rule)),
     _.filter(rule => rule.styleBody),
-    _.map(_.update('styleName', getStyleName))
+    _.map(_.update('styleVariableName', getStyleVariableName)),
+    _.map(_.update('styleSheetReference', getStyleSheetReference))
   )(rules);
 
-  const rulesBody = t.arrayExpression(_.map(({ selector, styleName }) => t.objectExpression([
+  const rulesBody = t.arrayExpression(_.map(rule => t.objectExpression([
+    ...baseRuleElements(rule),
+    t.objectProperty(t.stringLiteral('style'), rule.styleVariableName),
     t.objectProperty(
-      t.stringLiteral('validate'),
-      createValidatorNodeForSelector(selector)
-    ),
-    t.objectProperty(
-      t.stringLiteral('style'),
-      t.memberExpression(styleSheetReference, t.numericLiteral(styleName), true)
+      t.stringLiteral('styleSheetReference'),
+      t.memberExpression(styleSheetReference, rule.styleSheetReference, true)
     ),
   ]), ruleBases));
 
-  const staticComponent = getOrCreateImportReference(
-    path,
-    'cssta/dist/native/staticComponent',
-    'default'
-  );
-  const newElement = t.callExpression(staticComponent, [
-    component,
-    jsonToNode(Object.keys(propTypes)),
-    rulesBody,
-  ]);
+  const reactNativeStyleSheetRef =
+    getOrCreateImportReference(path, 'react-native', 'StyleSheet');
 
-  path.replaceWith(newElement);
-
-  const reactNativeStyleSheetRef = getOrCreateImportReference(
-    path,
-    'react-native',
-    'StyleSheet'
-  );
+  _.forEach(({ styleVariableName, styleBody }) => {
+    const styleDeclarator = t.variableDeclaration('const', [
+      t.variableDeclarator(styleVariableName, styleBody),
+    ]);
+    statementPath.insertBefore(styleDeclarator);
+  }, ruleBases);
 
   if (!_.isEmpty(ruleBases)) {
-    const styleSheetBody = t.objectExpression(_.map(({ styleName, styleBody }) => (
-      t.objectProperty(t.numericLiteral(styleName), styleBody)
+    const styleSheetBody = t.objectExpression(_.map(rule => t.objectProperty(
+      rule.styleSheetReference,
+      rule.styleVariableName
     ), ruleBases));
 
     const styleSheetElement = t.variableDeclaration('var', [
@@ -281,18 +285,17 @@ const createStaticStyleSheet = (
       )),
     ]);
 
-    path.insertBefore(styleSheetElement);
+    statementPath.insertBefore(styleSheetElement);
   }
+
+  return rulesBody;
 };
 
-const createDynamicStylesheet = (
+const createVariablesStyleSheet = (
   path,
   component,
   substitutionMap,
-  rules,
-  propTypes,
-  exportedVariables,
-  managerArgs
+  rules
 ) => {
   const createStyleTuples = ({ styleTuples }) => t.arrayExpression(_.map(([prop, value]) => (
     t.arrayExpression([
@@ -301,21 +304,11 @@ const createDynamicStylesheet = (
     ])
   ), styleTuples));
 
-  const hasVariables = !_.isEmpty(managerArgs.importedVariables) || !_.isEmpty(exportedVariables);
-  const hasTransitions = !_.isEmpty(managerArgs.transitions);
-
   const rulesBody = t.arrayExpression(_.map(rule => t.objectExpression([
-    t.objectProperty(
-      t.stringLiteral('validate'),
-      createValidatorNodeForSelector(rule.selector)
-    ),
+    ...baseRuleElements(rule),
     t.objectProperty(
       t.stringLiteral('styleTuples'),
       createStyleTuples(rule)
-    ),
-    t.objectProperty(
-      t.stringLiteral('transitions'),
-      jsonToNode(rule.transitions)
     ),
     t.objectProperty(
       t.stringLiteral('exportedVariables'),
@@ -323,48 +316,7 @@ const createDynamicStylesheet = (
     ),
   ]), rules));
 
-  const managerArgsNode = t.objectExpression([
-    t.objectProperty(t.stringLiteral('rules'), rulesBody),
-    _.map(([key, value]) => (
-      t.objectProperty(t.stringLiteral(key), jsonToNode(value))
-    ), _.toPairs(managerArgs)),
-  ]);
-
-  const dynamicComponent = getOrCreateImportReference(
-    path,
-    'cssta/dist/native/dynamicComponent',
-    'default'
-  );
-
-  const enhancers = [];
-  const styleSheetManagerSource = hasVariables
-    ? 'VariablesStyleSheetManager'
-    : 'StaticStyleSheetManager';
-
-  const styleSheetManager = getOrCreateImportReference(
-    path,
-    `cssta/dist/native/dynamicComponentEnhancers/${styleSheetManagerSource}`,
-    'default'
-  );
-  enhancers.push(styleSheetManager);
-
-  if (hasTransitions) {
-    const transitionEnhancer = getOrCreateImportReference(
-      path,
-      'cssta/dist/native/dynamicComponentEnhancers/Transition',
-      'default'
-    );
-    enhancers.push(transitionEnhancer);
-  }
-
-  const newElement = t.callExpression(dynamicComponent, [
-    component,
-    jsonToNode(Object.keys(propTypes)),
-    enhancers,
-    managerArgsNode,
-  ]);
-
-  path.replaceWith(newElement);
+  return rulesBody;
 };
 
 module.exports = (path, state, component, cssText, substitutionMap) => {
@@ -380,10 +332,59 @@ module.exports = (path, state, component, cssText, substitutionMap) => {
     throw new Error('When using singleSourceOfVariables, only one component can define variables');
   }
 
-  const baseParams = [path, component, substitutionMap, rules, propTypes];
-  if (singleSourceOfVariables || (!exportsVariables && _.every(_.isEmpty, managerArgs))) {
-    createStaticStyleSheet(...baseParams);
+  const hasVariables = !_.isEmpty(managerArgs.importedVariables) || !_.isEmpty(exportedVariables);
+  const hasTransitions = !_.isEmpty(managerArgs.transitions);
+
+  const enhancersRoot = 'cssta/dist/native/dynamicComponentEnhancers';
+  const enhancers = [];
+  let rulesBody;
+
+  if (singleSourceOfVariables || !hasVariables) {
+    rulesBody = createStaticStylesheet(path, component, substitutionMap, rules);
   } else {
-    createDynamicStylesheet(...baseParams, exportedVariables, managerArgs);
+    const variablesEnhancer =
+      getOrCreateImportReference(path, `${enhancersRoot}/VariablesStyleSheetManager`, 'default');
+    enhancers.push(variablesEnhancer);
+
+    rulesBody = createVariablesStyleSheet(path, component, substitutionMap, rules);
   }
+
+  if (hasTransitions) {
+    const transitionEnhancer =
+      getOrCreateImportReference(path, `${enhancersRoot}/Transition`, 'default');
+    enhancers.push(transitionEnhancer);
+  }
+
+  let newElement;
+
+  const componentRoot = 'cssta/dist/native';
+  if (_.isEmpty(enhancers)) {
+    const staticComponent =
+      getOrCreateImportReference(path, `${componentRoot}/staticComponent`, 'default');
+
+    newElement = t.callExpression(staticComponent, [
+      component,
+      jsonToNode(Object.keys(propTypes)),
+      rulesBody,
+    ]);
+  } else {
+    const dynamicComponent =
+      getOrCreateImportReference(path, `${componentRoot}/dynamicComponent`, 'default');
+
+    const managerArgsNode = t.objectExpression([].concat(
+      t.objectProperty(t.stringLiteral('rules'), rulesBody),
+      _.map(([key, value]) => (
+        t.objectProperty(t.stringLiteral(key), jsonToNode(value))
+      ), _.toPairs(managerArgs))
+    ));
+
+    newElement = t.callExpression(dynamicComponent, [
+      component,
+      jsonToNode(Object.keys(propTypes)),
+      t.arrayExpression(enhancers),
+      managerArgsNode,
+    ]);
+  }
+
+  path.replaceWith(newElement);
 };

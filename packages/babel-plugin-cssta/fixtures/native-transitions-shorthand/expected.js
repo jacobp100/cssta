@@ -1,27 +1,49 @@
-import _TransitionTransform from 'cssta/dist/native/dynamicComponent/TransitionTransform';
-import _StaticStyleSheetManager from 'cssta/dist/native/dynamicComponent/StaticStyleSheetManager';
-import _combineManagers from 'cssta/dist/native/dynamicComponent/combineManagers';
+import _dynamicComponent from 'cssta/dist/native/dynamicComponent';
+import _Transition from 'cssta/dist/native/dynamicComponentEnhancers/Transition';
+import { StyleSheet as _StyleSheet } from 'react-native';
 
 import { Animated } from 'react-native';
 
-_combineManagers(_StaticStyleSheetManager, [_TransitionTransform])(Animated.View, ['active'], {
+const _style = {
+  'backgroundColor': '#e74c3c',
+  'height': 20,
+  'marginBottom': 20,
+  'transform': [{
+    'rotate': '0deg'
+  }, {
+    'scaleX': 1
+  }]
+};
+const _style2 = {
+  'backgroundColor': '#1abc9c',
+  'transform': [{
+    'rotate': '6deg'
+  }, {
+    'scaleX': 0.5
+  }]
+};
+
+var _csstaStyle = _StyleSheet.create({
+  0: _style,
+  1: _style2
+});
+
+_dynamicComponent(Animated.View, ['active'], [_Transition], {
+  'rules': [{
+    'validate': function (p) {
+      return true;
+    },
+    'exportedVariables': {},
+    'style': _style,
+    'styleSheetReference': _csstaStyle[0]
+  }, {
+    'validate': function (p) {
+      return !!p['active'];
+    },
+    'exportedVariables': {},
+    'style': _style2,
+    'styleSheetReference': _csstaStyle[1]
+  }],
   'transitions': ['backgroundColor', 'transform'],
   'importedVariables': []
-}, [{
-  'validate': function (p) {
-    return true;
-  },
-  'styleTuples': [['backgroundColor', '#e74c3c'], ['height', '20px'], ['marginBottom', '20px'], ['transform', 'scaleX(1) rotate(0deg)']],
-  'transitions': {
-    'backgroundColor': ['0.5s', 'linear'],
-    'transform': ['0.75s', 'linear']
-  },
-  'exportedVariables': {}
-}, {
-  'validate': function (p) {
-    return !!p['active'];
-  },
-  'styleTuples': [['backgroundColor', '#1abc9c'], ['transform', 'scaleX(0.5) rotate(6deg)']],
-  'transitions': {},
-  'exportedVariables': {}
-}]);
+});
