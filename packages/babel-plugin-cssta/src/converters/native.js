@@ -323,42 +323,45 @@ const createDynamicStylesheet = (
     ),
   ]), rules));
 
-  const combineManagers = getOrCreateImportReference(
+  const managerArgsNode = t.objectExpression([
+    t.objectProperty(t.stringLiteral('rules'), rulesBody),
+    _.map(([key, value]) => (
+      t.objectProperty(t.stringLiteral(key), jsonToNode(value))
+    ), _.toPairs(managerArgs)),
+  ]);
+
+  const dynamicComponent = getOrCreateImportReference(
     path,
-    'cssta/dist/native/dynamicComponent/combineManagers',
+    'cssta/dist/native/dynamicComponent',
     'default'
   );
 
+  const enhancers = [];
   const styleSheetManagerSource = hasVariables
     ? 'VariablesStyleSheetManager'
     : 'StaticStyleSheetManager';
 
   const styleSheetManager = getOrCreateImportReference(
     path,
-    `cssta/dist/native/dynamicComponent/${styleSheetManagerSource}`,
+    `cssta/dist/native/dynamicComponentEnhancers/${styleSheetManagerSource}`,
     'default'
   );
+  enhancers.push(styleSheetManager);
 
-  const transforms = [];
   if (hasTransitions) {
-    const transitionTransform = getOrCreateImportReference(
+    const transitionEnhancer = getOrCreateImportReference(
       path,
-      'cssta/dist/native/dynamicComponent/TransitionTransform',
+      'cssta/dist/native/dynamicComponentEnhancers/Transition',
       'default'
     );
-    transforms.push(transitionTransform);
+    enhancers.push(transitionEnhancer);
   }
-
-  const dynamicComponent = t.callExpression(combineManagers, [
-    styleSheetManager,
-    t.arrayExpression(transforms),
-  ]);
 
   const newElement = t.callExpression(dynamicComponent, [
     component,
     jsonToNode(Object.keys(propTypes)),
-    jsonToNode(managerArgs),
-    rulesBody,
+    enhancers,
+    managerArgsNode,
   ]);
 
   path.replaceWith(newElement);

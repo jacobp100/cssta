@@ -3,17 +3,21 @@ const React = require('react');
 /* eslint-disable */
 const { Animated, Easing } = require('react-native');
 /* eslint-enable */
+const { getAppliedRules } = require('../util');
 const { shallowEqual } = require('../../util');
 
 const { Component } = React;
 
-const mergeObjectArray = objects =>
-  Object.assign({}, ...objects.filter(style => typeof style === 'object'));
+const mergeRuleParts = iteratee => (props) => {
+  const objects = getAppliedRules(props.rules, props.ownProps)
+    .map(iteratee)
+    .filter(style => typeof style === 'object');
 
-const mergeStyles = props =>
-  mergeObjectArray(props.appliedRules.map(rule => rule.style));
-const mergeTransitions = props =>
-  mergeObjectArray(props.appliedRules.map(rule => rule.transitions));
+  return Object.assign({}, ...objects);
+};
+
+const mergeStyles = mergeRuleParts(rule => rule.style);
+const mergeTransitions = mergeRuleParts(rule => rule.transitions);
 
 const getDurationInMs = (duration) => {
   const time = parseFloat(duration);
@@ -62,11 +66,11 @@ module.exports = class TransitionManager extends Component {
     super();
 
     const styles = mergeStyles(props);
-    const { transitions } = props.managerArgs; // All transitions
+    const allTransitions = props.args.transitions;
 
     this.state = { styles, previousStyles: styles };
 
-    this.animationValues = transitions.reduce((animationValues, transitionName) => {
+    this.animationValues = allTransitions.reduce((animationValues, transitionName) => {
       const targetValue = styles[transitionName];
       const initialValue = typeof targetValue === 'number' ? targetValue : 0;
       animationValues[transitionName] = new Animated.Value(initialValue);
@@ -113,9 +117,9 @@ module.exports = class TransitionManager extends Component {
   }
 
   render() {
-    const { NextElement, Element, ownProps, passedProps, managerArgs } = this.props;
-    let { appliedRules } = this.props;
+    const { children } = this.props;
     const { animationValues } = this;
+    const nextProps = this.props;
 
     const animationNames = Object.keys(animationValues);
     if (animationNames.length > 0) {
@@ -133,10 +137,9 @@ module.exports = class TransitionManager extends Component {
       }, {});
 
       const newRule = { style: fixedAnimations };
-      appliedRules = appliedRules.concat(newRule);
+      nextProps.args.rules = nextProps.args.rules.concat(newRule);
     }
 
-    const nextProps = { Element, ownProps, passedProps, appliedRules, managerArgs };
-    return React.createElement(NextElement, nextProps);
+    return React.cloneElement(children, nextProps);
   }
 };
