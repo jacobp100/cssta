@@ -1,6 +1,6 @@
 {
   "name": "cssta",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,7 @@
     "build": "npm run build:dist; npm run build:vendor",
     "build:dist": "rm -rf ./dist || :; babel ./src --out-dir ./dist --ignore __tests__,__mocks__",
     "build:vendor": "webpack --config ./webpack.config.js",
-    "prepublish": "npm run build; cp ../README.md ."
+    "prepublish": "npm run build; cp ../../README.md ."
   },
   "keywords": [
     "postcss",

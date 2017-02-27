@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "private": true,
   "dependencies": {
     "babel-core": "^6.22.1",
     "babel-loader": "^6.2.10",
