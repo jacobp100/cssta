@@ -35,7 +35,6 @@ const interpolateValue = (currentValue, previousValue, animation) => {
   return currentValue.map((transform, index) => {
     const previousTransform = previousValue[index];
     const property = Object.keys(transform)[0];
-    console.log(property);
 
     if (process.env.NODE_ENV !== 'production' && !(property in previousTransform)) {
       throw new Error('Expected transforms to have same shape between transforms');

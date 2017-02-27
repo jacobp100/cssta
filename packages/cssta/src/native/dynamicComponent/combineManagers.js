@@ -1,5 +1,5 @@
 const React = require('react');
-const { getOwnPropKeys, getComponentProps, getPropTypes } = require('../../util');
+const { getOwnPropKeys, getComponentProps, getPropTypes } = require('../../util/props');
 /* eslint-disable no-param-reassign */
 
 /*

@@ -10,13 +10,13 @@ const marginLarge = 10;
 var _csstaStyle = _StyleSheet.create({
   0: Object.assign({
     'paddingTop': 10
-  }, _cssToReactNative([['margin', `${marginLarge} ${marginSmall}`]])),
-  1: Object.assign(_cssToReactNative([['margin', `${marginLarge} ${marginSmall}`]]), {
+  }, _cssToReactNative([['margin', `${marginLarge}px ${marginSmall}px`]])),
+  1: Object.assign(_cssToReactNative([['margin', `${marginLarge}px ${marginSmall}px`]]), {
     'paddingTop': 10
   }),
   2: Object.assign({
     'paddingTop': 10
-  }, _cssToReactNative([['margin', `${marginLarge} ${marginSmall}`]]), {
+  }, _cssToReactNative([['margin', `${marginLarge}px ${marginSmall}px`]]), {
     'paddingBottom': 10
   })
 });

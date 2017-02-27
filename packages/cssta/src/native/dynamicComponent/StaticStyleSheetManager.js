@@ -11,10 +11,10 @@ module.exports = class StaticStyleSheetManager extends Component {
   }
 
   render() {
-    const { Element, ownProps, passedProps, managerArgs } = this.props;
+    const { NextElement, Element, ownProps, passedProps, managerArgs } = this.props;
     const { rules } = this;
 
     const nextProps = { Element, ownProps, passedProps, rules, managerArgs };
-    return React.createElement(Element, nextProps);
+    return React.createElement(NextElement, nextProps);
   }
 };

@@ -35,6 +35,7 @@ module.exports = class VariablesStyleSheetManager extends Component {
         ),
       },
       (appliedVariables) => {
+        console.log(importedVariables, appliedVariables);
         const ownAppliedVariables = importedVariables.reduce((accum, key) => {
           accum[key] = appliedVariables[key];
           return accum;

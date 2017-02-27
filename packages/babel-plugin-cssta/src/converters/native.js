@@ -291,6 +291,7 @@ const createDynamicStylesheet = (
   substitutionMap,
   rules,
   propTypes,
+  exportedVariables,
   managerArgs
 ) => {
   const createStyleTuples = ({ styleTuples }) => t.arrayExpression(_.map(([prop, value]) => (
@@ -300,7 +301,7 @@ const createDynamicStylesheet = (
     ])
   ), styleTuples));
 
-  const hasVariables = !_.isEmpty(managerArgs.importedVariables);
+  const hasVariables = !_.isEmpty(managerArgs.importedVariables) || !_.isEmpty(exportedVariables);
   const hasTransitions = !_.isEmpty(managerArgs.transitions);
 
   const rulesBody = t.arrayExpression(_.map(rule => t.objectExpression([
@@ -380,6 +381,6 @@ module.exports = (path, state, component, cssText, substitutionMap) => {
   if (singleSourceOfVariables || (!exportsVariables && _.every(_.isEmpty, managerArgs))) {
     createStaticStyleSheet(...baseParams);
   } else {
-    createDynamicStylesheet(...baseParams, managerArgs);
+    createDynamicStylesheet(...baseParams, exportedVariables, managerArgs);
   }
 };

@@ -1,0 +1,13 @@
+{
+  "presets": ["react-native"],
+  "plugins": [
+    ["babel-plugin-cssta", { "optimizations": ["interpolateValuesOnly"] }]
+  ],
+  "env": {
+    "production": {
+      "plugins": [
+        ["babel-plugin-cssta", { "optimizations": ["interpolateValuesOnly"] }]
+      ]
+    }
+  }
+}
