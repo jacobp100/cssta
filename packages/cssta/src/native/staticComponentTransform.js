@@ -5,6 +5,7 @@ const { getAppliedRules } = require('./util');
 type Rule = {
   validate: Props => boolean,
   style: Style,
+  ?styleSheetReference: any,
 };
 */
 

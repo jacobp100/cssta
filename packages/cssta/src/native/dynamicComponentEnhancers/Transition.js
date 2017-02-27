@@ -140,6 +140,6 @@ module.exports = class TransitionManager extends Component {
       nextProps.args.rules = nextProps.args.rules.concat(newRule);
     }
 
-    return React.cloneElement(children, nextProps);
+    return React.cloneElement(children, nextProps, children.props.children);
   }
 };

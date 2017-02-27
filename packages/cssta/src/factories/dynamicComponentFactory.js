@@ -1,42 +1,46 @@
 const React = require('react');
 const { getOwnPropKeys, getComponentProps, getPropTypes } = require('../util/props');
 
-const mergeTransformers = enhancers =>
+const mergeTransformers = (enhancers, EndNode) =>
   enhancers.reduceRight((NextElement, CurrentElement) => (
     props => React.createElement(CurrentElement, props, NextElement)
-  ));
+  ), EndNode);
 
 const nextCacheNode = (node, transform) => {
   if (!node.has(transform)) node.set(transform, new Map());
   return node.get(transform);
 };
 
-const managerCache = new Map();
 const LEAF = 'leaf';
+const mergeTransformersCached = (getTransformer, enhancers, cache) => {
+  const cacheEntry = enhancers.reduce(nextCacheNode, cache);
 
-const mergeTransformersCached = (enhancers, transformProps) => {
-  let cacheEntry = enhancers.reduce(nextCacheNode, managerCache);
-  cacheEntry = nextCacheNode(cacheEntry, transformProps);
-
-  if (!cacheEntry.has(LEAF)) {
-    cacheEntry.set(LEAF, mergeTransformers(enhancers));
-  }
+  if (!cacheEntry.has(LEAF)) cacheEntry.set(LEAF, getTransformer(enhancers));
   return cacheEntry.get(LEAF);
 };
 
-module.exports = transformProps => (component, propTypes, enhancers, args) => {
-  const RootComponent = mergeTransformersCached(enhancers, transformProps);
-  const ownPropKeys = getOwnPropKeys(propTypes);
+module.exports = (transformProps) => {
+  const cache = new Map();
 
-  const DynamicComponent = (props) => {
-    const { Element, ownProps, passedProps } = getComponentProps(ownPropKeys, component, props);
-    const nextProps = { Element, ownProps, passedProps, args };
-    return React.createElement(RootComponent, nextProps);
+  const EndNode = ({ Element, ownProps, passedProps, args }) =>
+    React.createElement(Element, transformProps(ownProps, passedProps, args));
+
+  const getTransformer = enhancers => mergeTransformers(enhancers, EndNode);
+
+  return (component, propTypes, enhancers, args) => {
+    const RootComponent = mergeTransformersCached(getTransformer, enhancers, cache);
+    const ownPropKeys = getOwnPropKeys(propTypes);
+
+    const DynamicComponent = (props) => {
+      const { Element, ownProps, passedProps } = getComponentProps(ownPropKeys, component, props);
+      const nextProps = { Element, ownProps, passedProps, args };
+      return React.createElement(RootComponent, nextProps);
+    };
+
+    if (process.env.NODE_ENV !== 'production' && !Array.isArray(propTypes)) {
+      DynamicComponent.propTypes = getPropTypes(ownPropKeys, propTypes);
+    }
+
+    return DynamicComponent;
   };
-
-  if (process.env.NODE_ENV !== 'production' && !Array.isArray(propTypes)) {
-    DynamicComponent.propTypes = getPropTypes(ownPropKeys, propTypes);
-  }
-
-  return DynamicComponent;
 };
