@@ -1,5 +1,4 @@
-const dynamicComponentFactory = require('../../factories/dynamicComponentFactory');
-const staticComponentTransform = require('../staticComponentTransform');
-/* eslint-disable no-param-reassign */
+const dynamicComponentFactory = require('../factories/dynamicComponentFactory');
+const staticComponentTransform = require('./staticComponentTransform');
 
 module.exports = dynamicComponentFactory(staticComponentTransform);
