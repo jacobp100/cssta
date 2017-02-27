@@ -67,8 +67,8 @@ android/app/libs
 # CUSTOM #
 ##########
 
-cssta/dist
-cssta/vendor
-cssta-demo/dist
-cssta/README.md
-babel-plugin-cssta/README.md
+packages/cssta/dist
+packages/cssta/vendor
+packages/cssta-demo/dist
+packages/cssta/README.md
+packages/babel-plugin-cssta/README.md
