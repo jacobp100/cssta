@@ -4,8 +4,7 @@
   "private": true,
   "devDependencies": {
     "babel-eslint": "^6.1.2",
-    "babel-plugin-cssta": "^0.2.4",
-    "cssta": "^0.2.3",
+    "babel-plugin-cssta": "^0.4.0",
     "eslint": "^3.5.0",
     "eslint-config-airbnb": "^11.1.0",
     "eslint-plugin-import": "^1.15.0",
@@ -16,7 +15,7 @@
   },
   "dependencies": {
     "cssnano-cli": "^1.0.5",
-    "cssta": "^0.2.2",
+    "cssta": "^0.4.0",
     "react": "^15.3.2",
     "react-dom": "^15.3.2"
   },
