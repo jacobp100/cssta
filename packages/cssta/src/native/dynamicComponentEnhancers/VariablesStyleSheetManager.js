@@ -12,8 +12,9 @@ const resolveVariableDependencies = require('../../util/resolveVariableDependenc
 const { Component } = React;
 
 /* eslint-disable no-param-reassign */
-const getExportedVariables = (ownProps, variablesFromScope, rules) => {
-  const appliedRuleVariables = getAppliedRules(rules, ownProps).map(rule => rule.exportedVariables);
+const getExportedVariables = (props, variablesFromScope) => {
+  const appliedRuleVariables = getAppliedRules(props.args.rules, props.ownProps)
+    .map(rule => rule.exportedVariables);
   const definedVariables = Object.assign({}, ...appliedRuleVariables);
   return resolveVariableDependencies(definedVariables, variablesFromScope);
 };
@@ -29,13 +30,10 @@ const createRuleStylesUsingStylesheet = (appliedVariables, untransformedRules) =
     return cssToReactNative(styleTuples);
   });
 
-  const styleBody = styles.reduce(
-    (accum, style, index) => {
-      accum[index] = style;
-      return accum;
-    },
-    {}
-  );
+  const styleBody = styles.reduce((accum, style, index) => {
+    accum[index] = style;
+    return accum;
+  }, {});
   const stylesheet = StyleSheet.create(styleBody);
 
   const rules = untransformedRules.map((rule, index) =>
@@ -57,7 +55,7 @@ module.exports = class VariablesStyleSheetManager extends Component {
       VariablesProvider,
       {
         exportedVariables: variablesFromScope => (
-          getExportedVariables(this.props.ownProps, variablesFromScope, this.props.args.rules)
+          getExportedVariables(this.props, variablesFromScope)
         ),
       },
       (appliedVariables) => {
@@ -74,11 +72,11 @@ module.exports = class VariablesStyleSheetManager extends Component {
 
         if (!styleCached) styleCache[styleCacheKey] = rules;
 
-        const { children } = this.props;
-        const nextProps = this.props;
-        nextProps.args.rules = rules;
+        const { args, children } = this.props;
+        const nextArgs = Object.assign({}, args, { rules });
+        const nextProps = Object.assign({}, this.props, { args: nextArgs });
 
-        return React.cloneElement(children, nextProps, children.props.children);
+        return children(nextProps);
       }
     );
   }

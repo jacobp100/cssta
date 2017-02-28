@@ -8,13 +8,11 @@ const font = '10px "Helvetica"';
 
 const _style = Object.assign({
   'marginTop': 10
-}, _cssToReactNative([['font', `${font}`]]));
-
-const _style2 = Object.assign(_cssToReactNative([['font', `${font}`]]), {
+}, _cssToReactNative([['font', `${font}`]])),
+      _style2 = Object.assign(_cssToReactNative([['font', `${font}`]]), {
   'marginTop': 10
-});
-
-const _style3 = Object.assign({
+}),
+      _style3 = Object.assign({
   'marginTop': 10
 }, _cssToReactNative([['font', `${font}`]]), {
   'marginBottom': 10
@@ -30,6 +28,7 @@ _staticComponent(View, ['attr1', 'attr2', 'attr3'], [{
   'validate': function (p) {
     return !!p['attr1'];
   },
+  'transitions': {},
   'exportedVariables': {},
   'style': _style,
   'styleSheetReference': _csstaStyle[0]
@@ -37,6 +36,7 @@ _staticComponent(View, ['attr1', 'attr2', 'attr3'], [{
   'validate': function (p) {
     return !!p['attr2'];
   },
+  'transitions': {},
   'exportedVariables': {},
   'style': _style2,
   'styleSheetReference': _csstaStyle[1]
@@ -44,6 +44,7 @@ _staticComponent(View, ['attr1', 'attr2', 'attr3'], [{
   'validate': function (p) {
     return !!p['attr3'];
   },
+  'transitions': {},
   'exportedVariables': {},
   'style': _style3,
   'styleSheetReference': _csstaStyle[2]

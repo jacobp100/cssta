@@ -13,8 +13,8 @@ const _style = {
   }, {
     'scaleX': 1
   }]
-};
-const _style2 = {
+},
+      _style2 = {
   'backgroundColor': '#1abc9c',
   'transform': [{
     'rotate': '6deg'
@@ -33,6 +33,10 @@ _dynamicComponent(Animated.View, ['active'], [_Transition], {
     'validate': function (p) {
       return true;
     },
+    'transitions': {
+      'backgroundColor': ['0.5s', 'linear'],
+      'transform': ['0.75s', 'linear']
+    },
     'exportedVariables': {},
     'style': _style,
     'styleSheetReference': _csstaStyle[0]
@@ -40,6 +44,7 @@ _dynamicComponent(Animated.View, ['active'], [_Transition], {
     'validate': function (p) {
       return !!p['active'];
     },
+    'transitions': {},
     'exportedVariables': {},
     'style': _style2,
     'styleSheetReference': _csstaStyle[1]

@@ -6,7 +6,7 @@ import Transitions, { code as transitionsCode } from './demos/Transitions';
 import CSSVariables, { code as cssVariablesCode } from './demos/CSSVariables';
 import VariablesProvider, { code as variablesProviderCode } from './demos/VariablesProvider';
 import StyleOverrides, { code as styleOverridesCode } from './demos/StyleOverrides';
-import Animations from './demos/Animations';
+import CustomAnimations from './demos/CustomAnimations';
 import ColorFunction, { code as colorFunctionCode } from './demos/ColorFunction';
 
 const App = cssta(ScrollView)`
@@ -75,8 +75,8 @@ export default () => (
     <Demo title="Style Overrides" code={styleOverridesCode}>
       <StyleOverrides />
     </Demo>
-    <Demo title="Animations">
-      <Animations />
+    <Demo title="Custom Animations">
+      <CustomAnimations />
     </Demo>
     <Demo title="Color Function" code={colorFunctionCode}>
       <ColorFunction />

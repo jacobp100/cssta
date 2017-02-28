@@ -8,13 +8,11 @@ _dynamicComponent(View, [], [_VariablesStyleSheetManager], {
     'validate': function (p) {
       return true;
     },
+    'transitions': {},
     'exportedVariables': {
       'color': 'red'
     },
-    'styleTuples': [['color', 'var(--color)']],
-    'exportedVariables': {
-      'color': 'red'
-    }
+    'styleTuples': [['color', 'var(--color)']]
   }],
   'transitions': [],
   'importedVariables': ['color']

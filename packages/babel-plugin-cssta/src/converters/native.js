@@ -223,6 +223,10 @@ const baseRuleElements = rule => [
     createValidatorNodeForSelector(rule.selector)
   ),
   t.objectProperty(
+    t.stringLiteral('transitions'),
+    jsonToNode(rule.transitions)
+  ),
+  t.objectProperty(
     t.stringLiteral('exportedVariables'),
     jsonToNode(rule.exportedVariables)
   ),
@@ -255,7 +259,10 @@ const createStaticStylesheet = (
 
   const rulesBody = t.arrayExpression(_.map(rule => t.objectExpression([
     ...baseRuleElements(rule),
-    t.objectProperty(t.stringLiteral('style'), rule.styleVariableName),
+    t.objectProperty(
+      t.stringLiteral('style'),
+      rule.styleVariableName
+    ),
     t.objectProperty(
       t.stringLiteral('styleSheetReference'),
       t.memberExpression(styleSheetReference, rule.styleSheetReference, true)
@@ -265,14 +272,16 @@ const createStaticStylesheet = (
   const reactNativeStyleSheetRef =
     getOrCreateImportReference(path, 'react-native', 'StyleSheet');
 
-  _.forEach(({ styleVariableName, styleBody }) => {
-    const styleDeclarator = t.variableDeclaration('const', [
-      t.variableDeclarator(styleVariableName, styleBody),
-    ]);
-    statementPath.insertBefore(styleDeclarator);
-  }, ruleBases);
 
   if (!_.isEmpty(ruleBases)) {
+    const styleDeclarators = t.variableDeclaration(
+      'const',
+      _.map(({ styleVariableName, styleBody }) => (
+        t.variableDeclarator(styleVariableName, styleBody)
+      ), ruleBases)
+    );
+    statementPath.insertBefore(styleDeclarators);
+
     const styleSheetBody = t.objectExpression(_.map(rule => t.objectProperty(
       rule.styleSheetReference,
       rule.styleVariableName
@@ -309,10 +318,6 @@ const createVariablesStyleSheet = (
     t.objectProperty(
       t.stringLiteral('styleTuples'),
       createStyleTuples(rule)
-    ),
-    t.objectProperty(
-      t.stringLiteral('exportedVariables'),
-      jsonToNode(rule.exportedVariables)
     ),
   ]), rules));
 

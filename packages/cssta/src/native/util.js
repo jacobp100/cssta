@@ -1,2 +1,2 @@
 module.exports.getAppliedRules = (rules, ownProps) =>
-  rules.filter(rule => rule.validate(ownProps));
+  rules.filter(rule => (rule.validate ? rule.validate(ownProps) : true));

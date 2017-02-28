@@ -15,6 +15,7 @@ _staticComponent(View, [], [{
   'validate': function (p) {
     return true;
   },
+  'transitions': {},
   'exportedVariables': {
     'large': '100',
     'small': '50',
@@ -36,6 +37,7 @@ _staticComponent(View, [], [{
   'validate': function (p) {
     return true;
   },
+  'transitions': {},
   'exportedVariables': {},
   'style': _style2,
   'styleSheetReference': _csstaStyle2[0]

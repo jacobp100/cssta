@@ -9,7 +9,7 @@ const { shallowEqual } = require('../../util');
 const { Component } = React;
 
 const mergeRuleParts = iteratee => (props) => {
-  const objects = getAppliedRules(props.rules, props.ownProps)
+  const objects = getAppliedRules(props.args.rules, props.ownProps)
     .map(iteratee)
     .filter(style => typeof style === 'object');
 
@@ -117,11 +117,12 @@ module.exports = class TransitionManager extends Component {
   }
 
   render() {
-    const { children } = this.props;
+    const { args, children } = this.props;
     const { animationValues } = this;
-    const nextProps = this.props;
 
     const animationNames = Object.keys(animationValues);
+
+    let nextProps;
     if (animationNames.length > 0) {
       const { styles, previousStyles } = this.state;
 
@@ -137,9 +138,12 @@ module.exports = class TransitionManager extends Component {
       }, {});
 
       const newRule = { style: fixedAnimations };
-      nextProps.args.rules = nextProps.args.rules.concat(newRule);
+      const nextArgs = Object.assign({}, args, { rules: args.rules.concat(newRule) });
+      nextProps = Object.assign({}, this.props, { args: nextArgs });
+    } else {
+      nextProps = this.props;
     }
 
-    return React.cloneElement(children, nextProps, children.props.children);
+    return children(nextProps);
   }
 };

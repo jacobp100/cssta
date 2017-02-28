@@ -5,14 +5,14 @@ import { View } from 'react-native';
 
 const _style = {
   'color': 'red'
-};
-const _style2 = {
+},
+      _style2 = {
   'color': 'green'
-};
-const _style3 = {
+},
+      _style3 = {
   'color': 'blue'
-};
-const _style4 = {
+},
+      _style4 = {
   'color': 'yellow'
 };
 
@@ -27,6 +27,7 @@ _staticComponent(View, ['booleanAttribute', 'stringAttribute'], [{
   'validate': function (p) {
     return true;
   },
+  'transitions': {},
   'exportedVariables': {},
   'style': _style,
   'styleSheetReference': _csstaStyle[0]
@@ -34,6 +35,7 @@ _staticComponent(View, ['booleanAttribute', 'stringAttribute'], [{
   'validate': function (p) {
     return !!p['booleanAttribute'];
   },
+  'transitions': {},
   'exportedVariables': {},
   'style': _style2,
   'styleSheetReference': _csstaStyle[1]
@@ -41,6 +43,7 @@ _staticComponent(View, ['booleanAttribute', 'stringAttribute'], [{
   'validate': function (p) {
     return p['stringAttribute'] === '1';
   },
+  'transitions': {},
   'exportedVariables': {},
   'style': _style3,
   'styleSheetReference': _csstaStyle[2]
@@ -48,6 +51,7 @@ _staticComponent(View, ['booleanAttribute', 'stringAttribute'], [{
   'validate': function (p) {
     return p['stringAttribute'] === '2';
   },
+  'transitions': {},
   'exportedVariables': {},
   'style': _style4,
   'styleSheetReference': _csstaStyle[3]

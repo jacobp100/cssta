@@ -8,12 +8,12 @@ const color = 'red';
 const _style = {
   'marginTop': 10,
   'color': String(color).trim()
-};
-const _style2 = {
+},
+      _style2 = {
   'color': String(color).trim(),
   'marginTop': 10
-};
-const _style3 = {
+},
+      _style3 = {
   'marginTop': 10,
   'color': String(color).trim(),
   'marginBottom': 10
@@ -29,6 +29,7 @@ _staticComponent(View, ['attr1', 'attr2', 'attr3'], [{
   'validate': function (p) {
     return !!p['attr1'];
   },
+  'transitions': {},
   'exportedVariables': {},
   'style': _style,
   'styleSheetReference': _csstaStyle[0]
@@ -36,6 +37,7 @@ _staticComponent(View, ['attr1', 'attr2', 'attr3'], [{
   'validate': function (p) {
     return !!p['attr2'];
   },
+  'transitions': {},
   'exportedVariables': {},
   'style': _style2,
   'styleSheetReference': _csstaStyle[1]
@@ -43,6 +45,7 @@ _staticComponent(View, ['attr1', 'attr2', 'attr3'], [{
   'validate': function (p) {
     return !!p['attr3'];
   },
+  'transitions': {},
   'exportedVariables': {},
   'style': _style3,
   'styleSheetReference': _csstaStyle[2]

@@ -9,16 +9,18 @@ _dynamicComponent(Animated.View, ['boolAttr'], [_VariablesStyleSheetManager, _Tr
     'validate': function (p) {
       return true;
     },
+    'transitions': {
+      'color': ['1s', 'linear']
+    },
     'exportedVariables': {},
-    'styleTuples': [['color', 'var(--primary)']],
-    'exportedVariables': {}
+    'styleTuples': [['color', 'var(--primary)']]
   }, {
     'validate': function (p) {
       return !!p['boolAttr'];
     },
+    'transitions': {},
     'exportedVariables': {},
-    'styleTuples': [['color', 'var(--secondary)']],
-    'exportedVariables': {}
+    'styleTuples': [['color', 'var(--secondary)']]
   }],
   'transitions': ['color'],
   'importedVariables': ['primary', 'secondary']
