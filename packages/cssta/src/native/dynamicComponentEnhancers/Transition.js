@@ -36,14 +36,24 @@ const interpolateValue = (currentValue, previousValue, animation) => {
   }
 
   // transforms
+  if (process.env.NODE_ENV !== 'production') {
+    const currentProperties = currentValue.map(Object.keys);
+    const previousProperties = previousValue.map(Object.keys);
+
+    // Not the *best* practise here...
+    const transformsAreConsistent =
+      String(currentProperties) === String(previousProperties);
+
+    if (!transformsAreConsistent) {
+      throw new Error('Expected transforms to have same shape between transforms');
+    }
+  }
+
   return currentValue.map((transform, index) => {
     const previousTransform = previousValue[index];
     const property = Object.keys(transform)[0];
 
-    if (process.env.NODE_ENV !== 'production' && !(property in previousTransform)) {
-      throw new Error('Expected transforms to have same shape between transforms');
-    }
-
+    // We *have* to interpolate even numeric values, as we will always animate between 0--1
     const interpolation = animation.interpolate({
       inputRange: [0, 1],
       outputRange: [previousTransform[property], transform[property]],

@@ -93,6 +93,83 @@ it('converts color-mod functions', () => runTest({
 it('transitions values', () => runTest({
   rules: [{
     validate: () => true,
+    styleTuples: [['top', '0']],
+    transitions: {
+      top: ['1s', 'linear'],
+    },
+  }],
+  transitions: ['top'],
+  expectedProps: {
+    style: [
+      { top: 0 },
+      { top: { isAnimatedValue: true } },
+    ],
+  },
+}));
+
+it('transitions colors', () => runTest({
+  rules: [{
+    validate: () => true,
+    styleTuples: [['color', 'red']],
+    transitions: {
+      color: ['1s', 'linear'],
+    },
+  }],
+  transitions: ['color'],
+  expectedProps: {
+    style: [
+      { color: 'red' },
+      {
+        color: {
+          isAnimatedValue: true,
+          interpolation: {
+            inputRange: [0, 1],
+            outputRange: ['red', 'red'],
+          },
+        },
+      },
+    ],
+  },
+}));
+
+it('transitions transforms', () => runTest({
+  rules: [{
+    validate: () => true,
+    styleTuples: [['transform', 'scaleX(3) rotateX(30deg)']],
+    transitions: {
+      transform: ['1s', 'linear'],
+    },
+  }],
+  transitions: ['transform'],
+  expectedProps: {
+    style: [
+      { transform: [{ rotateX: '30deg' }, { scaleX: 3 }] },
+      {
+        transform: [{
+          rotateX: {
+            isAnimatedValue: true,
+            interpolation: {
+              inputRange: [0, 1],
+              outputRange: ['30deg', '30deg'],
+            },
+          },
+        }, {
+          scaleX: {
+            isAnimatedValue: true,
+            interpolation: {
+              inputRange: [0, 1],
+              outputRange: [3, 3],
+            },
+          },
+        }],
+      },
+    ],
+  },
+}));
+
+it('transitions values using custom properties', () => runTest({
+  rules: [{
+    validate: () => true,
     styleTuples: [['color', 'var(--color, red)']],
     transitions: {
       color: ['1s', 'linear'],
@@ -102,7 +179,15 @@ it('transitions values', () => runTest({
   expectedProps: {
     style: [
       { color: 'red' },
-      { color: { isAnimatedValue: true } },
+      {
+        color: {
+          isAnimatedValue: true,
+          interpolation: {
+            inputRange: [0, 1],
+            outputRange: ['red', 'red'],
+          },
+        },
+      },
     ],
   },
 }));
@@ -133,4 +218,27 @@ it('animates between transitioned values', () => {
   instance.update(React.createElement(Element, { active: true }));
 
   expect(animationStartMock.mock.calls.length).toBe(1);
+});
+
+it('does not allow animating between divergent transforms', () => {
+  const rules = [{
+    validate: () => true,
+    styleTuples: [['transform', 'scaleX(2)']],
+    transitions: {
+      transform: ['1s', 'linear'],
+    },
+  }, {
+    validate: props => props.active,
+    styleTuples: [['transform', 'rotateX(30deg)']],
+    transitions: {},
+  }];
+  const enhancers = [VariablesStyleSheetManager, Transition];
+  const args = { rules, importedVariables: [], transitions: ['transform'] };
+  const Element = dynamicComponent('button', ['active'], enhancers, args);
+
+  const instance = renderer.create(React.createElement(Element, {}));
+
+  expect(() => {
+    instance.update(React.createElement(Element, { active: true }));
+  }).toThrow();
 });

@@ -9,7 +9,13 @@ module.exports.StyleSheet = {
 
 class Value {
   constructor() { this.isAnimatedValue = true; }
-  interpolate() { return this; }
+
+  interpolate(value) { // eslint-disable-line
+    const nextValue = new Value();
+    nextValue.interpolation = value;
+    return nextValue;
+  }
+
   setValue() { return this; }
 }
 
