@@ -27,7 +27,7 @@ const ButtonText = cssta(Animated.Text)`
   transition: color 0.3s;
 `;
 
-class TouchableActive extends Component {
+class TouchableCustom extends Component {
   /*
   Like TouchableOpacity. Pass in a child function that returns a component. Function is invoked
   with a bool that determines whether the Touchable is active or not.
@@ -55,13 +55,13 @@ class TouchableActive extends Component {
 }
 
 const Button = ({ children }) => (
-  <TouchableActive>
+  <TouchableCustom>
     {active => (
       <ButtonContainer active={active}>
         <ButtonText>{children}</ButtonText>
       </ButtonContainer>
     )}
-  </TouchableActive>
+  </TouchableCustom>
 );
 
 export default () => <Button>Hello world!</Button>;
