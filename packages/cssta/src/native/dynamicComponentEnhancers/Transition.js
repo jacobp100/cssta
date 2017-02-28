@@ -45,7 +45,7 @@ const interpolateValue = (currentValue, previousValue, animation) => {
       String(currentProperties) === String(previousProperties);
 
     if (!transformsAreConsistent) {
-      throw new Error('Expected transforms to have same shape between transforms');
+      throw new Error('Expected transforms to have same shape between transitions');
     }
   }
 
