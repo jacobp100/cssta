@@ -24,6 +24,7 @@ const ButtonBody = cssta(Animated.View)`
 
 const ButtonText = cssta(Animated.Text)`
   color: var(--foreground);
+  text-align: center;
   transition: color 0.3s;
 `;
 
