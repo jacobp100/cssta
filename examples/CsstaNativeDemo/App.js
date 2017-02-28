@@ -8,6 +8,7 @@ import VariablesProvider, { code as variablesProviderCode } from './demos/Variab
 import StyleOverrides, { code as styleOverridesCode } from './demos/StyleOverrides';
 import CustomAnimations from './demos/CustomAnimations';
 import ColorFunction, { code as colorFunctionCode } from './demos/ColorFunction';
+import CustomButton from './demos/CustomButton';
 
 const App = cssta(ScrollView)`
   padding: 20px 0px;
@@ -80,6 +81,9 @@ export default () => (
     </Demo>
     <Demo title="Color Function" code={colorFunctionCode}>
       <ColorFunction />
+    </Demo>
+    <Demo title="Custom Button">
+      <CustomButton />
     </Demo>
   </App>
 );
