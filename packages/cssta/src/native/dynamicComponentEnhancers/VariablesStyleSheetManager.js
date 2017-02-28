@@ -46,38 +46,40 @@ module.exports = class VariablesStyleSheetManager extends Component {
   constructor() {
     super();
     this.styleCache = {};
+
+    this.getExportedVariables = variablesFromScope =>
+      getExportedVariables(this.props, variablesFromScope);
+    this.renderWithVariables = this.renderWithVariables.bind(this);
+  }
+
+  renderWithVariables(appliedVariables) {
+    const { styleCache } = this;
+
+    const ownAppliedVariables = this.props.args.importedVariables.reduce((accum, key) => {
+      accum[key] = appliedVariables[key];
+      return accum;
+    }, {});
+    const styleCacheKey = JSON.stringify(ownAppliedVariables);
+    const styleCached = styleCacheKey in styleCache;
+
+    const rules = styleCached
+      ? styleCache[styleCacheKey]
+      : createRuleStylesUsingStylesheet(ownAppliedVariables, this.props.args.rules);
+
+    if (!styleCached) styleCache[styleCacheKey] = rules;
+
+    const { args, children } = this.props;
+    const nextArgs = Object.assign({}, args, { rules });
+    const nextProps = Object.assign({}, this.props, { args: nextArgs });
+
+    return children(nextProps);
   }
 
   render() {
-    const { styleCache } = this;
-
     return React.createElement(
       VariablesProvider,
-      {
-        exportedVariables: variablesFromScope => (
-          getExportedVariables(this.props, variablesFromScope)
-        ),
-      },
-      (appliedVariables) => {
-        const ownAppliedVariables = this.props.args.importedVariables.reduce((accum, key) => {
-          accum[key] = appliedVariables[key];
-          return accum;
-        }, {});
-        const styleCacheKey = JSON.stringify(ownAppliedVariables);
-        const styleCached = styleCacheKey in styleCache;
-
-        const rules = styleCached
-          ? styleCache[styleCacheKey]
-          : createRuleStylesUsingStylesheet(ownAppliedVariables, this.props.args.rules);
-
-        if (!styleCached) styleCache[styleCacheKey] = rules;
-
-        const { args, children } = this.props;
-        const nextArgs = Object.assign({}, args, { rules });
-        const nextProps = Object.assign({}, this.props, { args: nextArgs });
-
-        return children(nextProps);
-      }
+      { exportedVariables: this.getExportedVariables },
+      this.renderWithVariables
     );
   }
 };

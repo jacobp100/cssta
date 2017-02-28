@@ -7,14 +7,12 @@ const { Component, Children, PropTypes } = React;
 
 const STYLES_UPDATED = 'styles-updated';
 
-const getStyles = (variablesFromScope = {}, exportedVariables = {}) => {
-  const appliedVariables = Object.assign(
-    {},
-    variablesFromScope,
-    typeof exportedVariables === 'function'
-      ? exportedVariables(variablesFromScope)
-      : exportedVariables
-  );
+const getStyles = (variablesFromScope = {}, inputExportedVariables = {}) => {
+  const exportedVariables = typeof inputExportedVariables === 'function'
+    ? inputExportedVariables(variablesFromScope)
+    : inputExportedVariables;
+
+  const appliedVariables = Object.assign({}, variablesFromScope, exportedVariables);
 
   return { variablesFromScope, appliedVariables };
 };
@@ -35,6 +33,7 @@ class VariablesProvider extends Component {
       if (!shallowEqual(this.state.variablesFromScope, nextState.variablesFromScope) ||
         !shallowEqual(this.state.appliedVariables, nextState.appliedVariables)) {
         this.setState(nextState);
+        this.styleEmitter.emit(STYLES_UPDATED, nextState.appliedVariables);
       }
     };
   }
@@ -47,24 +46,13 @@ class VariablesProvider extends Component {
     if (this.context.cssta) this.context.cssta.on(STYLES_UPDATED, this.styleUpdateHandler);
   }
 
-  componentWillUpdate(nextProps, nextState, nextContext) {
-    if (this.context.cssta !== nextContext.cssta) {
-      if (this.context.cssta) this.context.cssta.off(STYLES_UPDATED, this.styleUpdateHandler);
-      if (nextContext.cssta) nextContext.cssta.on(STYLES_UPDATED, this.styleUpdateHandler);
-    }
+  componentWillReceiveProps(nextProps) {
+    const nextExportedVariablesChanged = typeof nextProps.exportedVariables === 'object'
+      ? !shallowEqual(this.props.exportedVariables, nextProps.exportedVariables)
+      : true; // If it's a function, it might change
 
-    const variablesFromScopeChanged =
-      !shallowEqual(this.state.variablesFromScope, nextState.variablesFromScope);
-    const nextExportedVariablesChanged = typeof nextProps.exportedVariables === 'function'
-      ? true
-      : !shallowEqual(this.props.exportedVariables, nextProps.exportedVariables);
-
-    if (variablesFromScopeChanged || nextExportedVariablesChanged) {
-      this.updateState(nextState.variablesFromScope, nextProps.exportedVariables);
-    }
-
-    if (!shallowEqual(this.state.appliedVariables, nextState.appliedVariables)) {
-      this.styleEmitter.emit(STYLES_UPDATED, nextState.appliedVariables);
+    if (nextExportedVariablesChanged) {
+      this.updateState(this.state.variablesFromScope, nextProps.exportedVariables);
     }
   }
 

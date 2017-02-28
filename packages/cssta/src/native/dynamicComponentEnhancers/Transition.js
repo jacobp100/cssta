@@ -71,7 +71,7 @@ const easingFunctions = {
   'ease-in-out': Easing.inOut,
 };
 
-module.exports = class TransitionManager extends Component {
+module.exports = class TransitionEnhancer extends Component {
   constructor(props) {
     super();
 

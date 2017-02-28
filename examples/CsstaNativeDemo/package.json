@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
+    "devtools": "react-devtools",
     "test": "jest"
   },
   "dependencies": {
@@ -24,6 +25,7 @@
     "eslint-plugin-jsx-a11y": "^4.0.0",
     "eslint-plugin-react": "^6.10.0",
     "jest": "17.0.3",
+    "react-devtools": "^2.0.12",
     "react-test-renderer": "15.4.1"
   }
 }

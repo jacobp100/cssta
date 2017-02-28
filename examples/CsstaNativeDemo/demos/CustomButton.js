@@ -1,25 +1,24 @@
 import React, { Component } from 'react';
-import { TouchableWithoutFeedback, Animated, View } from 'react-native';
+import { TouchableWithoutFeedback, Animated } from 'react-native';
 import cssta from 'cssta/native';
 
-const ButtonContainer = cssta(View)`
+
+const ButtonContainer = cssta(Animated.View)`
   --primary: #e67e22;
   --foreground: var(--primary);
   --background: white;
 
-  [active] {
-    --foreground: white;
-    --background: var(--primary);
-  }
-`;
-
-const ButtonBody = cssta(Animated.View)`
   margin: 10px 50px;
   padding: 10px 15px;
   border-radius: 1000px;
   border: 1px solid var(--primary);
   background-color: var(--background);
   transition: background-color 0.2s;
+
+  [active] {
+    --foreground: white;
+    --background: var(--primary);
+  }
 `;
 
 const ButtonText = cssta(Animated.Text)`
@@ -46,9 +45,7 @@ class Button extends Component {
         onPressOut={this.onPressOut}
       >
         <ButtonContainer active={active}>
-          <ButtonBody>
-            <ButtonText>{ children }</ButtonText>
-          </ButtonBody>
+          <ButtonText>{children}</ButtonText>
         </ButtonContainer>
       </TouchableWithoutFeedback>
     );
