@@ -6,7 +6,7 @@ const { varRegExp, varRegExpNonGlobal } = require('../util');
 const variableRegExp = /^--/;
 // Matches whole words, or whole functions (i.e. `var(--hello, with spaces here)`)
 const transitionPartRegExp = /([^\s(]+(?:\([^)]*\))?)/g;
-const nonTransitionPropertyRegExp = /(?:ease(?:-in|-out)?|linear|^\d|\()/g;
+const nonTransitionPropertyRegExp = /(?:ease(?:-in|-out)?|linear|^\d|\()/;
 
 const getStyleDeclarations = nodes => nodes
   .filter(node => node.type === 'decl' && !variableRegExp.test(node.prop));
@@ -36,13 +36,19 @@ const getTransitions = declValue => declValue
   .split(',')
   .reduce((transitions, value) => {
     const parts = value.match(transitionPartRegExp);
-    const property = parts
-      ? parts.find(part => !nonTransitionPropertyRegExp.test(part))
-      : null;
 
-    if (property) transitions[getPropertyName(property)] = parts.filter(part => part !== property);
+    if (!parts) return transitions;
 
-    return transitions;
+    const properties = parts
+      .filter(part => !nonTransitionPropertyRegExp.test(part))
+      .map(getPropertyName);
+    const transitionParts = parts
+      .filter(part => nonTransitionPropertyRegExp.test(part));
+
+    return properties.reduce((accum, property) => {
+      accum[property] = transitionParts;
+      return accum;
+    }, transitions);
   }, {});
 
 module.exports = (inputCss) => {
