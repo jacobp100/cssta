@@ -5,61 +5,17 @@ const { StyleSheet, Animated, Easing } = require('react-native');
 /* eslint-enable */
 const { getAppliedRules } = require('../util');
 const { shallowEqual } = require('../../util');
+const {
+  mergeStyles, interpolateValue, getInitialValue, getDurationInMs,
+} = require('./animationUtil');
 
 const { Component } = React;
-
-const mergeStyles = props =>
-  StyleSheet.flatten(getAppliedRules(props.args.rules, props.ownProps).map(rule => rule.style));
 
 const mergeTransitions = (props) => {
   const transitions = getAppliedRules(props.args.rules, props.ownProps)
     .map(rule => rule.transitions)
     .filter(transition => typeof transition === 'object');
   return Object.assign({}, ...transitions);
-};
-
-const getDurationInMs = (duration) => {
-  const time = parseFloat(duration);
-  const factor = /ms$/i.test(duration) ? 1 : 1000;
-  return time * factor;
-};
-
-const interpolateValue = (currentValue, previousValue, animation) => {
-  if (typeof currentValue === 'number') return animation;
-
-  if (!Array.isArray(currentValue)) {
-    return animation.interpolate({
-      inputRange: [0, 1],
-      outputRange: [previousValue, currentValue],
-    });
-  }
-
-  // transforms
-  if (process.env.NODE_ENV !== 'production') {
-    const currentProperties = currentValue.map(Object.keys);
-    const previousProperties = previousValue.map(Object.keys);
-
-    // Not the *best* practise here...
-    const transformsAreConsistent =
-      String(currentProperties) === String(previousProperties);
-
-    if (!transformsAreConsistent) {
-      throw new Error('Expected transforms to have same shape between transitions');
-    }
-  }
-
-  return currentValue.map((transform, index) => {
-    const previousTransform = previousValue[index];
-    const property = Object.keys(transform)[0];
-
-    // We *have* to interpolate even numeric values, as we will always animate between 0--1
-    const interpolation = animation.interpolate({
-      inputRange: [0, 1],
-      outputRange: [previousTransform[property], transform[property]],
-    });
-
-    return { [property]: interpolation };
-  });
 };
 
 const easingFunctions = {
@@ -75,14 +31,12 @@ module.exports = class TransitionEnhancer extends Component {
     super();
 
     const styles = mergeStyles(props);
-    const allTransitions = props.args.transitions;
+    const { transitionedProperties } = props.args;
 
     this.state = { styles, previousStyles: styles };
 
-    this.animationValues = allTransitions.reduce((animationValues, transitionName) => {
-      const targetValue = styles[transitionName];
-      const initialValue = typeof targetValue === 'number' ? targetValue : 0;
-      animationValues[transitionName] = new Animated.Value(initialValue);
+    this.animationValues = transitionedProperties.reduce((animationValues, transitionName) => {
+      animationValues[transitionName] = new Animated.Value(getInitialValue(styles[transitionName]));
       return animationValues;
     }, {});
   }

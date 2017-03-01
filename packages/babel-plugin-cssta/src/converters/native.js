@@ -323,7 +323,7 @@ module.exports = (path, state, component, cssText, substitutionMap) => {
   }
 
   const hasVariables = !_.isEmpty(managerArgs.importedVariables) || !_.isEmpty(exportedVariables);
-  const hasTransitions = !_.isEmpty(managerArgs.transitions);
+  const hasTransitions = !_.isEmpty(managerArgs.transitionedProperties);
 
   const enhancersRoot = 'cssta/dist/native/dynamicComponentEnhancers';
   const enhancers = [];
