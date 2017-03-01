@@ -3,12 +3,10 @@ import { transformRawValue as _transformRawValue } from 'cssta/dist/packages/css
 
 import { View, StyleSheet } from 'react-native';
 
-const _style = {
-  'borderBottomWidth': _transformRawValue(`${StyleSheet.hairlineWidth}px`)
-};
-
 var _csstaStyle = StyleSheet.create({
-  0: _style
+  0: {
+    'borderBottomWidth': _transformRawValue(`${StyleSheet.hairlineWidth}px`)
+  }
 });
 
 _staticComponent(View, [], [{
@@ -17,6 +15,5 @@ _staticComponent(View, [], [{
   },
   'transitions': {},
   'exportedVariables': {},
-  'style': _style,
-  'styleSheetReference': _csstaStyle[0]
+  'style': _csstaStyle[0]
 }]);

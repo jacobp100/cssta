@@ -3,12 +3,10 @@ import { StyleSheet as _StyleSheet } from 'react-native';
 
 import { View } from 'react-native';
 
-const _style = {
-  'width': 100
-};
-
 var _csstaStyle = _StyleSheet.create({
-  0: _style
+  0: {
+    'width': 100
+  }
 });
 
 _staticComponent(View, [], [{
@@ -21,16 +19,13 @@ _staticComponent(View, [], [{
     'small': '50',
     'margin': '100 50'
   },
-  'style': _style,
-  'styleSheetReference': _csstaStyle[0]
+  'style': _csstaStyle[0]
 }]);
 
-const _style2 = {
-  'width': 50
-};
-
 var _csstaStyle2 = _StyleSheet.create({
-  0: _style2
+  0: {
+    'width': 50
+  }
 });
 
 _staticComponent(View, [], [{
@@ -39,6 +34,5 @@ _staticComponent(View, [], [{
   },
   'transitions': {},
   'exportedVariables': {},
-  'style': _style2,
-  'styleSheetReference': _csstaStyle2[0]
+  'style': _csstaStyle2[0]
 }]);

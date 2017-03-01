@@ -3,17 +3,15 @@ import { StyleSheet as _StyleSheet } from 'react-native';
 
 import { View } from 'react-native';
 
-const _style = {
-  'fontStyle': 'italic',
-  'fontWeight': 'bold',
-  'fontVariant': [],
-  'fontSize': 12,
-  'fontFamily': 'Helvetica',
-  'lineHeight': 18
-};
-
 var _csstaStyle = _StyleSheet.create({
-  0: _style
+  0: {
+    'fontStyle': 'italic',
+    'fontWeight': 'bold',
+    'fontVariant': [],
+    'fontSize': 12,
+    'fontFamily': 'Helvetica',
+    'lineHeight': 18
+  }
 });
 
 _staticComponent(View, [], [{
@@ -22,6 +20,5 @@ _staticComponent(View, [], [{
   },
   'transitions': {},
   'exportedVariables': {},
-  'style': _style,
-  'styleSheetReference': _csstaStyle[0]
+  'style': _csstaStyle[0]
 }]);

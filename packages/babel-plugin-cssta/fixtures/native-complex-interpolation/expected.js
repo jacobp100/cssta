@@ -7,22 +7,18 @@ import { View } from 'react-native';
 const marginSmall = 10;
 const marginLarge = 10;
 
-const _style = Object.assign({
-  'paddingTop': 10
-}, _cssToReactNative([['margin', `${marginLarge}px ${marginSmall}px`]])),
-      _style2 = Object.assign(_cssToReactNative([['margin', `${marginLarge}px ${marginSmall}px`]]), {
-  'paddingTop': 10
-}),
-      _style3 = Object.assign({
-  'paddingTop': 10
-}, _cssToReactNative([['margin', `${marginLarge}px ${marginSmall}px`]]), {
-  'paddingBottom': 10
-});
-
 var _csstaStyle = _StyleSheet.create({
-  0: _style,
-  1: _style2,
-  2: _style3
+  0: Object.assign({
+    'paddingTop': 10
+  }, _cssToReactNative([['margin', `${marginLarge}px ${marginSmall}px`]])),
+  1: Object.assign(_cssToReactNative([['margin', `${marginLarge}px ${marginSmall}px`]]), {
+    'paddingTop': 10
+  }),
+  2: Object.assign({
+    'paddingTop': 10
+  }, _cssToReactNative([['margin', `${marginLarge}px ${marginSmall}px`]]), {
+    'paddingBottom': 10
+  })
 });
 
 _staticComponent(View, ['attr1', 'attr2', 'attr3'], [{
@@ -31,22 +27,19 @@ _staticComponent(View, ['attr1', 'attr2', 'attr3'], [{
   },
   'transitions': {},
   'exportedVariables': {},
-  'style': _style,
-  'styleSheetReference': _csstaStyle[0]
+  'style': _csstaStyle[0]
 }, {
   'validate': function (p) {
     return !!p['attr2'];
   },
   'transitions': {},
   'exportedVariables': {},
-  'style': _style2,
-  'styleSheetReference': _csstaStyle[1]
+  'style': _csstaStyle[1]
 }, {
   'validate': function (p) {
     return !!p['attr3'];
   },
   'transitions': {},
   'exportedVariables': {},
-  'style': _style3,
-  'styleSheetReference': _csstaStyle[2]
+  'style': _csstaStyle[2]
 }]);

@@ -1,23 +1,22 @@
 /* eslint-disable no-param-reassign */
 const React = require('react');
 /* eslint-disable */
-const { Animated, Easing } = require('react-native');
+const { StyleSheet, Animated, Easing } = require('react-native');
 /* eslint-enable */
 const { getAppliedRules } = require('../util');
 const { shallowEqual } = require('../../util');
 
 const { Component } = React;
 
-const mergeRuleParts = iteratee => (props) => {
-  const objects = getAppliedRules(props.args.rules, props.ownProps)
-    .map(iteratee)
-    .filter(style => typeof style === 'object');
+const mergeStyles = props =>
+  StyleSheet.flatten(getAppliedRules(props.args.rules, props.ownProps).map(rule => rule.style));
 
-  return Object.assign({}, ...objects);
+const mergeTransitions = (props) => {
+  const transitions = getAppliedRules(props.args.rules, props.ownProps)
+    .map(rule => rule.transitions)
+    .filter(transition => typeof transition === 'object');
+  return Object.assign({}, ...transitions);
 };
-
-const mergeStyles = mergeRuleParts(rule => rule.style);
-const mergeTransitions = mergeRuleParts(rule => rule.transitions);
 
 const getDurationInMs = (duration) => {
   const time = parseFloat(duration);

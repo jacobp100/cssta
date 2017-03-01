@@ -240,7 +240,6 @@ const createStaticStylesheet = (
 ) => {
   const statementPath = path.getStatementParent();
   const styleSheetReference = statementPath.scope.generateUidIdentifier('csstaStyle');
-  const getStyleVariableName = () => statementPath.scope.generateUidIdentifier('style');
 
   let i = 0;
   const getStyleSheetReference = () => {
@@ -253,7 +252,6 @@ const createStaticStylesheet = (
   const ruleBases = _.flow(
     _.map(rule => _.set('styleBody', createStyleBodyForRule(rule), rule)),
     _.filter(rule => rule.styleBody),
-    _.map(_.update('styleVariableName', getStyleVariableName)),
     _.map(_.update('styleSheetReference', getStyleSheetReference))
   )(rules);
 
@@ -261,30 +259,17 @@ const createStaticStylesheet = (
     ...baseRuleElements(rule),
     t.objectProperty(
       t.stringLiteral('style'),
-      rule.styleVariableName
-    ),
-    t.objectProperty(
-      t.stringLiteral('styleSheetReference'),
       t.memberExpression(styleSheetReference, rule.styleSheetReference, true)
     ),
   ]), ruleBases));
 
-  const reactNativeStyleSheetRef =
-    getOrCreateImportReference(path, 'react-native', 'StyleSheet');
-
-
   if (!_.isEmpty(ruleBases)) {
-    const styleDeclarators = t.variableDeclaration(
-      'const',
-      _.map(({ styleVariableName, styleBody }) => (
-        t.variableDeclarator(styleVariableName, styleBody)
-      ), ruleBases)
-    );
-    statementPath.insertBefore(styleDeclarators);
+    const reactNativeStyleSheetRef =
+      getOrCreateImportReference(path, 'react-native', 'StyleSheet');
 
     const styleSheetBody = t.objectExpression(_.map(rule => t.objectProperty(
       rule.styleSheetReference,
-      rule.styleVariableName
+      rule.styleBody
     ), ruleBases));
 
     const styleSheetElement = t.variableDeclaration('var', [

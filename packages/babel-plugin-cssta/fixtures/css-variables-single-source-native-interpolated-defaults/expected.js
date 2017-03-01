@@ -1,5 +1,5 @@
-import _staticComponent from 'cssta/dist/native/staticComponent';
 import { StyleSheet as _StyleSheet } from 'react-native';
+import _staticComponent from 'cssta/dist/native/staticComponent';
 
 import { View } from 'react-native';
 
@@ -7,12 +7,10 @@ const color = 'blue';
 
 _staticComponent(View, [], []);
 
-const _style = {
-  'color': 'red'
-};
-
 var _csstaStyle2 = _StyleSheet.create({
-  0: _style
+  0: {
+    'color': 'red'
+  }
 });
 
 _staticComponent(View, [], [{
@@ -21,6 +19,5 @@ _staticComponent(View, [], [{
   },
   'transitions': {},
   'exportedVariables': {},
-  'style': _style,
-  'styleSheetReference': _csstaStyle2[0]
+  'style': _csstaStyle2[0]
 }]);

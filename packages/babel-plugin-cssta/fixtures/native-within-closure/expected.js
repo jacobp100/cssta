@@ -4,12 +4,10 @@ import { StyleSheet as _StyleSheet } from 'react-native';
 import { View } from 'react-native';
 
 function test() {
-  const _style = {
-    'color': 'red'
-  };
-
   var _csstaStyle = _StyleSheet.create({
-    0: _style
+    0: {
+      'color': 'red'
+    }
   });
 
   const Component = _staticComponent(View, [], [{
@@ -18,7 +16,6 @@ function test() {
     },
     'transitions': {},
     'exportedVariables': {},
-    'style': _style,
-    'styleSheetReference': _csstaStyle[0]
+    'style': _csstaStyle[0]
   }]);
 }

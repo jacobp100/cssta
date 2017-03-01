@@ -36,8 +36,8 @@ const createRuleStylesUsingStylesheet = (appliedVariables, untransformedRules) =
   }, {});
   const stylesheet = StyleSheet.create(styleBody);
 
-  const rules = untransformedRules.map((rule, index) =>
-    Object.assign({}, rule, { style: styles[index], styleSheetReference: stylesheet[index] }));
+  const rules = untransformedRules
+    .map((rule, index) => Object.assign({}, rule, { style: stylesheet[index] }));
 
   return rules;
 };

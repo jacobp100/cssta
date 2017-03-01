@@ -4,16 +4,13 @@ import { StyleSheet as _StyleSheet } from 'react-native';
 
 import { Animated } from 'react-native';
 
-const _style = {
-  'color': 'red'
-},
-      _style2 = {
-  'color': 'blue'
-};
-
 var _csstaStyle = _StyleSheet.create({
-  0: _style,
-  1: _style2
+  0: {
+    'color': 'red'
+  },
+  1: {
+    'color': 'blue'
+  }
 });
 
 _dynamicComponent(Animated.View, ['boolAttr'], [_Transition], {
@@ -25,16 +22,14 @@ _dynamicComponent(Animated.View, ['boolAttr'], [_Transition], {
       'color': ['1s', 'linear']
     },
     'exportedVariables': {},
-    'style': _style,
-    'styleSheetReference': _csstaStyle[0]
+    'style': _csstaStyle[0]
   }, {
     'validate': function (p) {
       return !!p['boolAttr'];
     },
     'transitions': {},
     'exportedVariables': {},
-    'style': _style2,
-    'styleSheetReference': _csstaStyle[1]
+    'style': _csstaStyle[1]
   }],
   'transitions': ['color'],
   'importedVariables': []
