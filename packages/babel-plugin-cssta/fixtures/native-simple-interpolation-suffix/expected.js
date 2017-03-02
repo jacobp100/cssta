@@ -1,5 +1,5 @@
-import _staticComponent from 'cssta/dist/native/staticComponent';
-import { transformRawValue as _transformRawValue } from 'cssta/dist/packages/css-to-react-native';
+import _staticComponent from 'cssta/lib/native/staticComponent';
+import { transformRawValue as _transformRawValue } from 'cssta/lib/packages/css-to-react-native';
 
 import { View, StyleSheet } from 'react-native';
 
@@ -15,5 +15,6 @@ _staticComponent(View, [], [{
   },
   'transitions': {},
   'exportedVariables': {},
+  'animation': null,
   'style': _csstaStyle[0]
 }]);

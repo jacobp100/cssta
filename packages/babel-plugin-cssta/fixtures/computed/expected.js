@@ -1,4 +1,4 @@
-import _staticComponent from 'cssta/dist/web/staticComponent';
+import _staticComponent from 'cssta/lib/web/staticComponent';
 
 
 const button = 'button';

@@ -109,7 +109,7 @@ module.exports = (path, state, component, cssText, substititionMap) => {
 
     const staticComponent = getOrCreateImportReference(
       path,
-      'cssta/dist/web/staticComponent',
+      'cssta/lib/web/staticComponent',
       'default'
     );
     const baseClass = baseClassName

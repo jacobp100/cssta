@@ -11,7 +11,8 @@ const runTest = ({
   type = 'button',
   propTypes = [],
   importedVariables = [],
-  transitions = [],
+  transitionedProperties = [],
+  keyframesStyleTuples = {},
   enhancers = [VariablesStyleSheetManager, Transition],
   rules = [],
   inputProps = {},
@@ -19,7 +20,7 @@ const runTest = ({
   expectedProps = {},
   expectedChildren = null,
 } = {}) => {
-  const args = { rules, importedVariables, transitions };
+  const args = { rules, keyframesStyleTuples, transitionedProperties, importedVariables };
   const Element = dynamicComponent(type, propTypes, enhancers, args);
 
   const component = renderer.create(React.createElement(Element, inputProps)).toJSON();
@@ -98,7 +99,7 @@ it('transitions values', () => runTest({
       top: ['1s', 'linear'],
     },
   }],
-  transitions: ['top'],
+  transitionedProperties: ['top'],
   expectedProps: {
     style: [
       { top: 0 },
@@ -115,7 +116,7 @@ it('transitions colors', () => runTest({
       color: ['1s', 'linear'],
     },
   }],
-  transitions: ['color'],
+  transitionedProperties: ['color'],
   expectedProps: {
     style: [
       { color: 'red' },
@@ -140,7 +141,7 @@ it('transitions transforms', () => runTest({
       transform: ['1s', 'linear'],
     },
   }],
-  transitions: ['transform'],
+  transitionedProperties: ['transform'],
   expectedProps: {
     style: [
       { transform: [{ rotateX: '30deg' }, { scaleX: 3 }] },
@@ -175,7 +176,7 @@ it('transitions values using custom properties', () => runTest({
       color: ['1s', 'linear'],
     },
   }],
-  transitions: ['color'],
+  transitionedProperties: ['color'],
   expectedProps: {
     style: [
       { color: 'red' },
@@ -205,7 +206,9 @@ it('animates between transitioned values', () => {
     transitions: {},
   }];
   const enhancers = [VariablesStyleSheetManager, Transition];
-  const args = { rules, importedVariables: [], transitions: ['color'] };
+  const args = {
+    rules, importedVariables: [], transitionedProperties: ['color'], keyframesStyleTuples: {},
+  };
   const Element = dynamicComponent('button', ['active'], enhancers, args);
 
   const animationStartMock = reactNativeMock.Animated.start;
@@ -233,7 +236,9 @@ it('does not allow animating between divergent transforms', () => {
     transitions: {},
   }];
   const enhancers = [VariablesStyleSheetManager, Transition];
-  const args = { rules, importedVariables: [], transitions: ['transform'] };
+  const args = {
+    rules, importedVariables: [], transitionedProperties: ['transform'], keyframesStyleTuples: {},
+  };
   const Element = dynamicComponent('button', ['active'], enhancers, args);
 
   const instance = renderer.create(React.createElement(Element, {}));

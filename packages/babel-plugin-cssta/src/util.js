@@ -9,6 +9,8 @@ const jsonToNode = (object) => {
     return t.numericLiteral(object);
   } else if (Array.isArray(object)) {
     return t.arrayExpression(object.map(jsonToNode));
+  } else if (object === null) {
+    return t.nullLiteral();
   }
   return t.objectExpression(Object.keys(object).map(key => (
     t.objectProperty(

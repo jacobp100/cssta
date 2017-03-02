@@ -25,7 +25,7 @@ const stringInterpolation = (path, value) =>
 const lengthInterpolation = (path, value) => {
   const transformRawValue = getOrCreateImportReference(
     path,
-    'cssta/dist/packages/css-to-react-native',
+    'cssta/lib/packages/css-to-react-native',
     'transformRawValue'
   );
 
@@ -142,21 +142,21 @@ const getStringWithSubstitutedValues = (substitutionMap, value) => {
   return t.templateLiteral(quasis, expressions);
 };
 
-const createStyleSheetBody = _.curry((path, substitutionMap, rule) => {
-  const styleGroups = _.reduce((groups, styleTuple) => {
+const createStyleBody = _.curry((path, substitutionMap, styleTuples) => {
+  const styleTupleGroups = _.reduce((groups, styleTuple) => {
     const interpolationType = getInterpolationType(substitutionMap, styleTuple);
     const lastGroup = _.last(groups);
 
     if (_.get('interpolationType', lastGroup) === interpolationType) {
-      lastGroup.styleTuples.push(styleTuple);
+      lastGroup.styleTuplesGroup.push(styleTuple);
     } else {
-      groups.push({ interpolationType, styleTuples: [styleTuple] });
+      groups.push({ interpolationType, styleTuplesGroup: [styleTuple] });
     }
 
     return groups;
-  }, [], rule.styleTuples);
+  }, [], styleTuples);
 
-  const transformedGroups = _.map(({ styleTuples, interpolationType }) => {
+  const transformedGroups = _.map(({ styleTuplesGroup, interpolationType }) => {
     if (interpolationType === SIMPLE_OR_NO_INTERPOLATION) {
       const substitutionRegExp = !_.isEmpty(substitutionMap)
         ? getSubstitutionRegExp(substitutionMap)
@@ -185,7 +185,7 @@ const createStyleSheetBody = _.curry((path, substitutionMap, rule) => {
         }
 
         throw new Error(`Used multiple values ${propertyName}, which accepts one value`);
-      }, {}, styleTuples);
+      }, {}, styleTuplesGroup);
 
       return t.objectExpression(_.map(([key, value]) => (
         t.objectProperty(t.stringLiteral(key), value)
@@ -194,17 +194,17 @@ const createStyleSheetBody = _.curry((path, substitutionMap, rule) => {
 
     const cssToReactNativeReference = getOrCreateImportReference(
       path,
-      'cssta/dist/packages/css-to-react-native',
+      'cssta/lib/packages/css-to-react-native',
       'default'
     );
 
     const bodyPairs = t.arrayExpression(_.map(([prop, value]) => t.arrayExpression([
       t.stringLiteral(getPropertyName(prop)),
       getStringWithSubstitutedValues(substitutionMap, value),
-    ]), styleTuples));
+    ]), styleTuplesGroup));
 
     return t.callExpression(cssToReactNativeReference, [bodyPairs]);
-  }, styleGroups);
+  }, styleTupleGroups);
 
   if (_.isEmpty(transformedGroups)) {
     return null;
@@ -230,14 +230,13 @@ const baseRuleElements = rule => [
     t.stringLiteral('exportedVariables'),
     jsonToNode(rule.exportedVariables)
   ),
+  t.objectProperty(
+    t.stringLiteral('animation'),
+    jsonToNode(rule.animation)
+  ),
 ];
 
-const createStaticStylesheet = (
-  path,
-  component,
-  substitutionMap,
-  rules
-) => {
+const createStaticStylesheet = (path, substitutionMap, rules) => {
   const statementPath = path.getStatementParent();
   const styleSheetReference = statementPath.scope.generateUidIdentifier('csstaStyle');
 
@@ -248,9 +247,9 @@ const createStaticStylesheet = (
     return t.numericLiteral(value);
   };
 
-  const createStyleBodyForRule = createStyleSheetBody(statementPath, substitutionMap);
+  const createStyleBodyForRule = createStyleBody(statementPath, substitutionMap);
   const ruleBases = _.flow(
-    _.map(rule => _.set('styleBody', createStyleBodyForRule(rule), rule)),
+    _.map(rule => _.set('styleBody', createStyleBodyForRule(rule.styleTuples), rule)),
     _.filter(rule => rule.styleBody),
     _.map(_.update('styleSheetReference', getStyleSheetReference))
   )(rules);
@@ -285,12 +284,7 @@ const createStaticStylesheet = (
   return rulesBody;
 };
 
-const createVariablesStyleSheet = (
-  path,
-  component,
-  substitutionMap,
-  rules
-) => {
+const createVariablesStyleSheet = (path, substitutionMap, rules) => {
   const createStyleTuples = ({ styleTuples }) => t.arrayExpression(_.map(([prop, value]) => (
     t.arrayExpression([
       t.stringLiteral(getPropertyName(prop)),
@@ -309,6 +303,56 @@ const createVariablesStyleSheet = (
   return rulesBody;
 };
 
+const commonManagerArgsProperties = _.flow(
+  _.pick(['transitionedProperties', 'importedVariables']),
+  _.toPairs,
+  _.map(([key, value]) => t.objectProperty(t.stringLiteral(key), jsonToNode(value)))
+);
+
+const commonProperties = (rulesBody, managerArgs) => [
+  ...commonManagerArgsProperties(managerArgs),
+  t.objectProperty(t.stringLiteral('rules'), rulesBody),
+];
+
+const getStaticKeyframe = _.curry((path, substitutionMap, keyframe) => (
+  t.objectExpression([
+    t.objectProperty(
+      t.stringLiteral('time'),
+      t.numericLiteral(keyframe.time)
+    ),
+    t.objectProperty(
+      t.stringLiteral('styles'),
+      createStyleBody(path, substitutionMap, keyframe.styleTuples)
+    ),
+  ])
+));
+
+const getSatticKeyframes = (path, substitutionMap, keyframesStyleTuples) =>
+  t.objectExpression(
+    _.map(([keyframeName, styleTuples]) => t.objectProperty(
+      t.stringLiteral(keyframeName),
+      t.arrayExpression(_.map(getStaticKeyframe(path, substitutionMap), styleTuples))
+    ), _.toPairs(keyframesStyleTuples))
+  );
+
+const createStaticManagerArgs = (path, substitutionMap, rulesBody, managerArgs) =>
+  t.objectExpression([
+    ...commonProperties(rulesBody, managerArgs),
+    t.objectProperty(
+      t.stringLiteral('keyframes'),
+      getSatticKeyframes(path, substitutionMap, managerArgs.keyframesStyleTuples)
+    ),
+  ]);
+
+const createVariablesManagerArgs = (path, substitutionMap, rulesBody, managerArgs) =>
+  t.objectExpression([
+    ...commonProperties(rulesBody, managerArgs),
+    t.objectProperty(
+      t.stringLiteral('keyframesStyleTuples'),
+      jsonToNode(managerArgs.keyframesStyleTuples)
+    ),
+  ]);
+
 module.exports = (path, state, component, cssText, substitutionMap) => {
   const { rules, propTypes, managerArgs } = extractRules(cssText);
   const exportedVariables = _.reduce(_.assign, {}, _.map('exportedVariables', rules));
@@ -322,32 +366,37 @@ module.exports = (path, state, component, cssText, substitutionMap) => {
     throw new Error('When using singleSourceOfVariables, only one component can define variables');
   }
 
-  const hasVariables = !_.isEmpty(managerArgs.importedVariables) || !_.isEmpty(exportedVariables);
+  const hasVariables =
+    !singleSourceOfVariables &&
+    (!_.isEmpty(managerArgs.importedVariables) || !_.isEmpty(exportedVariables));
+  const hasKeyframes = !_.isEmpty(managerArgs.keyframesStyleTuples);
   const hasTransitions = !_.isEmpty(managerArgs.transitionedProperties);
 
-  const enhancersRoot = 'cssta/dist/native/dynamicComponentEnhancers';
+  const enhancersRoot = 'cssta/lib/native/dynamicComponentEnhancers';
   const enhancers = [];
   let rulesBody;
 
-  if (singleSourceOfVariables || !hasVariables) {
-    rulesBody = createStaticStylesheet(path, component, substitutionMap, rules);
-  } else {
+  if (hasVariables) {
     const variablesEnhancer =
       getOrCreateImportReference(path, `${enhancersRoot}/VariablesStyleSheetManager`, 'default');
     enhancers.push(variablesEnhancer);
 
-    rulesBody = createVariablesStyleSheet(path, component, substitutionMap, rules);
+    rulesBody = createVariablesStyleSheet(path, substitutionMap, rules, managerArgs);
+  } else {
+    rulesBody = createStaticStylesheet(path, substitutionMap, rules);
   }
 
   if (hasTransitions) {
-    const transitionEnhancer =
-      getOrCreateImportReference(path, `${enhancersRoot}/Transition`, 'default');
-    enhancers.push(transitionEnhancer);
+    enhancers.push(getOrCreateImportReference(path, `${enhancersRoot}/Transition`, 'default'));
+  }
+
+  if (hasKeyframes) {
+    enhancers.push(getOrCreateImportReference(path, `${enhancersRoot}/Animation`, 'default'));
   }
 
   let newElement;
 
-  const componentRoot = 'cssta/dist/native';
+  const componentRoot = 'cssta/lib/native';
   if (_.isEmpty(enhancers)) {
     const staticComponent =
       getOrCreateImportReference(path, `${componentRoot}/staticComponent`, 'default');
@@ -361,12 +410,9 @@ module.exports = (path, state, component, cssText, substitutionMap) => {
     const dynamicComponent =
       getOrCreateImportReference(path, `${componentRoot}/dynamicComponent`, 'default');
 
-    const managerArgsNode = t.objectExpression([].concat(
-      t.objectProperty(t.stringLiteral('rules'), rulesBody),
-      _.map(([key, value]) => (
-        t.objectProperty(t.stringLiteral(key), jsonToNode(value))
-      ), _.toPairs(managerArgs))
-    ));
+    const managerArgsNode = hasVariables
+      ? createVariablesManagerArgs(path, substitutionMap, rulesBody, managerArgs)
+      : createStaticManagerArgs(path, substitutionMap, rulesBody, managerArgs);
 
     newElement = t.callExpression(dynamicComponent, [
       component,

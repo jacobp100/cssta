@@ -1,4 +1,4 @@
-import _staticComponent from 'cssta/dist/native/staticComponent';
+import _staticComponent from 'cssta/lib/native/staticComponent';
 import { StyleSheet as _StyleSheet } from 'react-native';
 
 import { View } from 'react-native';
@@ -27,6 +27,7 @@ _staticComponent(View, ['attr1', 'attr2', 'attr3'], [{
   },
   'transitions': {},
   'exportedVariables': {},
+  'animation': null,
   'style': _csstaStyle[0]
 }, {
   'validate': function (p) {
@@ -34,6 +35,7 @@ _staticComponent(View, ['attr1', 'attr2', 'attr3'], [{
   },
   'transitions': {},
   'exportedVariables': {},
+  'animation': null,
   'style': _csstaStyle[1]
 }, {
   'validate': function (p) {
@@ -41,5 +43,6 @@ _staticComponent(View, ['attr1', 'attr2', 'attr3'], [{
   },
   'transitions': {},
   'exportedVariables': {},
+  'animation': null,
   'style': _csstaStyle[2]
 }]);

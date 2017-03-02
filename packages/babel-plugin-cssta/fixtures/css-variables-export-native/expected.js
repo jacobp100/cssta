@@ -1,9 +1,11 @@
-import _dynamicComponent from 'cssta/dist/native/dynamicComponent';
-import _VariablesStyleSheetManager from 'cssta/dist/native/dynamicComponentEnhancers/VariablesStyleSheetManager';
+import _dynamicComponent from 'cssta/lib/native/dynamicComponent';
+import _VariablesStyleSheetManager from 'cssta/lib/native/dynamicComponentEnhancers/VariablesStyleSheetManager';
 
 import { View } from 'react-native';
 
 _dynamicComponent(View, ['blue'], [_VariablesStyleSheetManager], {
+  'transitionedProperties': [],
+  'importedVariables': [],
   'rules': [{
     'validate': function (p) {
       return true;
@@ -12,6 +14,7 @@ _dynamicComponent(View, ['blue'], [_VariablesStyleSheetManager], {
     'exportedVariables': {
       'color': 'red'
     },
+    'animation': null,
     'styleTuples': []
   }, {
     'validate': function (p) {
@@ -21,8 +24,8 @@ _dynamicComponent(View, ['blue'], [_VariablesStyleSheetManager], {
     'exportedVariables': {
       'color': 'blue'
     },
+    'animation': null,
     'styleTuples': []
   }],
-  'transitions': [],
-  'importedVariables': []
+  'keyframesStyleTuples': {}
 });

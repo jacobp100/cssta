@@ -2,9 +2,8 @@
 /* eslint-disable no-param-reassign */
 
 module.exports.StyleSheet = {
-  create(body) {
-    return body;
-  },
+  create: body => body,
+  flatten: styles => Object.assign({}, ...[].concat(styles)),
 };
 
 class Value {

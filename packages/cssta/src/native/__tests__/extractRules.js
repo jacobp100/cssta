@@ -12,8 +12,8 @@ it('scopes top-level declarations', () => runTestFor(`
   selector: '&',
   styleTuples: [['color', 'red']],
   exportedVariables: {},
-  importedVariables: [],
   transitions: {},
+  animation: null,
 }]));
 
 it('scopes multiple top-level declarations into one class', () => runTestFor(`
@@ -26,8 +26,8 @@ it('scopes multiple top-level declarations into one class', () => runTestFor(`
     ['borderLeftColor', 'green'],
   ],
   exportedVariables: {},
-  importedVariables: [],
   transitions: {},
+  animation: null,
 }]));
 
 it('scopes boolean attribute selectors', () => runTestFor(`
@@ -38,8 +38,8 @@ it('scopes boolean attribute selectors', () => runTestFor(`
   selector: '[attribute]',
   styleTuples: [['color', 'red']],
   exportedVariables: {},
-  importedVariables: [],
   transitions: {},
+  animation: null,
 }]));
 
 it('scopes string attribute selectors', () => runTestFor(`
@@ -50,8 +50,8 @@ it('scopes string attribute selectors', () => runTestFor(`
   selector: '[stringAttribute = "red"]',
   styleTuples: [['color', 'red']],
   exportedVariables: {},
-  importedVariables: [],
   transitions: {},
+  animation: null,
 }]));
 
 it('scopes attribute selectors', () => runTestFor(`
@@ -78,32 +78,32 @@ it('scopes attribute selectors', () => runTestFor(`
   selector: '[booleanValue1]',
   styleTuples: [['color', 'red']],
   exportedVariables: {},
-  importedVariables: [],
   transitions: {},
+  animation: null,
 }, {
   selector: '[booleanValue2]',
   styleTuples: [['color', 'green']],
   exportedVariables: {},
-  importedVariables: [],
   transitions: {},
+  animation: null,
 }, {
   selector: '[stringValue1 = "a"]',
   styleTuples: [['color', 'red']],
   exportedVariables: {},
-  importedVariables: [],
   transitions: {},
+  animation: null,
 }, {
   selector: '[stringValue1 = "b"]',
   styleTuples: [['color', 'green']],
   exportedVariables: {},
-  importedVariables: [],
   transitions: {},
+  animation: null,
 }, {
   selector: '[stringValue2 = "c"]',
   styleTuples: [['color', 'blue']],
   exportedVariables: {},
-  importedVariables: [],
   transitions: {},
+  animation: null,
 }]));
 
 it('recognises variable declarations', () => runTestFor(`
@@ -114,8 +114,8 @@ it('recognises variable declarations', () => runTestFor(`
   exportedVariables: {
     color: 'red',
   },
-  importedVariables: [],
   transitions: {},
+  animation: null,
 }]));
 
 it('recognises variable imports', () => runTestFor(`
@@ -124,8 +124,8 @@ it('recognises variable imports', () => runTestFor(`
   selector: '&',
   styleTuples: [['color', 'var(--color)']],
   exportedVariables: {},
-  importedVariables: ['color'],
   transitions: {},
+  animation: null,
 }]));
 
 it('recognises multiple variable declarations', () => runTestFor(`
@@ -139,8 +139,8 @@ it('recognises multiple variable declarations', () => runTestFor(`
     color: 'blue',
     other: 'green',
   },
-  importedVariables: [],
   transitions: {},
+  animation: null,
 }]));
 
 it('recognises multiple variable imports', () => runTestFor(`
@@ -149,8 +149,8 @@ it('recognises multiple variable imports', () => runTestFor(`
   selector: '&',
   styleTuples: [['margin', 'var(--large) var(--small)']],
   exportedVariables: {},
-  importedVariables: ['large', 'small'],
   transitions: {},
+  animation: null,
 }]));
 
 it('mixes variable and style declarations', () => runTestFor(`
@@ -162,8 +162,8 @@ it('mixes variable and style declarations', () => runTestFor(`
   exportedVariables: {
     color: 'red',
   },
-  importedVariables: ['color'],
   transitions: {},
+  animation: null,
 }]));
 
 it('returns all imported variables without duplicates', () => {
@@ -190,10 +190,10 @@ it('recognises transitions', () => runTestFor(`
     ['color', 'red'],
   ],
   exportedVariables: {},
-  importedVariables: [],
   transitions: {
     color: ['1s', 'linear'],
   },
+  animation: null,
 }]));
 
 it('recognises multiple separate transitions', () => runTestFor(`
@@ -206,11 +206,11 @@ it('recognises multiple separate transitions', () => runTestFor(`
     ['color', 'red'],
   ],
   exportedVariables: {},
-  importedVariables: [],
   transitions: {
     color: ['1s', 'linear'],
     transition: ['2s', 'ease-in-out'],
   },
+  animation: null,
 }]));
 
 it('recognises multiple property transitions', () => runTestFor(`
@@ -223,11 +223,11 @@ it('recognises multiple property transitions', () => runTestFor(`
     ['color', 'red'],
   ],
   exportedVariables: {},
-  importedVariables: [],
   transitions: {
     color: ['1s', 'linear'],
     transition: ['1s', 'linear'],
   },
+  animation: null,
 }]));
 
 it('recognises multiple allows variables in transitions', () => runTestFor(`
@@ -239,8 +239,82 @@ it('recognises multiple allows variables in transitions', () => runTestFor(`
     ['color', 'red'],
   ],
   exportedVariables: {},
-  importedVariables: ['time', 'easing'],
   transitions: {
     color: ['var(--time)', 'var(--easing)'],
   },
+  animation: null,
 }]));
+
+it('recognises animations', () => runTestFor(`
+  animation: test 1s linear;
+`, [{
+  selector: '&',
+  styleTuples: [],
+  exportedVariables: {},
+  transitions: {},
+  animation: ['test', '1s', 'linear'],
+}]));
+
+it('recognises keyframes', () => {
+  const { managerArgs } = extractRules(`
+    @keyframes test {
+      start { opacity: 0 }
+      end { opacity: 1 }
+    }
+  `);
+
+  const { keyframesStyleTuples } = managerArgs;
+
+  expect(keyframesStyleTuples).toEqual({
+    test: [
+      { time: 0, styleTuples: [['opacity', '0']] },
+      { time: 1, styleTuples: [['opacity', '1']] },
+    ],
+  });
+});
+
+it('recognises multiple', () => {
+  const { managerArgs } = extractRules(`
+    @keyframes test1 {
+      start { opacity: 0 }
+      end { opacity: 1 }
+    }
+
+    @keyframes test2 {
+      start { opacity: 0 }
+      50% { opacity: 0.5 }
+      end { opacity: 1 }
+    }
+  `);
+
+  const { keyframesStyleTuples } = managerArgs;
+
+  expect(keyframesStyleTuples).toEqual({
+    test1: [
+      { time: 0, styleTuples: [['opacity', '0']] },
+      { time: 1, styleTuples: [['opacity', '1']] },
+    ],
+    test2: [
+      { time: 0, styleTuples: [['opacity', '0']] },
+      { time: 0.5, styleTuples: [['opacity', '0.5']] },
+      { time: 1, styleTuples: [['opacity', '1']] },
+    ],
+  });
+});
+
+it('imports variables from keyframes', () => {
+  const { managerArgs } = extractRules(`
+    @keyframes test {
+      start { color: var(--primary) }
+    }
+  `);
+
+  const { importedVariables, keyframesStyleTuples } = managerArgs;
+
+  expect(importedVariables).toEqual(['primary']);
+  expect(keyframesStyleTuples).toEqual({
+    test: [
+      { time: 0, styleTuples: [['color', 'var(--primary)']] },
+    ],
+  });
+});

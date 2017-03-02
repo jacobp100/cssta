@@ -1,5 +1,5 @@
-import _dynamicComponent from 'cssta/dist/native/dynamicComponent';
-import _Transition from 'cssta/dist/native/dynamicComponentEnhancers/Transition';
+import _dynamicComponent from 'cssta/lib/native/dynamicComponent';
+import _Transition from 'cssta/lib/native/dynamicComponentEnhancers/Transition';
 import { StyleSheet as _StyleSheet } from 'react-native';
 
 import { Animated } from 'react-native';
@@ -14,6 +14,8 @@ var _csstaStyle = _StyleSheet.create({
 });
 
 _dynamicComponent(Animated.View, ['boolAttr'], [_Transition], {
+  'transitionedProperties': ['color'],
+  'importedVariables': [],
   'rules': [{
     'validate': function (p) {
       return true;
@@ -22,6 +24,7 @@ _dynamicComponent(Animated.View, ['boolAttr'], [_Transition], {
       'color': ['1s', 'linear']
     },
     'exportedVariables': {},
+    'animation': null,
     'style': _csstaStyle[0]
   }, {
     'validate': function (p) {
@@ -29,8 +32,8 @@ _dynamicComponent(Animated.View, ['boolAttr'], [_Transition], {
     },
     'transitions': {},
     'exportedVariables': {},
+    'animation': null,
     'style': _csstaStyle[1]
   }],
-  'transitions': ['color'],
-  'importedVariables': []
+  'keyframes': {}
 });

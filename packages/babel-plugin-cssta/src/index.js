@@ -2,7 +2,7 @@
 const p = require('path');
 const t = require('babel-types');
 const _ = require('lodash/fp');
-const { varRegExp } = require('cssta/dist/util');
+const { varRegExp } = require('cssta/lib/util');
 const transformWebCssta = require('./converters/web');
 const transformNativeCssta = require('./converters/native');
 const removeSetPostCssPipeline = require('./optimizations/removeSetPostCssPipeline');
@@ -26,7 +26,7 @@ const transformCsstaTypes = {
 
 const redirectImports = {
   'cssta/native': {
-    VariablesProvider: 'cssta/dist/native/VariablesProvider',
+    VariablesProvider: 'cssta/lib/native/VariablesProvider',
   },
 };
 

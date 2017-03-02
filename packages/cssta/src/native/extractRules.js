@@ -75,11 +75,8 @@ const getRuleBody = (rule) => {
   styleTuples = styleTuples.filter(styleTuple => !specialTuples.includes(styleTuple[0]));
 
   const exportedVariables = getExportedVariables(rule.nodes);
-  const importedVariables = getImportedVariables(rule.nodes);
 
-  return {
-    selector, styleTuples, transitions, animation, exportedVariables, importedVariables,
-  };
+  return { selector, styleTuples, transitions, animation, exportedVariables };
 };
 
 const getKeyframes = atRule => walkToArray(cb => atRule.walkRules(cb))
@@ -118,13 +115,19 @@ module.exports = (inputCss) => {
   const transitionedProperties =
     Object.keys(Object.assign({}, ...rules.map(rule => rule.transitions)));
 
-  const importedVariables = rules.reduce((outerAccum, rule) => (
-    rule.importedVariables.reduce((innerAccum, importedVariable) => (
-      innerAccum.indexOf(importedVariable) === -1
-        ? innerAccum.concat([importedVariable])
-        : innerAccum
-    ), outerAccum)
-  ), []);
+  let importedVariables = walkToArray(cb => root.walkDecls(cb)).reduce((accum, decl) => {
+    const referencedVariableMatches = decl.value.match(varRegExp);
+    if (!referencedVariableMatches) return accum;
+
+    const referencedVariables = referencedVariableMatches
+      .map(match => match.match(varRegExpNonGlobal)[1]);
+
+    return referencedVariables.reduce((innerAccum, variable) => {
+      innerAccum[variable] = true;
+      return innerAccum;
+    }, accum);
+  }, {});
+  importedVariables = Object.keys(importedVariables);
 
   const managerArgs = { keyframesStyleTuples, transitionedProperties, importedVariables };
 
