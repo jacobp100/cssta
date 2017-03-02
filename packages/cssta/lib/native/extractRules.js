@@ -109,11 +109,8 @@ var getRuleBody = function getRuleBody(rule) {
   });
 
   var exportedVariables = getExportedVariables(rule.nodes);
-  var importedVariables = getImportedVariables(rule.nodes);
 
-  return {
-    selector: selector, styleTuples: styleTuples, transitions: transitions, animation: animation, exportedVariables: exportedVariables, importedVariables: importedVariables
-  };
+  return { selector: selector, styleTuples: styleTuples, transitions: transitions, animation: animation, exportedVariables: exportedVariables };
 };
 
 var getKeyframes = function getKeyframes(atRule) {
@@ -166,11 +163,22 @@ module.exports = function (inputCss) {
     return rule.transitions;
   })))));
 
-  var importedVariables = rules.reduce(function (outerAccum, rule) {
-    return rule.importedVariables.reduce(function (innerAccum, importedVariable) {
-      return innerAccum.indexOf(importedVariable) === -1 ? innerAccum.concat([importedVariable]) : innerAccum;
-    }, outerAccum);
-  }, []);
+  var importedVariables = walkToArray(function (cb) {
+    return root.walkDecls(cb);
+  }).reduce(function (accum, decl) {
+    var referencedVariableMatches = decl.value.match(varRegExp);
+    if (!referencedVariableMatches) return accum;
+
+    var referencedVariables = referencedVariableMatches.map(function (match) {
+      return match.match(varRegExpNonGlobal)[1];
+    });
+
+    return referencedVariables.reduce(function (innerAccum, variable) {
+      innerAccum[variable] = true;
+      return innerAccum;
+    }, accum);
+  }, {});
+  importedVariables = Object.keys(importedVariables);
 
   var managerArgs = { keyframesStyleTuples: keyframesStyleTuples, transitionedProperties: transitionedProperties, importedVariables: importedVariables };
 

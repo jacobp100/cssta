@@ -1,18 +1,12 @@
 import _dynamicComponent from 'cssta/lib/native/dynamicComponent';
 import _Animation from 'cssta/lib/native/dynamicComponentEnhancers/Animation';
-import { StyleSheet as _StyleSheet } from 'react-native';
+import _VariablesStyleSheetManager from 'cssta/lib/native/dynamicComponentEnhancers/VariablesStyleSheetManager';
 
 import { Animated } from 'react-native';
 
-var _csstaStyle = _StyleSheet.create({
-  0: {
-    'color': 'red'
-  }
-});
-
-_dynamicComponent(Animated.View, [], [_Animation], {
+_dynamicComponent(Animated.View, [], [_VariablesStyleSheetManager, _Animation], {
   'transitionedProperties': [],
-  'importedVariables': [],
+  'importedVariables': ['primary'],
   'rules': [{
     'validate': function (p) {
       return true;
@@ -20,19 +14,15 @@ _dynamicComponent(Animated.View, [], [_Animation], {
     'transitions': {},
     'exportedVariables': {},
     'animation': ['test', '1s', 'linear'],
-    'style': _csstaStyle[0]
+    'styleTuples': [['color', 'red']]
   }],
-  'keyframes': {
+  'keyframesStyleTuples': {
     'test': [{
       'time': 0,
-      'styles': {
-        'color': 'rgba(0, 0, 0, 0)'
-      }
+      'styleTuples': [['color', 'rgba(0, 0, 0, 0)']]
     }, {
       'time': 1,
-      'styles': {
-        'opacity': 'var(--primary)'
-      }
+      'styleTuples': [['opacity', 'var(--primary)']]
     }]
   }
 });

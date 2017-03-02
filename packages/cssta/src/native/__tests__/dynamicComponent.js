@@ -247,3 +247,5 @@ it('does not allow animating between divergent transforms', () => {
     instance.update(React.createElement(Element, { active: true }));
   }).toThrow();
 });
+
+// FIXME: Test animations
