@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import cssta from 'cssta/native';
 import Basic, { code as basicCode } from './demos/Basic';
+import Animations, { code as animationsCode } from './demos/Animations';
 import Transitions, { code as transitionsCode } from './demos/Transitions';
 import CSSVariables, { code as cssVariablesCode } from './demos/CSSVariables';
 import VariablesProvider, { code as variablesProviderCode } from './demos/VariablesProvider';
@@ -63,6 +64,9 @@ export default () => (
   <App>
     <Demo title="Basic" code={basicCode}>
       <Basic />
+    </Demo>
+    <Demo title="Animations" code={animationsCode}>
+      <Animations />
     </Demo>
     <Demo title="Transitions" code={transitionsCode}>
       <Transitions />

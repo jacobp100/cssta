@@ -4,8 +4,9 @@ const dynamicComponent = require('./dynamicComponent');
 const VariablesProvider = require('./VariablesProvider');
 const VariablesStyleSheetManager = require('./dynamicComponentEnhancers/VariablesStyleSheetManager');
 const Transition = require('./dynamicComponentEnhancers/Transition');
+const Animation = require('./dynamicComponentEnhancers/Animation');
 
-const defaultEnhancers = [VariablesStyleSheetManager, Transition];
+const defaultEnhancers = [VariablesStyleSheetManager, Transition, Animation];
 
 /* eslint-disable no-param-reassign */
 module.exports = element => (cssTextFragments, ...substitutions) => {
@@ -20,6 +21,7 @@ module.exports = element => (cssTextFragments, ...substitutions) => {
     validate: createValidatorForSelector(rule.selector),
     styleTuples: rule.styleTuples,
     transitions: rule.transitions,
+    animation: rule.animation,
     exportedVariables: rule.exportedVariables,
   }));
 

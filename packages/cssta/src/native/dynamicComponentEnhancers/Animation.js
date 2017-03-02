@@ -4,9 +4,8 @@ const React = require('react');
 const { StyleSheet, Animated, Easing } = require('react-native');
 /* eslint-enable */
 const { getAppliedRules } = require('../util');
-const { shallowEqual } = require('../../util');
 const {
-  mergeStyles, interpolateValue, getInitialValue, getDurationInMs,
+  mergeStyles, interpolateValue, getDurationInMs, easingFunctions, durationRegExp, easingRegExp,
 } = require('./animationUtil');
 
 const { Component } = React;
@@ -18,77 +17,100 @@ const getAnimation = (props) => {
   return animations.length ? animations[animations.length - 1] : null;
 };
 
-module.exports = class TransitionEnhancer extends Component {
+const getKeyframe = animationValues => animationValues
+    .find(value => !durationRegExp.test(value) && !easingRegExp.test(value));
+
+const getAnimationState = (props) => {
+  const currentStyles = mergeStyles(props);
+
+  const currentAnimationValues = getAnimation(props) || [];
+
+  const durationMatch = currentAnimationValues.find(value => durationRegExp.test(value));
+  const duration = durationMatch ? getDurationInMs(durationMatch) : 0;
+
+  const easingMatch = currentAnimationValues.find(value => easingRegExp.test(value));
+  const easing = easingMatch ? easingFunctions[easingMatch] : easingFunctions.linear;
+
+  const keyframe = getKeyframe(currentAnimationValues);
+
+  const animationSequence = keyframe ? props.args.keyframes[keyframe] : [];
+  const animatedProperties =
+    Object.keys(Object.assign({}, ...animationSequence.map(frame => frame.styles)));
+
+  const animationValues = animatedProperties.reduce((accum, animationProperty) => {
+    accum[animationProperty] = new Animated.Value(0);
+    return accum;
+  }, {});
+
+  const animations = animatedProperties.reduce((accum, animationProperty) => {
+    const currentValue = currentStyles[animationProperty];
+
+    let keyframes = animationSequence
+      .filter(frame => animationProperty in frame.styles)
+      .map(({ time, styles }) => ({ time, value: styles[animationProperty] }));
+    // Fixes missing start/end values
+    keyframes = [].concat(
+      (keyframes[0].time > 0) ? [{ time: 0, value: currentValue }] : [],
+      keyframes,
+      (keyframes[keyframes.length - 1].time < 1) ? [{ time: 1, value: currentValue }] : []
+    );
+
+    const inputRange = keyframes.map(frame => frame.time);
+    const outputRange = keyframes.map(frame => frame.value);
+    const animation = animationValues[animationProperty];
+    accum[animationProperty] = interpolateValue(inputRange, outputRange, animation);
+    return accum;
+  }, {});
+
+  return { duration, easing, animations, animationValues };
+};
+
+module.exports = class AnimationEnhancer extends Component {
   constructor(props) {
     super();
 
-    const styles = mergeStyles(props);
-    const { animatedProperties } = props.args;
-
-    this.animationValues = animatedProperties.reduce((animationValues, transitionName) => {
-      animationValues[transitionName] = new Animated.Value(getInitialValue(styles[transitionName]));
-      return animationValues;
-    }, {});
-
-    this.state = this.getActiveAnimations(props);
+    this.state = getAnimationState(props);
   }
 
   componentDidMount() {
-    this.runAnimation(this.state);
+    this.runAnimation();
   }
 
-  getActiveAnimations(props) {
-    const styles = mergeStyles(props);
+  componentWillReceiveProps(nextProps) {
+    const nextAnimationValues = getAnimation(nextProps) || [];
+    const currentAnimationValues = getAnimation(this.props) || [];
 
-    const { animationValues } = this;
-
-    const currentAnimation = getAnimation(props); // FIXME: Get keyframes
-    const animatedProperties = currentAnimation
-      ? this.props.args.keyframes[currentAnimation]
-      : {};
-
-    const duration = 1000;
-    const easing = Easing.linear;
-
-    const activeAnimations = Object.keys(animatedProperties).reduce((accum, animationProperty) => {
-      let keyframes = animatedProperties[animationProperty];
-      if (keyframes[0].time !== 0) {
-        keyframes = [{ time: 0, value: styles[animationProperty] }].concat(keyframes);
-      }
-      if (keyframes[keyframes.length - 1].time !== 0) {
-        keyframes = keyframes.concat({ time: 1, value: styles[animationProperty] });
-      }
-      const inputRange = keyframes.map(keyframe => keyframe.time);
-      const outputRange = keyframes.map(keyframe => keyframe.value);
-      accum[animationProperty] = animationValues.interpolate({ inputRange, outputRange });
-      return accum;
-    });
-
-    return { duration, easing, activeAnimations };
+    if (getKeyframe(nextAnimationValues) !== getKeyframe(currentAnimationValues)) {
+      this.setState(getAnimationState(nextProps));
+    }
   }
 
-  runAnimation({ duration, easing, activeAnimations }) {
-    const { animationValues } = this;
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.animations !== prevState.animations) this.runAnimation();
+  }
 
-    const animations = Object.keys(activeAnimations).map(animationProperty => (
-      Animated.timing(animationValues[animationProperty], { toValue: 1, duration, easing })
-    ));
+  runAnimation() {
+    const { duration, easing, animationValues: animationValuesObject } = this.state;
+    const animationValues = Object.values(animationValuesObject);
 
-    Animated.parallel(animations).start();
+    animationValues.forEach(animation => animation.setValue(0));
+
+    const timings = animationValues
+      .map(animation => Animated.timing(animation, { toValue: 1, duration, easing }));
+
+    Animated.parallel(timings).start();
   }
 
   animate() {
-    const nextState = this.getActiveAnimations(this.props);
-    this.setState(nextState, () => {
-      this.runAnimation(nextState);
-    });
+    // How do we expose this to the user?
+    this.setState(getAnimationState(this.props));
   }
 
   render() {
     const { args, children } = this.props;
-    const { activeAnimations } = this.state;
+    const { animations } = this.state;
 
-    const newRule = { style: activeAnimations };
+    const newRule = { style: animations };
     const nextArgs = Object.assign({}, args, { rules: args.rules.concat(newRule) });
     const nextProps = Object.assign({}, this.props, { args: nextArgs });
     return children(nextProps);

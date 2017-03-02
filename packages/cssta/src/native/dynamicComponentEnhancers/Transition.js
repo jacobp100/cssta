@@ -6,24 +6,19 @@ const { StyleSheet, Animated, Easing } = require('react-native');
 const { getAppliedRules } = require('../util');
 const { shallowEqual } = require('../../util');
 const {
-  mergeStyles, interpolateValue, getInitialValue, getDurationInMs,
+  mergeStyles, interpolateValue, getDurationInMs, easingFunctions,
+  durationRegExp, easingRegExp,
 } = require('./animationUtil');
 
 const { Component } = React;
+
+const getInitialValue = targetValue => (typeof targetValue === 'number' ? targetValue : 0);
 
 const mergeTransitions = (props) => {
   const transitions = getAppliedRules(props.args.rules, props.ownProps)
     .map(rule => rule.transitions)
     .filter(transition => typeof transition === 'object');
   return Object.assign({}, ...transitions);
-};
-
-const easingFunctions = {
-  linear: Easing.linear,
-  ease: Easing.ease,
-  'ease-in': Easing.in,
-  'ease-out': Easing.out,
-  'ease-in-out': Easing.inOut,
 };
 
 module.exports = class TransitionEnhancer extends Component {
@@ -59,10 +54,10 @@ module.exports = class TransitionEnhancer extends Component {
     const animations = Object.keys(animationValues).map((transitionProperty) => {
       const transitionValues = currentTransitions[transitionProperty] || [];
 
-      const durationMatch = transitionValues.find(value => /^\d/.test(value));
+      const durationMatch = transitionValues.find(value => durationRegExp.test(value));
       const duration = durationMatch ? getDurationInMs(durationMatch) : 0;
 
-      const easingMatch = transitionValues.find(value => /^[a-z]/.test(value));
+      const easingMatch = transitionValues.find(value => easingRegExp.test(value));
       const easing = easingMatch ? easingFunctions[easingMatch] : easingFunctions.linear;
 
       const animation = animationValues[transitionProperty];
@@ -90,12 +85,10 @@ module.exports = class TransitionEnhancer extends Component {
       const { styles, previousStyles } = this.state;
 
       const fixedAnimations = animationNames.reduce((accum, animationName) => {
-        const animation = animationValues[animationName];
-
         accum[animationName] = interpolateValue(
-          styles[animationName],
-          previousStyles[animationName],
-          animation
+          [0, 1],
+          [previousStyles[animationName], styles[animationName]],
+          animationValues[animationName]
         );
         return accum;
       }, {});

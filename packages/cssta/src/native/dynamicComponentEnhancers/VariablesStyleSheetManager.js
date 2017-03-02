@@ -19,16 +19,19 @@ const getExportedVariables = (props, variablesFromScope) => {
   return resolveVariableDependencies(definedVariables, variablesFromScope);
 };
 
-const createRuleStylesUsingStylesheet = (appliedVariables, untransformedRules) => {
-  const styles = untransformedRules.map((rule) => {
-    const styleTuples = rule.styleTuples.map(([property, value]) => {
-      let transformedValue = value;
-      transformedValue = transformVariables(transformedValue, appliedVariables);
-      transformedValue = transformColors(transformedValue);
-      return [property, transformedValue];
-    });
-    return cssToReactNative(styleTuples);
+const transformStyleTuples = (appliedVariables, styleTuples) => {
+  const transformedStyleTuples = styleTuples.map(([property, value]) => {
+    let transformedValue = value;
+    transformedValue = transformVariables(transformedValue, appliedVariables);
+    transformedValue = transformColors(transformedValue);
+    return [property, transformedValue];
   });
+  return cssToReactNative(transformedStyleTuples);
+};
+
+const createRuleStylesUsingStylesheet = (appliedVariables, args) => {
+  const styles = args.rules
+    .map(rule => transformStyleTuples(appliedVariables, rule.styleTuples));
 
   const styleBody = styles.reduce((accum, style, index) => {
     accum[index] = style;
@@ -36,10 +39,21 @@ const createRuleStylesUsingStylesheet = (appliedVariables, untransformedRules) =
   }, {});
   const stylesheet = StyleSheet.create(styleBody);
 
-  const rules = untransformedRules
+  const rules = args.rules
     .map((rule, index) => Object.assign({}, rule, { style: stylesheet[index] }));
 
-  return rules;
+  // FIXME: Transitions (i.e. `transition: color var(--short-duration) var(--easing)`)
+  const { keyframesStyleTuples } = args;
+  const keyframes = Object.keys(keyframesStyleTuples).reduce((accum, keyframeName) => {
+    const keyframeStyles = keyframesStyleTuples[keyframeName].map(({ time, styleTuples }) => ({
+      time,
+      styles: transformStyleTuples(appliedVariables, styleTuples),
+    }));
+    accum[keyframeName] = keyframeStyles;
+    return accum;
+  }, {});
+
+  return { rules, keyframes };
 };
 
 module.exports = class VariablesStyleSheetManager extends Component {
@@ -62,14 +76,14 @@ module.exports = class VariablesStyleSheetManager extends Component {
     const styleCacheKey = JSON.stringify(ownAppliedVariables);
     const styleCached = styleCacheKey in styleCache;
 
-    const rules = styleCached
+    const transformedArgs = styleCached
       ? styleCache[styleCacheKey]
-      : createRuleStylesUsingStylesheet(ownAppliedVariables, this.props.args.rules);
+      : createRuleStylesUsingStylesheet(ownAppliedVariables, this.props.args);
 
-    if (!styleCached) styleCache[styleCacheKey] = rules;
+    if (!styleCached) styleCache[styleCacheKey] = transformedArgs;
 
     const { args, children } = this.props;
-    const nextArgs = Object.assign({}, args, { rules });
+    const nextArgs = Object.assign({}, args, transformedArgs);
     const nextProps = Object.assign({}, this.props, { args: nextArgs });
 
     return children(nextProps);
