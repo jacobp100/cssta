@@ -6,9 +6,14 @@ const { getAppliedRules } = require('../util');
 module.exports.mergeStyles = props =>
   StyleSheet.flatten(getAppliedRules(props.args.rules, props.ownProps).map(rule => rule.style));
 
-module.exports.interpolateValue = (inputRange, outputRange, animation) => {
+module.exports.interpolateValue = (
+  inputRange,
+  outputRange,
+  animation,
+  interpolateNumbers = false
+) => {
   const firstValue = outputRange[0];
-  if (typeof firstValue === 'number') return animation;
+  if (interpolateNumbers && typeof firstValue === 'number') return animation;
 
   if (!Array.isArray(firstValue)) {
     return animation.interpolate({ inputRange, outputRange });

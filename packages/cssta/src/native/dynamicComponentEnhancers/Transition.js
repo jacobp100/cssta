@@ -88,7 +88,8 @@ module.exports = class TransitionEnhancer extends Component {
         accum[animationName] = interpolateValue(
           [0, 1],
           [previousStyles[animationName], styles[animationName]],
-          animationValues[animationName]
+          animationValues[animationName],
+          true /* interpolate numbers */
         );
         return accum;
       }, {});

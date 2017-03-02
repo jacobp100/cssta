@@ -20,10 +20,17 @@ const getAnimation = (props) => {
 const getKeyframe = animationValues => animationValues
     .find(value => !durationRegExp.test(value) && !easingRegExp.test(value));
 
+const noAnimations = { duration: null, easing: null, animations: null, animationValues: null };
+
 const getAnimationState = (props) => {
   const currentStyles = mergeStyles(props);
 
   const currentAnimationValues = getAnimation(props) || [];
+  const keyframe = getKeyframe(currentAnimationValues);
+
+  const animationSequence = keyframe ? props.args.keyframes[keyframe] : null;
+
+  if (!animationSequence) return noAnimations;
 
   const durationMatch = currentAnimationValues.find(value => durationRegExp.test(value));
   const duration = durationMatch ? getDurationInMs(durationMatch) : 0;
@@ -31,9 +38,6 @@ const getAnimationState = (props) => {
   const easingMatch = currentAnimationValues.find(value => easingRegExp.test(value));
   const easing = easingMatch ? easingFunctions[easingMatch] : easingFunctions.linear;
 
-  const keyframe = getKeyframe(currentAnimationValues);
-
-  const animationSequence = keyframe ? props.args.keyframes[keyframe] : [];
   const animatedProperties =
     Object.keys(Object.assign({}, ...animationSequence.map(frame => frame.styles)));
 
@@ -86,11 +90,14 @@ module.exports = class AnimationEnhancer extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (this.state.animations !== prevState.animations) this.runAnimation();
+    if (this.state.animationValues !== prevState.animationValues) this.runAnimation();
   }
 
   runAnimation() {
     const { duration, easing, animationValues: animationValuesObject } = this.state;
+
+    if (!animationValuesObject) return;
+
     const animationValues = Object.values(animationValuesObject);
 
     animationValues.forEach(animation => animation.setValue(0));
@@ -98,9 +105,11 @@ module.exports = class AnimationEnhancer extends Component {
     const timings = animationValues
       .map(animation => Animated.timing(animation, { toValue: 1, duration, easing }));
 
-    Animated.parallel(timings).start();
+    Animated.parallel(timings).start(({ finished }) => {
+      // FIXME: This doesn't seem to clear the animation
+      if (finished) this.setState(noAnimations);
+    });
   }
-
   animate() {
     // How do we expose this to the user?
     this.setState(getAnimationState(this.props));
@@ -110,9 +119,15 @@ module.exports = class AnimationEnhancer extends Component {
     const { args, children } = this.props;
     const { animations } = this.state;
 
-    const newRule = { style: animations };
-    const nextArgs = Object.assign({}, args, { rules: args.rules.concat(newRule) });
-    const nextProps = Object.assign({}, this.props, { args: nextArgs });
+    let nextProps;
+    if (animations) {
+      const newRule = { style: animations };
+      const nextArgs = Object.assign({}, args, { rules: args.rules.concat(newRule) });
+      nextProps = Object.assign({}, this.props, { args: nextArgs });
+    } else {
+      nextProps = this.props;
+    }
+
     return children(nextProps);
   }
 };

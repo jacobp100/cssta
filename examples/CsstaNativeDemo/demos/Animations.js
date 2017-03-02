@@ -15,6 +15,7 @@ const Palette = cssta(Animated.View)`
   height: 50px;
   width: 50px;
   margin-bottom: 20px;
+  opacity: 1;
 
   [animation = "fade-in"] {
     animation: 0.5s fade-in;
