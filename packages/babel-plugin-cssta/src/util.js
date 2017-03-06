@@ -21,31 +21,10 @@ const jsonToNode = (object) => {
 };
 module.exports.jsonToNode = jsonToNode;
 
-
-const csstaModules = {
+module.exports.csstaModules = {
   cssta: 'web',
   'cssta/web': 'web',
   'cssta/native': 'native',
-};
-module.exports.csstaModules = csstaModules;
-
-module.exports.getCsstaTypeForCallee = (path, callee) => {
-  if (!t.isIdentifier(callee)) return null;
-
-  const importScopePath = path.findParent(_.has(['scope', 'bindings', callee.name]));
-  if (!importScopePath) return null;
-
-  const importSpecifier = _.get(['scope', 'bindings', callee.name, 'path'], importScopePath);
-  if (!importSpecifier || !t.isImportDefaultSpecifier(importSpecifier)) return null;
-
-  const importDeclaration = importSpecifier.findParent(t.isImportDeclaration);
-  if (!importDeclaration) return null;
-
-  const source = importDeclaration.node.source.value;
-  const csstaType = csstaModules[source];
-  if (!csstaType) return null;
-
-  return { csstaType, importDeclaration };
 };
 
 const getImportReferences = (path, moduleName, importedName) => {

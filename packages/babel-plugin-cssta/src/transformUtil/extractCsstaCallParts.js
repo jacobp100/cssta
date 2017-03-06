@@ -1,6 +1,6 @@
 const t = require('babel-types');
 const _ = require('lodash/fp');
-const { getCsstaTypeForCallee } = require('../util');
+const { csstaModules } = require('../util');
 
 
 const interpolationTypes = {
@@ -15,6 +15,25 @@ const csstaConstructorExpressionTypes = {
     node.object,
     node.computed ? node.property : t.stringLiteral(node.property.name),
   ],
+};
+
+const getCsstaTypeForCallee = (path, callee) => {
+  if (!t.isIdentifier(callee)) return null;
+
+  const importScopePath = path.findParent(_.has(['scope', 'bindings', callee.name]));
+  if (!importScopePath) return null;
+
+  const importSpecifier = _.get(['scope', 'bindings', callee.name, 'path'], importScopePath);
+  if (!importSpecifier || !t.isImportDefaultSpecifier(importSpecifier)) return null;
+
+  const importDeclaration = importSpecifier.findParent(t.isImportDeclaration);
+  if (!importDeclaration) return null;
+
+  const source = importDeclaration.node.source.value;
+  const csstaType = csstaModules[source];
+  if (!csstaType) return null;
+
+  return { csstaType, importDeclaration };
 };
 
 module.exports.getCsstaReferences = (path, node) => {

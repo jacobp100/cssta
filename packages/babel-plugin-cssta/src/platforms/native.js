@@ -377,7 +377,8 @@ module.exports = (path, state, component, cssText, substitutionMap) => {
   const hasKeyframes = !_.isEmpty(managerArgs.keyframesStyleTuples);
   const hasTransitions = !_.isEmpty(managerArgs.transitionedProperties);
 
-  const enhancersRoot = 'cssta/lib/native/dynamicComponentEnhancers';
+  const componentRoot = 'cssta/lib/native';
+  const enhancersRoot = `${componentRoot}/enhancers`;
   const enhancers = [];
   let rulesBody;
 
@@ -399,33 +400,29 @@ module.exports = (path, state, component, cssText, substitutionMap) => {
     enhancers.push(getOrCreateImportReference(path, `${enhancersRoot}/Animation`, 'default'));
   }
 
-  let newElement;
-
-  const componentRoot = 'cssta/lib/native';
-  if (_.isEmpty(enhancers)) {
-    const staticComponent =
-      getOrCreateImportReference(path, `${componentRoot}/staticComponent`, 'default');
-
-    newElement = t.callExpression(staticComponent, [
-      component,
-      jsonToNode(Object.keys(propTypes)),
-      rulesBody,
-    ]);
+  let componentConstructor;
+  if (!_.isEmpty(enhancers)) {
+    const createComponent =
+      getOrCreateImportReference(path, `${componentRoot}/createComponent`, 'default');
+    componentConstructor = createComponent;
   } else {
-    const dynamicComponent =
-      getOrCreateImportReference(path, `${componentRoot}/dynamicComponent`, 'default');
-
-    const managerArgsNode = hasVariables
-      ? createVariablesManagerArgs(path, substitutionMap, rulesBody, managerArgs)
-      : createStaticManagerArgs(path, substitutionMap, rulesBody, managerArgs);
-
-    newElement = t.callExpression(dynamicComponent, [
-      component,
-      jsonToNode(Object.keys(propTypes)),
-      t.arrayExpression(enhancers),
-      managerArgsNode,
-    ]);
+    const withEnhancers =
+      getOrCreateImportReference(path, `${componentRoot}/withEnhancers`, 'default');
+    componentConstructor = t.callExpression(
+      withEnhancers,
+      t.arrayExpression(enhancers)
+    );
   }
+
+  const argsNode = hasVariables
+    ? createVariablesManagerArgs(path, substitutionMap, rulesBody, managerArgs)
+    : createStaticManagerArgs(path, substitutionMap, rulesBody, managerArgs);
+
+  const newElement = t.callExpression(componentConstructor, [
+    component,
+    jsonToNode(Object.keys(propTypes)),
+    argsNode,
+  ]);
 
   path.replaceWith(newElement);
 };
