@@ -122,7 +122,7 @@ module.exports = (inputCss) => {
 
   const importedVariables = getImportedVariables(root);
 
-  const managerArgs = { keyframesStyleTuples, transitionedProperties, importedVariables };
+  const args = { keyframesStyleTuples, transitionedProperties, importedVariables };
 
-  return { rules, propTypes, managerArgs };
+  return { rules, propTypes, args };
 };

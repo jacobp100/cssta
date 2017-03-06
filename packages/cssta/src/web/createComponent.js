@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-const staticComponentFactory = require('../factories/staticComponentFactory');
+const componentFactory = require('../factories/componentFactory');
 
 /*
 rules = {
@@ -9,7 +9,8 @@ rules = {
 };
 */
 
-const factory = staticComponentFactory((ownProps, passedProps, defaultClassName, classNameMap) => {
+const factory = componentFactory((ownProps, passedProps, args) => {
+  const { defaultClassName, classNameMap } = args;
   const classNames = Object.keys(ownProps)
     .map(propName => classNameMap[propName][ownProps[propName]])
     .filter(Boolean); // remove undefined values
@@ -24,5 +25,5 @@ const factory = staticComponentFactory((ownProps, passedProps, defaultClassName,
 });
 
 // Optimisation allows not passing propTypes on prod
-module.exports = (component, propTypes, defaultClassName, classNameMap) =>
-  factory(component, propTypes || Object.keys(classNameMap), defaultClassName, classNameMap);
+module.exports = (component, propTypes, args) =>
+  factory(component, propTypes || Object.keys(args.classNameMap), args);

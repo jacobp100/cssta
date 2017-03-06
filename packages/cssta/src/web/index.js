@@ -1,7 +1,6 @@
 /* global document */
-const postcss = require('../../vendor/postcss');
 const extractRules = require('./extractRules');
-const staticComponent = require('./staticComponent');
+const createComponent = require('./createComponent');
 
 let devId = 0;
 const getDevId = name => () => {
@@ -19,25 +18,17 @@ const assertNoTemplateParams = (cssTextFragments) => {
 };
 
 let styleElement = null;
-let stylePipeline = [];
-let stylePromise = Promise.resolve();
-const updateCss = (inputCss) => {
-  stylePromise = stylePromise.then(() => (
-    postcss(stylePipeline).process(inputCss)
-  )).then((result) => {
-    const cssText = result.css;
-
-    if (!styleElement) {
-      styleElement = document.createElement('style');
-      const styleBody = document.createTextNode(cssText);
-      styleElement.appendChild(styleBody);
-      document.getElementsByTagName('head')[0].appendChild(styleElement);
-    } else {
-      const existingStyleBody = styleElement.firstChild;
-      const newStyleBody = document.createTextNode(cssText);
-      styleElement.replaceChild(newStyleBody, existingStyleBody);
-    }
-  });
+const updateCss = (cssText) => {
+  if (!styleElement) {
+    styleElement = document.createElement('style');
+    const styleBody = document.createTextNode(cssText);
+    styleElement.appendChild(styleBody);
+    document.getElementsByTagName('head')[0].appendChild(styleElement);
+  } else {
+    const existingStyleBody = styleElement.firstChild;
+    const newStyleBody = document.createTextNode(cssText);
+    styleElement.replaceChild(newStyleBody, existingStyleBody);
+  }
 };
 
 const opts = {
@@ -46,15 +37,15 @@ const opts = {
 };
 
 let styleContents = '';
-const style = tagName => (cssTextFragments) => {
+const style = element => (cssTextFragments) => {
   const cssText = assertNoTemplateParams(cssTextFragments);
 
-  const { css, propTypes, baseClassName, classNameMap } = extractRules(cssText, opts);
+  const { css, propTypes, args } = extractRules(cssText, opts);
 
   styleContents += css;
   updateCss(styleContents);
 
-  return staticComponent(tagName, propTypes, baseClassName, classNameMap);
+  return createComponent(element, propTypes, args);
 };
 
 let didInjectGlobal = false;
@@ -67,11 +58,6 @@ style.injectGlobal = (cssTextFragments) => {
 
   didInjectGlobal = true;
   styleContents = cssText + styleContents;
-  updateCss(styleContents);
-};
-
-style.setPostCssPipeline = (pipeline) => {
-  stylePipeline = pipeline;
   updateCss(styleContents);
 };
 
