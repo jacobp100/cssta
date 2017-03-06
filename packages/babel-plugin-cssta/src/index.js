@@ -5,7 +5,6 @@ const _ = require('lodash/fp');
 const { varRegExp } = require('cssta/lib/util');
 const transformWebCssta = require('./converters/web');
 const transformNativeCssta = require('./converters/native');
-const removeSetPostCssPipeline = require('./optimizations/removeSetPostCssPipeline');
 const singleSourceOfVariables = require('./optimizations/singleSourceOfVariables');
 const {
   getCsstaReferences, interpolationTypes, extractCsstaCallParts,
@@ -121,15 +120,7 @@ module.exports = () => ({
       const { node } = path;
       const { callee } = node;
       const [arg] = node.arguments;
-      if (
-        t.isMemberExpression(callee) &&
-        _.get('property.name', callee) === 'setPostCssPipeline' &&
-        getCsstaTypeForCallee(path, callee.object)
-      ) {
-        removeSetPostCssPipeline(path);
-      } else {
-        transformCsstaCall(path, state, callee, arg);
-      }
+      transformCsstaCall(path, state, callee, arg);
     },
     TaggedTemplateExpression(path, state) {
       const { quasi, tag } = path.node;

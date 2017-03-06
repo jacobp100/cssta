@@ -250,15 +250,20 @@ const createStaticStylesheet = (path, substitutionMap, rules) => {
   const createStyleBodyForRule = createStyleBody(statementPath, substitutionMap);
   const ruleBases = _.flow(
     _.map(rule => _.set('styleBody', createStyleBodyForRule(rule.styleTuples), rule)),
-    _.filter(rule => rule.styleBody),
-    _.map(_.update('styleSheetReference', getStyleSheetReference))
+    _.map(rule => _.set(
+      'styleSheetReference',
+      rule.styleBody ? getStyleSheetReference() : null,
+      rule
+    ))
   )(rules);
 
   const rulesBody = t.arrayExpression(_.map(rule => t.objectExpression([
     ...baseRuleElements(rule),
     t.objectProperty(
       t.stringLiteral('style'),
-      t.memberExpression(styleSheetReference, rule.styleSheetReference, true)
+      rule.styleSheetReference
+        ? t.memberExpression(styleSheetReference, rule.styleSheetReference, true)
+        : t.nullLiteral()
     ),
   ]), ruleBases));
 
@@ -266,10 +271,10 @@ const createStaticStylesheet = (path, substitutionMap, rules) => {
     const reactNativeStyleSheetRef =
       getOrCreateImportReference(path, 'react-native', 'StyleSheet');
 
-    const styleSheetBody = t.objectExpression(_.map(rule => t.objectProperty(
-      rule.styleSheetReference,
-      rule.styleBody
-    ), ruleBases));
+    const styleSheetBody = t.objectExpression(_.flow(
+      _.filter(_.get('styleSheetReference')),
+      _.map(rule => t.objectProperty(rule.styleSheetReference, rule.styleBody))
+    )(ruleBases));
 
     const styleSheetElement = t.variableDeclaration('var', [
       t.variableDeclarator(styleSheetReference, t.callExpression(

@@ -28,17 +28,6 @@ const getExportedVariables = nodes => nodes
     return accum;
   }, {});
 
-const getImportedVariables = nodes => getStyleDeclarations(nodes)
-  .reduce((accum, decl) => {
-    const referencedVariableMatches = decl.value.match(varRegExp);
-    if (!referencedVariableMatches) return accum;
-
-    const referencedVariables = referencedVariableMatches
-      .map(match => match.match(varRegExpNonGlobal)[1]);
-
-    return accum.concat(referencedVariables);
-  }, []);
-
 const getTransitions = declValue => declValue
   .split(',')
   .reduce((transitions, value) => {
@@ -98,6 +87,22 @@ const getKeyframes = atRule => walkToArray(cb => atRule.walkRules(cb))
   }, [])
   .sort((a, b) => a.time - b.time);
 
+const getImportedVariables = (root) => {
+  const keyMirror = walkToArray(cb => root.walkDecls(cb)).reduce((accum, decl) => {
+    const referencedVariableMatches = decl.value.match(varRegExp);
+    if (!referencedVariableMatches) return accum;
+
+    const referencedVariables = referencedVariableMatches
+      .map(match => match.match(varRegExpNonGlobal)[1]);
+
+    return referencedVariables.reduce((innerAccum, variable) => {
+      innerAccum[variable] = true;
+      return innerAccum;
+    }, accum);
+  }, {});
+  return Object.keys(keyMirror);
+};
+
 module.exports = (inputCss) => {
   const { root, propTypes } = getRoot(inputCss);
 
@@ -115,19 +120,7 @@ module.exports = (inputCss) => {
   const transitionedProperties =
     Object.keys(Object.assign({}, ...rules.map(rule => rule.transitions)));
 
-  let importedVariables = walkToArray(cb => root.walkDecls(cb)).reduce((accum, decl) => {
-    const referencedVariableMatches = decl.value.match(varRegExp);
-    if (!referencedVariableMatches) return accum;
-
-    const referencedVariables = referencedVariableMatches
-      .map(match => match.match(varRegExpNonGlobal)[1]);
-
-    return referencedVariables.reduce((innerAccum, variable) => {
-      innerAccum[variable] = true;
-      return innerAccum;
-    }, accum);
-  }, {});
-  importedVariables = Object.keys(importedVariables);
+  const importedVariables = getImportedVariables(root);
 
   const managerArgs = { keyframesStyleTuples, transitionedProperties, importedVariables };
 

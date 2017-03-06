@@ -50,19 +50,6 @@ var getExportedVariables = function getExportedVariables(nodes) {
   }, {});
 };
 
-var getImportedVariables = function getImportedVariables(nodes) {
-  return getStyleDeclarations(nodes).reduce(function (accum, decl) {
-    var referencedVariableMatches = decl.value.match(varRegExp);
-    if (!referencedVariableMatches) return accum;
-
-    var referencedVariables = referencedVariableMatches.map(function (match) {
-      return match.match(varRegExpNonGlobal)[1];
-    });
-
-    return accum.concat(referencedVariables);
-  }, []);
-};
-
 var getTransitions = function getTransitions(declValue) {
   return declValue.split(',').reduce(function (transitions, value) {
     var parts = value.match(transitionPartRegExp);
@@ -139,6 +126,25 @@ var getKeyframes = function getKeyframes(atRule) {
   });
 };
 
+var getImportedVariables = function getImportedVariables(root) {
+  var keyMirror = walkToArray(function (cb) {
+    return root.walkDecls(cb);
+  }).reduce(function (accum, decl) {
+    var referencedVariableMatches = decl.value.match(varRegExp);
+    if (!referencedVariableMatches) return accum;
+
+    var referencedVariables = referencedVariableMatches.map(function (match) {
+      return match.match(varRegExpNonGlobal)[1];
+    });
+
+    return referencedVariables.reduce(function (innerAccum, variable) {
+      innerAccum[variable] = true;
+      return innerAccum;
+    }, accum);
+  }, {});
+  return Object.keys(keyMirror);
+};
+
 module.exports = function (inputCss) {
   var _getRoot = getRoot(inputCss),
       root = _getRoot.root,
@@ -163,22 +169,7 @@ module.exports = function (inputCss) {
     return rule.transitions;
   })))));
 
-  var importedVariables = walkToArray(function (cb) {
-    return root.walkDecls(cb);
-  }).reduce(function (accum, decl) {
-    var referencedVariableMatches = decl.value.match(varRegExp);
-    if (!referencedVariableMatches) return accum;
-
-    var referencedVariables = referencedVariableMatches.map(function (match) {
-      return match.match(varRegExpNonGlobal)[1];
-    });
-
-    return referencedVariables.reduce(function (innerAccum, variable) {
-      innerAccum[variable] = true;
-      return innerAccum;
-    }, accum);
-  }, {});
-  importedVariables = Object.keys(importedVariables);
+  var importedVariables = getImportedVariables(root);
 
   var managerArgs = { keyframesStyleTuples: keyframesStyleTuples, transitionedProperties: transitionedProperties, importedVariables: importedVariables };
 
