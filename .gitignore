@@ -67,7 +67,7 @@ android/app/libs
 # CUSTOM #
 ##########
 
-packages/cssta/dist
+packages/cssta/lib
 packages/cssta/vendor
 packages/cssta-demo/dist
 packages/cssta/README.md
