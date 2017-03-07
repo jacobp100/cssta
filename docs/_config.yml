@@ -27,16 +27,7 @@ github_username:  jekyll
 # Build settings
 markdown: kramdown
 theme: minima
-gems:
-  - jekyll-assets
 exclude:
   - Gemfile
   - Gemfile.lock
 highlighter: rouge
-
-assets:
-  prefix: "/assets"
-  assets:
-  - "style.css"
-  sources:
-    - _assets/css
