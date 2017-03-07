@@ -355,6 +355,9 @@ const createVariablesArgs = (path, substitutionMap, rulesBody, args) =>
     ),
   ]);
 
+const everyIsEmpty = _.every(_.isEmpty);
+const ruleIsEmpty = _.flow(_.omit(['selector']), everyIsEmpty);
+
 module.exports = (path, state, component, cssText, substitutionMap) => {
   // eslint-disable-next-line
   let { rules, propTypes, args } = extractRules(cssText);
@@ -380,12 +383,10 @@ module.exports = (path, state, component, cssText, substitutionMap) => {
     rulesOmissions.push('exportedVariables');
   }
 
-  const everyIsEmpty = _.every(_.isEmpty);
-
   args = _.omit(argsOmissions, args);
   rules = _.flow(
     _.map(_.omit(rulesOmissions)),
-    _.reject(_.flow(_.omit(['validate']), everyIsEmpty))
+    _.reject(ruleIsEmpty)
   )(rules);
 
   // If we end up with nothing after removing configs, we can just return the component

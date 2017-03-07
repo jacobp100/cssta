@@ -1,24 +1,13 @@
-import { StyleSheet as _StyleSheet } from 'react-native';
 import _createComponent from 'cssta/lib/native/createComponent';
+import { StyleSheet as _StyleSheet } from 'react-native';
 
 import { View } from 'react-native';
 
 const color = 'blue';
 
-_createComponent(View, [], {
-  'transitionedProperties': [],
-  'rules': [{
-    'validate': function (p) {
-      return true;
-    },
-    'transitions': {},
-    'animation': null,
-    'style': null
-  }],
-  'keyframes': {}
-});
+View;
 
-var _csstaStyle2 = _StyleSheet.create({
+var _csstaStyle = _StyleSheet.create({
   0: {
     'color': 'red'
   }
@@ -32,7 +21,7 @@ _createComponent(View, [], {
     },
     'transitions': {},
     'animation': null,
-    'style': _csstaStyle2[0]
+    'style': _csstaStyle[0]
   }],
   'keyframes': {}
 });
