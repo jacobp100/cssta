@@ -1,14 +1,16 @@
 # 🌞 CSSTA
 
-# [Docs](https://jacobp100.gitbooks.io/cssta/content/)
+# [View Docs](https://jacobp100.gitbooks.io/cssta/content/)
 
 CSSTA is a way to co-locate your CSS with your React components, and lets you define components using isolated units of style.
 
 It is available both for [React for web 🌍](https://jacobp100.gitbooks.io/cssta/content/web.html) and [React Native 📱](https://jacobp100.gitbooks.io/cssta/content/native.html). For web, it generates **real CSS files** with **<1kb JS overhead**.
 
+There’s also a tonne of stuff for React Native, including CSS transitions and CSS custom properties.
+
 It is almost identical in concept to [styled-components](https://github.com/styled-components/styled-components), but makes different trade-offs.
 
-```js
+```jsx
 import cssta from 'cssta';
 
 const Button = cssta.button`
@@ -38,7 +40,7 @@ However, selectors are changed on all platforms: only the following selector par
 
 * `&` to refer to the current component
 * `:hover`, `::before`, `:not(...)`, `:nth-child(...)` etc. pseudo selectors (platform dependent)
-* `[attribute]` and `[attribute="value']` (these refer to React Props—see below)
+* `[attribute]` and `[attribute="value"]` (these refer to React Props—see below)
 
 Combinators (`a b`, `a > b` etc.) are not permitted.
 
@@ -46,7 +48,7 @@ Combinators (`a b`, `a > b` etc.) are not permitted.
 
 Attribute selectors have their meaning redefined to refer to React props. Defined as `[stringAttribute="stringValue"]` for string props, and `[booleanAttribute]` for boolean props, these apply conditional styling.
 
-```js
+```jsx
 const Button = cssta.button`
   padding: 0.5em 1em;
 
@@ -66,10 +68,10 @@ const Button = cssta.button`
   }
 `;
 
-<Button large>Large Button with an Outline</Button>,
-<Button noOutline>Button with no Outline</Button>,
-<Button priority="critical">Red Button with an Outline</Button>,
-<Button priority="important">Orange Button with an Outline</Button>,
+<Button large>Large Button with an Outline</Button>
+<Button noOutline>Button with no Outline</Button>
+<Button priority="critical">Red Button with an Outline</Button>
+<Button priority="important">Orange Button with an Outline</Button>
 
 <Button large noOutline priority="critical">
   Large, Red Button with no Outline
@@ -80,14 +82,14 @@ Note that only the attribute formats shown are valid: `[value~="invalid" i]` is 
 
 The properties you defined in the CSS determine the style applied, and are not passed down to the base component. All other props get passed down.
 
-```js
+```jsx
 const button = `
   [large] { font-size: 12pt; }
 `;
 
 <Button large onClick={() => alert('clicked')}>
   onClick Prop Passed Down
-</Button>;
+</Button>
 ```
 
 The properties defined in your CSS are type checked with `propTypes` to check for typos.
@@ -127,9 +129,9 @@ const BlueButton = cssta(OutlineButton)`
 
 ## 🏳️‍🌈 Theming
 
-The best way to do theming in Cssta is by using [CSS custom properties](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_variables). **We provide polyfills for React Native**, so these will just work. On the web, you can either rely on native browser support, or [a postCSS plugin](https://github.com/MadLittleMods/postcss-css-variables#differences-from-postcss-custom-properties).
+The best way to do theming in Cssta is by using [CSS custom properties](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_variables). **We provide polyfills for React Native**, so these will just work. On the web, you can either rely on native browser support, or [a postCSS plugin](https://github.com/MadLittleMods/postcss-css-variables).
 
-```js
+```jsx
 const LightBox = cssta.div`
   background-color: black;
   --primary: white;
@@ -148,15 +150,15 @@ const Example = (
 );
 ```
 
-There's a few extra examples in [theming](https://jacobp100.gitbooks.io/cssta/content/theming.md).
+There's a few extra examples in [theming](https://jacobp100.gitbooks.io/cssta/content/theming.html).
 
 ## 🖌 Overriding Styles
 
 The properties `className` on web, and `style` on React Native have special behavior. They append styles to those already defined by the component.
 
-```js
+```jsx
 // Web only
-;<Button className="margin-right-1">
+<Button className="margin-right-1">
   Composing Classes
 </Button>
 
@@ -174,7 +176,7 @@ For class names, it is your responsibility to resolve the specificity. I recomme
 
 You can define `component` property on any Cssta elements to override the base component.
 
-```js
+```jsx
 const Div = cssta.div`
   background: red;
 `;
@@ -182,4 +184,4 @@ const Div = cssta.div`
 <Div component="span">I am a span now</Div>
 ```
 
-# [Docs](https://jacobp100.gitbooks.io/cssta/content/)
+# [View Docs](https://jacobp100.gitbooks.io/cssta/content/)
