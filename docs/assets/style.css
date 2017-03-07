@@ -85,7 +85,7 @@ pre code {
 .menu__hide,
 .menu__show {
   display: block;
-  padding: 2pt 12pt;
+  padding: 6pt 12pt;
   text-decoration: none;
   color: black;
 }
