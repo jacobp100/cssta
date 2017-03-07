@@ -356,7 +356,10 @@ const createVariablesArgs = (path, substitutionMap, rulesBody, args) =>
   ]);
 
 const everyIsEmpty = _.every(_.isEmpty);
-const ruleIsEmpty = _.flow(_.omit(['selector']), everyIsEmpty);
+const ruleIsEmpty = _.flow(
+  _.omit(['selector']),
+  everyIsEmpty
+);
 
 module.exports = (path, state, component, cssText, substitutionMap) => {
   // eslint-disable-next-line
