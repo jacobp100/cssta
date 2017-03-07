@@ -7,15 +7,11 @@ const color = 'blue';
 
 _createComponent(View, [], {
   'transitionedProperties': [],
-  'importedVariables': [],
   'rules': [{
     'validate': function (p) {
       return true;
     },
     'transitions': {},
-    'exportedVariables': {
-      'color': 'red'
-    },
     'animation': null,
     'style': null
   }],
@@ -30,13 +26,11 @@ var _csstaStyle2 = _StyleSheet.create({
 
 _createComponent(View, [], {
   'transitionedProperties': [],
-  'importedVariables': [],
   'rules': [{
     'validate': function (p) {
       return true;
     },
     'transitions': {},
-    'exportedVariables': {},
     'animation': null,
     'style': _csstaStyle2[0]
   }],

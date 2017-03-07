@@ -11,17 +11,11 @@ var _csstaStyle = _StyleSheet.create({
 
 _createComponent(View, [], {
   'transitionedProperties': [],
-  'importedVariables': [],
   'rules': [{
     'validate': function (p) {
       return true;
     },
     'transitions': {},
-    'exportedVariables': {
-      'large': '100',
-      'small': '50',
-      'margin': '100 50'
-    },
     'animation': null,
     'style': _csstaStyle[0]
   }],
@@ -36,13 +30,11 @@ var _csstaStyle2 = _StyleSheet.create({
 
 _createComponent(View, [], {
   'transitionedProperties': [],
-  'importedVariables': [],
   'rules': [{
     'validate': function (p) {
       return true;
     },
     'transitions': {},
-    'exportedVariables': {},
     'animation': null,
     'style': _csstaStyle2[0]
   }],

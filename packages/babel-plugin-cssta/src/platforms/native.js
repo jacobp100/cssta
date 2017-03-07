@@ -217,23 +217,20 @@ const createStyleBody = _.curry((path, substitutionMap, styleTuples) => {
   );
 });
 
+const jsonObjectProperties = _.flow(
+  _.toPairs,
+  _.map(([key, value]) => t.objectProperty(t.stringLiteral(key), jsonToNode(value)))
+);
+
 const baseRuleElements = rule => [
   t.objectProperty(
     t.stringLiteral('validate'),
     createValidatorNodeForSelector(rule.selector)
   ),
-  t.objectProperty(
-    t.stringLiteral('transitions'),
-    jsonToNode(rule.transitions)
-  ),
-  t.objectProperty(
-    t.stringLiteral('exportedVariables'),
-    jsonToNode(rule.exportedVariables)
-  ),
-  t.objectProperty(
-    t.stringLiteral('animation'),
-    jsonToNode(rule.animation)
-  ),
+  ..._.flow(
+    _.pick(['transitions', 'exportedVariables', 'animation']),
+    jsonObjectProperties
+  )(rule),
 ];
 
 const createStaticStylesheet = (path, substitutionMap, rules) => {
@@ -311,8 +308,7 @@ const createVariablesStyleSheet = (path, substitutionMap, rules) => {
 
 const commonArgsProperties = _.flow(
   _.pick(['transitionedProperties', 'importedVariables']),
-  _.toPairs,
-  _.map(([key, value]) => t.objectProperty(t.stringLiteral(key), jsonToNode(value)))
+  jsonObjectProperties
 );
 
 const commonProperties = (rulesBody, args) => [
@@ -360,7 +356,8 @@ const createVariablesArgs = (path, substitutionMap, rulesBody, args) =>
   ]);
 
 module.exports = (path, state, component, cssText, substitutionMap) => {
-  const { rules, propTypes, args } = extractRules(cssText);
+  // eslint-disable-next-line
+  let { rules, propTypes, args } = extractRules(cssText);
   const exportedVariables = _.reduce(_.assign, {}, _.map('exportedVariables', rules));
   const exportsVariables = !_.isEmpty(exportedVariables);
 
@@ -368,8 +365,33 @@ module.exports = (path, state, component, cssText, substitutionMap) => {
   const resolvedVariables = (singleSourceOfVariables && exportsVariables)
     ? resolveVariableDependencies(exportedVariables, {})
     : null;
+
   if (resolvedVariables && !_.isEqual(resolvedVariables, singleSourceOfVariables)) {
     throw new Error('When using singleSourceOfVariables, only one component can define variables');
+  }
+
+  // If we can globally remove configs from args/rules, do so here
+  // Only do this for global configs so `args` has the same hidden class for each component
+  const argsOmissions = [];
+  const rulesOmissions = [];
+
+  if (singleSourceOfVariables) {
+    argsOmissions.push('importedVariables');
+    rulesOmissions.push('exportedVariables');
+  }
+
+  const everyIsEmpty = _.every(_.isEmpty);
+
+  args = _.omit(argsOmissions, args);
+  rules = _.flow(
+    _.map(_.omit(rulesOmissions)),
+    _.reject(_.flow(_.omit(['validate']), everyIsEmpty))
+  )(rules);
+
+  // If we end up with nothing after removing configs, we can just return the component
+  if (everyIsEmpty(args) && _.isEmpty(rules)) {
+    path.replaceWith(component);
+    return;
   }
 
   const hasVariables =
