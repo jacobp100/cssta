@@ -1,0 +1,19 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>{{ page.title }}</title>
+<link href="https://fonts.googleapis.com/css?family=Source+Code+Pro|Source+Sans+Pro:200,300,400,400i,700" rel="stylesheet">
+<link href="/assets/style.css" rel="stylesheet">
+<div id="menu">
+  <a class="menu__show" href="#menu">Show Navigation</a>
+  <a class="menu__hide" href="#">Hide Navigation</a>
+  <ul class="menu__list">
+    {% include sidebar-link.html url="/" title="Introduction" %}
+    {% include sidebar-link.html url="/web" title="Web" %}
+    {% include sidebar-link.html url="/native" title="Native" %}
+    {% include sidebar-link.html url="/theming" title="Theming" %}
+    {% include sidebar-link.html url="/production-builds" title="Production Builds" %}
+    {% include sidebar-link.html url="/publishing-and-using-modules" title="Publishing and Using Modules" %}
+    {% include sidebar-link.html url="/editor-integration" title="Editor Integration" %}
+  </ul>
+</div>
+{{ content }}

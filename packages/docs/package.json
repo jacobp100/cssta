@@ -5,7 +5,8 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "build": "gitbook install; gitbook build . ../../docs"
+    "build": "gitbook install; gitbook build . ../../docs",
+    "prepublish": "npm run build"
   },
   "keywords": [],
   "author": "",

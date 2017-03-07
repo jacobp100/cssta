@@ -1,8 +1,14 @@
+---
+layout: page
+title: Native
+permalink: /native
+---
+
 # 📱 Native
 
 For React Native, you need to import `cssta/native`, and unlike the web version, there's no `cssta.View` syntax. Other than that, it works as normal.
 
-```js
+```jsx
 import { cssta } from 'cssta/native';
 import { Text } from 'react-native';
 
@@ -60,7 +66,7 @@ The only selectors supported on React Native are,
 
 And these selectors work as normal.
 
-```js
+```jsx
 cssta(Text)`
   [color="red"] { ... }
 
@@ -76,10 +82,10 @@ Cssta for React Native does not use specificity: rules get applied in the order 
 
 Cssta has a lightweight wrapper for CSS transitions. You’ll need to use a `Animated` component (usually `Animated.View`) for this, and then define transitions as you would in CSS.
 
-```js
+```jsx
 const AnimatedButton = cssta(Animated.View)`
   background-color: blue;
-  
+
   transition: background-color 0.5s ease-in;
 
   [disabled] {
@@ -102,7 +108,7 @@ You can animate multiple transitions, but the nodes of the transition must not c
 
 To get React Native animations working, you’ll want to define all your non-changing styles in the usual way, and then pass your `Animated.Value`s in as style props.
 
-```js
+```jsx
 const BaseStyles = cssta(View)`
   height: 100px;
   width: 100px;
@@ -117,14 +123,14 @@ class AnimateOpacity extends Component {
       opacity: new Animated.Value(0)
     };
   }
-  
+
   componentWillMount() {
     Animated.timing(this.state.opacity, {
       toValue: 1,
       duration: 1000,
     }).start();
   }
-  
+
   render() {
     const { opacity } = this.state;
     // Pass in your animated values here!

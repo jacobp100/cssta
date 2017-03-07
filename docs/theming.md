@@ -1,10 +1,16 @@
+---
+layout: page
+title: Theming
+permalink: /theming
+---
+
 # 🏳️‍🌈 Theming
 
 As said in the introduction, theming sholud be done by CSS custom properties. Cssta for React Native has custom property polyfills built in. On the web, you can either rely on native browser support or [a postCSS plugin](https://github.com/MadLittleMods/postcss-css-variables#differences-from-postcss-custom-properties).
 
 To define global variables, you can do the following on the web.
 
-```js
+```jsx
 // Web
 cssta.injectGlobal`
   :root {
@@ -15,7 +21,7 @@ cssta.injectGlobal`
 
 But in React Native, you'll have to create a wrapper View.
 
-```js
+```jsx
 // Native
 const Root = cssta(View)`
   --primary: red;
@@ -24,7 +30,7 @@ const Root = cssta(View)`
 
 You can then use the variables as normal.
 
-```js
+```jsx
 const Button = cssta.button`
   color: var(--primary);
   border: 1px solid var(--primary);
@@ -53,7 +59,7 @@ And to make dynamic styling even more dynamic.
 const LightBox = cssta.div`
   background-color: black;
   --primary: white;
-  
+
   [inverted] {
     background-color: white;
     --primary: black;

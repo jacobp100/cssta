@@ -1,3 +1,9 @@
+---
+layout: page
+title: Production Builds
+permalink: /production-builds
+---
+
 # ⛵️ Production Builds
 
 A Babel plugin exists for both web and React Native. For web, it will generate a real CSS file. For React Native, it will perform a lot of pre-parsing and reduce the amount of dependencies. Both platforms are handled by the same plugin:
@@ -8,7 +14,7 @@ npm install --save-dev babel-plugin-cssta
 
 And in your `.babelrc`.
 
-```json
+```jsxon
 {
   "plugins" ["babel-plugin-cssta"]
 }
@@ -18,7 +24,7 @@ And in your `.babelrc`.
 
 If you are building for the web, you need to specify a CSS file to write out to with the `output` option. This is relative to your current working directory.
 
-```json
+```jsxon
 {
   "plugins" [
     ["babel-plugin-cssta", {
@@ -34,7 +40,7 @@ You can transform multiple JS files, and the CSS will be concatenated to. Howeve
 
 You can enable certain build optimizations in the `optimizations` parameter in the options.
 
-```json
+```jsxon
 {
   "plugins" [
     ["babel-plugin-cssta", {
@@ -60,7 +66,7 @@ You cannot interpolate property names or entire declarations.
 
 ###### Examples
 
-```js
+```jsx
 // ✅
 const color = 'red';
 const small = 5;
@@ -74,7 +80,7 @@ const RedView = cssta(View)`
 ```
 
 
-```js
+```jsx
 // ❌ Not interpolating a value
 const prop = 'font';
 
@@ -83,7 +89,7 @@ const invalid = cssta(Text)`
 `;
 ```
 
-```js
+```jsx
 // ❌ Not interpolating a value
 const mixin = `
   color: blue;
@@ -104,7 +110,7 @@ This is for you define all CSS custom properties in a single component, and do n
 
 ###### Examples
 
-```js
+```jsx
 // ✅
 const Component = cssta(View)`
   --primary: red;
@@ -115,7 +121,7 @@ const OtherComponent = cssta(View)`
 `;
 ```
 
-```js
+```jsx
 // ✅ You can still reference your own variables
 const Component = cssta(View)`
   --red: red;
@@ -123,7 +129,7 @@ const Component = cssta(View)`
 `;
 ```
 
-```js
+```jsx
 // ❌ Interpolating values
 const red = 'red';
 
@@ -132,7 +138,7 @@ const Component = cssta(View)`
 `;
 ```
 
-```js
+```jsx
 // ❌ Two components define properties
 const Component1 = cssta(View)`
   --primary: red;
