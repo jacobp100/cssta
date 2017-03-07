@@ -1,10 +1,10 @@
-import _dynamicComponent from 'cssta/lib/native/dynamicComponent';
-import _Transition from 'cssta/lib/native/dynamicComponentEnhancers/Transition';
-import _VariablesStyleSheetManager from 'cssta/lib/native/dynamicComponentEnhancers/VariablesStyleSheetManager';
+import _withEnhancers from 'cssta/lib/native/withEnhancers';
+import _Transition from 'cssta/lib/native/enhancers/Transition';
+import _VariablesStyleSheetManager from 'cssta/lib/native/enhancers/VariablesStyleSheetManager';
 
 import { Animated } from 'react-native';
 
-_dynamicComponent(Animated.View, ['boolAttr'], [_VariablesStyleSheetManager, _Transition], {
+_withEnhancers([_VariablesStyleSheetManager, _Transition])(Animated.View, ['boolAttr'], {
   'transitionedProperties': ['color'],
   'importedVariables': ['primary', 'secondary'],
   'rules': [{

@@ -69,6 +69,6 @@ android/app/libs
 
 packages/cssta/lib
 packages/cssta/vendor
-packages/cssta-demo/dist
 packages/cssta/README.md
 packages/babel-plugin-cssta/README.md
+examples/cssta-demo/dist

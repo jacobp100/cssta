@@ -1,4 +1,10 @@
-import _staticComponent from 'cssta/lib/web/staticComponent';
+import _createComponent from 'cssta/lib/web/createComponent';
+import cssta from 'cssta';
+import simpleExtend from 'postcss-simple-extend';
 
+cssta.setPostCssPipeline([simpleExtend()]);
 
-_staticComponent('button', null, 'A', {});
+_createComponent('button', null, {
+  'defaultClassName': 'A',
+  'classNameMap': {}
+});

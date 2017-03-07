@@ -1,5 +1,8 @@
-import _staticComponent from 'cssta/lib/web/staticComponent';
+import _createComponent from 'cssta/lib/web/createComponent';
 
 import Link from 'react-router';
 
-_staticComponent(Link, null, 'A', {});
+_createComponent(Link, null, {
+  'defaultClassName': 'A',
+  'classNameMap': {}
+});

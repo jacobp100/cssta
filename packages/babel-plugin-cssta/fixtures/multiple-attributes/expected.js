@@ -1,12 +1,15 @@
-import _staticComponent from 'cssta/lib/web/staticComponent';
+import _createComponent from 'cssta/lib/web/createComponent';
 
 
-_staticComponent('button', null, 'A', {
-  'booleanAttribute': {
-    'true': 'B'
-  },
-  'stringAttribute': {
-    '1': 'C',
-    '2': 'D'
+_createComponent('button', null, {
+  'defaultClassName': 'A',
+  'classNameMap': {
+    'booleanAttribute': {
+      'true': 'B'
+    },
+    'stringAttribute': {
+      '1': 'C',
+      '2': 'D'
+    }
   }
 });

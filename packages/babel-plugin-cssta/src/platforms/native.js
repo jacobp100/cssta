@@ -217,23 +217,20 @@ const createStyleBody = _.curry((path, substitutionMap, styleTuples) => {
   );
 });
 
+const jsonObjectProperties = _.flow(
+  _.toPairs,
+  _.map(([key, value]) => t.objectProperty(t.stringLiteral(key), jsonToNode(value)))
+);
+
 const baseRuleElements = rule => [
   t.objectProperty(
     t.stringLiteral('validate'),
     createValidatorNodeForSelector(rule.selector)
   ),
-  t.objectProperty(
-    t.stringLiteral('transitions'),
-    jsonToNode(rule.transitions)
-  ),
-  t.objectProperty(
-    t.stringLiteral('exportedVariables'),
-    jsonToNode(rule.exportedVariables)
-  ),
-  t.objectProperty(
-    t.stringLiteral('animation'),
-    jsonToNode(rule.animation)
-  ),
+  ..._.flow(
+    _.pick(['transitions', 'exportedVariables', 'animation']),
+    jsonObjectProperties
+  )(rule),
 ];
 
 const createStaticStylesheet = (path, substitutionMap, rules) => {
@@ -267,14 +264,15 @@ const createStaticStylesheet = (path, substitutionMap, rules) => {
     ),
   ]), ruleBases));
 
-  if (!_.isEmpty(ruleBases)) {
+  const ruleBasesWithStyles = _.filter(_.get('styleSheetReference'), ruleBases);
+
+  if (!_.isEmpty(ruleBasesWithStyles)) {
     const reactNativeStyleSheetRef =
       getOrCreateImportReference(path, 'react-native', 'StyleSheet');
 
-    const styleSheetBody = t.objectExpression(_.flow(
-      _.filter(_.get('styleSheetReference')),
-      _.map(rule => t.objectProperty(rule.styleSheetReference, rule.styleBody))
-    )(ruleBases));
+    const styleSheetBody = t.objectExpression(_.map(rule => (
+      t.objectProperty(rule.styleSheetReference, rule.styleBody)
+    ), ruleBasesWithStyles));
 
     const styleSheetElement = t.variableDeclaration('var', [
       t.variableDeclarator(styleSheetReference, t.callExpression(
@@ -308,14 +306,13 @@ const createVariablesStyleSheet = (path, substitutionMap, rules) => {
   return rulesBody;
 };
 
-const commonManagerArgsProperties = _.flow(
+const commonArgsProperties = _.flow(
   _.pick(['transitionedProperties', 'importedVariables']),
-  _.toPairs,
-  _.map(([key, value]) => t.objectProperty(t.stringLiteral(key), jsonToNode(value)))
+  jsonObjectProperties
 );
 
-const commonProperties = (rulesBody, managerArgs) => [
-  ...commonManagerArgsProperties(managerArgs),
+const commonProperties = (rulesBody, args) => [
+  ...commonArgsProperties(args),
   t.objectProperty(t.stringLiteral('rules'), rulesBody),
 ];
 
@@ -332,7 +329,7 @@ const getStaticKeyframe = _.curry((path, substitutionMap, keyframe) => (
   ])
 ));
 
-const getSatticKeyframes = (path, substitutionMap, keyframesStyleTuples) =>
+const getSaticKeyframes = (path, substitutionMap, keyframesStyleTuples) =>
   t.objectExpression(
     _.map(([keyframeName, styleTuples]) => t.objectProperty(
       t.stringLiteral(keyframeName),
@@ -340,26 +337,30 @@ const getSatticKeyframes = (path, substitutionMap, keyframesStyleTuples) =>
     ), _.toPairs(keyframesStyleTuples))
   );
 
-const createStaticManagerArgs = (path, substitutionMap, rulesBody, managerArgs) =>
+const createStaticArgs = (path, substitutionMap, rulesBody, args) =>
   t.objectExpression([
-    ...commonProperties(rulesBody, managerArgs),
+    ...commonProperties(rulesBody, args),
     t.objectProperty(
       t.stringLiteral('keyframes'),
-      getSatticKeyframes(path, substitutionMap, managerArgs.keyframesStyleTuples)
+      getSaticKeyframes(path, substitutionMap, args.keyframesStyleTuples)
     ),
   ]);
 
-const createVariablesManagerArgs = (path, substitutionMap, rulesBody, managerArgs) =>
+const createVariablesArgs = (path, substitutionMap, rulesBody, args) =>
   t.objectExpression([
-    ...commonProperties(rulesBody, managerArgs),
+    ...commonProperties(rulesBody, args),
     t.objectProperty(
       t.stringLiteral('keyframesStyleTuples'),
-      jsonToNode(managerArgs.keyframesStyleTuples)
+      jsonToNode(args.keyframesStyleTuples)
     ),
   ]);
 
+const everyIsEmpty = _.every(_.isEmpty);
+const ruleIsEmpty = _.flow(_.omit(['selector']), everyIsEmpty);
+
 module.exports = (path, state, component, cssText, substitutionMap) => {
-  const { rules, propTypes, managerArgs } = extractRules(cssText);
+  // eslint-disable-next-line
+  let { rules, propTypes, args } = extractRules(cssText);
   const exportedVariables = _.reduce(_.assign, {}, _.map('exportedVariables', rules));
   const exportsVariables = !_.isEmpty(exportedVariables);
 
@@ -367,17 +368,42 @@ module.exports = (path, state, component, cssText, substitutionMap) => {
   const resolvedVariables = (singleSourceOfVariables && exportsVariables)
     ? resolveVariableDependencies(exportedVariables, {})
     : null;
+
   if (resolvedVariables && !_.isEqual(resolvedVariables, singleSourceOfVariables)) {
     throw new Error('When using singleSourceOfVariables, only one component can define variables');
   }
 
+  // If we can globally remove configs from args/rules, do so here
+  // Only do this for global configs so `args` has the same hidden class for each component
+  const argsOmissions = [];
+  const rulesOmissions = [];
+
+  if (singleSourceOfVariables) {
+    argsOmissions.push('importedVariables');
+    rulesOmissions.push('exportedVariables');
+  }
+
+  args = _.omit(argsOmissions, args);
+  rules = _.flow(
+    _.map(_.omit(rulesOmissions)),
+    _.reject(ruleIsEmpty)
+  )(rules);
+
+  // If we end up with nothing after removing configs, and we don't filter props,
+  // we can just return the component
+  if (everyIsEmpty(args) && _.isEmpty(rules) && _.isEmpty(propTypes)) {
+    path.replaceWith(component);
+    return;
+  }
+
   const hasVariables =
     !singleSourceOfVariables &&
-    (!_.isEmpty(managerArgs.importedVariables) || !_.isEmpty(exportedVariables));
-  const hasKeyframes = !_.isEmpty(managerArgs.keyframesStyleTuples);
-  const hasTransitions = !_.isEmpty(managerArgs.transitionedProperties);
+    (!_.isEmpty(args.importedVariables) || !_.isEmpty(exportedVariables));
+  const hasKeyframes = !_.isEmpty(args.keyframesStyleTuples);
+  const hasTransitions = !_.isEmpty(args.transitionedProperties);
 
-  const enhancersRoot = 'cssta/lib/native/dynamicComponentEnhancers';
+  const componentRoot = 'cssta/lib/native';
+  const enhancersRoot = `${componentRoot}/enhancers`;
   const enhancers = [];
   let rulesBody;
 
@@ -386,7 +412,7 @@ module.exports = (path, state, component, cssText, substitutionMap) => {
       getOrCreateImportReference(path, `${enhancersRoot}/VariablesStyleSheetManager`, 'default');
     enhancers.push(variablesEnhancer);
 
-    rulesBody = createVariablesStyleSheet(path, substitutionMap, rules, managerArgs);
+    rulesBody = createVariablesStyleSheet(path, substitutionMap, rules, args);
   } else {
     rulesBody = createStaticStylesheet(path, substitutionMap, rules);
   }
@@ -399,33 +425,28 @@ module.exports = (path, state, component, cssText, substitutionMap) => {
     enhancers.push(getOrCreateImportReference(path, `${enhancersRoot}/Animation`, 'default'));
   }
 
-  let newElement;
-
-  const componentRoot = 'cssta/lib/native';
+  let componentConstructor;
   if (_.isEmpty(enhancers)) {
-    const staticComponent =
-      getOrCreateImportReference(path, `${componentRoot}/staticComponent`, 'default');
-
-    newElement = t.callExpression(staticComponent, [
-      component,
-      jsonToNode(Object.keys(propTypes)),
-      rulesBody,
-    ]);
+    const createComponent =
+      getOrCreateImportReference(path, `${componentRoot}/createComponent`, 'default');
+    componentConstructor = createComponent;
   } else {
-    const dynamicComponent =
-      getOrCreateImportReference(path, `${componentRoot}/dynamicComponent`, 'default');
-
-    const managerArgsNode = hasVariables
-      ? createVariablesManagerArgs(path, substitutionMap, rulesBody, managerArgs)
-      : createStaticManagerArgs(path, substitutionMap, rulesBody, managerArgs);
-
-    newElement = t.callExpression(dynamicComponent, [
-      component,
-      jsonToNode(Object.keys(propTypes)),
+    const withEnhancers =
+      getOrCreateImportReference(path, `${componentRoot}/withEnhancers`, 'default');
+    componentConstructor = t.callExpression(withEnhancers, [
       t.arrayExpression(enhancers),
-      managerArgsNode,
     ]);
   }
+
+  const argsNode = hasVariables
+    ? createVariablesArgs(path, substitutionMap, rulesBody, args)
+    : createStaticArgs(path, substitutionMap, rulesBody, args);
+
+  const newElement = t.callExpression(componentConstructor, [
+    component,
+    jsonToNode(Object.keys(propTypes)),
+    argsNode,
+  ]);
 
   path.replaceWith(newElement);
 };

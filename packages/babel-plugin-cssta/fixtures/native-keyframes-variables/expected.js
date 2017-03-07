@@ -1,10 +1,10 @@
-import _dynamicComponent from 'cssta/lib/native/dynamicComponent';
-import _Animation from 'cssta/lib/native/dynamicComponentEnhancers/Animation';
-import _VariablesStyleSheetManager from 'cssta/lib/native/dynamicComponentEnhancers/VariablesStyleSheetManager';
+import _withEnhancers from 'cssta/lib/native/withEnhancers';
+import _Animation from 'cssta/lib/native/enhancers/Animation';
+import _VariablesStyleSheetManager from 'cssta/lib/native/enhancers/VariablesStyleSheetManager';
 
 import { Animated } from 'react-native';
 
-_dynamicComponent(Animated.View, [], [_VariablesStyleSheetManager, _Animation], {
+_withEnhancers([_VariablesStyleSheetManager, _Animation])(Animated.View, [], {
   'transitionedProperties': [],
   'importedVariables': ['primary'],
   'rules': [{

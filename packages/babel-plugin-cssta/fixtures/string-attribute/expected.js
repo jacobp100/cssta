@@ -1,9 +1,12 @@
-import _staticComponent from 'cssta/lib/web/staticComponent';
+import _createComponent from 'cssta/lib/web/createComponent';
 
 
-_staticComponent('button', null, null, {
-  'stringAttribute': {
-    '1': 'A',
-    '2': 'B'
+_createComponent('button', null, {
+  'defaultClassName': null,
+  'classNameMap': {
+    'stringAttribute': {
+      '1': 'A',
+      '2': 'B'
+    }
   }
 });

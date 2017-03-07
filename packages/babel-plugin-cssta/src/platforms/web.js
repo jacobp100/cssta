@@ -99,7 +99,7 @@ module.exports = (path, state, component, cssText, substititionMap) => {
   let newElement = null;
 
   if (!isInjectGlobal) {
-    const { css: output, baseClassName, classNameMap } = extractRules(cssText, {
+    const { css: output, args } = extractRules(cssText, {
       generateClassName: () => classGenerator.next().value,
       generateAnimationName: () => animationGenerator.next().value,
     });
@@ -107,20 +107,16 @@ module.exports = (path, state, component, cssText, substititionMap) => {
     outputCss = `${existingCss}\n${commentMarker}\n${output}`;
     writeCssToFile(outputCss, cssFilename);
 
-    const staticComponent = getOrCreateImportReference(
+    const createComponent = getOrCreateImportReference(
       path,
-      'cssta/lib/web/staticComponent',
+      'cssta/lib/web/createComponent',
       'default'
     );
-    const baseClass = baseClassName
-      ? t.stringLiteral(baseClassName)
-      : t.nullLiteral();
 
-    newElement = t.callExpression(staticComponent, [
+    newElement = t.callExpression(createComponent, [
       component,
       t.nullLiteral(), // Gets replaced with Object.keys(classNameMap)
-      baseClass,
-      jsonToNode(classNameMap),
+      jsonToNode(args),
     ]);
   } else {
     outputCss = `${existingCss}\n${commentMarker}\n${cssText}`;

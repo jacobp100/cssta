@@ -9,10 +9,10 @@ module.exports = (inputCss, { generateClassName, generateAnimationName }) => {
   const classNameMap = {}; // { propName: { propValue: className } }
   const animationNameMap = {};
 
-  let baseClassName = null;
-  const getBaseClassName = () => {
-    if (!baseClassName) baseClassName = generateClassName();
-    return baseClassName;
+  let defaultClassName = null;
+  const getDefaultClassName = () => {
+    if (!defaultClassName) defaultClassName = generateClassName();
+    return defaultClassName;
   };
 
   const getClassNameFor = (attribute, value) => {
@@ -30,7 +30,7 @@ module.exports = (inputCss, { generateClassName, generateAnimationName }) => {
   const transformSelectors = selectorParser((container) => {
     container.each((selector) => {
       container.walkNesting((node) => {
-        const className = getBaseClassName();
+        const className = getDefaultClassName();
         const replacementNode = selectorParser.className({ value: className });
         node.replaceWith(replacementNode);
       });
@@ -64,6 +64,7 @@ module.exports = (inputCss, { generateClassName, generateAnimationName }) => {
   });
 
   const css = root.toString();
+  const args = { defaultClassName, classNameMap };
 
-  return { css, propTypes, baseClassName, classNameMap };
+  return { css, propTypes, args };
 };

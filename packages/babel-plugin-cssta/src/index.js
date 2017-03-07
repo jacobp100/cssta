@@ -3,15 +3,13 @@ const p = require('path');
 const t = require('babel-types');
 const _ = require('lodash/fp');
 const { varRegExp } = require('cssta/lib/util');
-const transformWebCssta = require('./converters/web');
-const transformNativeCssta = require('./converters/native');
+const transformWebCssta = require('./platforms/web');
+const transformNativeCssta = require('./platforms/native');
 const singleSourceOfVariables = require('./optimizations/singleSourceOfVariables');
 const {
   getCsstaReferences, interpolationTypes, extractCsstaCallParts,
 } = require('./transformUtil/extractCsstaCallParts');
-const {
-  csstaModules, getImportReferences, getCsstaTypeForCallee, getOptimisationOpts,
-} = require('./util');
+const { csstaModules, getImportReferences, getOptimisationOpts } = require('./util');
 
 const canInterpolate = {
   web: false,

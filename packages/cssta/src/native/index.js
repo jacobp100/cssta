@@ -1,12 +1,12 @@
 const extractRules = require('./extractRules');
 const { createValidatorForSelector } = require('./selectorTransform');
-const dynamicComponent = require('./dynamicComponent');
+const withEnhancers = require('./withEnhancers');
 const VariablesProvider = require('./VariablesProvider');
-const VariablesStyleSheetManager = require('./dynamicComponentEnhancers/VariablesStyleSheetManager');
-const Transition = require('./dynamicComponentEnhancers/Transition');
-const Animation = require('./dynamicComponentEnhancers/Animation');
+const VariablesStyleSheetManager = require('./enhancers/VariablesStyleSheetManager');
+const Transition = require('./enhancers/Transition');
+const Animation = require('./enhancers/Animation');
 
-const defaultEnhancers = [VariablesStyleSheetManager, Transition, Animation];
+const dynamicComponent = withEnhancers([VariablesStyleSheetManager, Transition, Animation]);
 
 /* eslint-disable no-param-reassign */
 module.exports = element => (cssTextFragments, ...substitutions) => {
@@ -15,7 +15,7 @@ module.exports = element => (cssTextFragments, ...substitutions) => {
     : cssTextFragments[0] +
       substitutions.map((value, index) => String(value) + cssTextFragments[index + 1]).join('');
 
-  const { rules: baseRules, propTypes, managerArgs } = extractRules(cssText);
+  const { rules: baseRules, propTypes, args: baseArgs } = extractRules(cssText);
 
   const rules = baseRules.map(rule => ({
     validate: createValidatorForSelector(rule.selector),
@@ -25,8 +25,8 @@ module.exports = element => (cssTextFragments, ...substitutions) => {
     exportedVariables: rule.exportedVariables,
   }));
 
-  const args = Object.assign({}, managerArgs, { rules });
-  return dynamicComponent(element, propTypes, defaultEnhancers, args);
+  const args = Object.assign({}, baseArgs, { rules });
+  return dynamicComponent(element, propTypes, args);
 };
 
 module.exports.VariablesProvider = VariablesProvider;
