@@ -68,6 +68,7 @@ pre {
   text-indent: 0;
   background-color: #ecf0f1;
   overflow-x: scroll;
+  -webkit-overflow-scrolling: touch;
 }
 
 pre code {
