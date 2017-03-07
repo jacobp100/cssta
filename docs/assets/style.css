@@ -21,7 +21,9 @@ h1 {
   letter-spacing: -1.5pt;
 }
 
-h2 {
+h2,
+.menu__title {
+  /* Note, includes non-base style */
   font-size: 18pt;
   font-weight: 300;
   margin: 32pt 0 12pt;
@@ -74,28 +76,48 @@ pre code {
   background-color: inherit;
 }
 
+/*****************\
+* CUSTOM ELEMENTS *
+\*****************/
+
 #menu {
   margin: calc(-1 * var(--gutter));
   padding: var(--gutter);
   border-bottom: 1px solid #eee;
 }
 
-/*****************\
-* CUSTOM ELEMENTS *
-\*****************/
+.menu__title {
+  /* inherits from h2 */
+  line-height: 1;
+  margin: 0;
+}
+
+.menu__show,
+.menu__hide {
+  position: relative;
+  top: 2pt;
+  float: right;
+}
 
 .menu__list {
   list-style: none;
   padding: 0;
 }
 
+.menu__title,
 .menu__link,
+.menu__image-section,
 .menu__hide,
 .menu__show {
   display: block;
   padding: 6pt 12pt;
   text-decoration: none;
   color: black;
+}
+
+.menu__image {
+  margin: 12pt 0;
+  height: 32pt;
 }
 
 .menu__list,
@@ -153,7 +175,9 @@ pre code {
     display: none;
   }
 
-  .menu__link {
+  .menu__title,
+  .menu__link,
+  .menu__image-section {
     padding: 2pt 24pt;
   }
 }

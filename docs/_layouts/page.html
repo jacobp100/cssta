@@ -7,6 +7,7 @@
 <div id="menu">
   <a class="menu__show" href="#menu">Show Navigation</a>
   <a class="menu__hide" href="#">Hide Navigation</a>
+  <h1 class="menu__title">Cssta</h1>
   <ul class="menu__list">
     {% include sidebar-link.html url="/" title="Introduction" %}
     {% include sidebar-link.html url="/web" title="Web" %}
@@ -15,6 +16,7 @@
     {% include sidebar-link.html url="/production-builds" title="Production Builds" %}
     {% include sidebar-link.html url="/publishing-and-using-modules" title="Publishing and Using Modules" %}
     {% include sidebar-link.html url="/editor-integration" title="Editor Integration" %}
+    <li class="menu__image-section"><a href="https://github.com/jacobp100/cssta"><img class="menu__image" alt="Github" src="https://assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png"></a><li>
   </ul>
 </div>
 {{ content }}
