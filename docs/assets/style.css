@@ -1,3 +1,7 @@
+/*************\
+* BASE STYLES *
+\*************/
+
 :root {
   font: 12pt/16pt 'Source Sans Pro', sans-serif;
   --gutter: 12pt;
@@ -76,6 +80,10 @@ pre code {
   border-bottom: 1px solid #eee;
 }
 
+/*****************\
+* CUSTOM ELEMENTS *
+\*****************/
+
 .menu__list {
   list-style: none;
   padding: 0;
@@ -104,6 +112,17 @@ pre code {
 
 .menu__link--active {
   color: var(--primary);
+}
+
+/***************\
+* MEDIA QUERIES *
+\***************/
+
+@media screen and (max-width: 360px) {
+  /* On the iPhone SE, the code elements can cause sideways scroll */
+  code {
+    word-break: break-all;
+  }
 }
 
 @media screen and (min-width: 768px) {
@@ -138,6 +157,11 @@ pre code {
     padding: 2pt 24pt;
   }
 }
+
+
+/********************\
+* SYNTAX HIGHLIGHTER *
+\********************/
 
 .highlight .c { color: #998; font-style: italic; }
 .highlight .err { color: #a61717; background-color: #e3d2d2; }
