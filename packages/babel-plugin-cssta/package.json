@@ -7,7 +7,7 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "approve": "node ./src/index.test.js --approve",
-    "prepublish": "cp ../../README.md ."
+    "prepublish": "cp $(node -p \"require.resolve('cssta-docs/README.md')\") ."
   },
   "keywords": [
     "postcss",
@@ -29,6 +29,7 @@
   "license": "ISC",
   "devDependencies": {
     "babel-core": "^6.18.2",
+    "cssta-docs": "^0.4.0",
     "eslint": "^3.11.1",
     "eslint-config-airbnb-base": "^10.0.1",
     "eslint-plugin-import": "^1.16.0",
