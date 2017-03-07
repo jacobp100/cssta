@@ -1,10 +1,8 @@
-# 🌞 CSSTA
+# [🌞 Cssta](https://jacobp100.github.io/cssta/)
 
-# [View Docs](https://jacobp100.gitbooks.io/cssta/content/)
+Cssta is a way to co-locate your CSS with your React components, and lets you define components using isolated units of style.
 
-CSSTA is a way to co-locate your CSS with your React components, and lets you define components using isolated units of style.
-
-It is available both for [React for web 🌍](https://jacobp100.gitbooks.io/cssta/content/web.html) and [React Native 📱](https://jacobp100.gitbooks.io/cssta/content/native.html). For web, it generates **real CSS files** with **<1kb JS overhead**.
+It is available both for [React for web 🌍](https://jacobp100.github.io/cssta/web) and [React Native 📱](https://jacobp100.github.io/cssta/native). For web, it generates **real CSS files** with **<1kb JS overhead**.
 
 There’s also a tonne of stuff for React Native, including CSS transitions and CSS custom properties.
 
@@ -98,7 +96,7 @@ The properties defined in your CSS are type checked with `propTypes` to check fo
 
 It is possible React components only when the component accepts the prop `className` for web, and `style` for React Native.
 
-```js
+```jsx
 import { Link }  from 'react-router';
 
 const StyledLink = cssta(Link)`
@@ -109,7 +107,7 @@ const StyledLink = cssta(Link)`
 
 It is also possible to compose your own components.
 
-```js
+```jsx
 const OutlineButton = cssta.button`
   padding: 0.5rem 1rem;
   border: 2px solid currentColor;
@@ -150,7 +148,7 @@ const Example = (
 );
 ```
 
-There's a few extra examples in [theming](https://jacobp100.gitbooks.io/cssta/content/theming.html).
+There's a few extra examples in [theming](https://jacobp100.github.io/cssta/theming).
 
 ## 🖌 Overriding Styles
 
@@ -183,5 +181,3 @@ const Div = cssta.div`
 
 <Div component="span">I am a span now</Div>
 ```
-
-# [View Docs](https://jacobp100.gitbooks.io/cssta/content/)
