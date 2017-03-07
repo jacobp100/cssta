@@ -389,8 +389,9 @@ module.exports = (path, state, component, cssText, substitutionMap) => {
     _.reject(ruleIsEmpty)
   )(rules);
 
-  // If we end up with nothing after removing configs, we can just return the component
-  if (everyIsEmpty(args) && _.isEmpty(rules)) {
+  // If we end up with nothing after removing configs, and we don't filter props,
+  // we can just return the component
+  if (everyIsEmpty(args) && _.isEmpty(rules) && _.isEmpty(propTypes)) {
     path.replaceWith(component);
     return;
   }
