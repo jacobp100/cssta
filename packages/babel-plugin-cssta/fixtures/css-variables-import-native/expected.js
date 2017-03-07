@@ -1,9 +1,9 @@
-import _dynamicComponent from 'cssta/lib/native/dynamicComponent';
-import _VariablesStyleSheetManager from 'cssta/lib/native/dynamicComponentEnhancers/VariablesStyleSheetManager';
+import _withEnhancers from 'cssta/lib/native/withEnhancers';
+import _VariablesStyleSheetManager from 'cssta/lib/native/enhancers/VariablesStyleSheetManager';
 
 import { View } from 'react-native';
 
-_dynamicComponent(View, [], [_VariablesStyleSheetManager], {
+_withEnhancers([_VariablesStyleSheetManager])(View, [], {
   'transitionedProperties': [],
   'importedVariables': ['color'],
   'rules': [{

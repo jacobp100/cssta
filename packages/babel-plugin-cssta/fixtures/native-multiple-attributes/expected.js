@@ -1,4 +1,4 @@
-import _staticComponent from 'cssta/lib/native/staticComponent';
+import _createComponent from 'cssta/lib/native/createComponent';
 import { StyleSheet as _StyleSheet } from 'react-native';
 
 import { View } from 'react-native';
@@ -18,36 +18,41 @@ var _csstaStyle = _StyleSheet.create({
   }
 });
 
-_staticComponent(View, ['booleanAttribute', 'stringAttribute'], [{
-  'validate': function (p) {
-    return true;
-  },
-  'transitions': {},
-  'exportedVariables': {},
-  'animation': null,
-  'style': _csstaStyle[0]
-}, {
-  'validate': function (p) {
-    return !!p['booleanAttribute'];
-  },
-  'transitions': {},
-  'exportedVariables': {},
-  'animation': null,
-  'style': _csstaStyle[1]
-}, {
-  'validate': function (p) {
-    return p['stringAttribute'] === '1';
-  },
-  'transitions': {},
-  'exportedVariables': {},
-  'animation': null,
-  'style': _csstaStyle[2]
-}, {
-  'validate': function (p) {
-    return p['stringAttribute'] === '2';
-  },
-  'transitions': {},
-  'exportedVariables': {},
-  'animation': null,
-  'style': _csstaStyle[3]
-}]);
+_createComponent(View, ['booleanAttribute', 'stringAttribute'], {
+  'transitionedProperties': [],
+  'importedVariables': [],
+  'rules': [{
+    'validate': function (p) {
+      return true;
+    },
+    'transitions': {},
+    'exportedVariables': {},
+    'animation': null,
+    'style': _csstaStyle[0]
+  }, {
+    'validate': function (p) {
+      return !!p['booleanAttribute'];
+    },
+    'transitions': {},
+    'exportedVariables': {},
+    'animation': null,
+    'style': _csstaStyle[1]
+  }, {
+    'validate': function (p) {
+      return p['stringAttribute'] === '1';
+    },
+    'transitions': {},
+    'exportedVariables': {},
+    'animation': null,
+    'style': _csstaStyle[2]
+  }, {
+    'validate': function (p) {
+      return p['stringAttribute'] === '2';
+    },
+    'transitions': {},
+    'exportedVariables': {},
+    'animation': null,
+    'style': _csstaStyle[3]
+  }],
+  'keyframes': {}
+});

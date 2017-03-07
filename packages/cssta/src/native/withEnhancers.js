@@ -1,4 +1,4 @@
-const withEnhancers = require('../factories/withEnhancers');
+const enhancerFactory = require('../factories/enhancerFactory');
 const createComponent = require('./createComponent');
 
-module.exports = withEnhancers(createComponent);
+module.exports = enhancerFactory(createComponent);

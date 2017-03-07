@@ -1,4 +1,4 @@
-import _staticComponent from 'cssta/lib/native/staticComponent';
+import _createComponent from 'cssta/lib/native/createComponent';
 import { StyleSheet as _StyleSheet } from 'react-native';
 
 import { View } from 'react-native';
@@ -10,13 +10,18 @@ function test() {
     }
   });
 
-  const Component = _staticComponent(View, [], [{
-    'validate': function (p) {
-      return true;
-    },
-    'transitions': {},
-    'exportedVariables': {},
-    'animation': null,
-    'style': _csstaStyle[0]
-  }]);
+  const Component = _createComponent(View, [], {
+    'transitionedProperties': [],
+    'importedVariables': [],
+    'rules': [{
+      'validate': function (p) {
+        return true;
+      },
+      'transitions': {},
+      'exportedVariables': {},
+      'animation': null,
+      'style': _csstaStyle[0]
+    }],
+    'keyframes': {}
+  });
 }

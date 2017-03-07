@@ -1,5 +1,10 @@
-import _staticComponent from 'cssta/lib/native/staticComponent';
+import _createComponent from 'cssta/lib/native/createComponent';
 
 import { View } from 'react-native';
 
-_staticComponent(View, [], []);
+_createComponent(View, [], {
+  'transitionedProperties': [],
+  'importedVariables': [],
+  'rules': [],
+  'keyframes': {}
+});

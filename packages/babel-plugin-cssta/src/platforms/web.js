@@ -99,7 +99,7 @@ module.exports = (path, state, component, cssText, substititionMap) => {
   let newElement = null;
 
   if (!isInjectGlobal) {
-    const { css: output, baseClassName, classNameMap } = extractRules(cssText, {
+    const { css: output, args } = extractRules(cssText, {
       generateClassName: () => classGenerator.next().value,
       generateAnimationName: () => animationGenerator.next().value,
     });
@@ -112,15 +112,11 @@ module.exports = (path, state, component, cssText, substititionMap) => {
       'cssta/lib/web/createComponent',
       'default'
     );
-    const baseClass = baseClassName
-      ? t.stringLiteral(baseClassName)
-      : t.nullLiteral();
 
     newElement = t.callExpression(createComponent, [
       component,
       t.nullLiteral(), // Gets replaced with Object.keys(classNameMap)
-      baseClass,
-      jsonToNode(classNameMap),
+      jsonToNode(args),
     ]);
   } else {
     outputCss = `${existingCss}\n${commentMarker}\n${cssText}`;

@@ -267,14 +267,15 @@ const createStaticStylesheet = (path, substitutionMap, rules) => {
     ),
   ]), ruleBases));
 
-  if (!_.isEmpty(ruleBases)) {
+  const ruleBasesWithStyles = _.filter(_.get('styleSheetReference'), ruleBases);
+
+  if (!_.isEmpty(ruleBasesWithStyles)) {
     const reactNativeStyleSheetRef =
       getOrCreateImportReference(path, 'react-native', 'StyleSheet');
 
-    const styleSheetBody = t.objectExpression(_.flow(
-      _.filter(_.get('styleSheetReference')),
-      _.map(rule => t.objectProperty(rule.styleSheetReference, rule.styleBody))
-    )(ruleBases));
+    const styleSheetBody = t.objectExpression(_.map(rule => (
+      t.objectProperty(rule.styleSheetReference, rule.styleBody)
+    ), ruleBasesWithStyles));
 
     const styleSheetElement = t.variableDeclaration('var', [
       t.variableDeclarator(styleSheetReference, t.callExpression(
@@ -308,14 +309,14 @@ const createVariablesStyleSheet = (path, substitutionMap, rules) => {
   return rulesBody;
 };
 
-const commonManagerArgsProperties = _.flow(
+const commonArgsProperties = _.flow(
   _.pick(['transitionedProperties', 'importedVariables']),
   _.toPairs,
   _.map(([key, value]) => t.objectProperty(t.stringLiteral(key), jsonToNode(value)))
 );
 
-const commonProperties = (rulesBody, managerArgs) => [
-  ...commonManagerArgsProperties(managerArgs),
+const commonProperties = (rulesBody, args) => [
+  ...commonArgsProperties(args),
   t.objectProperty(t.stringLiteral('rules'), rulesBody),
 ];
 
@@ -332,7 +333,7 @@ const getStaticKeyframe = _.curry((path, substitutionMap, keyframe) => (
   ])
 ));
 
-const getSatticKeyframes = (path, substitutionMap, keyframesStyleTuples) =>
+const getSaticKeyframes = (path, substitutionMap, keyframesStyleTuples) =>
   t.objectExpression(
     _.map(([keyframeName, styleTuples]) => t.objectProperty(
       t.stringLiteral(keyframeName),
@@ -340,26 +341,26 @@ const getSatticKeyframes = (path, substitutionMap, keyframesStyleTuples) =>
     ), _.toPairs(keyframesStyleTuples))
   );
 
-const createStaticManagerArgs = (path, substitutionMap, rulesBody, managerArgs) =>
+const createStaticArgs = (path, substitutionMap, rulesBody, args) =>
   t.objectExpression([
-    ...commonProperties(rulesBody, managerArgs),
+    ...commonProperties(rulesBody, args),
     t.objectProperty(
       t.stringLiteral('keyframes'),
-      getSatticKeyframes(path, substitutionMap, managerArgs.keyframesStyleTuples)
+      getSaticKeyframes(path, substitutionMap, args.keyframesStyleTuples)
     ),
   ]);
 
-const createVariablesManagerArgs = (path, substitutionMap, rulesBody, managerArgs) =>
+const createVariablesArgs = (path, substitutionMap, rulesBody, args) =>
   t.objectExpression([
-    ...commonProperties(rulesBody, managerArgs),
+    ...commonProperties(rulesBody, args),
     t.objectProperty(
       t.stringLiteral('keyframesStyleTuples'),
-      jsonToNode(managerArgs.keyframesStyleTuples)
+      jsonToNode(args.keyframesStyleTuples)
     ),
   ]);
 
 module.exports = (path, state, component, cssText, substitutionMap) => {
-  const { rules, propTypes, managerArgs } = extractRules(cssText);
+  const { rules, propTypes, args } = extractRules(cssText);
   const exportedVariables = _.reduce(_.assign, {}, _.map('exportedVariables', rules));
   const exportsVariables = !_.isEmpty(exportedVariables);
 
@@ -373,9 +374,9 @@ module.exports = (path, state, component, cssText, substitutionMap) => {
 
   const hasVariables =
     !singleSourceOfVariables &&
-    (!_.isEmpty(managerArgs.importedVariables) || !_.isEmpty(exportedVariables));
-  const hasKeyframes = !_.isEmpty(managerArgs.keyframesStyleTuples);
-  const hasTransitions = !_.isEmpty(managerArgs.transitionedProperties);
+    (!_.isEmpty(args.importedVariables) || !_.isEmpty(exportedVariables));
+  const hasKeyframes = !_.isEmpty(args.keyframesStyleTuples);
+  const hasTransitions = !_.isEmpty(args.transitionedProperties);
 
   const componentRoot = 'cssta/lib/native';
   const enhancersRoot = `${componentRoot}/enhancers`;
@@ -387,7 +388,7 @@ module.exports = (path, state, component, cssText, substitutionMap) => {
       getOrCreateImportReference(path, `${enhancersRoot}/VariablesStyleSheetManager`, 'default');
     enhancers.push(variablesEnhancer);
 
-    rulesBody = createVariablesStyleSheet(path, substitutionMap, rules, managerArgs);
+    rulesBody = createVariablesStyleSheet(path, substitutionMap, rules, args);
   } else {
     rulesBody = createStaticStylesheet(path, substitutionMap, rules);
   }
@@ -401,22 +402,21 @@ module.exports = (path, state, component, cssText, substitutionMap) => {
   }
 
   let componentConstructor;
-  if (!_.isEmpty(enhancers)) {
+  if (_.isEmpty(enhancers)) {
     const createComponent =
       getOrCreateImportReference(path, `${componentRoot}/createComponent`, 'default');
     componentConstructor = createComponent;
   } else {
     const withEnhancers =
       getOrCreateImportReference(path, `${componentRoot}/withEnhancers`, 'default');
-    componentConstructor = t.callExpression(
-      withEnhancers,
-      t.arrayExpression(enhancers)
-    );
+    componentConstructor = t.callExpression(withEnhancers, [
+      t.arrayExpression(enhancers),
+    ]);
   }
 
   const argsNode = hasVariables
-    ? createVariablesManagerArgs(path, substitutionMap, rulesBody, managerArgs)
-    : createStaticManagerArgs(path, substitutionMap, rulesBody, managerArgs);
+    ? createVariablesArgs(path, substitutionMap, rulesBody, args)
+    : createStaticArgs(path, substitutionMap, rulesBody, args);
 
   const newElement = t.callExpression(componentConstructor, [
     component,

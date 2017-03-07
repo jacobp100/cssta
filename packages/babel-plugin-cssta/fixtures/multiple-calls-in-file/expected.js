@@ -1,8 +1,17 @@
-import _staticComponent from 'cssta/lib/web/staticComponent';
+import _createComponent from 'cssta/lib/web/createComponent';
 
 
-_staticComponent('button', null, 'A', {});
+_createComponent('button', null, {
+  'defaultClassName': 'A',
+  'classNameMap': {}
+});
 
-_staticComponent('span', null, 'B', {});
+_createComponent('span', null, {
+  'defaultClassName': 'B',
+  'classNameMap': {}
+});
 
-_staticComponent('div', null, 'C', {});
+_createComponent('div', null, {
+  'defaultClassName': 'C',
+  'classNameMap': {}
+});

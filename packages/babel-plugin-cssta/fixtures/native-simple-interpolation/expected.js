@@ -1,4 +1,4 @@
-import _staticComponent from 'cssta/lib/native/staticComponent';
+import _createComponent from 'cssta/lib/native/createComponent';
 import { StyleSheet as _StyleSheet } from 'react-native';
 
 import { View } from 'react-native';
@@ -21,28 +21,33 @@ var _csstaStyle = _StyleSheet.create({
   }
 });
 
-_staticComponent(View, ['attr1', 'attr2', 'attr3'], [{
-  'validate': function (p) {
-    return !!p['attr1'];
-  },
-  'transitions': {},
-  'exportedVariables': {},
-  'animation': null,
-  'style': _csstaStyle[0]
-}, {
-  'validate': function (p) {
-    return !!p['attr2'];
-  },
-  'transitions': {},
-  'exportedVariables': {},
-  'animation': null,
-  'style': _csstaStyle[1]
-}, {
-  'validate': function (p) {
-    return !!p['attr3'];
-  },
-  'transitions': {},
-  'exportedVariables': {},
-  'animation': null,
-  'style': _csstaStyle[2]
-}]);
+_createComponent(View, ['attr1', 'attr2', 'attr3'], {
+  'transitionedProperties': [],
+  'importedVariables': [],
+  'rules': [{
+    'validate': function (p) {
+      return !!p['attr1'];
+    },
+    'transitions': {},
+    'exportedVariables': {},
+    'animation': null,
+    'style': _csstaStyle[0]
+  }, {
+    'validate': function (p) {
+      return !!p['attr2'];
+    },
+    'transitions': {},
+    'exportedVariables': {},
+    'animation': null,
+    'style': _csstaStyle[1]
+  }, {
+    'validate': function (p) {
+      return !!p['attr3'];
+    },
+    'transitions': {},
+    'exportedVariables': {},
+    'animation': null,
+    'style': _csstaStyle[2]
+  }],
+  'keyframes': {}
+});

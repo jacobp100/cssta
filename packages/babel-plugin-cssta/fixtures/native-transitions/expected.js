@@ -1,5 +1,5 @@
-import _dynamicComponent from 'cssta/lib/native/dynamicComponent';
-import _Transition from 'cssta/lib/native/dynamicComponentEnhancers/Transition';
+import _withEnhancers from 'cssta/lib/native/withEnhancers';
+import _Transition from 'cssta/lib/native/enhancers/Transition';
 import { StyleSheet as _StyleSheet } from 'react-native';
 
 import { Animated } from 'react-native';
@@ -13,7 +13,7 @@ var _csstaStyle = _StyleSheet.create({
   }
 });
 
-_dynamicComponent(Animated.View, ['boolAttr'], [_Transition], {
+_withEnhancers([_Transition])(Animated.View, ['boolAttr'], {
   'transitionedProperties': ['color'],
   'importedVariables': [],
   'rules': [{

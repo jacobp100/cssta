@@ -1,6 +1,6 @@
 const extractRules = require('./extractRules');
 const { createValidatorForSelector } = require('./selectorTransform');
-const withEnhancers = require('../factories/withEnhancers');
+const withEnhancers = require('./withEnhancers');
 const VariablesProvider = require('./VariablesProvider');
 const VariablesStyleSheetManager = require('./enhancers/VariablesStyleSheetManager');
 const Transition = require('./enhancers/Transition');
