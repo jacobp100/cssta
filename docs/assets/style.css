@@ -159,7 +159,7 @@ pre code {
 
   pre {
     /* hide scrollbars */
-    overflow-y: auto;
+    overflow-x: auto;
   }
 
   #menu {
