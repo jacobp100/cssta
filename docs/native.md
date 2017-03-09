@@ -109,7 +109,6 @@ You can animate multiple transitions, but the nodes of the transition must not c
 To get React Native animations working, you’ll want to define all your non-changing styles in the usual way, and then pass your `Animated.Value`s in as style props.
 
 ```jsx
-{% raw %}
 const BaseStyles = cssta(View)`
   height: 100px;
   width: 100px;
@@ -135,10 +134,9 @@ class AnimateOpacity extends Component {
   render() {
     const { opacity } = this.state;
     // Pass in your animated values here!
-    return <BaseStyles style={{ opacity }} />;
+    return <BaseStyles style={% raw %}{{ opacity }}{% endraw %} />;
   }
 }
-{% endraw %}
 ```
 
 ## 💉 Injecting Variables
@@ -146,13 +144,11 @@ class AnimateOpacity extends Component {
 You can use `VariablesProvider` to dynamically set variables. This accepts an `exportedVariables` property, which is a map of variables to inject. It can also be a function that when called with the variables from the scope will return this map.
 
 ```jsx
-{% raw %}
 import { VariablesProvider } from 'cssta/native';
 
-<VariablesProvider exportedVariables={{ color: 'red' }}>
+<VariablesProvider exportedVariables={% raw %}{{ color: 'red' }}{% endraw %}>
   <ComponentsThatUseColorVariable />
 </Variables>
-{% endraw %}
 ```
 
 ```jsx
