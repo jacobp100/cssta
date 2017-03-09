@@ -160,6 +160,7 @@ There's a few extra examples in [theming](./theming.md).
 The properties `className` on web, and `style` on React Native have special behavior. They append styles to those already defined by the component.
 
 ```jsx
+{% raw %}
 // Web only
 <Button className="margin-right-1">
   Composing Classes
@@ -169,6 +170,7 @@ The properties `className` on web, and `style` on React Native have special beha
 <Button style={{ marginRight: 0 }}>
   Composing Styles
 </Button>
+{% endraw %}
 ```
 
 Note that you cannot remove the classes otherwise set by the component.

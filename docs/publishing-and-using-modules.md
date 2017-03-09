@@ -61,6 +61,7 @@ For web, you could consider having the user copy and paste a snippet of all vari
 You may also wish to allow specific overrides if appropriate.
 
 ```jsx
+{% raw %}
 const Button = cssta.div`
   color: var(--example-module-primary, red);
 `;
@@ -68,6 +69,7 @@ const Button = cssta.div`
 export default ({ color, ...props }) => (
   <Button {...props} style={{ color }} />
 );
+{% endraw %}
 ```
 
 ### ⛸ Optimizations
