@@ -8,7 +8,7 @@ permalink: /publishing-and-using-modules
 
 As a user of external Cssta modules, all you have to do is ensure these modules are run through babel using `babel-plugin-cssta`. On the web, this will add the module’s CSS in the outputted CSS file, and on native, this will mostly perform optimizations.
 
-All Cssta modules have to use the ES `import ... from 'cssta';` syntax for the babel plugin to work. For users, this means ensuring your build process can handle this. For publishers, just make sure your users get this syntax!
+All Cssta modules have to use the ES `import ... from 'cssta'` syntax for the babel plugin to work. For users, this means ensuring your build process can handle this. For publishers, just make sure your users get this syntax!
 
 ## Webpack
 
@@ -43,17 +43,17 @@ For theming, try to stick to using user-definable, namespaced variables to overr
 ```jsx
 export const Button = cssta.div`
   color: var(--example-module-primary, red);
-`;
+`
 ```
 
 For native, you can abstract out your defaults into variables.
 
 ```jsx
-const defaultPrimary = 'red';
+const defaultPrimary = 'red'
 
 export const Button = cssta(View)`
   color: var(--example-module-primary, ${defaultPrimary});
-`;
+`
 ```
 
 For web, you could consider having the user copy and paste a snippet of all variables if it is not practical to manually write each default.
@@ -63,11 +63,11 @@ You may also wish to allow specific overrides if appropriate.
 ```jsx
 const Button = cssta.div`
   color: var(--example-module-primary, red);
-`;
+`
 
 export default ({ color, ...props }) => (
   <Button {...props} style={% raw %}{{ color }}{% endraw %} />
-);
+)
 ```
 
 ### ⛸ Optimizations

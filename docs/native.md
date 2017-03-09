@@ -9,12 +9,12 @@ permalink: /native
 For React Native, you need to import `cssta/native`, and unlike the web version, there's no `cssta.View` syntax. Other than that, it works as normal.
 
 ```jsx
-import { cssta } from 'cssta/native';
-import { Text } from 'react-native';
+import { cssta } from 'cssta/native'
+import { Text } from 'react-native'
 
 const StyledView = cssta(Text)`
   color: red;
-`;
+`
 ```
 
 ## 📝 CSS Support
@@ -73,7 +73,7 @@ cssta(Text)`
   :matches([color="red"], [color="blue"]) { ... }
 
   :not([allowOverflow]) { ... }
-`;
+`
 ```
 
 Cssta for React Native does not use specificity: rules get applied in the order defined.
@@ -91,7 +91,7 @@ const AnimatedButton = cssta(Animated.View)`
   [disabled] {
     background-color: grey;
   }
-`;
+`
 ```
 
 You can animate between CSS custom properties.
@@ -117,24 +117,24 @@ const BaseStyles = cssta(View)`
 
 class AnimateOpacity extends Component {
   constructor() {
-    super();
+    super()
 
     this.state = {
       opacity: new Animated.Value(0)
-    };
+    }
   }
 
   componentWillMount() {
     Animated.timing(this.state.opacity, {
       toValue: 1,
       duration: 1000,
-    }).start();
+    }).start()
   }
 
   render() {
-    const { opacity } = this.state;
+    const { opacity } = this.state
     // Pass in your animated values here!
-    return <BaseStyles style={% raw %}{{ opacity }}{% endraw %} />;
+    return <BaseStyles style={% raw %}{{ opacity }}{% endraw %} />
   }
 }
 ```
@@ -144,7 +144,7 @@ class AnimateOpacity extends Component {
 You can use `VariablesProvider` to dynamically set variables. This accepts an `exportedVariables` property, which is a map of variables to inject. It can also be a function that when called with the variables from the scope will return this map.
 
 ```jsx
-import { VariablesProvider } from 'cssta/native';
+import { VariablesProvider } from 'cssta/native'
 
 <VariablesProvider exportedVariables={% raw %}{{ color: 'red' }}{% endraw %}>
   <ComponentsThatUseColorVariable />
@@ -153,10 +153,10 @@ import { VariablesProvider } from 'cssta/native';
 
 ```jsx
 const getExportedVariables = (variablesFromScope) => {
-  const { marginHorizontal, marginVertical } = variablesFromScope;
-  const margin = `${marginHorizontal} ${marginVertical}`;
-  return { margin };
-};
+  const { marginHorizontal, marginVertical } = variablesFromScope
+  const margin = `${marginHorizontal} ${marginVertical}`
+  return { margin }
+}
 
 <VariablesProvider exportedVariables={getExportedVariables}>
   <ComponentsThatUseColorVariable />

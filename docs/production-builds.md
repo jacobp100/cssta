@@ -14,9 +14,9 @@ npm install --save-dev babel-plugin-cssta
 
 And in your `.babelrc`.
 
-```jsxon
+```json
 {
-  "plugins" ["babel-plugin-cssta"]
+  "plugins": ["babel-plugin-cssta"]
 }
 ```
 
@@ -24,9 +24,9 @@ And in your `.babelrc`.
 
 If you are building for the web, you need to specify a CSS file to write out to with the `output` option. This is relative to your current working directory.
 
-```jsxon
+```json
 {
-  "plugins" [
+  "plugins": [
     ["babel-plugin-cssta", {
       "output": "dist/styles.css"
     }]
@@ -40,9 +40,9 @@ You can transform multiple JS files, and the CSS will be concatenated to. Howeve
 
 You can enable certain build optimizations in the `optimizations` parameter in the options.
 
-```jsxon
+```json
 {
-  "plugins" [
+  "plugins": [
     ["babel-plugin-cssta", {
       "optimizations": [
         "name1",
@@ -68,36 +68,36 @@ You cannot interpolate property names or entire declarations.
 
 ```jsx
 // ✅
-const color = 'red';
-const small = 5;
-const large = 10;
+const color = 'red'
+const small = 5
+const large = 10
 
 const RedView = cssta(View)`
   color: ${color};
   margin: ${small} ${large};
   border: ${1 / PixelRatio.get()} solid red;
-`;
+`
 ```
 
 
 ```jsx
 // ❌ Not interpolating a value
-const prop = 'font';
+const prop = 'font'
 
 const invalid = cssta(Text)`
   ${prop}: 12 "Helvetica";
-`;
+`
 ```
 
 ```jsx
 // ❌ Not interpolating a value
 const mixin = `
   color: blue;
-`;
+`
 
 const invalid = cssta(Text)`
   ${mixin}
-`;
+`
 ```
 
 ### `singleSourceOfVariables`
@@ -114,11 +114,11 @@ This is for you define all CSS custom properties in a single component, and do n
 // ✅
 const Component = cssta(View)`
   --primary: red;
-`;
+`
 
 const OtherComponent = cssta(View)`
   backgroundColor: var(--primary);
-`;
+`
 ```
 
 ```jsx
@@ -126,7 +126,7 @@ const OtherComponent = cssta(View)`
 const Component = cssta(View)`
   --red: red;
   --primary: var(--red);
-`;
+`
 ```
 
 ```jsx
@@ -135,16 +135,16 @@ const red = 'red';
 
 const Component = cssta(View)`
   --primary: ${red};
-`;
+`
 ```
 
 ```jsx
 // ❌ Two components define properties
 const Component1 = cssta(View)`
   --primary: red;
-`;
+`
 
 const Component2 = cssta(View)`
   --secondary: blue;
-`;
+`
 ```

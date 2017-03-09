@@ -16,7 +16,7 @@ cssta.injectGlobal`
   :root {
     --primary: red;
   }
-`;
+`
 ```
 
 But in React Native, you'll have to create a wrapper View.
@@ -25,7 +25,7 @@ But in React Native, you'll have to create a wrapper View.
 // Native
 const Root = cssta(View)`
   --primary: red;
-`;
+`
 ```
 
 You can then use the variables as normal.
@@ -35,7 +35,7 @@ const Button = cssta.button`
   color: var(--primary);
   border: 1px solid var(--primary);
   padding: 0.5rem 1rem;
-`;
+`
 ```
 
 To add dynamic styling based upon context, just redefine variables.
@@ -44,13 +44,13 @@ To add dynamic styling based upon context, just redefine variables.
 const LightBox = cssta.div`
   background-color: black;
   --primary: white;
-`;
+`
 
 const Example = (
   <LightBox>
     <Button>I am white on black!</Button>
   </LightBox>
-);
+)
 ```
 
 And to make dynamic styling even more dynamic.
@@ -64,11 +64,11 @@ const LightBox = cssta.div`
     background-color: white;
     --primary: black;
   }
-`;
+`
 
 const Example = (
   <LightBox inverted>
     <Button>I am black on white!</Button>
   </LightBox>
-);
+)
 ```

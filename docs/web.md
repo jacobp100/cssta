@@ -25,7 +25,7 @@ const Button = cssta.button`
       background: linear-gradient(to bottom, red, green);
     }
   }
-`;
+`
 ```
 
 Animations work too, and CSSTA will scope the keyframe names to avoid conflicts.
@@ -37,7 +37,7 @@ const Button = cssta.button`
   @keyframes scoped-animation {
     0% { opacity: 0; }
   }
-`;
+`
 ```
 
 ## 🌐 Globals
@@ -53,7 +53,7 @@ cssta.injectGlobal`
   body {
     margin: var(--margin);
   }
-`;
+`
 ```
 
 This can also create global animations.
@@ -63,11 +63,11 @@ cssta.injectGlobal`
   @keyframes fade-in {
     0% { opacity: 0; }
   }
-`;
+`
 
 const Button = cssta.button`
   animation: 1s fade-in;
-`;
+`
 ```
 
 ## 📝 Polyfills

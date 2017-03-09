@@ -11,11 +11,11 @@ Plenty of work has been done for styled-components integration into text editors
 All styled-components tools should work with Cssta: you just have call your Cssta import `styled`.
 
 ```jsx
-import styled from 'cssta';
+import styled from 'cssta'
 
 styled.h1`
   color: red;
-`;
+`
 ```
 
 ## 🖍 Syntax Highlighting
