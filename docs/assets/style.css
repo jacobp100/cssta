@@ -157,6 +157,11 @@ pre code {
     margin: 48pt 120pt 24pt var(--sidebar-width);
   }
 
+  pre {
+    /* hide scrollbars */
+    overflow-y: auto;
+  }
+
   #menu {
     position: absolute;
     top: 48pt;
