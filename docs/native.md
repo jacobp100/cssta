@@ -6,7 +6,7 @@ permalink: /native
 
 # 📱 Native
 
-For React Native, you need to import `cssta/native`, and unlike the web version, there's no `cssta.View` syntax. Other than that, it works as normal.
+For React Native, you need to import `cssta/native`, and unlike the web version, there’s no `cssta.View` syntax. Other than that, it works as normal.
 
 ```jsx
 import { cssta } from 'cssta/native'
@@ -26,7 +26,14 @@ font-size: 12px;
 color: red;
 ```
 
-There is also support for more complicated attributes.
+There’s also support for short-hands.
+
+```css
+margin: 0px 5px; /* { marginTop: 0, marginRight: 5, ... } */
+font: bold italic 12px/18px "Helvetica";
+```
+
+And support for more complicated attributes.
 
 ```css
 shadow-offset: 10px 5px;  /* { width: 10, height: 5 } */
@@ -34,26 +41,7 @@ font-variant: small-caps; /* ['small-caps'] */
 transform: scale(3) rotate(30deg); /* [{ scale: 3 }, { rotate: '30deg' }] */
 ```
 
-And support for short-hands:
-
-```css
-margin: 0px 5px; /* { marginTop: 0, marginRight: 5, ... } */
-font: bold italic 12px/18px "Helvetica";
-```
-
 For more information, see [css-to-react-native](https://www.npmjs.com/package/css-to-react-native).
-
-## 🎚 Polyfills
-
-There are built-in polyfills for the following.
-
-* Transitions (See below)
-* CSS custom properties (`var(--property)`)
-* CSS color function (`color(red tint(50%))`, see [spec](https://drafts.csswg.org/css-color/#modifying-colors))
-
-These work the same as in CSS.
-
-Note that the `color` function is subject to change when the spec is complete.
 
 ## 🔍 Selectors
 
@@ -78,6 +66,14 @@ cssta(Text)`
 
 Cssta for React Native does not use specificity: rules get applied in the order defined.
 
+## 🎚 Polyfills
+
+There are built-in polyfills for the following.
+
+* Transitions and Animations (see below)
+* CSS custom properties: `var(--property)`
+* [CSS color function](https://drafts.csswg.org/css-color/#modifying-colors): `color(red tint(50%))`
+
 ## 📹 Transitions and Animations
 
 Cssta has a lightweight wrapper for CSS transitions and animations. You’ll need to use a `Animated` component (usually `Animated.View`) for this, and then define these as you would in CSS.
@@ -85,11 +81,15 @@ Cssta has a lightweight wrapper for CSS transitions and animations. You’ll nee
 ```jsx
 const ButtonWithTransition = cssta(Animated.View)`
   background-color: blue;
+  color: white;
 
-  transition: background-color 0.5s ease-in;
+  transition:
+    background-color 0.5s ease-in,
+    color 0.7s ease-in;
 
   [disabled] {
-    background-color: grey;
+    background-color: gray;
+    color: light-gray;
   }
 `
 
@@ -103,19 +103,26 @@ const ButtonWithKeyframes = cssta(Animated.View)`
 `
 ```
 
-You can animate between CSS custom properties.
+You can even use CSS custom properties!
+
+```jsx
+const ButtonWithVariablesTransition = cssta(Animated.View)`
+  color: var(--primary);
+  transition: color 1s;
+`
+```
+
+Check the [React Native documentation](https://facebook.github.io/react-native/docs/animations.html) for what you can and can’t animate.
 
 ⚠️ We aren’t a full-blown CSS engine, so there are a few caveats—but these shouldn’t affect you too much.
 
-Both the `animation` and `transition` properties must use shorthand notation: you can't split it into separate parts like `animation-name`. They both accept a duration (in `s` or `ms`) and a timing function (`linear`, `ease`, `ease-in`, `ease-out`, and `ease-in-out`). The `transition` property also take a property name, and can use a comma to define multiple transitions. The `animation` property takes an additional keyframe name.
+Both the `animation` and `transition` properties must use shorthand notation: you can’t split it into separate parts like `animation-name`.
 
-All properties that are transitioned must defined in the top level (without a selector) so we know a default value to use: in the case above, `background-color` was defined in the top level. This does not apply to keyframes.
+You can animate multiple transforms, but the nodes of the transform must not change. I.e, you can animate `transform: scaleX(1) rotateX(0deg)` to `transform: scaleX(5) rotateX(30deg)`, but you cannot then transform to `transform: scaleY(5) skew(30deg)`.
 
-You can’t use shorthand properties in the transition property, including things like `border-width`. You can have `border-width: 5px` transition to `border-width: 10px 20px`, but you’ll need to write `transition: border-top-width border-right-width … 1s`. This does not apply to keyframes.
+**Transitions** must have all transitioned properties defined in the top level (without a selector) so we know a default value to use. When transitioning shorthand properties, you’ll have to write each property name out individually in the `transition` property. This includes things like `border-width`, where you’ll have to write `transition: border-top-width border-right-width … 1s`.
 
-You can animate multiple transitions, but the nodes of the transition must not change. You can animate `transition: scaleX(1) rotateX(0deg)` to `transition: scaleX(5) rotateX(30deg)`, but you cannot then transition to `transition: scaleY(2)`.
-
-For the moment, keyframes will not reset to their default values after the animation has elapsed: they will take the value they had at the end of the animation (like `animation-fill-mode: forwards`).
+**Animations** currently do not reset to their default values after the animation has elapsed: they will take the value they had at the end of the animation (like `animation-fill-mode: forwards`).
 
 ## 🎥 Custom Animations via `Animated.Value`
 

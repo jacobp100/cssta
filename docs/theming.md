@@ -19,7 +19,7 @@ cssta.injectGlobal`
 `
 ```
 
-But in React Native, you'll have to create a wrapper View.
+But in React Native, you’ll have to create a wrapper View.
 
 ```jsx
 // Native

@@ -34,7 +34,7 @@ If you are building for the web, you need to specify a CSS file to write out to 
 }
 ```
 
-You can transform multiple JS files, and the CSS will be concatenated to. However, **before you run babel, you must delete the existing CSS file** so you don't end up with duplicate CSS.
+You can transform multiple JS files, and the CSS will be concatenated to. However, **before you run babel, you must delete the existing CSS file** so you don’t end up with duplicate CSS.
 
 ## ⛸ Optimizations
 
@@ -60,7 +60,7 @@ You can enable certain build optimizations in the `optimizations` parameter in t
 
 Template interpolation (`${value}`) in React Native is permitted anywhere. However, this makes it impossible to pre-parse, since you could be interpolating entire rules. As a result, when you interpolate values, we have to bundle postCSS, and perform parsing at run-time.
 
-The most common use-case for interpolation is interpolating values. If you limit interpolation to only values this, we can pre-parse your CSS at build-time, and won't bundle postCSS. CSS short-hands are still supported using this optimization.
+The most common use-case for interpolation is interpolating values. If you limit interpolation to only values this, we can pre-parse your CSS at build-time, and won’t bundle postCSS. CSS short-hands are still supported using this optimization.
 
 You cannot interpolate property names or entire declarations.
 
@@ -78,7 +78,6 @@ const RedView = cssta(View)`
   border: ${1 / PixelRatio.get()} solid red;
 `
 ```
-
 
 ```jsx
 // ❌ Not interpolating a value

@@ -153,7 +153,7 @@ const Example = (
 )
 ```
 
-There's a few extra examples in [theming](./theming.md).
+There’s a few extra examples in [theming](./theming.md).
 
 ## 🖌 Overriding Styles
 

@@ -30,9 +30,21 @@ h2,
   letter-spacing: -0.3pt;
 }
 
+  h2 code {
+    letter-spacing: -1.1pt;
+  }
+
 h3 {
   font-size: 12pt;
   font-weight: 700;
+  margin: 12pt 0;
+}
+
+h6 {
+  color: inherit;
+  font-size: 8pt;
+  line-height: inherit;
+  text-transform: uppercase;
   margin: 12pt 0;
 }
 
@@ -55,14 +67,14 @@ img {
 }
 
 code {
-  font-family: 'Source Mono Pro', monospace;
-  padding: 0 4pt;
-  background-color: #f8f8f8;
+  font-family: 'Source Code Pro', monospace;
+  padding: 0 3pt;
+  background-color: #f2f5f5; /* lighten(#ecf0f1, 2%); */
 }
 
 pre {
   position: relative;
-  font: 10pt/12pt 'Source Mono Pro', monospace;
+  font: 10pt/12pt 'Source Code Pro', monospace;
   margin: 18pt calc(-1 * var(--gutter));
   padding: 18pt var(--gutter);
   text-indent: 0;
@@ -71,11 +83,11 @@ pre {
   -webkit-overflow-scrolling: touch;
 }
 
-pre code {
-  font: inherit;
-  padding: 0;
-  background-color: inherit;
-}
+  pre code {
+    font: inherit;
+    padding: 0;
+    background-color: inherit;
+  }
 
 /*****************\
 * CUSTOM ELEMENTS *
@@ -87,55 +99,55 @@ pre code {
   border-bottom: 1px solid #eee;
 }
 
-.menu__title {
-  /* inherits from h2 */
-  line-height: 1;
-  margin: 0;
-}
+  .menu__title {
+    /* inherits from h2 */
+    line-height: 1;
+    margin: 0;
+  }
 
-.menu__show,
-.menu__hide {
-  position: relative;
-  top: 2pt;
-  float: right;
-}
+  .menu__show,
+  .menu__hide {
+    position: relative;
+    top: 2pt;
+    float: right;
+  }
 
-.menu__list {
-  list-style: none;
-  padding: 0;
-}
+  .menu__list {
+    list-style: none;
+    padding: 0;
+  }
 
-.menu__title,
-.menu__link,
-.menu__image-section,
-.menu__hide,
-.menu__show {
-  display: block;
-  padding: 6pt 12pt;
-  text-decoration: none;
-  color: black;
-}
+  .menu__title,
+  .menu__link,
+  .menu__image-section,
+  .menu__hide,
+  .menu__show {
+    display: block;
+    padding: 6pt 12pt;
+    text-decoration: none;
+    color: black;
+  }
 
-.menu__image {
-  margin: 12pt 0;
-  height: 32pt;
-}
+  .menu__image {
+    margin: 12pt 0;
+    height: 32pt;
+  }
 
-.menu__list,
-.menu__hide,
-:target .menu__show {
-  display: none;
-}
+  .menu__list,
+  .menu__hide,
+  :target .menu__show {
+    display: none;
+  }
 
-:target .menu__list,
-:target .menu__hide,
-.menu__show {
-  display: block;
-}
+  :target .menu__list,
+  :target .menu__hide,
+  .menu__show {
+    display: block;
+  }
 
-.menu__link--active {
-  color: var(--primary);
-}
+  .menu__link--active {
+    color: var(--primary);
+  }
 
 /***************\
 * MEDIA QUERIES *
@@ -172,20 +184,20 @@ pre code {
     margin: 0;
   }
 
-  .menu__list {
-    display: block;
-  }
+    .menu__list {
+      display: block;
+    }
 
-  .menu__hide,
-  .menu__show {
-    display: none;
-  }
+    .menu__hide,
+    .menu__show {
+      display: none;
+    }
 
-  .menu__title,
-  .menu__link,
-  .menu__image-section {
-    padding: 2pt 24pt;
-  }
+    .menu__title,
+    .menu__link,
+    .menu__image-section {
+      padding: 2pt 24pt;
+    }
 }
 
 /********************\
