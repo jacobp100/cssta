@@ -21,10 +21,10 @@ const normaliseCss = (str) => {
   return output;
 };
 
-const getActual = (testPath, actualJsPath, tempCssPath, optionsPath) => {
+const getActual = (testPath, actualJsPath, expectedCssPath, optionsPath) => {
   plugin.resetGenerators();
 
-  const options = { output: tempCssPath, cwd: testPath };
+  const options = { output: expectedCssPath, cwd: testPath };
 
   if (fs.existsSync(optionsPath)) {
     const userOptions = JSON.parse(fs.readFileSync(optionsPath, 'utf8'));
@@ -35,13 +35,15 @@ const getActual = (testPath, actualJsPath, tempCssPath, optionsPath) => {
     plugins: [[plugin, options]],
   }).code;
 
-  let actualCss = fs.existsSync(tempCssPath)
-    ? fs.readFileSync(tempCssPath, 'utf8')
+  let actualCss = fs.existsSync(expectedCssPath)
+    ? fs.readFileSync(expectedCssPath, 'utf8')
     : '';
   actualCss = normaliseCss(actualCss);
 
   return { actualJs, actualCss };
 };
+
+const getMockCssPath = () => tempfile('.css');
 
 glob.sync(path.join(baseDir, 'fixtures/*/')).filter(name => (
   !filter || name.indexOf(filter) !== -1
@@ -49,22 +51,24 @@ glob.sync(path.join(baseDir, 'fixtures/*/')).filter(name => (
   const testName = path.relative(path.join(baseDir, 'fixtures'), testPath);
 
   const expectedJsPath = path.join(testPath, 'expected.js');
-  const expectedCssPath = path.join(testPath, 'expected.css');
   const actualJsPath = path.join(testPath, 'actual.js');
-  const tempCssPath = tempfile('.css');
   const optionsPath = path.join(testPath, 'options.json');
 
   if (approve) {
-    const { actualJs, actualCss } = getActual(testPath, actualJsPath, tempCssPath, optionsPath);
+    const expectedCssPath = path.join(testPath, 'expected.css');
+    const { actualJs, actualCss } = getActual(testPath, actualJsPath, expectedCssPath, optionsPath);
+
     const options = { flag: 'w+', encoding: 'utf8' };
     fs.writeFileSync(expectedJsPath, actualJs, options);
     if (actualCss) fs.writeFileSync(expectedCssPath, actualCss, options);
   } else if (skipTest) {
-    const { actualJs } = getActual(testPath, actualJsPath, tempCssPath, optionsPath);
+    const { actualJs } = getActual(testPath, actualJsPath, getMockCssPath(), optionsPath);
     if (print) console.log(actualJs); // eslint-disable-line
   } else {
     it(`should work with ${testName}`, () => {
-      const { actualJs, actualCss } = getActual(testPath, actualJsPath, tempCssPath, optionsPath);
+      const expectedCssPath = getMockCssPath();
+      const { actualJs, actualCss } =
+        getActual(testPath, actualJsPath, expectedCssPath, optionsPath);
       const expectedJs = fs.readFileSync(expectedJsPath, 'utf8');
       const expectedCss = actualCss && fs.readFileSync(expectedCssPath, 'utf8');
 
