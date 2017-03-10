@@ -42,7 +42,10 @@ The CSS input is *mostly* regular CSS—but you should look at the platform guid
 However, selectors are changed on all platforms: only the following selector parts are permitted:
 
 * `&` to refer to the current component
-* `:hover`, `::before`, `:not(...)`, `:nth-child(...)` etc. pseudo selectors (platform dependent)
+…ly the following selector parts are permitted:
+
+* `&` to refer to the current component
+* `:hover`, `::before`, `:not(…)`, `:nth-child(…)` etc. pseudo selectors (platform dependent)
 * `[attribute]` and `[attribute="value"]` (these refer to React Props—see below)
 
 Combinators (`a b`, `a > b` etc.) are not permitted.

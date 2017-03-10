@@ -17,6 +17,8 @@ const StyledView = cssta(Text)`
 `
 ```
 
+You’ll still want to run your code through `babel-plugin-cssta`, as we do a lot of optimisations. See [Production Builds](/production-builds#-native) for how to do this.
+
 ## 📝 CSS Support
 
 Cssta for React Native supports all the CSS React Native supports, and has the same syntax as your browser.
@@ -49,8 +51,8 @@ The only selectors supported on React Native are,
 
 * `[boolAttribute]`
 * `[stringAttribute="stringValue"]`
-* `:not(...)`
-* `:matches(...)`
+* `:not(…)`
+* `:matches(…)`
 
 And these selectors work as normal.
 

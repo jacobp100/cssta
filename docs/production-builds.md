@@ -34,6 +34,21 @@ If you are building for the web, you need to specify a CSS file to write out to 
 }
 ```
 
+## 📱 Native
+
+For native, just create a `.babelrc` file with the following.
+
+```json
+{
+  "presets": ["react-native"],
+  "env": {
+    "production": {
+      "plugins": ["babel-plugin-cssta"]
+    }
+  }
+}
+```
+
 You can transform multiple JS files, and the CSS will be concatenated to. However, **before you run babel, you must delete the existing CSS file** so you don’t end up with duplicate CSS.
 
 ## ⛸ Optimizations

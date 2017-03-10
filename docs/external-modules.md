@@ -1,14 +1,12 @@
 ---
 layout: page
-title: Publishing and Using External Modules
-permalink: /publishing-and-using-modules
+title: External Modules
+permalink: /external-modules
 ---
 
-# Ⓜ️ Publishing and Using External Modules
+# Ⓜ️ External Modules
 
 As a user of external Cssta modules, all you have to do is ensure these modules are run through babel using `babel-plugin-cssta`. On the web, this will add the module’s CSS in the outputted CSS file, and on native, this will mostly perform optimizations.
-
-All Cssta modules have to use the ES `import ... from 'cssta'` syntax for the babel plugin to work. For users, this means ensuring your build process can handle this. For publishers, just make sure your users get this syntax!
 
 ## Webpack
 
@@ -33,3 +31,7 @@ To get Cssta modules working, you have to make sure that you are running all fil
 ```
 
 However, if this is causing serious performance issues, you can do two runs through babel ([example](https://gist.github.com/jacobp100/4f0b08bf485bfcdcb17741cbabf85c75)).
+
+## 🅿️ Publishers
+
+All Cssta modules have to use the ES `import … from 'cssta'` syntax for the babel plugin to work. For users, this means ensuring your build process can handle this. For publishers, just make sure your users get this syntax!
