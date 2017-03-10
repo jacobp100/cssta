@@ -111,7 +111,6 @@ it('transitions values', () => runTest({
     ],
   },
 }));
-
 it('transitions colors', () => runTest({
   rules: [{
     validate: () => true,
@@ -250,4 +249,124 @@ it('does not allow animating between divergent transforms', () => {
   }).toThrow();
 });
 
-// FIXME: Test animations
+it('animates values', () => runTest({
+  rules: [{
+    validate: () => true,
+    styleTuples: [],
+    animation: ['fade-in', '1s'],
+  }],
+  keyframesStyleTuples: {
+    'fade-in': [
+      { time: 0, styleTuples: [['opacity', '0']] },
+      { time: 1, styleTuples: [['opacity', '1']] },
+    ],
+  },
+  expectedProps: {
+    style: [
+      {},
+      {
+        opacity: {
+          isAnimatedValue: true,
+          interpolation: {
+            inputRange: [0, 1],
+            outputRange: [0, 1],
+          },
+        },
+      },
+    ],
+  },
+}));
+
+it('animates colors', () => runTest({
+  rules: [{
+    validate: () => true,
+    styleTuples: [],
+    animation: ['fade-in', '1s'],
+  }],
+  keyframesStyleTuples: {
+    'fade-in': [
+      { time: 0, styleTuples: [['color', 'red']] },
+      { time: 1, styleTuples: [['color', 'green']] },
+    ],
+  },
+  expectedProps: {
+    style: [
+      {},
+      {
+        color: {
+          isAnimatedValue: true,
+          interpolation: {
+            inputRange: [0, 1],
+            outputRange: ['red', 'green'],
+          },
+        },
+      },
+    ],
+  },
+}));
+
+it('performs keyframe animation on mount', () => {
+  const rules = [{
+    validate: () => true,
+    styleTuples: [],
+    animation: ['fade-in', '1s'],
+  }];
+  const keyframesStyleTuples = {
+    'fade-in': [
+      { time: 0, styleTuples: [['opacity', '0']] },
+      { time: 1, styleTuples: [['opacity', '1']] },
+    ],
+  };
+  const args = {
+    rules, importedVariables: [], transitionedProperties: [], keyframesStyleTuples,
+  };
+  const Element = defaultDynamicComponent('button', [], args);
+
+  const animationStartMock = reactNativeMock.Animated.start;
+
+  animationStartMock.mockClear();
+  expect(animationStartMock.mock.calls.length).toBe(0);
+
+  renderer.create(React.createElement(Element, {}));
+
+  expect(animationStartMock.mock.calls.length).toBe(1);
+});
+
+it('performs keyframe animation when changing animation', () => {
+  const rules = [{
+    validate: () => true,
+    styleTuples: [],
+    animation: ['fade-in', '1s'],
+  }, {
+    validate: props => props.active,
+    styleTuples: [],
+    animation: ['fade-out', '1s'],
+  }];
+  const keyframesStyleTuples = {
+    'fade-in': [
+      { time: 0, styleTuples: [['opacity', '0']] },
+      { time: 1, styleTuples: [['opacity', '1']] },
+    ],
+    'fade-out': [
+      { time: 0, styleTuples: [['opacity', '1']] },
+      { time: 1, styleTuples: [['opacity', '0']] },
+    ],
+  };
+  const args = {
+    rules, importedVariables: [], transitionedProperties: [], keyframesStyleTuples,
+  };
+  const Element = defaultDynamicComponent('button', ['active'], args);
+
+  const animationStartMock = reactNativeMock.Animated.start;
+
+  animationStartMock.mockClear();
+  expect(animationStartMock.mock.calls.length).toBe(0);
+
+  const instance = renderer.create(React.createElement(Element, {}));
+
+  expect(animationStartMock.mock.calls.length).toBe(1);
+
+  instance.update(React.createElement(Element, { active: true }));
+
+  expect(animationStartMock.mock.calls.length).toBe(2);
+});
