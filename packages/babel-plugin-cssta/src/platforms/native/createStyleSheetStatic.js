@@ -3,7 +3,7 @@ const t = require('babel-types');
 const _ = require('lodash/fp');
 const { getOrCreateImportReference } = require('../../util');
 const createStyleBody = require('./createStyleBody');
-const { baseRuleElements } = require('./util');
+const { baseRuleElements } = require('./createUtil');
 
 module.exports = (path, substitutionMap, rules) => {
   const statementPath = path.getStatementParent();

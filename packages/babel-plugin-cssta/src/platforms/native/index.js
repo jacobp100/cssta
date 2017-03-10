@@ -4,59 +4,11 @@ const _ = require('lodash/fp');
 const resolveVariableDependencies = require('cssta/src/util/resolveVariableDependencies');
 const extractRules = require('cssta/src/native/extractRules');
 const { getOrCreateImportReference, jsonToNode } = require('../../util');
-const createStyleBody = require('./createStyleBody');
-const createStaticStylesheet = require('./createStaticStylesheet');
-const createVariablesStyleSheet = require('./createVariablesStyleSheet');
-const { jsonObjectProperties } = require('./util');
+const createStyleSheetStatic = require('./createStyleSheetStatic');
+const createStyleSheetVariables = require('./createStyleSheetVariables');
+const createArgsStatic = require('./createArgsStatic');
+const createArgsVariables = require('./createArgsVariables');
 
-const commonArgsProperties = _.flow(
-  _.pick(['transitionedProperties', 'importedVariables']),
-  jsonObjectProperties
-);
-
-const commonArgs = (rulesBody, args) => [
-  ...commonArgsProperties(args),
-  t.objectProperty(t.stringLiteral('rules'), rulesBody),
-];
-
-const getStaticKeyframe = _.curry((path, substitutionMap, keyframe) => (
-  t.objectExpression([
-    t.objectProperty(
-      t.stringLiteral('time'),
-      t.numericLiteral(keyframe.time)
-    ),
-    t.objectProperty(
-      t.stringLiteral('styles'),
-      createStyleBody(path, substitutionMap, keyframe.styleTuples)
-    ),
-  ])
-));
-
-const getSaticKeyframes = (path, substitutionMap, keyframesStyleTuples) =>
-  t.objectExpression(
-    _.map(([keyframeName, styleTuples]) => t.objectProperty(
-      t.stringLiteral(keyframeName),
-      t.arrayExpression(_.map(getStaticKeyframe(path, substitutionMap), styleTuples))
-    ), _.toPairs(keyframesStyleTuples))
-  );
-
-const createStaticArgs = (path, substitutionMap, rulesBody, args) =>
-  t.objectExpression([
-    ...commonArgs(rulesBody, args),
-    t.objectProperty(
-      t.stringLiteral('keyframes'),
-      getSaticKeyframes(path, substitutionMap, args.keyframesStyleTuples)
-    ),
-  ]);
-
-const createVariablesArgs = (path, substitutionMap, rulesBody, args) =>
-  t.objectExpression([
-    ...commonArgs(rulesBody, args),
-    t.objectProperty(
-      t.stringLiteral('keyframesStyleTuples'),
-      jsonToNode(args.keyframesStyleTuples)
-    ),
-  ]);
 
 const everyIsEmpty = _.every(_.isEmpty);
 const ruleIsEmpty = _.flow(
@@ -118,9 +70,9 @@ module.exports = (path, state, component, cssText, substitutionMap) => {
       getOrCreateImportReference(path, `${enhancersRoot}/VariablesStyleSheetManager`, 'default');
     enhancers.push(variablesEnhancer);
 
-    rulesBody = createVariablesStyleSheet(path, substitutionMap, rules, args);
+    rulesBody = createStyleSheetVariables(path, substitutionMap, rules, args);
   } else {
-    rulesBody = createStaticStylesheet(path, substitutionMap, rules);
+    rulesBody = createStyleSheetStatic(path, substitutionMap, rules);
   }
 
   if (hasTransitions) {
@@ -145,8 +97,8 @@ module.exports = (path, state, component, cssText, substitutionMap) => {
   }
 
   const argsNode = hasVariables
-    ? createVariablesArgs(path, substitutionMap, rulesBody, args)
-    : createStaticArgs(path, substitutionMap, rulesBody, args);
+    ? createArgsVariables(path, substitutionMap, rulesBody, args)
+    : createArgsStatic(path, substitutionMap, rulesBody, args);
 
   const newElement = t.callExpression(componentConstructor, [
     component,

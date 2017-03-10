@@ -1,0 +1,25 @@
+/* eslint-disable no-param-reassign */
+const t = require('babel-types');
+const _ = require('lodash/fp');
+const createStyleBody = require('./createStyleBody');
+
+const createKeyframeStatic = _.curry((path, substitutionMap, keyframe) => (
+  t.objectExpression([
+    t.objectProperty(
+      t.stringLiteral('time'),
+      t.numericLiteral(keyframe.time)
+    ),
+    t.objectProperty(
+      t.stringLiteral('styles'),
+      createStyleBody(path, substitutionMap, keyframe.styleTuples)
+    ),
+  ])
+));
+
+module.exports = (path, substitutionMap, keyframesStyleTuples) =>
+  t.objectExpression(
+    _.map(([keyframeName, styleTuples]) => t.objectProperty(
+      t.stringLiteral(keyframeName),
+      t.arrayExpression(_.map(createKeyframeStatic(path, substitutionMap), styleTuples))
+    ), _.toPairs(keyframesStyleTuples))
+  );

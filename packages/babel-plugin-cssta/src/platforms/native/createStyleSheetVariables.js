@@ -2,7 +2,8 @@
 const t = require('babel-types');
 const _ = require('lodash/fp');
 const { getPropertyName } = require('css-to-react-native');
-const { getStringWithSubstitutedValues, baseRuleElements } = require('./util');
+const { getStringWithSubstitutedValues } = require('./util');
+const { baseRuleElements } = require('./createUtil');
 
 module.exports = (path, substitutionMap, rules) => {
   const createStyleTuples = ({ styleTuples }) => t.arrayExpression(_.map(([prop, value]) => (
