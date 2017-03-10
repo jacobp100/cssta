@@ -4,9 +4,9 @@
 
 :root {
   font: 12pt/16pt 'Source Sans Pro', sans-serif;
+  --sidebar-width: 200pt;
   --gutter: 12pt;
   --primary: #d35400;
-  --sidebar-width: 240pt;
 }
 
 body {
@@ -53,9 +53,9 @@ a {
   text-decoration: none;
 }
 
-a:hover, a:focus {
-  opacity: 0.75;
-}
+  a:hover, a:focus {
+    opacity: 0.75;
+  }
 
 p {
   margin: 6pt 0;
@@ -94,6 +94,7 @@ pre {
 \*****************/
 
 #menu {
+  /* Use an id so we can make use of :target */
   margin: calc(-1 * var(--gutter));
   padding: var(--gutter);
   border-bottom: 1px solid #eee;
@@ -166,7 +167,7 @@ pre {
   }
 
   body {
-    margin: 48pt 120pt 24pt var(--sidebar-width);
+    margin: 48pt 120pt 24pt calc(var(--sidebar-width) + var(--gutter));
   }
 
   pre {
