@@ -136,12 +136,12 @@ pre {
 
   .menu__list,
   .menu__hide,
-  :target .menu__show {
+  #menu:target .menu__show {
     display: none;
   }
 
-  :target .menu__list,
-  :target .menu__hide,
+  #menu:target .menu__list,
+  #menu:target .menu__hide,
   .menu__show {
     display: block;
   }
@@ -186,6 +186,7 @@ pre {
   }
 
     .menu__list {
+      /* We aren't going to be able to the mobile's specificity... */
       display: block !important;
     }
 
