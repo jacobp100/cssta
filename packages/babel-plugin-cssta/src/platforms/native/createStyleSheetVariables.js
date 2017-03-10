@@ -5,21 +5,21 @@ const { getPropertyName } = require('css-to-react-native');
 const { getStringWithSubstitutedValues } = require('./util');
 const { baseRuleElements } = require('./createUtil');
 
-module.exports = (path, substitutionMap, rules) => {
-  const createStyleTuples = ({ styleTuples }) => t.arrayExpression(_.map(([prop, value]) => (
-    t.arrayExpression([
-      t.stringLiteral(getPropertyName(prop)),
-      getStringWithSubstitutedValues(substitutionMap, value),
-    ])
-  ), styleTuples));
+const createStyleTuples = (
+  substitutionMap,
+  { styleTuples }
+) => t.arrayExpression(_.map(([prop, value]) => (
+  t.arrayExpression([
+    t.stringLiteral(getPropertyName(prop)),
+    getStringWithSubstitutedValues(substitutionMap, value),
+  ])
+), styleTuples));
 
-  const rulesBody = t.arrayExpression(_.map(rule => t.objectExpression([
+module.exports = (path, substitutionMap, rules) =>
+  t.arrayExpression(_.map(rule => t.objectExpression([
     ...baseRuleElements(rule),
     t.objectProperty(
       t.stringLiteral('styleTuples'),
-      createStyleTuples(rule)
+      createStyleTuples(substitutionMap, rule)
     ),
   ]), rules));
-
-  return rulesBody;
-};
