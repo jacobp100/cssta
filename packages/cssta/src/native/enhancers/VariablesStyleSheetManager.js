@@ -2,12 +2,10 @@ const React = require('react');
 /* eslint-disable */
 const { StyleSheet } = require('react-native');
 /* eslint-enable */
-const cssToReactNative = require('css-to-react-native').default;
 const VariablesProvider = require('../VariablesProvider');
-const transformVariables = require('../../css-transforms/variables');
-const transformColors = require('../../css-transforms/colors');
 const { getAppliedRules } = require('../util');
 const resolveVariableDependencies = require('../../util/resolveVariableDependencies');
+const { transformStyleTuples } = require('../cssUtil');
 
 const { Component } = React;
 
@@ -19,19 +17,9 @@ const getExportedVariables = (props, variablesFromScope) => {
   return resolveVariableDependencies(definedVariables, variablesFromScope);
 };
 
-const transformStyleTuples = (appliedVariables, styleTuples) => {
-  const transformedStyleTuples = styleTuples.map(([property, value]) => {
-    let transformedValue = value;
-    transformedValue = transformVariables(transformedValue, appliedVariables);
-    transformedValue = transformColors(transformedValue);
-    return [property, transformedValue];
-  });
-  return cssToReactNative(transformedStyleTuples);
-};
-
 const createRuleStylesUsingStylesheet = (appliedVariables, args) => {
   const styles = args.rules
-    .map(rule => transformStyleTuples(appliedVariables, rule.styleTuples));
+    .map(rule => transformStyleTuples(rule.styleTuples, appliedVariables));
 
   const styleBody = styles.reduce((accum, style, index) => {
     accum[index] = style;

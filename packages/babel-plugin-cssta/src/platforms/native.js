@@ -5,7 +5,8 @@ const _ = require('lodash/fp');
 const { getValidatorSourceForSelector } = require('cssta/src/native/selectorTransform');
 const resolveVariableDependencies = require('cssta/src/util/resolveVariableDependencies');
 const extractRules = require('cssta/src/native/extractRules');
-const { default: cssToReactNative, getPropertyName } = require('css-to-react-native');
+const { transformStyleTuples } = require('cssta/src/native/cssUtil');
+const { getPropertyName } = require('css-to-react-native');
 const {
   getOrCreateImportReference, jsonToNode, containsSubstitution, getSubstitutionRegExp,
 } = require('../util');
@@ -25,7 +26,7 @@ const stringInterpolation = (path, value) =>
 const lengthInterpolation = (path, value) => {
   const transformRawValue = getOrCreateImportReference(
     path,
-    'cssta/lib/packages/css-to-react-native',
+    'cssta/lib/native/cssUtil',
     'transformRawValue'
   );
 
@@ -169,7 +170,7 @@ const createStyleBody = _.curry((path, substitutionMap, styleTuples) => {
           : null;
 
         if (!substitutionMatches) {
-          const styles = cssToReactNative([[propertyName, value]]);
+          const styles = transformStyleTuples([[propertyName, value]]);
           const styleToValue = _.mapValues(jsonToNode, styles);
           return _.assign(accum, styleToValue);
         } else if (substitutionMatches.length === 1) {
@@ -190,20 +191,21 @@ const createStyleBody = _.curry((path, substitutionMap, styleTuples) => {
       return t.objectExpression(_.map(([key, value]) => (
         t.objectProperty(t.stringLiteral(key), value)
       ), _.toPairs(styleMap)));
+    } else if (interpolationType === TEMPLATE_INTERPOLATION) {
+      const cssToReactNativeReference = getOrCreateImportReference(
+        path,
+        'cssta/lib/native/cssUtil',
+        'transformStyleTuples'
+      );
+
+      const bodyPairs = t.arrayExpression(_.map(([prop, value]) => t.arrayExpression([
+        t.stringLiteral(getPropertyName(prop)),
+        getStringWithSubstitutedValues(substitutionMap, value),
+      ]), styleTuplesGroup));
+
+      return t.callExpression(cssToReactNativeReference, [bodyPairs]);
     }
-
-    const cssToReactNativeReference = getOrCreateImportReference(
-      path,
-      'cssta/lib/packages/css-to-react-native',
-      'default'
-    );
-
-    const bodyPairs = t.arrayExpression(_.map(([prop, value]) => t.arrayExpression([
-      t.stringLiteral(getPropertyName(prop)),
-      getStringWithSubstitutedValues(substitutionMap, value),
-    ]), styleTuplesGroup));
-
-    return t.callExpression(cssToReactNativeReference, [bodyPairs]);
+    throw new Error('No interpolation type specified');
   }, styleTupleGroups);
 
   if (_.isEmpty(transformedGroups)) {

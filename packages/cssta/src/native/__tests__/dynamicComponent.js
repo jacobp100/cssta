@@ -1,11 +1,14 @@
 /* global jest it, expect */
 const React = require('react');
 const renderer = require('react-test-renderer'); // eslint-disable-line
-const dynamicComponent = require('../dynamicComponent');
-const VariablesStyleSheetManager = require('../dynamicComponentEnhancers/VariablesStyleSheetManager');
-const Transition = require('../dynamicComponentEnhancers/Transition');
+const withEnhancers = require('../withEnhancers');
+const VariablesStyleSheetManager = require('../enhancers/VariablesStyleSheetManager');
+const Transition = require('../enhancers/Transition');
+const Animation = require('../enhancers/Animation');
 const reactNativeMock = require('../__mocks__/react-native');
 
+const defaultDynamicComponent =
+  withEnhancers([VariablesStyleSheetManager, Transition, Animation]);
 
 const runTest = ({
   type = 'button',
@@ -13,7 +16,7 @@ const runTest = ({
   importedVariables = [],
   transitionedProperties = [],
   keyframesStyleTuples = {},
-  enhancers = [VariablesStyleSheetManager, Transition],
+  enhancers = [VariablesStyleSheetManager, Transition, Animation],
   rules = [],
   inputProps = {},
   expectedType = type,
@@ -21,7 +24,8 @@ const runTest = ({
   expectedChildren = null,
 } = {}) => {
   const args = { rules, keyframesStyleTuples, transitionedProperties, importedVariables };
-  const Element = dynamicComponent(type, propTypes, enhancers, args);
+  const dynamicComponent = withEnhancers(enhancers);
+  const Element = dynamicComponent(type, propTypes, args);
 
   const component = renderer.create(React.createElement(Element, inputProps)).toJSON();
 
@@ -205,11 +209,10 @@ it('animates between transitioned values', () => {
     styleTuples: [['color', 'blue']],
     transitions: {},
   }];
-  const enhancers = [VariablesStyleSheetManager, Transition];
   const args = {
     rules, importedVariables: [], transitionedProperties: ['color'], keyframesStyleTuples: {},
   };
-  const Element = dynamicComponent('button', ['active'], enhancers, args);
+  const Element = defaultDynamicComponent('button', ['active'], args);
 
   const animationStartMock = reactNativeMock.Animated.start;
 
@@ -235,11 +238,10 @@ it('does not allow animating between divergent transforms', () => {
     styleTuples: [['transform', 'rotateX(30deg)']],
     transitions: {},
   }];
-  const enhancers = [VariablesStyleSheetManager, Transition];
   const args = {
     rules, importedVariables: [], transitionedProperties: ['transform'], keyframesStyleTuples: {},
   };
-  const Element = dynamicComponent('button', ['active'], enhancers, args);
+  const Element = defaultDynamicComponent('button', ['active'], args);
 
   const instance = renderer.create(React.createElement(Element, {}));
 

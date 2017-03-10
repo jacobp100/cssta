@@ -5,12 +5,12 @@ const trim = str =>
   str.split('\n').map(line => line.trim()).filter(line => line !== '').join('\n');
 
 const runTestFor = (inputCss, expectedCss, {
-  defaultClassName = null,
   scopedClassNames = [],
+  defaultClassName: expectedDefaultClassName = null,
   classNameMap: expectedClassNameMap = {},
 } = {}) => {
-  const classNames = defaultClassName
-    ? [defaultClassName, ...scopedClassNames]
+  const classNames = expectedDefaultClassName
+    ? [expectedDefaultClassName, ...scopedClassNames]
     : scopedClassNames;
 
   const generateClassName = classNames.reduce((mock, name) => (
@@ -18,14 +18,15 @@ const runTestFor = (inputCss, expectedCss, {
   ), jest.fn());
   const generateAnimationName = generateClassName;
 
-  const { css, baseClassName, classNameMap: actualClassNameMap } = extractRules(inputCss, {
+  const { css, args } = extractRules(inputCss, {
     generateClassName,
     generateAnimationName,
   });
+  const { defaultClassName: actualDefaultClassName, classNameMap: actualClassNameMap } = args;
 
   expect(generateClassName.mock.calls.length).toBe(classNames.length);
   expect(trim(css)).toBe(trim(expectedCss));
-  expect(baseClassName).toBe(defaultClassName);
+  expect(actualDefaultClassName).toBe(expectedDefaultClassName);
   expect(actualClassNameMap).toEqual(expectedClassNameMap);
 };
 

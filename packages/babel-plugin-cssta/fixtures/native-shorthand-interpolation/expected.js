@@ -1,6 +1,6 @@
 import _createComponent from 'cssta/lib/native/createComponent';
 import { StyleSheet as _StyleSheet } from 'react-native';
-import _cssToReactNative from 'cssta/lib/packages/css-to-react-native';
+import { transformStyleTuples as _transformStyleTuples } from 'cssta/lib/native/cssUtil';
 
 import { View } from 'react-native';
 
@@ -9,13 +9,13 @@ const font = '10px "Helvetica"';
 var _csstaStyle = _StyleSheet.create({
   0: Object.assign({
     'marginTop': 10
-  }, _cssToReactNative([['font', `${font}`]])),
-  1: Object.assign(_cssToReactNative([['font', `${font}`]]), {
+  }, _transformStyleTuples([['font', `${font}`]])),
+  1: Object.assign(_transformStyleTuples([['font', `${font}`]]), {
     'marginTop': 10
   }),
   2: Object.assign({
     'marginTop': 10
-  }, _cssToReactNative([['font', `${font}`]]), {
+  }, _transformStyleTuples([['font', `${font}`]]), {
     'marginBottom': 10
   })
 });

@@ -1,11 +1,11 @@
 import _createComponent from 'cssta/lib/native/createComponent';
-import { transformRawValue as _transformRawValue } from 'cssta/lib/native/cssUtil';
+import { StyleSheet as _StyleSheet } from 'react-native';
 
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 
-var _csstaStyle = StyleSheet.create({
+var _csstaStyle = _StyleSheet.create({
   0: {
-    'borderBottomWidth': _transformRawValue(`${StyleSheet.hairlineWidth}px`)
+    'color': 'rgb(255, 128, 128)'
   }
 });
 

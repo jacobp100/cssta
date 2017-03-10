@@ -167,7 +167,7 @@ it('mixes variable and style declarations', () => runTestFor(`
 }]));
 
 it('returns all imported variables without duplicates', () => {
-  const { managerArgs } = extractRules(`
+  const { args } = extractRules(`
     color: var(--color);
 
     [inverted] {
@@ -176,7 +176,7 @@ it('returns all imported variables without duplicates', () => {
     }
   `);
 
-  const { importedVariables } = managerArgs;
+  const { importedVariables } = args;
 
   expect(importedVariables).toEqual(['color', 'background']);
 });
@@ -256,14 +256,14 @@ it('recognises animations', () => runTestFor(`
 }]));
 
 it('recognises keyframes', () => {
-  const { managerArgs } = extractRules(`
+  const { args } = extractRules(`
     @keyframes test {
       start { opacity: 0 }
       end { opacity: 1 }
     }
   `);
 
-  const { keyframesStyleTuples } = managerArgs;
+  const { keyframesStyleTuples } = args;
 
   expect(keyframesStyleTuples).toEqual({
     test: [
@@ -274,7 +274,7 @@ it('recognises keyframes', () => {
 });
 
 it('recognises multiple', () => {
-  const { managerArgs } = extractRules(`
+  const { args } = extractRules(`
     @keyframes test1 {
       start { opacity: 0 }
       end { opacity: 1 }
@@ -287,7 +287,7 @@ it('recognises multiple', () => {
     }
   `);
 
-  const { keyframesStyleTuples } = managerArgs;
+  const { keyframesStyleTuples } = args;
 
   expect(keyframesStyleTuples).toEqual({
     test1: [
@@ -303,13 +303,13 @@ it('recognises multiple', () => {
 });
 
 it('imports variables from keyframes', () => {
-  const { managerArgs } = extractRules(`
+  const { args } = extractRules(`
     @keyframes test {
       start { color: var(--primary) }
     }
   `);
 
-  const { importedVariables, keyframesStyleTuples } = managerArgs;
+  const { importedVariables, keyframesStyleTuples } = args;
 
   expect(importedVariables).toEqual(['primary']);
   expect(keyframesStyleTuples).toEqual({
