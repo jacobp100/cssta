@@ -78,12 +78,12 @@ cssta(Text)`
 
 Cssta for React Native does not use specificity: rules get applied in the order defined.
 
-## 📹 Transitions
+## 📹 Transitions and Animations
 
-Cssta has a lightweight wrapper for CSS transitions. You’ll need to use a `Animated` component (usually `Animated.View`) for this, and then define transitions as you would in CSS.
+Cssta has a lightweight wrapper for CSS transitions and animations. You’ll need to use a `Animated` component (usually `Animated.View`) for this, and then define these as you would in CSS.
 
 ```jsx
-const AnimatedButton = cssta(Animated.View)`
+const ButtonWithTransition = cssta(Animated.View)`
   background-color: blue;
 
   transition: background-color 0.5s ease-in;
@@ -92,19 +92,32 @@ const AnimatedButton = cssta(Animated.View)`
     background-color: grey;
   }
 `
+
+const ButtonWithKeyframes = cssta(Animated.View)`
+  animation: fade-in 1s ease-in;
+
+  @keyframes fade-in {
+      0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+`
 ```
 
 You can animate between CSS custom properties.
 
-⚠️ We aren’t a full-blown CSS engine, so there are a few caveats—but these shouldn’t hinder you too much.
+⚠️ We aren’t a full-blown CSS engine, so there are a few caveats—but these shouldn’t affect you too much.
 
-All properties that are transitioned must defined in the top level (without a selector) so we know a default value to use—in the case above, `background-color` was defined in the top level.
+Both the `animation` and `transition` properties must use shorthand notation: you can't split it into separate parts like `animation-name`. They both accept a duration (in `s` or `ms`) and a timing function (`linear`, `ease`, `ease-in`, `ease-out`, and `ease-in-out`). The `transition` property also take a property name, and can use a comma to define multiple transitions. The `animation` property takes an additional keyframe name.
 
-You can’t use shorthand properties in the transition property, including things like `border-width`. You can have `border-width: 5px` transition to `border-width: 10px 20px`, but you’ll need to write `transition: border-top-width border-right-width … 1s`.
+All properties that are transitioned must defined in the top level (without a selector) so we know a default value to use: in the case above, `background-color` was defined in the top level. This does not apply to keyframes.
+
+You can’t use shorthand properties in the transition property, including things like `border-width`. You can have `border-width: 5px` transition to `border-width: 10px 20px`, but you’ll need to write `transition: border-top-width border-right-width … 1s`. This does not apply to keyframes.
 
 You can animate multiple transitions, but the nodes of the transition must not change. You can animate `transition: scaleX(1) rotateX(0deg)` to `transition: scaleX(5) rotateX(30deg)`, but you cannot then transition to `transition: scaleY(2)`.
 
-## 🎥 Custom Animations
+For the moment, keyframes will not reset to their default values after the animation has elapsed: they will take the value they had at the end of the animation (like `animation-fill-mode: forwards`).
+
+## 🎥 Custom Animations via `Animated.Value`
 
 To get React Native animations working, you’ll want to define all your non-changing styles in the usual way, and then pass your `Animated.Value`s in as style props.
 
