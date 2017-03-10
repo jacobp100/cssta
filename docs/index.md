@@ -42,9 +42,6 @@ The CSS input is *mostly* regular CSS—but you should look at the platform guid
 However, selectors are changed on all platforms: only the following selector parts are permitted:
 
 * `&` to refer to the current component
-…ly the following selector parts are permitted:
-
-* `&` to refer to the current component
 * `:hover`, `::before`, `:not(…)`, `:nth-child(…)` etc. pseudo selectors (platform dependent)
 * `[attribute]` and `[attribute="value"]` (these refer to React Props—see below)
 
@@ -83,8 +80,6 @@ const Button = cssta.button`
   Large, Red Button with no Outline
 </Button>
 ```
-
-Note that only the attribute formats shown are valid: `[value~="invalid" i]` is invalid.
 
 The properties you defined in the CSS determine the style applied, and are not passed down to the base component. All other props get passed down.
 
@@ -131,7 +126,7 @@ const BlueButton = cssta(OutlineButton)`
 `
 ```
 
-**Note that for the moment, this only works when the components get defined in the same file!**
+**For the moment, this only works when the components get defined in the same file!**
 
 ## 🏳️‍🌈 Theming
 
@@ -174,9 +169,7 @@ The properties `className` on web, and `style` on React Native have special beha
 </Button>
 ```
 
-Note that you cannot remove the classes otherwise set by the component.
-
-For class names, it is your responsibility to resolve the specificity. I recommend you only add util classes, and each declaration in those util classes uses `!important` for everything.
+When doing this on the web, watch out for specificity conflicts!
 
 ## ✂️ Overriding the Component
 

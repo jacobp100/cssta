@@ -70,6 +70,6 @@ const Button = cssta.button`
 `
 ```
 
-## 📝 Polyfills
+## 🎚 Polyfills
 
-We don’t automatically auto-prefix your CSS, so you’ll likely want to use [autoprefixer](https://github.com/postcss/autoprefixer). If you’re using CSS custom properties, you’ll also want to use [postcss-css-variables](https://github.com/MadLittleMods/postcss-css-variables)
+We don’t auto-prefix your CSS, so you’ll likely want to use [autoprefixer](https://github.com/postcss/autoprefixer). If you’re using CSS custom properties, you’ll also want to use [postcss-css-variables](https://github.com/MadLittleMods/postcss-css-variables)

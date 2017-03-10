@@ -17,7 +17,7 @@ const StyledView = cssta(Text)`
 `
 ```
 
-You’ll still want to run your code through `babel-plugin-cssta`, as we do a lot of optimisations. See [Production Builds](/production-builds#-native) for how to do this.
+You’ll still want to run your code through the babel plugin, as we do a lot of optimisations. See [Production Builds](/production-builds#-native) for how to do this.
 
 ## 📝 CSS Support
 
@@ -128,7 +128,7 @@ You can animate multiple transforms, but the nodes of the transform must not cha
 
 ## 🎥 Custom Animations via `Animated.Value`
 
-To get React Native animations working, you’ll want to define all your non-changing styles in the usual way, and then pass your `Animated.Value`s in as style props.
+For more complicated animations, you’ll want to define all your non-changing styles in the usual way, and then pass your `Animated.Value`s in as style props.
 
 ```jsx
 const BaseStyles = cssta(View)`
@@ -163,7 +163,7 @@ class AnimateOpacity extends Component {
 
 ## 💉 Injecting Variables
 
-You can use `VariablesProvider` to dynamically set variables. This accepts an `exportedVariables` property, which is a map of variables to inject. It can also be a function that when called with the variables from the scope will return this map.
+You can use `VariablesProvider` to dynamically set variables. This accepts an `exportedVariables` property, which is a map of variables to inject.
 
 ```jsx
 import { VariablesProvider } from 'cssta/native'
@@ -172,6 +172,8 @@ import { VariablesProvider } from 'cssta/native'
   <ComponentsThatUseColorVariable />
 </Variables>
 ```
+
+You can also pass a function for `exportedVariables`, which is called with an object of the parent scope.
 
 ```jsx
 const getExportedVariables = (variablesFromScope) => {
