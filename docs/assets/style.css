@@ -186,12 +186,12 @@ pre {
   }
 
     .menu__list {
-      display: block;
+      display: block !important;
     }
 
     .menu__hide,
     .menu__show {
-      display: none;
+      display: none !important;
     }
 
     .menu__title,
