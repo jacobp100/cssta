@@ -186,7 +186,7 @@ pre {
   }
 
     .menu__list {
-      /* We aren't going to be able to the mobile's specificity... */
+      /* We aren't going to be able to match mobile's specificity... */
       display: block !important;
     }
 
