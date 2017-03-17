@@ -40,7 +40,7 @@ type KeyframeTuple = {
 }
 ```
 
-After VariablesProvider
+After VariablesProvider (unchanged names means unchanged values)
 
 ```js
 type ArgsAfter = {
