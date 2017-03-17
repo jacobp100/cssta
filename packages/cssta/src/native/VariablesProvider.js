@@ -1,13 +1,32 @@
+// @flow
 /* eslint-disable no-param-reassign */
 const React = require('react');
 const { EventEmitter } = require('events');
 const { shallowEqual } = require('../util');
+/*:: import type { VariablesStore } from './types' */
 
 const { Component, Children, PropTypes } = React;
 
 const STYLES_UPDATED = 'styles-updated';
 
-const getStyles = (variablesFromScope = {}, inputExportedVariables = {}) => {
+/*::
+type InputVariables = VariablesStore | (variables: VariablesStore) => VariablesStore
+
+type VariablesProviderState = {
+  variablesFromScope: VariablesStore,
+  appliedVariables: VariablesStore,
+}
+
+type VariablesProviderProps = {
+  exportedVariables: InputVariables,
+  children: any,
+}
+*/
+
+const getStyles = (
+  variablesFromScope /* VariablesStore */ = {},
+  inputExportedVariables /*: InputVariables */ = {}
+) /*: VariablesProviderState */ => {
   const exportedVariables = typeof inputExportedVariables === 'function'
     ? inputExportedVariables(variablesFromScope)
     : inputExportedVariables;
@@ -18,7 +37,16 @@ const getStyles = (variablesFromScope = {}, inputExportedVariables = {}) => {
 };
 
 class VariablesProvider extends Component {
-  constructor(props, context) {
+  /*::
+  state: VariablesProviderState
+  // $FlowFixMe
+  props: VariablesProviderProps
+  styleUpdateHandler: any
+  styleEmitter: any
+  updateState: (variablesFromScope: VariablesStore, inputVariables: InputVariables) => void
+  */
+
+  constructor(props /*: VariablesProviderProps */, context /*: any */) {
     super();
     this.state = getStyles(context.csstaInitialVariables || {}, props.exportedVariables);
 
@@ -27,15 +55,7 @@ class VariablesProvider extends Component {
       this.updateState(variablesFromScope, this.props.exportedVariables);
     };
 
-    this.updateState = (variablesFromScope, exportedVariables) => {
-      const nextState = getStyles(variablesFromScope, exportedVariables);
-
-      if (!shallowEqual(this.state.variablesFromScope, nextState.variablesFromScope) ||
-        !shallowEqual(this.state.appliedVariables, nextState.appliedVariables)) {
-        this.setState(nextState);
-        this.styleEmitter.emit(STYLES_UPDATED, nextState.appliedVariables);
-      }
-    };
+    this.updateState = this.updateState.bind(this);
   }
 
   getChildContext() {
@@ -46,7 +66,7 @@ class VariablesProvider extends Component {
     if (this.context.cssta) this.context.cssta.on(STYLES_UPDATED, this.styleUpdateHandler);
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps /*: VariablesProviderProps */) {
     const nextExportedVariablesChanged = typeof nextProps.exportedVariables === 'object'
       ? !shallowEqual(this.props.exportedVariables, nextProps.exportedVariables)
       : true; // If it's a function, it might change
@@ -58,6 +78,16 @@ class VariablesProvider extends Component {
 
   componentWillUnmount() {
     if (this.context.cssta) this.context.cssta.off(STYLES_UPDATED, this.styleUpdateHandler);
+  }
+
+  updateState(variablesFromScope /*: VariablesStore */, exportedVariables /*: InputVariables */) {
+    const nextState = getStyles(variablesFromScope, exportedVariables);
+
+    if (!shallowEqual(this.state.variablesFromScope, nextState.variablesFromScope) ||
+      !shallowEqual(this.state.appliedVariables, nextState.appliedVariables)) {
+      this.setState(nextState);
+      this.styleEmitter.emit(STYLES_UPDATED, nextState.appliedVariables);
+    }
   }
 
   render() {

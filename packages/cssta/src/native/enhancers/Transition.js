@@ -1,6 +1,8 @@
+// @flow
 /* eslint-disable no-param-reassign */
 const React = require('react');
 /* eslint-disable */
+// $FlowFixMe
 const { StyleSheet, Animated, Easing } = require('react-native');
 /* eslint-enable */
 const { getAppliedRules } = require('../util');
@@ -9,6 +11,8 @@ const {
   mergeStyles, interpolateValue, getDurationInMs, easingFunctions,
   durationRegExp, easingRegExp,
 } = require('./animationUtil');
+/*:: import type { DynamicProps } from '../../factories/types' */
+/*:: import type { Args } from '../types' */
 
 const { Component } = React;
 
@@ -21,8 +25,25 @@ const mergeTransitions = (props) => {
   return Object.assign({}, ...transitions);
 };
 
+/*::
+type AnimatedValue = {
+  setValue: (value: number) => void,
+}
+
+type TransitionState = {
+  styles: Object,
+  previousStyles: Object,
+}
+*/
+
 module.exports = class TransitionEnhancer extends Component {
-  constructor(props) {
+  /*::
+  state: TransitionState
+  props: DynamicProps<Args>
+  animationValues: { [key:string]: AnimatedValue }
+  */
+
+  constructor(props /*: DynamicProps<Args> */) {
     super();
 
     const styles = mergeStyles(props);
@@ -36,13 +57,13 @@ module.exports = class TransitionEnhancer extends Component {
     }, {});
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps /*: DynamicProps<Args> */) {
     const previousStyles = this.state.styles;
     const styles = mergeStyles(nextProps);
     if (!shallowEqual(previousStyles, styles)) this.setState({ styles, previousStyles });
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(prevProps /*: DynamicProps<Args> */, prevState /*: TransitionState */) {
     const { styles } = this.state;
 
     if (prevState.styles === styles) return;

@@ -1,7 +1,9 @@
+// @flow
 /* eslint-disable no-param-reassign */
 const { getPropertyName } = require('css-to-react-native');
 const getRoot = require('../util/getRoot');
 const { varRegExp, varRegExpNonGlobal, isDirectChildOfKeyframes } = require('../util');
+/*:: import type { RawVariableArgs, RawVariableRuleTuple } from './types' */
 
 const variableRegExp = /^--/;
 // Matches whole words, or whole functions (i.e. `var(--hello, with spaces here)`)
@@ -51,7 +53,7 @@ const getAnimation = declValue => declValue.match(transitionPartRegExp);
 
 const specialTuples = ['transition', 'animation'];
 
-const getRuleBody = (rule) => {
+const getRuleBody = (rule) /*: RawVariableRuleTuple */ => {
   const { selector } = rule;
   let styleTuples = getStyleTuples(rule.nodes);
 
@@ -65,7 +67,7 @@ const getRuleBody = (rule) => {
 
   const exportedVariables = getExportedVariables(rule.nodes);
 
-  return { selector, styleTuples, exportedVariables, transitionParts, animationParts };
+  return { selector, exportedVariables, transitionParts, animationParts, styleTuples };
 };
 
 const getKeyframes = atRule => walkToArray(cb => atRule.walkRules(cb))
@@ -103,7 +105,7 @@ const getImportedVariables = (root) => {
   return Object.keys(keyMirror);
 };
 
-module.exports = (inputCss) => {
+module.exports = (inputCss /*: string */) /*: ({ propTypes: Object, args: RawVariableArgs }) */ => {
   const { root, propTypes } = getRoot(inputCss);
 
   const ruleTuples = walkToArray(cb => root.walkRules(cb))
@@ -118,7 +120,7 @@ module.exports = (inputCss) => {
     }, {});
 
   const transitionedProperties =
-    Object.keys(Object.assign({}, ...ruleTuples.map(rule => rule.transitions)));
+    Object.keys(Object.assign({}, ...ruleTuples.map(rule => rule.transitionParts)));
 
   const importedVariables = getImportedVariables(root);
 

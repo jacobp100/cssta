@@ -1,12 +1,16 @@
+// @flow
 /* eslint-disable no-param-reassign */
 const React = require('react');
 /* eslint-disable */
+// $FlowFixMe
 const { StyleSheet, Animated, Easing } = require('react-native');
 /* eslint-enable */
 const { getAppliedRules } = require('../util');
 const {
   mergeStyles, interpolateValue, getDurationInMs, easingFunctions, durationRegExp, easingRegExp,
 } = require('./animationUtil');
+/*:: import type { DynamicProps } from '../../factories/types' */
+/*:: import type { Args } from '../types' */
 
 const { Component } = React;
 
@@ -69,8 +73,26 @@ const getAnimationState = (props) => {
   return { duration, easing, animations, animationValues };
 };
 
+/*::
+type AnimatedValue = {
+  setValue: (value: number) => void,
+}
+
+type AnimationState = {
+  duration: ?number,
+  easing: ?any,
+  animations: ?Object,
+  animationValues: ?{ [key:string]: AnimatedValue },
+}
+*/
+
 module.exports = class AnimationEnhancer extends Component {
-  constructor(props) {
+  /*::
+  state: AnimationState
+  props: DynamicProps<Args>
+  */
+
+  constructor(props /*: DynamicProps<Args> */) {
     super();
 
     this.state = getAnimationState(props);
@@ -80,7 +102,7 @@ module.exports = class AnimationEnhancer extends Component {
     this.runAnimation();
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps /*: DynamicProps<Args> */) {
     const nextAnimationValues = getAnimation(nextProps) || [];
     const currentAnimationValues = getAnimation(this.props) || [];
 
@@ -89,7 +111,7 @@ module.exports = class AnimationEnhancer extends Component {
     }
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(prevProps /*: DynamicProps<Args> */, prevState /*: AnimationState */) {
     if (this.state.animationValues !== prevState.animationValues) this.runAnimation();
   }
 
@@ -98,7 +120,8 @@ module.exports = class AnimationEnhancer extends Component {
 
     if (!animationValuesObject) return;
 
-    const animationValues = Object.values(animationValuesObject);
+    // $FlowFixMe
+    const animationValues /*: AnimatedValue[] */ = Object.values(animationValuesObject);
 
     animationValues.forEach(animation => animation.setValue(0));
 
@@ -122,7 +145,7 @@ module.exports = class AnimationEnhancer extends Component {
     let nextProps;
     if (animations) {
       const newRule = { style: animations };
-      const nextArgs = Object.assign({}, args, { rules: args.rules.concat(newRule) });
+      const nextArgs /*: Args */ = Object.assign({}, args, { rules: args.rules.concat(newRule) });
       nextProps = Object.assign({}, this.props, { args: nextArgs });
     } else {
       nextProps = this.props;

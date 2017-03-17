@@ -1,3 +1,4 @@
+// @flow
 /* eslint-disable no-param-reassign */
 const componentFactory = require('../factories/componentFactory');
 const { getAppliedRules } = require('./util');

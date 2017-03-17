@@ -1,3 +1,4 @@
+// @flow
 // We generate babel nodes that represent a validation function
 // In prod, we use the babel nodes to make a function
 // In dev, we eval to generate a function
@@ -37,7 +38,7 @@ const createPseudoValidator = (node) => {
     return createLogicalValidator(nodes, '||');
   } else if (value === ':not') {
     const baseValidator = createLogicalValidator(nodes, '||');
-    return `!${baseValidator}`;
+    return baseValidator ? `!${baseValidator}` : null;
   }
   throw new Error(`Invalid selector part: ${node}`);
 };
@@ -60,15 +61,20 @@ const createValidator = (node) => {
 const getBaseValidatorSourceForSelector = (selector) => {
   let selectorNode;
   selectorParser((node) => { selectorNode = node; }).process(selector);
+  if (!selectorNode) throw new Error('Expected to parse selector');
   const validatorNode = createValidator(selectorNode) || 'true';
   const returnNode = `return ${validatorNode};`;
   return returnNode;
 };
 
-module.exports.getValidatorSourceForSelector = selector =>
+module.exports.getValidatorSourceForSelector = (selector /*: string */) =>
   `(function(${propArg}) {${getBaseValidatorSourceForSelector(selector)}})`;
 
-module.exports.createValidatorForSelector = (selector) => {
+module.exports.createValidatorForSelector = (
+  selector /*: string */
+) /*: (props: Object) => boolean */ => {
   const source = getBaseValidatorSourceForSelector(selector);
-  return new Function(propArg, source); // eslint-disable-line
+  // $FlowFixMe
+  const validator /*: (props: Object) => boolean */ = new Function(propArg, source); // eslint-disable-line
+  return validator;
 };

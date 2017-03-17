@@ -1,21 +1,31 @@
+// @flow
 /* eslint-disable */
+// $FlowFixMe
 const { StyleSheet, Easing } = require('react-native');
 /* eslint-enable */
 const { getAppliedRules } = require('../util');
+/*:: import type { Args } from '../types' */
 
-module.exports.mergeStyles = props =>
+module.exports.mergeStyles = (props /*: { ownProps: Object, args: Args } */) =>
   StyleSheet.flatten(getAppliedRules(props.args.rules, props.ownProps).map(rule => rule.style));
 
-module.exports.interpolateValue = (
-  inputRange,
-  outputRange,
-  animation,
-  interpolateNumbers = false
-) => {
-  const firstValue = outputRange[0];
-  if (interpolateNumbers && typeof firstValue === 'number') return animation;
+/*::
+type SimpleInterpolation = number | string
+type TransformInterpolation = [{ [key:string]: SimpleInterpolation }]
+type OutputRange = [SimpleInterpolation, SimpleInterpolation] |
+  [TransformInterpolation, TransformInterpolation]
+*/
 
-  if (!Array.isArray(firstValue)) {
+module.exports.interpolateValue = (
+  inputRange /*: [number, number] */,
+  outputRange /*: OutputRange */,
+  animation /*: any */,
+  interpolateNumbers /*: boolean */ = false
+) /*: any */ => {
+  const firstValue = outputRange[0];
+  if (interpolateNumbers && typeof firstValue === 'number') {
+    return animation;
+  } else if (!Array.isArray(firstValue)) {
     return animation.interpolate({ inputRange, outputRange });
   }
 
@@ -24,6 +34,7 @@ module.exports.interpolateValue = (
     const currentProperties = String(firstValue.map(Object.keys));
     // Not the *best* practise here...
     const transformsAreConsistent = outputRange.every((range) => {
+      // $FlowFixMe
       const rangeProperties = String(range.map(Object.keys));
       return currentProperties === rangeProperties;
     });
@@ -35,6 +46,7 @@ module.exports.interpolateValue = (
 
   return firstValue.map((transform, index) => {
     const property = Object.keys(transform)[0];
+    // $FlowFixMe
     const innerOutputRange = outputRange.map(range => range[index][property]);
 
     // We *have* to interpolate even numeric values, as we will always animate between 0--1
@@ -44,7 +56,7 @@ module.exports.interpolateValue = (
   });
 };
 
-module.exports.getDurationInMs = (duration) => {
+module.exports.getDurationInMs = (duration /*: string */) /*: number */ => {
   const time = parseFloat(duration);
   const factor = /ms$/i.test(duration) ? 1 : 1000;
   return time * factor;
