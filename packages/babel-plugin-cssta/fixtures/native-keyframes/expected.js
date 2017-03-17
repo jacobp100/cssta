@@ -11,17 +11,8 @@ var _csstaStyle = _StyleSheet.create({
 });
 
 _withEnhancers([_Animation])(Animated.View, [], {
-  'transitionedProperties': [],
   'importedVariables': [],
-  'rules': [{
-    'validate': function (p) {
-      return true;
-    },
-    'transitions': {},
-    'exportedVariables': {},
-    'animation': ['test', '1s', 'linear'],
-    'style': _csstaStyle[0]
-  }],
+  'transitionedProperties': [],
   'keyframes': {
     'test': [{
       'time': 0,
@@ -39,5 +30,14 @@ _withEnhancers([_Animation])(Animated.View, [], {
         'opacity': 1
       }
     }]
-  }
+  },
+  'rules': [{
+    'validate': function (p) {
+      return true;
+    },
+    'transitions': {},
+    'exportedVariables': {},
+    'animation': ['test', '1s', 'linear'],
+    'style': _csstaStyle[0]
+  }]
 });

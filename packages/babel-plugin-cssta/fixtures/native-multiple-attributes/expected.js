@@ -19,8 +19,9 @@ var _csstaStyle = _StyleSheet.create({
 });
 
 _createComponent(View, ['booleanAttribute', 'stringAttribute'], {
-  'transitionedProperties': [],
   'importedVariables': [],
+  'transitionedProperties': [],
+  'keyframes': {},
   'rules': [{
     'validate': function (p) {
       return true;
@@ -53,6 +54,5 @@ _createComponent(View, ['booleanAttribute', 'stringAttribute'], {
     'exportedVariables': {},
     'animation': null,
     'style': _csstaStyle[3]
-  }],
-  'keyframes': {}
+  }]
 });

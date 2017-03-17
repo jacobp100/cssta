@@ -23,3 +23,8 @@ module.exports.isDirectChildOfKeyframes = node =>
   node.parent && node.parent.type === 'atrule' && keyframesRegExp.test(node.parent.name);
 module.exports.varRegExp = /var\s*\(\s*--([_a-z0-9-]+)\s*(?:,\s*([^)]+))?\)/ig;
 module.exports.varRegExpNonGlobal = /var\s*\(\s*--([_a-z0-9-]+)\s*(?:,\s*([^)]+))?\)/i;
+
+module.exports.mapValues = (iteratee, object) => Object.keys(object).reduce((accum, key) => {
+  accum[key] = iteratee(object[key]);
+  return accum;
+}, {});

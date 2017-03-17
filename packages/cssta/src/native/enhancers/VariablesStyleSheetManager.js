@@ -6,20 +6,25 @@ const VariablesProvider = require('../VariablesProvider');
 const { getAppliedRules } = require('../util');
 const resolveVariableDependencies = require('../../util/resolveVariableDependencies');
 const { transformStyleTuples } = require('../cssUtil');
+const transformVariables = require('../../css-transforms/variables');
+const { mapValues } = require('../../util');
 
 const { Component } = React;
 
 /* eslint-disable no-param-reassign */
 const getExportedVariables = (props, variablesFromScope) => {
-  const appliedRuleVariables = getAppliedRules(props.args.rules, props.ownProps)
+  const appliedRuleVariables = getAppliedRules(props.args.ruleTuples, props.ownProps)
     .map(rule => rule.exportedVariables);
   const definedVariables = Object.assign({}, ...appliedRuleVariables);
   return resolveVariableDependencies(definedVariables, variablesFromScope);
 };
 
+const substitutePartsVariables = (appliedVariables, parts) =>
+  parts.map(part => transformVariables(part, appliedVariables));
+
 const createRuleStylesUsingStylesheet = (appliedVariables, args) => {
-  const styles = args.rules
-    .map(rule => transformStyleTuples(rule.styleTuples, appliedVariables));
+  const { keyframesStyleTuples, ruleTuples } = args;
+  const styles = ruleTuples.map(rule => transformStyleTuples(rule.styleTuples, appliedVariables));
 
   const styleBody = styles.reduce((accum, style, index) => {
     accum[index] = style;
@@ -27,11 +32,21 @@ const createRuleStylesUsingStylesheet = (appliedVariables, args) => {
   }, {});
   const stylesheet = StyleSheet.create(styleBody);
 
-  const rules = args.rules
-    .map((rule, index) => Object.assign({}, rule, { style: stylesheet[index] }));
+  const rules = ruleTuples
+    .map((rule, index) => Object.assign({}, rule, { style: stylesheet[index] }))
+    .map((rule) => {
+      const { transitionParts, animationParts } = rule;
+      const transitions = transitionParts
+        ? mapValues(
+          parts => substitutePartsVariables(appliedVariables, parts),
+          transitionParts)
+        : null;
+      const animation = animationParts
+        ? substitutePartsVariables(appliedVariables, animationParts)
+        : null;
+      return Object.assign({}, rule, { transitions, animation });
+    });
 
-  // FIXME: Transitions (i.e. `transition: color var(--short-duration) var(--easing)`)
-  const { keyframesStyleTuples } = args;
   const keyframes = Object.keys(keyframesStyleTuples).reduce((accum, keyframeName) => {
     const keyframeStyles = keyframesStyleTuples[keyframeName].map(({ time, styleTuples }) => ({
       time,
@@ -41,7 +56,7 @@ const createRuleStylesUsingStylesheet = (appliedVariables, args) => {
     return accum;
   }, {});
 
-  return { rules, keyframes };
+  return { keyframes, rules };
 };
 
 module.exports = class VariablesStyleSheetManager extends Component {

@@ -2,7 +2,7 @@
 const extractRules = require('../extractRules');
 
 const runTestFor = (inputCss, rules = []) => {
-  const { rules: actualRules } = extractRules(inputCss);
+  const { args: { ruleTuples: actualRules } } = extractRules(inputCss);
   expect(actualRules).toEqual(rules);
 };
 
@@ -12,8 +12,8 @@ it('scopes top-level declarations', () => runTestFor(`
   selector: '&',
   styleTuples: [['color', 'red']],
   exportedVariables: {},
-  transitions: {},
-  animation: null,
+  transitionParts: {},
+  animationParts: null,
 }]));
 
 it('scopes multiple top-level declarations into one class', () => runTestFor(`
@@ -26,8 +26,8 @@ it('scopes multiple top-level declarations into one class', () => runTestFor(`
     ['borderLeftColor', 'green'],
   ],
   exportedVariables: {},
-  transitions: {},
-  animation: null,
+  transitionParts: {},
+  animationParts: null,
 }]));
 
 it('scopes boolean attribute selectors', () => runTestFor(`
@@ -38,8 +38,8 @@ it('scopes boolean attribute selectors', () => runTestFor(`
   selector: '[attribute]',
   styleTuples: [['color', 'red']],
   exportedVariables: {},
-  transitions: {},
-  animation: null,
+  transitionParts: {},
+  animationParts: null,
 }]));
 
 it('scopes string attribute selectors', () => runTestFor(`
@@ -50,8 +50,8 @@ it('scopes string attribute selectors', () => runTestFor(`
   selector: '[stringAttribute = "red"]',
   styleTuples: [['color', 'red']],
   exportedVariables: {},
-  transitions: {},
-  animation: null,
+  transitionParts: {},
+  animationParts: null,
 }]));
 
 it('scopes attribute selectors', () => runTestFor(`
@@ -78,32 +78,32 @@ it('scopes attribute selectors', () => runTestFor(`
   selector: '[booleanValue1]',
   styleTuples: [['color', 'red']],
   exportedVariables: {},
-  transitions: {},
-  animation: null,
+  transitionParts: {},
+  animationParts: null,
 }, {
   selector: '[booleanValue2]',
   styleTuples: [['color', 'green']],
   exportedVariables: {},
-  transitions: {},
-  animation: null,
+  transitionParts: {},
+  animationParts: null,
 }, {
   selector: '[stringValue1 = "a"]',
   styleTuples: [['color', 'red']],
   exportedVariables: {},
-  transitions: {},
-  animation: null,
+  transitionParts: {},
+  animationParts: null,
 }, {
   selector: '[stringValue1 = "b"]',
   styleTuples: [['color', 'green']],
   exportedVariables: {},
-  transitions: {},
-  animation: null,
+  transitionParts: {},
+  animationParts: null,
 }, {
   selector: '[stringValue2 = "c"]',
   styleTuples: [['color', 'blue']],
   exportedVariables: {},
-  transitions: {},
-  animation: null,
+  transitionParts: {},
+  animationParts: null,
 }]));
 
 it('recognises variable declarations', () => runTestFor(`
@@ -114,8 +114,8 @@ it('recognises variable declarations', () => runTestFor(`
   exportedVariables: {
     color: 'red',
   },
-  transitions: {},
-  animation: null,
+  transitionParts: {},
+  animationParts: null,
 }]));
 
 it('recognises variable imports', () => runTestFor(`
@@ -124,8 +124,8 @@ it('recognises variable imports', () => runTestFor(`
   selector: '&',
   styleTuples: [['color', 'var(--color)']],
   exportedVariables: {},
-  transitions: {},
-  animation: null,
+  transitionParts: {},
+  animationParts: null,
 }]));
 
 it('recognises multiple variable declarations', () => runTestFor(`
@@ -139,8 +139,8 @@ it('recognises multiple variable declarations', () => runTestFor(`
     color: 'blue',
     other: 'green',
   },
-  transitions: {},
-  animation: null,
+  transitionParts: {},
+  animationParts: null,
 }]));
 
 it('recognises multiple variable imports', () => runTestFor(`
@@ -149,8 +149,8 @@ it('recognises multiple variable imports', () => runTestFor(`
   selector: '&',
   styleTuples: [['margin', 'var(--large) var(--small)']],
   exportedVariables: {},
-  transitions: {},
-  animation: null,
+  transitionParts: {},
+  animationParts: null,
 }]));
 
 it('mixes variable and style declarations', () => runTestFor(`
@@ -162,8 +162,8 @@ it('mixes variable and style declarations', () => runTestFor(`
   exportedVariables: {
     color: 'red',
   },
-  transitions: {},
-  animation: null,
+  transitionParts: {},
+  animationParts: null,
 }]));
 
 it('returns all imported variables without duplicates', () => {
@@ -190,10 +190,10 @@ it('recognises transitions', () => runTestFor(`
     ['color', 'red'],
   ],
   exportedVariables: {},
-  transitions: {
+  transitionParts: {
     color: ['1s', 'linear'],
   },
-  animation: null,
+  animationParts: null,
 }]));
 
 it('recognises multiple separate transitions', () => runTestFor(`
@@ -206,11 +206,11 @@ it('recognises multiple separate transitions', () => runTestFor(`
     ['color', 'red'],
   ],
   exportedVariables: {},
-  transitions: {
+  transitionParts: {
     color: ['1s', 'linear'],
     transition: ['2s', 'ease-in-out'],
   },
-  animation: null,
+  animationParts: null,
 }]));
 
 it('recognises multiple property transitions', () => runTestFor(`
@@ -223,11 +223,11 @@ it('recognises multiple property transitions', () => runTestFor(`
     ['color', 'red'],
   ],
   exportedVariables: {},
-  transitions: {
+  transitionParts: {
     color: ['1s', 'linear'],
     transition: ['1s', 'linear'],
   },
-  animation: null,
+  animationParts: null,
 }]));
 
 it('recognises multiple allows variables in transitions', () => runTestFor(`
@@ -239,10 +239,10 @@ it('recognises multiple allows variables in transitions', () => runTestFor(`
     ['color', 'red'],
   ],
   exportedVariables: {},
-  transitions: {
+  transitionParts: {
     color: ['var(--time)', 'var(--easing)'],
   },
-  animation: null,
+  animationParts: null,
 }]));
 
 it('recognises animations', () => runTestFor(`
@@ -251,8 +251,8 @@ it('recognises animations', () => runTestFor(`
   selector: '&',
   styleTuples: [],
   exportedVariables: {},
-  transitions: {},
-  animation: ['test', '1s', 'linear'],
+  transitionParts: {},
+  animationParts: ['test', '1s', 'linear'],
 }]));
 
 it('recognises keyframes', () => {

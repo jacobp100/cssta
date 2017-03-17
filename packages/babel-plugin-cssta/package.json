@@ -7,7 +7,7 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "approve": "node ./src/index.test.js --approve",
-    "prepublish": "cp $(node -p \"require.resolve('cssta-docs/README.md')\") ."
+    "prepublish": "cp ../../docs/index.md README.md"
   },
   "keywords": [
     "postcss",

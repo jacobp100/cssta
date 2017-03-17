@@ -11,8 +11,9 @@ function test() {
   });
 
   const Component = _createComponent(View, [], {
-    'transitionedProperties': [],
     'importedVariables': [],
+    'transitionedProperties': [],
+    'keyframes': {},
     'rules': [{
       'validate': function (p) {
         return true;
@@ -21,7 +22,6 @@ function test() {
       'exportedVariables': {},
       'animation': null,
       'style': _csstaStyle[0]
-    }],
-    'keyframes': {}
+    }]
   });
 }

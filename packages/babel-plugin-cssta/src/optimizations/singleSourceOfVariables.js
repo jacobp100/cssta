@@ -19,8 +19,11 @@ const extractVariables = (path, target, stringArg) => {
 
   const { cssText, substitutionMap } = callParts;
 
-  const { rules } = extractRules(cssText);
-  const rulesWithExportedVariables = _.reject(_.conforms({ exportedVariables: _.isEmpty }), rules);
+  const { args: { ruleTuples } } = extractRules(cssText);
+  const rulesWithExportedVariables = _.reject(
+    _.conforms({ exportedVariables: _.isEmpty }),
+    ruleTuples
+  );
 
   if (_.isEmpty(rulesWithExportedVariables)) return null;
 

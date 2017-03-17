@@ -19,12 +19,7 @@ module.exports.baseRuleElements = rule => [
   )(rule),
 ];
 
-const commonArgsProperties = _.flow(
-  _.pick(['transitionedProperties', 'importedVariables']),
+module.exports.commonArgs = _.flow(
+  _.pick(['importedVariables', 'transitionedProperties']),
   jsonObjectProperties
 );
-
-module.exports.commonArgs = (rulesBody, args) => [
-  ...commonArgsProperties(args),
-  t.objectProperty(t.stringLiteral('rules'), rulesBody),
-];

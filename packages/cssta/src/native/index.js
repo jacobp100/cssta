@@ -15,9 +15,9 @@ module.exports = element => (cssTextFragments, ...substitutions) => {
     : cssTextFragments[0] +
       substitutions.map((value, index) => String(value) + cssTextFragments[index + 1]).join('');
 
-  const { rules: baseRules, propTypes, args: baseArgs } = extractRules(cssText);
+  const { propTypes, args: baseArgs } = extractRules(cssText);
 
-  const rules = baseRules.map(rule => ({
+  const ruleTuples = baseArgs.ruleTuples.map(rule => ({
     validate: createValidatorForSelector(rule.selector),
     styleTuples: rule.styleTuples,
     transitions: rule.transitions,
@@ -25,7 +25,7 @@ module.exports = element => (cssTextFragments, ...substitutions) => {
     exportedVariables: rule.exportedVariables,
   }));
 
-  const args = Object.assign({}, baseArgs, { rules });
+  const args = Object.assign({}, baseArgs, { ruleTuples });
   return dynamicComponent(element, propTypes, args);
 };
 

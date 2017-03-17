@@ -13,7 +13,7 @@
     "build": "npm run clean; npm run build:lib; npm run build:vendor",
     "build:lib": "babel ./src --out-dir ./lib --ignore __tests__,__mocks__",
     "build:vendor": "webpack --config ./webpack.config.js",
-    "prepublish": "npm run build; cp $(node -p \"require.resolve('cssta-docs/README.md')\") ."
+    "prepublish": "cp ../../docs/index.md README.md"
   },
   "keywords": [
     "postcss",

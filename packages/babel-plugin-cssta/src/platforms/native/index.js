@@ -18,8 +18,8 @@ const ruleIsEmpty = _.flow(
 
 module.exports = (path, state, component, cssText, substitutionMap) => {
   // eslint-disable-next-line
-  let { rules, propTypes, args } = extractRules(cssText);
-  const exportedVariables = _.reduce(_.assign, {}, _.map('exportedVariables', rules));
+  let { propTypes, args } = extractRules(cssText);
+  const exportedVariables = _.reduce(_.assign, {}, _.map('exportedVariables', args.ruleTuples));
   const exportsVariables = !_.isEmpty(exportedVariables);
 
   const { singleSourceOfVariables } = state;
@@ -41,15 +41,17 @@ module.exports = (path, state, component, cssText, substitutionMap) => {
     rulesOmissions.push('exportedVariables');
   }
 
-  args = _.omit(argsOmissions, args);
-  rules = _.flow(
-    _.map(_.omit(rulesOmissions)),
-    _.reject(ruleIsEmpty)
-  )(rules);
+  args = _.flow(
+    _.omit(argsOmissions),
+    _.update('ruleTuples', _.flow(
+      _.map(_.omit(rulesOmissions)),
+      _.reject(ruleIsEmpty)
+    ))
+  )(args);
 
   // If we end up with nothing after removing configs, and we don't filter props,
   // we can just return the component
-  if (everyIsEmpty(args) && _.isEmpty(rules) && _.isEmpty(propTypes)) {
+  if (everyIsEmpty(args) && _.isEmpty(propTypes)) {
     path.replaceWith(component);
     return;
   }
@@ -70,9 +72,9 @@ module.exports = (path, state, component, cssText, substitutionMap) => {
       getOrCreateImportReference(path, `${enhancersRoot}/VariablesStyleSheetManager`, 'default');
     enhancers.push(variablesEnhancer);
 
-    rulesBody = createStyleSheetVariables(path, substitutionMap, rules, args);
+    rulesBody = createStyleSheetVariables(path, substitutionMap, args.ruleTuples, args);
   } else {
-    rulesBody = createStyleSheetStatic(path, substitutionMap, rules);
+    rulesBody = createStyleSheetStatic(path, substitutionMap, args.ruleTuples);
   }
 
   if (hasTransitions) {

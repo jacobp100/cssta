@@ -4,9 +4,10 @@ import _VariablesStyleSheetManager from 'cssta/lib/native/enhancers/VariablesSty
 import { View } from 'react-native';
 
 _withEnhancers([_VariablesStyleSheetManager])(View, [], {
-  'transitionedProperties': [],
   'importedVariables': ['color'],
-  'rules': [{
+  'transitionedProperties': [],
+  'keyframesStyleTuples': {},
+  'ruleTuples': [{
     'validate': function (p) {
       return true;
     },
@@ -16,6 +17,5 @@ _withEnhancers([_VariablesStyleSheetManager])(View, [], {
     },
     'animation': null,
     'styleTuples': [['color', 'var(--color)']]
-  }],
-  'keyframesStyleTuples': {}
+  }]
 });

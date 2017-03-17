@@ -17,13 +17,13 @@ const runTest = ({
   transitionedProperties = [],
   keyframesStyleTuples = {},
   enhancers = [VariablesStyleSheetManager, Transition, Animation],
-  rules = [],
+  ruleTuples = [],
   inputProps = {},
   expectedType = type,
   expectedProps = {},
   expectedChildren = null,
 } = {}) => {
-  const args = { rules, keyframesStyleTuples, transitionedProperties, importedVariables };
+  const args = { importedVariables, transitionedProperties, keyframesStyleTuples, ruleTuples };
   const dynamicComponent = withEnhancers(enhancers);
   const Element = dynamicComponent(type, propTypes, args);
 
@@ -38,10 +38,10 @@ it('renders an element', () => runTest());
 
 it('adds a boolean property if it is equal to the expected value', () => runTest({
   propTypes: ['booleanAttribute'],
-  rules: [{
+  ruleTuples: [{
     validate: p => !!p.booleanAttribute,
     styleTuples: [['color', 'red']],
-    transitions: {},
+    transitionParts: {},
   }],
   inputProps: { booleanAttribute: true },
   expectedProps: { style: [{ color: 'red' }] },
@@ -49,19 +49,19 @@ it('adds a boolean property if it is equal to the expected value', () => runTest
 
 it('does not add a boolean property if it is not equal to the expected value', () => runTest({
   propTypes: ['booleanAttribute'],
-  rules: [{
+  ruleTuples: [{
     validate: p => !!p.booleanAttribute,
     styleTuples: [['color', 'red']],
-    transitions: {},
+    transitionParts: {},
   }],
 }));
 
 it('adds a string property if it is equal to the expected value', () => runTest({
   propTypes: ['stringAttribute'],
-  rules: [{
+  ruleTuples: [{
     validate: p => p.stringAttribute === 'test',
     styleTuples: [['color', 'red']],
-    transitions: {},
+    transitionParts: {},
   }],
   inputProps: { stringAttribute: 'test' },
   expectedProps: { style: [{ color: 'red' }] },
@@ -69,37 +69,37 @@ it('adds a string property if it is equal to the expected value', () => runTest(
 
 it('does not add a string property if it is not equal to the expected value', () => runTest({
   propTypes: ['stringAttribute'],
-  rules: [{
+  ruleTuples: [{
     validate: p => p.stringAttribute === 'test',
     styleTuples: [['color', 'red']],
-    transitions: {},
+    transitionParts: {},
   }],
 }));
 
 it('uses fallback for variable if not defined within scope', () => runTest({
   importedVariables: ['color'],
-  rules: [{
+  ruleTuples: [{
     validate: () => true,
     styleTuples: [['color', 'var(--color, red)']],
-    transitions: {},
+    transitionParts: {},
   }],
   expectedProps: { style: [{ color: 'red' }] },
 }));
 
 it('converts color-mod functions', () => runTest({
-  rules: [{
+  ruleTuples: [{
     validate: () => true,
     styleTuples: [['color', 'color(red tint(50%))']],
-    transitions: {},
+    transitionParts: {},
   }],
   expectedProps: { style: [{ color: 'rgb(255, 128, 128)' }] },
 }));
 
 it('transitions values', () => runTest({
-  rules: [{
+  ruleTuples: [{
     validate: () => true,
     styleTuples: [['top', '0']],
-    transitions: {
+    transitionParts: {
       top: ['1s', 'linear'],
     },
   }],
@@ -112,10 +112,10 @@ it('transitions values', () => runTest({
   },
 }));
 it('transitions colors', () => runTest({
-  rules: [{
+  ruleTuples: [{
     validate: () => true,
     styleTuples: [['color', 'red']],
-    transitions: {
+    transitionParts: {
       color: ['1s', 'linear'],
     },
   }],
@@ -137,10 +137,10 @@ it('transitions colors', () => runTest({
 }));
 
 it('transitions transforms', () => runTest({
-  rules: [{
+  ruleTuples: [{
     validate: () => true,
     styleTuples: [['transform', 'scaleX(3) rotateX(30deg)']],
-    transitions: {
+    transitionParts: {
       transform: ['1s', 'linear'],
     },
   }],
@@ -172,10 +172,10 @@ it('transitions transforms', () => runTest({
 }));
 
 it('transitions values using custom properties', () => runTest({
-  rules: [{
+  ruleTuples: [{
     validate: () => true,
     styleTuples: [['color', 'var(--color, red)']],
-    transitions: {
+    transitionParts: {
       color: ['1s', 'linear'],
     },
   }],
@@ -197,19 +197,19 @@ it('transitions values using custom properties', () => runTest({
 }));
 
 it('animates between transitioned values', () => {
-  const rules = [{
+  const ruleTuples = [{
     validate: () => true,
     styleTuples: [['color', 'red']],
-    transitions: {
+    transitionParts: {
       color: ['1s', 'linear'],
     },
   }, {
     validate: props => props.active,
     styleTuples: [['color', 'blue']],
-    transitions: {},
+    transitionParts: {},
   }];
   const args = {
-    rules, importedVariables: [], transitionedProperties: ['color'], keyframesStyleTuples: {},
+    importedVariables: [], transitionedProperties: ['color'], keyframesStyleTuples: {}, ruleTuples,
   };
   const Element = defaultDynamicComponent('button', ['active'], args);
 
@@ -226,19 +226,19 @@ it('animates between transitioned values', () => {
 });
 
 it('does not allow animating between divergent transforms', () => {
-  const rules = [{
+  const ruleTuples = [{
     validate: () => true,
     styleTuples: [['transform', 'scaleX(2)']],
-    transitions: {
+    transitionParts: {
       transform: ['1s', 'linear'],
     },
   }, {
     validate: props => props.active,
     styleTuples: [['transform', 'rotateX(30deg)']],
-    transitions: {},
+    transitionParts: {},
   }];
   const args = {
-    rules, importedVariables: [], transitionedProperties: ['transform'], keyframesStyleTuples: {},
+    importedVariables: [], transitionedProperties: ['transform'], keyframesStyleTuples: {}, ruleTuples,
   };
   const Element = defaultDynamicComponent('button', ['active'], args);
 
@@ -250,10 +250,10 @@ it('does not allow animating between divergent transforms', () => {
 });
 
 it('animates values', () => runTest({
-  rules: [{
+  ruleTuples: [{
     validate: () => true,
     styleTuples: [],
-    animation: ['fade-in', '1s'],
+    animationParts: ['fade-in', '1s'],
   }],
   keyframesStyleTuples: {
     'fade-in': [
@@ -278,10 +278,10 @@ it('animates values', () => runTest({
 }));
 
 it('animates colors', () => runTest({
-  rules: [{
+  ruleTuples: [{
     validate: () => true,
     styleTuples: [],
-    animation: ['fade-in', '1s'],
+    animationParts: ['fade-in', '1s'],
   }],
   keyframesStyleTuples: {
     'fade-in': [
@@ -306,10 +306,10 @@ it('animates colors', () => runTest({
 }));
 
 it('performs keyframe animation on mount', () => {
-  const rules = [{
+  const ruleTuples = [{
     validate: () => true,
     styleTuples: [],
-    animation: ['fade-in', '1s'],
+    animationParts: ['fade-in', '1s'],
   }];
   const keyframesStyleTuples = {
     'fade-in': [
@@ -318,7 +318,7 @@ it('performs keyframe animation on mount', () => {
     ],
   };
   const args = {
-    rules, importedVariables: [], transitionedProperties: [], keyframesStyleTuples,
+    importedVariables: [], transitionedProperties: [], keyframesStyleTuples, ruleTuples,
   };
   const Element = defaultDynamicComponent('button', [], args);
 
@@ -333,14 +333,14 @@ it('performs keyframe animation on mount', () => {
 });
 
 it('performs keyframe animation when changing animation', () => {
-  const rules = [{
+  const ruleTuples = [{
     validate: () => true,
     styleTuples: [],
-    animation: ['fade-in', '1s'],
+    animationParts: ['fade-in', '1s'],
   }, {
     validate: props => props.active,
     styleTuples: [],
-    animation: ['fade-out', '1s'],
+    animationParts: ['fade-out', '1s'],
   }];
   const keyframesStyleTuples = {
     'fade-in': [
@@ -353,7 +353,7 @@ it('performs keyframe animation when changing animation', () => {
     ],
   };
   const args = {
-    rules, importedVariables: [], transitionedProperties: [], keyframesStyleTuples,
+    importedVariables: [], transitionedProperties: [], keyframesStyleTuples, ruleTuples,
   };
   const Element = defaultDynamicComponent('button', ['active'], args);
 

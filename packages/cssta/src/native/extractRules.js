@@ -56,16 +56,16 @@ const getRuleBody = (rule) => {
   let styleTuples = getStyleTuples(rule.nodes);
 
   const transitionDeclValue = findLast(styleTuples, styleTuple => styleTuple[0] === 'transition');
-  const transitions = transitionDeclValue ? getTransitions(transitionDeclValue[1]) : {};
+  const transitionParts = transitionDeclValue ? getTransitions(transitionDeclValue[1]) : {};
 
   const animationDeclValue = findLast(styleTuples, styleTuple => styleTuple[0] === 'animation');
-  const animation = animationDeclValue ? getAnimation(animationDeclValue[1]) : null;
+  const animationParts = animationDeclValue ? getAnimation(animationDeclValue[1]) : null;
 
   styleTuples = styleTuples.filter(styleTuple => !specialTuples.includes(styleTuple[0]));
 
   const exportedVariables = getExportedVariables(rule.nodes);
 
-  return { selector, styleTuples, transitions, animation, exportedVariables };
+  return { selector, styleTuples, exportedVariables, transitionParts, animationParts };
 };
 
 const getKeyframes = atRule => walkToArray(cb => atRule.walkRules(cb))
@@ -106,7 +106,7 @@ const getImportedVariables = (root) => {
 module.exports = (inputCss) => {
   const { root, propTypes } = getRoot(inputCss);
 
-  const rules = walkToArray(cb => root.walkRules(cb))
+  const ruleTuples = walkToArray(cb => root.walkRules(cb))
     .filter(rule => !isDirectChildOfKeyframes(rule))
     .map(getRuleBody);
 
@@ -118,11 +118,11 @@ module.exports = (inputCss) => {
     }, {});
 
   const transitionedProperties =
-    Object.keys(Object.assign({}, ...rules.map(rule => rule.transitions)));
+    Object.keys(Object.assign({}, ...ruleTuples.map(rule => rule.transitions)));
 
   const importedVariables = getImportedVariables(root);
 
-  const args = { keyframesStyleTuples, transitionedProperties, importedVariables };
+  const args = { importedVariables, transitionedProperties, keyframesStyleTuples, ruleTuples };
 
-  return { rules, propTypes, args };
+  return { propTypes, args };
 };

@@ -11,6 +11,7 @@ var _csstaStyle = _StyleSheet.create({
 
 _createComponent(View, [], {
   'transitionedProperties': [],
+  'keyframes': {},
   'rules': [{
     'validate': function (p) {
       return true;
@@ -18,8 +19,7 @@ _createComponent(View, [], {
     'transitions': {},
     'animation': null,
     'style': _csstaStyle[0]
-  }],
-  'keyframes': {}
+  }]
 });
 
 var _csstaStyle2 = _StyleSheet.create({
@@ -30,6 +30,7 @@ var _csstaStyle2 = _StyleSheet.create({
 
 _createComponent(View, [], {
   'transitionedProperties': [],
+  'keyframes': {},
   'rules': [{
     'validate': function (p) {
       return true;
@@ -37,6 +38,5 @@ _createComponent(View, [], {
     'transitions': {},
     'animation': null,
     'style': _csstaStyle2[0]
-  }],
-  'keyframes': {}
+  }]
 });
