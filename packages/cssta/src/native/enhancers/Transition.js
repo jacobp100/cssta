@@ -13,6 +13,7 @@ const {
 } = require('./animationUtil');
 /*:: import type { DynamicProps } from '../../factories/types' */
 /*:: import type { Args } from '../types' */
+/*:: import type { Interpolation } from './animationUtil' */
 
 const { Component } = React;
 
@@ -31,8 +32,8 @@ type AnimatedValue = {
 }
 
 type TransitionState = {
-  styles: Object,
-  previousStyles: Object,
+  styles: { [key:string]: Interpolation },
+  previousStyles: { [key:string]: Interpolation },
 }
 */
 

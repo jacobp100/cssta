@@ -1,3 +1,4 @@
+// @flow
 /* eslint-disable no-param-reassign */
 const postcss = require('../../vendor/postcss');
 const selectorParser = require('postcss-selector-parser');
@@ -40,7 +41,7 @@ const nestNode = (node) => {
 
 const scopingTypes = ['nesting', 'attribute'];
 
-module.exports = (inputCss, allowCombinators = false) => {
+module.exports = (inputCss /*: string */, allowCombinators /*: boolean */ = false) => {
   const root = postcss.parse(inputCss);
 
   iterateChildren(root, nestNode);

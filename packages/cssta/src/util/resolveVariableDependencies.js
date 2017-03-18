@@ -1,8 +1,12 @@
+// @flow
 /* eslint-disable no-param-reassign */
 const DepGraph = require('dependency-graph').DepGraph;
 const { varRegExp, varRegExpNonGlobal } = require('./index');
 
-module.exports = (definedVariables, variablesFromScope) => {
+module.exports = (
+  definedVariables /*: { [key:string]: string } */,
+  variablesFromScope /*: { [key:string]: string } */
+) /*: { [key:string]: string } */ => {
   const graph = new DepGraph();
 
   const variableNames = Object.keys(definedVariables);
@@ -16,7 +20,11 @@ module.exports = (definedVariables, variablesFromScope) => {
     if (!referencedVariableMatches) return;
 
     const referencedVariables = referencedVariableMatches
-      .map(match => match.match(varRegExpNonGlobal)[1]);
+      .map(match => {
+        const matchedVariable = match.match(varRegExpNonGlobal);
+        return matchedVariable ? matchedVariable[1] : null;
+      })
+      .filter(Boolean);
 
     referencedVariables.forEach((referencedVariableName) => {
       if (referencedVariableName in definedVariables) {

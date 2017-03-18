@@ -1,15 +1,9 @@
+// @flow
 /* eslint-disable no-param-reassign */
 const componentFactory = require('../factories/componentFactory');
+/*:: import type { Args } from './types' */
 
-/*
-rules = {
-  prop: {
-    value: className
-  },
-};
-*/
-
-const factory = componentFactory((ownProps, passedProps, args) => {
+const factory = componentFactory((ownProps, passedProps, args /*: Args */) => {
   const { defaultClassName, classNameMap } = args;
   const classNames = Object.keys(ownProps)
     .map(propName => classNameMap[propName][ownProps[propName]])
@@ -25,5 +19,5 @@ const factory = componentFactory((ownProps, passedProps, args) => {
 });
 
 // Optimisation allows not passing propTypes on prod
-module.exports = (component, propTypes, args) =>
+module.exports = (component /*: any */, propTypes /*: ?Object */, args /*: Args */) =>
   factory(component, propTypes || Object.keys(args.classNameMap), args);

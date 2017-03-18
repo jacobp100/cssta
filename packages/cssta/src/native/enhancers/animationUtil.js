@@ -10,18 +10,17 @@ module.exports.mergeStyles = (props /*: { ownProps: Object, args: Args } */) =>
   StyleSheet.flatten(getAppliedRules(props.args.rules, props.ownProps).map(rule => rule.style));
 
 /*::
-type SimpleInterpolation = number | string
-type TransformInterpolation = [{ [key:string]: SimpleInterpolation }]
-type OutputRange = [SimpleInterpolation, SimpleInterpolation] |
-  [TransformInterpolation, TransformInterpolation]
+export type Interpolation = number | string | [{ [key:string]: Interpolation }]
+export type OutputRange = Interpolation[]
+export type InterpolatedValue = Object | Object[]
 */
 
 module.exports.interpolateValue = (
-  inputRange /*: [number, number] */,
+  inputRange /*: number[] */,
   outputRange /*: OutputRange */,
   animation /*: any */,
   interpolateNumbers /*: boolean */ = false
-) /*: any */ => {
+) /*: InterpolatedValue */ => {
   const firstValue = outputRange[0];
   if (interpolateNumbers && typeof firstValue === 'number') {
     return animation;

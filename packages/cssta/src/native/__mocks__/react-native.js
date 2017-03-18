@@ -1,3 +1,4 @@
+/* eslint-disable flowtype/require-valid-file-annotation */
 /* global jest */
 /* eslint-disable no-param-reassign */
 

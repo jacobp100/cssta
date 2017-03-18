@@ -11,6 +11,7 @@ const {
 } = require('./animationUtil');
 /*:: import type { DynamicProps } from '../../factories/types' */
 /*:: import type { Args } from '../types' */
+/*:: import type { OutputRange, InterpolatedValue } from './animationUtil' */
 
 const { Component } = React;
 
@@ -64,7 +65,7 @@ const getAnimationState = (props) => {
     );
 
     const inputRange = keyframes.map(frame => frame.time);
-    const outputRange = keyframes.map(frame => frame.value);
+    const outputRange /*: OutputRange */ = keyframes.map(frame => frame.value);
     const animation = animationValues[animationProperty];
     accum[animationProperty] = interpolateValue(inputRange, outputRange, animation);
     return accum;
@@ -81,7 +82,7 @@ type AnimatedValue = {
 type AnimationState = {
   duration: ?number,
   easing: ?any,
-  animations: ?Object,
+  animations: ?{ [key:string]: InterpolatedValue },
   animationValues: ?{ [key:string]: AnimatedValue },
 }
 */

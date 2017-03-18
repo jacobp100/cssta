@@ -1,3 +1,4 @@
+// @flow
 /* global document */
 const extractRules = require('./extractRules');
 const createComponent = require('./createComponent');
@@ -26,6 +27,7 @@ const updateCss = (cssText) => {
     document.getElementsByTagName('head')[0].appendChild(styleElement);
   } else {
     const existingStyleBody = styleElement.firstChild;
+    if (!existingStyleBody) throw new Error('Unexpected error creating styles');
     const newStyleBody = document.createTextNode(cssText);
     styleElement.replaceChild(newStyleBody, existingStyleBody);
   }
@@ -37,7 +39,7 @@ const opts = {
 };
 
 let styleContents = '';
-const style = element => (cssTextFragments) => {
+const style = (element /*: any */) => (cssTextFragments /*: string[] | string */) => {
   const cssText = assertNoTemplateParams(cssTextFragments);
 
   const { css, propTypes, args } = extractRules(cssText, opts);

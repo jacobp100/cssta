@@ -1,11 +1,22 @@
+// @flow
 /* eslint-disable no-param-reassign */
 const selectorParser = require('postcss-selector-parser');
 const { transformAnimationNames } = require('postcss-transform-animations');
 const getRoot = require('../util/getRoot');
 const { isDirectChildOfKeyframes } = require('../util');
+/*:: import type { Args } from './types' */
 
+/*::
+type Generators = {
+  generateClassName: () => string,
+  generateAnimationName: () => string,
+}
+*/
 
-module.exports = (inputCss, { generateClassName, generateAnimationName }) => {
+module.exports = (
+  inputCss /*: string */,
+  { generateClassName, generateAnimationName } /*: Generators */
+) /*: { css: string, propTypes: Object, args: Args } */ => {
   const classNameMap = {}; // { propName: { propValue: className } }
   const animationNameMap = {};
 

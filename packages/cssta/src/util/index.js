@@ -1,8 +1,9 @@
+// @flow
 /* eslint-disable no-param-reassign */
 
 const keyframesRegExp = /keyframes$/i;
 
-module.exports.shallowEqual = (tom, jerry) => {
+module.exports.shallowEqual = (tom /*: Object */, jerry /*: Object */) /*: boolean */ => {
   if (tom === jerry) return true;
 
   /* eslint-disable */
@@ -19,12 +20,15 @@ module.exports.shallowEqual = (tom, jerry) => {
 };
 
 module.exports.keyframesRegExp = keyframesRegExp;
-module.exports.isDirectChildOfKeyframes = node =>
+module.exports.isDirectChildOfKeyframes = (node /*: Object */) /*: boolean */ =>
   node.parent && node.parent.type === 'atrule' && keyframesRegExp.test(node.parent.name);
 module.exports.varRegExp = /var\s*\(\s*--([_a-z0-9-]+)\s*(?:,\s*([^)]+))?\)/ig;
 module.exports.varRegExpNonGlobal = /var\s*\(\s*--([_a-z0-9-]+)\s*(?:,\s*([^)]+))?\)/i;
 
-module.exports.mapValues = (iteratee, object) => Object.keys(object).reduce((accum, key) => {
+module.exports.mapValues = (
+  iteratee /*: (value: any) => any */,
+  object /*: Object */
+) /*: Object */ => Object.keys(object).reduce((accum, key) => {
   accum[key] = iteratee(object[key]);
   return accum;
 }, {});
