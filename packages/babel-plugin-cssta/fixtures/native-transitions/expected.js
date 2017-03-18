@@ -27,7 +27,7 @@ _withEnhancers([_Transition])(Animated.View, ['boolAttr'], {
     'style': _csstaStyle[0]
   }, {
     'validate': function (p) {
-      return !!p['boolAttr'];
+      return !!p["boolAttr"];
     },
     'transitions': {},
     'animation': null,

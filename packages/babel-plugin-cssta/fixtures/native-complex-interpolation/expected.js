@@ -26,21 +26,21 @@ _createComponent(View, ['attr1', 'attr2', 'attr3'], {
   'keyframes': {},
   'rules': [{
     'validate': function (p) {
-      return !!p['attr1'];
+      return !!p["attr1"];
     },
     'transitions': {},
     'animation': null,
     'style': _csstaStyle[0]
   }, {
     'validate': function (p) {
-      return !!p['attr2'];
+      return !!p["attr2"];
     },
     'transitions': {},
     'animation': null,
     'style': _csstaStyle[1]
   }, {
     'validate': function (p) {
-      return !!p['attr3'];
+      return !!p["attr3"];
     },
     'transitions': {},
     'animation': null,

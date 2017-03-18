@@ -28,7 +28,7 @@ const createAttributeValidator = (node) => {
   if (!value) return `!!${memberExpression}`;
 
   const unquoted = raws.unquoted.trim();
-  return `(${memberExpression} === '${unquoted}')`;
+  return `(${memberExpression} === ${JSON.stringify(unquoted)})`;
 };
 
 const createPseudoValidator = (node) => {

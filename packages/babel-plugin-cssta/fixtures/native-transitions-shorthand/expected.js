@@ -40,7 +40,7 @@ _withEnhancers([_Transition])(Animated.View, ['active'], {
     'style': _csstaStyle[0]
   }, {
     'validate': function (p) {
-      return !!p['active'];
+      return !!p["active"];
     },
     'transitions': {},
     'animation': null,
