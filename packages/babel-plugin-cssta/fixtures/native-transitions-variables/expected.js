@@ -20,7 +20,7 @@ _withEnhancers([_VariablesStyleSheetManager, _Transition])(Animated.View, ['bool
     'styleTuples': [['color', 'var(--primary)']]
   }, {
     'validate': function (p) {
-      return !!p['boolAttr'];
+      return !!p["boolAttr"];
     },
     'exportedVariables': {},
     'transitionParts': {},

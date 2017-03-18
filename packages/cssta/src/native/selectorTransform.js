@@ -28,7 +28,7 @@ const createAttributeValidator = (node) => {
   }
 
   const prop = attribute.slice(1);
-  const memberExpression = `${propArg}['${prop}']`;
+  const memberExpression = `${propArg}[${JSON.stringify(prop)}]`;
 
   if (!value) return `!!${memberExpression}`;
 

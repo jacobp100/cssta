@@ -19,7 +19,7 @@ _withEnhancers([_VariablesStyleSheetManager])(View, ['blue'], {
     'styleTuples': []
   }, {
     'validate': function (p) {
-      return !!p['blue'];
+      return !!p["blue"];
     },
     'exportedVariables': {
       'color': 'blue'
