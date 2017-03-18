@@ -5,20 +5,26 @@ import _VariablesStyleSheetManager from 'cssta/lib/native/enhancers/VariablesSty
 import { Animated } from 'react-native';
 
 _withEnhancers([_VariablesStyleSheetManager, _Transition])(Animated.View, ['boolAttr'], {
-  'importedVariables': ['primary', 'secondary'],
   'transitionedProperties': ['color'],
+  'importedVariables': ['primary', 'secondary'],
   'keyframesStyleTuples': {},
   'ruleTuples': [{
     'validate': function (p) {
       return true;
     },
     'exportedVariables': {},
+    'transitionParts': {
+      'color': ['1s', 'linear']
+    },
+    'animationParts': null,
     'styleTuples': [['color', 'var(--primary)']]
   }, {
     'validate': function (p) {
       return !!p['boolAttr'];
     },
     'exportedVariables': {},
+    'transitionParts': {},
+    'animationParts': null,
     'styleTuples': [['color', 'var(--secondary)']]
   }]
 });

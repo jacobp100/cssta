@@ -10,7 +10,11 @@ const resolveVariableDependencies = require('../../util/resolveVariableDependenc
 const { transformStyleTuples } = require('../cssUtil');
 const transformVariables = require('../../css-transforms/variables');
 const { mapValues } = require('../../util');
-/*:: import type { VariableArgs, Args, VariablesStore, Keyframe } from '../types' */
+/*::
+import type {
+  VariableArgs, VariableRuleTuple, Args, VariablesStore, Rule, Keyframe,
+} from '../types'
+*/
 
 const { Component } = React;
 
@@ -24,6 +28,24 @@ const getExportedVariables = (props, variablesFromScope) => {
 
 const substitutePartsVariables = (appliedVariables, parts) =>
   parts.map(part => transformVariables(part, appliedVariables));
+
+const createRule = (
+  inputRule /*: VariableRuleTuple */,
+  style /*: string */,
+  appliedVariables /*: Object */
+) /*: Rule */ => {
+  const { validate, transitionParts, animationParts } = inputRule;
+  const transitions = transitionParts
+    ? mapValues(
+      parts => substitutePartsVariables(appliedVariables, parts),
+      transitionParts)
+    : null;
+  const animation = animationParts
+    ? substitutePartsVariables(appliedVariables, animationParts)
+    : null;
+
+  return { validate, transitions, animation, style };
+};
 
 const createRuleStylesUsingStylesheet = (
   appliedVariables,
@@ -39,19 +61,7 @@ const createRuleStylesUsingStylesheet = (
   const stylesheet = StyleSheet.create(styleBody);
 
   const rules = ruleTuples
-    .map((rule, index) => Object.assign({}, rule, { style: stylesheet[index] }))
-    .map((rule) => {
-      const { transitionParts, animationParts } = rule;
-      const transitions = transitionParts
-        ? mapValues(
-          parts => substitutePartsVariables(appliedVariables, parts),
-          transitionParts)
-        : null;
-      const animation = animationParts
-        ? substitutePartsVariables(appliedVariables, animationParts)
-        : null;
-      return Object.assign({}, rule, { transitions, animation });
-    });
+    .map((rule, index) => createRule(rule, stylesheet[index], appliedVariables));
 
   const keyframes = Object.keys(keyframesStyleTuples).reduce((accum, keyframeName) => {
     const keyframeStyles /*: Keyframe[] */ = keyframesStyleTuples[keyframeName]

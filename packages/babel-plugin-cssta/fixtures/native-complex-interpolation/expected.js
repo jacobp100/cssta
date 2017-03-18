@@ -22,26 +22,28 @@ var _csstaStyle = _StyleSheet.create({
 });
 
 _createComponent(View, ['attr1', 'attr2', 'attr3'], {
-  'importedVariables': [],
   'transitionedProperties': [],
   'keyframes': {},
   'rules': [{
     'validate': function (p) {
       return !!p['attr1'];
     },
-    'exportedVariables': {},
+    'transitions': {},
+    'animation': null,
     'style': _csstaStyle[0]
   }, {
     'validate': function (p) {
       return !!p['attr2'];
     },
-    'exportedVariables': {},
+    'transitions': {},
+    'animation': null,
     'style': _csstaStyle[1]
   }, {
     'validate': function (p) {
       return !!p['attr3'];
     },
-    'exportedVariables': {},
+    'transitions': {},
+    'animation': null,
     'style': _csstaStyle[2]
   }]
 });

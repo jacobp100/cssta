@@ -11,10 +11,17 @@ const createArgsVariables = require('./createArgsVariables');
 
 
 const everyIsEmpty = _.every(_.isEmpty);
-const ruleIsEmpty = _.flow(
-  _.omit(['selector']),
-  everyIsEmpty
-);
+const argsIsEmpty = (args, singleSourceOfVariables) => {
+  const argsOmissions = singleSourceOfVariables ? ['importedVariables'] : [];
+  const ruleOmissions = singleSourceOfVariables ? ['exportedVariables'] : [];
+
+  return _.flow(
+    _.omit(argsOmissions),
+    _.update('ruleTuples', _.map(_.omit(['selector', ...ruleOmissions]))),
+    _.update('ruleTuples', _.reject(everyIsEmpty)),
+    everyIsEmpty
+  )(args);
+};
 
 module.exports = (path, state, component, cssText, substitutionMap) => {
   // eslint-disable-next-line
@@ -31,27 +38,9 @@ module.exports = (path, state, component, cssText, substitutionMap) => {
     throw new Error('When using singleSourceOfVariables, only one component can define variables');
   }
 
-  // If we can globally remove configs from args/rules, do so here
-  // Only do this for global configs so `args` has the same hidden class for each component
-  const argsOmissions = [];
-  const rulesOmissions = [];
-
-  if (singleSourceOfVariables) {
-    argsOmissions.push('importedVariables');
-    rulesOmissions.push('exportedVariables');
-  }
-
-  args = _.flow(
-    _.omit(argsOmissions),
-    _.update('ruleTuples', _.flow(
-      _.map(_.omit(rulesOmissions)),
-      _.reject(ruleIsEmpty)
-    ))
-  )(args);
-
   // If we end up with nothing after removing configs, and we don't filter props,
   // we can just return the component
-  if (everyIsEmpty(args) && _.isEmpty(propTypes)) {
+  if (argsIsEmpty(args, singleSourceOfVariables) && _.isEmpty(propTypes)) {
     path.replaceWith(component);
     return;
   }

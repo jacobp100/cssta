@@ -11,14 +11,14 @@ var _csstaStyle = _StyleSheet.create({
 });
 
 _createComponent(View, [], {
-  'importedVariables': [],
   'transitionedProperties': [],
   'keyframes': {},
   'rules': [{
     'validate': function (p) {
       return true;
     },
-    'exportedVariables': {},
+    'transitions': {},
+    'animation': null,
     'style': _csstaStyle[0]
   }]
 });

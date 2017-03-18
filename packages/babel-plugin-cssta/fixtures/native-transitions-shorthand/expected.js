@@ -26,20 +26,24 @@ var _csstaStyle = _StyleSheet.create({
 });
 
 _withEnhancers([_Transition])(Animated.View, ['active'], {
-  'importedVariables': [],
   'transitionedProperties': ['backgroundColor', 'transform'],
   'keyframes': {},
   'rules': [{
     'validate': function (p) {
       return true;
     },
-    'exportedVariables': {},
+    'transitions': {
+      'backgroundColor': ['0.5s', 'linear'],
+      'transform': ['0.75s', 'linear']
+    },
+    'animation': null,
     'style': _csstaStyle[0]
   }, {
     'validate': function (p) {
       return !!p['active'];
     },
-    'exportedVariables': {},
+    'transitions': {},
+    'animation': null,
     'style': _csstaStyle[1]
   }]
 });

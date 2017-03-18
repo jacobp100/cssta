@@ -19,32 +19,35 @@ var _csstaStyle = _StyleSheet.create({
 });
 
 _createComponent(View, ['booleanAttribute', 'stringAttribute'], {
-  'importedVariables': [],
   'transitionedProperties': [],
   'keyframes': {},
   'rules': [{
     'validate': function (p) {
       return true;
     },
-    'exportedVariables': {},
+    'transitions': {},
+    'animation': null,
     'style': _csstaStyle[0]
   }, {
     'validate': function (p) {
       return !!p['booleanAttribute'];
     },
-    'exportedVariables': {},
+    'transitions': {},
+    'animation': null,
     'style': _csstaStyle[1]
   }, {
     'validate': function (p) {
       return p['stringAttribute'] === "1";
     },
-    'exportedVariables': {},
+    'transitions': {},
+    'animation': null,
     'style': _csstaStyle[2]
   }, {
     'validate': function (p) {
       return p['stringAttribute'] === "2";
     },
-    'exportedVariables': {},
+    'transitions': {},
+    'animation': null,
     'style': _csstaStyle[3]
   }]
 });

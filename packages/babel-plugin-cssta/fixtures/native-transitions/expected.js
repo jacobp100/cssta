@@ -14,20 +14,23 @@ var _csstaStyle = _StyleSheet.create({
 });
 
 _withEnhancers([_Transition])(Animated.View, ['boolAttr'], {
-  'importedVariables': [],
   'transitionedProperties': ['color'],
   'keyframes': {},
   'rules': [{
     'validate': function (p) {
       return true;
     },
-    'exportedVariables': {},
+    'transitions': {
+      'color': ['1s', 'linear']
+    },
+    'animation': null,
     'style': _csstaStyle[0]
   }, {
     'validate': function (p) {
       return !!p['boolAttr'];
     },
-    'exportedVariables': {},
+    'transitions': {},
+    'animation': null,
     'style': _csstaStyle[1]
   }]
 });

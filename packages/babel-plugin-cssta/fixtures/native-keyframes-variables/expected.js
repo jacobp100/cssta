@@ -5,8 +5,8 @@ import _VariablesStyleSheetManager from 'cssta/lib/native/enhancers/VariablesSty
 import { Animated } from 'react-native';
 
 _withEnhancers([_VariablesStyleSheetManager, _Animation])(Animated.View, [], {
-  'importedVariables': ['primary'],
   'transitionedProperties': [],
+  'importedVariables': ['primary'],
   'keyframesStyleTuples': {
     'test': [{
       'time': 0,
@@ -21,6 +21,8 @@ _withEnhancers([_VariablesStyleSheetManager, _Animation])(Animated.View, [], {
       return true;
     },
     'exportedVariables': {},
+    'transitionParts': {},
+    'animationParts': ['test', '1s', 'linear'],
     'styleTuples': [['color', 'red']]
   }]
 });

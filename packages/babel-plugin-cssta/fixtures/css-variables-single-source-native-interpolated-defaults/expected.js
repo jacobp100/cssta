@@ -20,6 +20,8 @@ _createComponent(View, [], {
     'validate': function (p) {
       return true;
     },
+    'transitions': {},
+    'animation': null,
     'style': _csstaStyle[0]
   }]
 });

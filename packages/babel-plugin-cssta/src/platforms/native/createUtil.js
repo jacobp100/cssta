@@ -13,13 +13,9 @@ module.exports.baseRuleElements = rule => [
     t.stringLiteral('validate'),
     createValidatorNodeForSelector(rule.selector)
   ),
-  ..._.flow(
-    _.pick(['transitions', 'exportedVariables', 'animation']),
-    jsonObjectProperties
-  )(rule),
 ];
 
 module.exports.commonArgs = _.flow(
-  _.pick(['importedVariables', 'transitionedProperties']),
+  _.pick(['transitionedProperties']),
   jsonObjectProperties
 );

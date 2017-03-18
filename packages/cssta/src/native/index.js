@@ -11,7 +11,7 @@ const Animation = require('./enhancers/Animation');
 const dynamicComponent = withEnhancers([VariablesStyleSheetManager, Transition, Animation]);
 
 const createValidatorsForRules = (args /*: RawVariableArgs */) /*: VariableArgs */ => {
-  const { importedVariables, transitionedProperties, keyframesStyleTuples } = args;
+  const { transitionedProperties, importedVariables, keyframesStyleTuples } = args;
   const ruleTuples = args.ruleTuples.map(rule => ({
     validate: createValidatorForSelector(rule.selector),
     styleTuples: rule.styleTuples,
@@ -19,7 +19,7 @@ const createValidatorsForRules = (args /*: RawVariableArgs */) /*: VariableArgs 
     animationParts: rule.animationParts,
     exportedVariables: rule.exportedVariables,
   }));
-  return { importedVariables, transitionedProperties, keyframesStyleTuples, ruleTuples };
+  return { transitionedProperties, importedVariables, keyframesStyleTuples, ruleTuples };
 };
 
 /* eslint-disable no-param-reassign */
