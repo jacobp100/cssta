@@ -21,7 +21,7 @@ const Button = cssta.button`
   }
 
   @supports (background: linear-gradient(to bottom, red, green)) {
-    [christmas] {
+    [*christmas] {
       background: linear-gradient(to bottom, red, green);
     }
   }

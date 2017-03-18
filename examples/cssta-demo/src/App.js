@@ -18,7 +18,7 @@ const Button = cssta.button`
   }
 
   @supports (background: linear-gradient(to bottom, red, green)) {
-    [christmas] {
+    [*christmas] {
       background: linear-gradient(to bottom, red, green);
     }
   }
@@ -27,25 +27,25 @@ const Button = cssta.button`
     background: lightgray;
   }
 
-  [color="red"] {
+  [*color="red"] {
     background: red;
     color: white;
   }
 
-  [color="red"]:hover {
+  [*color="red"]:hover {
     background: maroon;
   }
 
-  [color="blue"] {
+  [*color="blue"] {
     background: blue;
     color: white;
   }
 
-  [color="blue"]:hover {
+  [*color="blue"]:hover {
     background: darkblue;
   }
 
-  [throb] {
+  [*throb] {
     animation: 1s throb infinite;
   }
 
