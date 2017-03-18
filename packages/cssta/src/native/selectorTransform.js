@@ -23,7 +23,7 @@ const createNestingValidator = () => null;
 const createAttributeValidator = (node) => {
   const { attribute, raws, value } = node;
 
-  const memberExpression = `${propArg}['${attribute.trim()}']`;
+  const memberExpression = `${propArg}[${JSON.stringify(attribute.trim())}]`;
 
   if (!value) return `!!${memberExpression}`;
 
