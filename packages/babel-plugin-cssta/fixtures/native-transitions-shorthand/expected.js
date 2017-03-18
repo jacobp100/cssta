@@ -33,20 +33,13 @@ _withEnhancers([_Transition])(Animated.View, ['active'], {
     'validate': function (p) {
       return true;
     },
-    'transitions': {
-      'backgroundColor': ['0.5s', 'linear'],
-      'transform': ['0.75s', 'linear']
-    },
     'exportedVariables': {},
-    'animation': null,
     'style': _csstaStyle[0]
   }, {
     'validate': function (p) {
       return !!p['active'];
     },
-    'transitions': {},
     'exportedVariables': {},
-    'animation': null,
     'style': _csstaStyle[1]
   }]
 });

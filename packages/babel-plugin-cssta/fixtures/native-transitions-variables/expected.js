@@ -12,19 +12,13 @@ _withEnhancers([_VariablesStyleSheetManager, _Transition])(Animated.View, ['bool
     'validate': function (p) {
       return true;
     },
-    'transitions': {
-      'color': ['1s', 'linear']
-    },
     'exportedVariables': {},
-    'animation': null,
     'styleTuples': [['color', 'var(--primary)']]
   }, {
     'validate': function (p) {
       return !!p['boolAttr'];
     },
-    'transitions': {},
     'exportedVariables': {},
-    'animation': null,
     'styleTuples': [['color', 'var(--secondary)']]
   }]
 });

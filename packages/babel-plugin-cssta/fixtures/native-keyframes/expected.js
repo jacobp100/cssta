@@ -35,9 +35,7 @@ _withEnhancers([_Animation])(Animated.View, [], {
     'validate': function (p) {
       return true;
     },
-    'transitions': {},
     'exportedVariables': {},
-    'animation': ['test', '1s', 'linear'],
     'style': _csstaStyle[0]
   }]
 });

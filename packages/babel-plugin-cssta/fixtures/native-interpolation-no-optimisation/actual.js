@@ -4,17 +4,17 @@ import { View } from 'react-native';
 const color = 'red';
 
 cssta(View)`
-  [attr1] {
+  [*attr1] {
     margin-top: 10px;
     color: ${color};
   }
 
-  [attr2] {
+  [*attr2] {
     color: ${color};
     margin-top: 10px;
   }
 
-  [attr3] {
+  [*attr3] {
     margin-top: 10px;
     color: ${color};
     margin-bottom: 10px;

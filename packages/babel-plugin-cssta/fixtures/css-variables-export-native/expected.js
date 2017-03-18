@@ -11,21 +11,17 @@ _withEnhancers([_VariablesStyleSheetManager])(View, ['blue'], {
     'validate': function (p) {
       return true;
     },
-    'transitions': {},
     'exportedVariables': {
       'color': 'red'
     },
-    'animation': null,
     'styleTuples': []
   }, {
     'validate': function (p) {
       return !!p['blue'];
     },
-    'transitions': {},
     'exportedVariables': {
       'color': 'blue'
     },
-    'animation': null,
     'styleTuples': []
   }]
 });

@@ -21,19 +21,13 @@ _withEnhancers([_Transition])(Animated.View, ['boolAttr'], {
     'validate': function (p) {
       return true;
     },
-    'transitions': {
-      'color': ['1s', 'linear']
-    },
     'exportedVariables': {},
-    'animation': null,
     'style': _csstaStyle[0]
   }, {
     'validate': function (p) {
       return !!p['boolAttr'];
     },
-    'transitions': {},
     'exportedVariables': {},
-    'animation': null,
     'style': _csstaStyle[1]
   }]
 });

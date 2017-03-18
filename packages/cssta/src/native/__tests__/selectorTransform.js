@@ -16,17 +16,17 @@ const runTest = (selector, { valid = [], invalid = [] }) => {
   });
 };
 
-it('creates a function that validates boolean attributes', () => runTest('[bool]', {
+it('creates a function that validates boolean attributes', () => runTest('[*bool]', {
   valid: [{ bool: true }, { bool: true, otherAttribute: true }],
   invalid: [{}, { bool: false }, { otherAttribute: true }],
 }));
 
-it('creates a function that validates string attributes', () => runTest('[string = "test"]', {
+it('creates a function that validates string attributes', () => runTest('[*string = "test"]', {
   valid: [{ string: 'test' }, { string: 'test', otherAttribute: true }],
   invalid: [{}, { string: 'other' }, { otherAttribute: true }],
 }));
 
-it('combines multiple validators', () => runTest('[bool][string = "test"]', {
+it('combines multiple validators', () => runTest('[*bool][*string = "test"]', {
   valid: [
     { bool: true, string: 'test' },
     { bool: true, string: 'test', otherAttribute: true },
@@ -45,22 +45,22 @@ it('validates everything for & selector', () => runTest('&', {
   valid: [{}, { otherAttribute: true }],
 }));
 
-it('works with :matches for same prop', () => runTest(':matches([string = "a"], [string = "b"])', {
+it('works with :matches for same prop', () => runTest(':matches([*string = "a"], [*string = "b"])', {
   valid: [{ string: 'a' }, { string: 'b' }, { string: 'a', otherAttribute: true }],
   invalid: [{}, { string: 'other' }, { otherAttribute: true }],
 }));
 
-it('works with :matches for different props', () => runTest(':matches([string = "a"], [bool])', {
+it('works with :matches for different props', () => runTest(':matches([*string = "a"], [*bool])', {
   valid: [{ string: 'a' }, { bool: true }, { string: 'a', otherAttribute: true }],
   invalid: [{}, { string: 'other' }, { bool: false }, { otherAttribute: true }],
 }));
 
-it('works with :not for same prop', () => runTest(':not([string = "a"], [string = "b"])', {
+it('works with :not for same prop', () => runTest(':not([*string = "a"], [*string = "b"])', {
   valid: [{}, { string: 'other' }, { otherAttribute: true }],
   invalid: [{ string: 'a' }, { string: 'b' }, { string: 'a', otherAttribute: true }],
 }));
 
-it('works with :not for different props', () => runTest(':not([string = "a"], [bool])', {
+it('works with :not for different props', () => runTest(':not([*string = "a"], [*bool])', {
   valid: [{}, { string: 'other' }, { bool: false }, { otherAttribute: true }],
   invalid: [{ string: 'a' }, { bool: true }, { string: 'a', otherAttribute: true }],
 }));

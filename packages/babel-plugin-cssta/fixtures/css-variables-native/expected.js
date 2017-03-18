@@ -11,11 +11,9 @@ _withEnhancers([_VariablesStyleSheetManager])(View, [], {
     'validate': function (p) {
       return true;
     },
-    'transitions': {},
     'exportedVariables': {
       'color': 'red'
     },
-    'animation': null,
     'styleTuples': [['color', 'var(--color)']]
   }]
 });

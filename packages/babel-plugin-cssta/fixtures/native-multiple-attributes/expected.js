@@ -26,33 +26,25 @@ _createComponent(View, ['booleanAttribute', 'stringAttribute'], {
     'validate': function (p) {
       return true;
     },
-    'transitions': {},
     'exportedVariables': {},
-    'animation': null,
     'style': _csstaStyle[0]
   }, {
     'validate': function (p) {
       return !!p['booleanAttribute'];
     },
-    'transitions': {},
     'exportedVariables': {},
-    'animation': null,
     'style': _csstaStyle[1]
   }, {
     'validate': function (p) {
-      return p['stringAttribute'] === '1';
+      return p['stringAttribute'] === "1";
     },
-    'transitions': {},
     'exportedVariables': {},
-    'animation': null,
     'style': _csstaStyle[2]
   }, {
     'validate': function (p) {
-      return p['stringAttribute'] === '2';
+      return p['stringAttribute'] === "2";
     },
-    'transitions': {},
     'exportedVariables': {},
-    'animation': null,
     'style': _csstaStyle[3]
   }]
 });

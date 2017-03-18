@@ -48,8 +48,10 @@ module.exports = (
 
       selector.walkAttributes((node) => {
         const attribute = node.attribute.trim();
+        if (attribute[0] !== '*') return;
+        const prop = attribute.slice(1);
         const value = node.value ? node.raws.unquoted : 'true';
-        const className = getClassNameFor(attribute, value);
+        const className = getClassNameFor(prop, value);
         const replacementNode = selectorParser.className({ value: className });
         node.replaceWith(replacementNode);
       });

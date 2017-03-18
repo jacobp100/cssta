@@ -16,8 +16,6 @@ _createComponent(View, [], {
     'validate': function (p) {
       return true;
     },
-    'transitions': {},
-    'animation': null,
     'style': _csstaStyle[0]
   }]
 });
@@ -35,8 +33,6 @@ _createComponent(View, [], {
     'validate': function (p) {
       return true;
     },
-    'transitions': {},
-    'animation': null,
     'style': _csstaStyle2[0]
   }]
 });

@@ -5,7 +5,7 @@ cssta(Animated.View)`
   color: var(--primary);
   transition: color 1s linear;
 
-  [boolAttr] {
+  [*boolAttr] {
     color: var(--secondary);
   }
 `;

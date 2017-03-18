@@ -1,7 +1,7 @@
 import cssta from 'cssta';
 
 cssta.button`
-  [booleanAttribute] {
+  [*booleanAttribute] {
     color: red;
   }
 `;
