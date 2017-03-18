@@ -1,1 +1,2 @@
-module.exports = require('./dist/web');
+// @flow
+module.exports = require('./lib/web');

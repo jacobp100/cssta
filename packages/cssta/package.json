@@ -14,7 +14,7 @@
     "build": "npm run clean; npm run build:lib; npm run build:vendor",
     "build:lib": "babel ./src --out-dir ./lib --ignore __tests__,__mocks__",
     "build:vendor": "webpack --config ./webpack.config.js",
-    "prepublish": "cp ../../docs/index.md README.md"
+    "prepublish": "npm run build; cp ../../docs/index.md README.md"
   },
   "keywords": [
     "postcss",
