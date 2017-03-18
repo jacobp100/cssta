@@ -4,6 +4,7 @@ const _ = require('lodash/fp');
 const { getOrCreateImportReference } = require('../../util');
 const createStyleBody = require('./createStyleBody');
 const { baseRuleElements } = require('./createUtil');
+const { jsonObjectProperties } = require('./util');
 
 module.exports = (path, substitutionMap, rules) => {
   const statementPath = path.getStatementParent();
@@ -28,6 +29,10 @@ module.exports = (path, substitutionMap, rules) => {
 
   const rulesBody = t.arrayExpression(_.map(rule => t.objectExpression([
     ...baseRuleElements(rule),
+    ...jsonObjectProperties({
+      transitions: rule.transitionParts,
+      animation: rule.animationParts,
+    }),
     t.objectProperty(
       t.stringLiteral('style'),
       rule.styleSheetReference

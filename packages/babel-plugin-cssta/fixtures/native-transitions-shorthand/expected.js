@@ -26,7 +26,6 @@ var _csstaStyle = _StyleSheet.create({
 });
 
 _withEnhancers([_Transition])(Animated.View, ['active'], {
-  'importedVariables': [],
   'transitionedProperties': ['backgroundColor', 'transform'],
   'keyframes': {},
   'rules': [{
@@ -37,7 +36,6 @@ _withEnhancers([_Transition])(Animated.View, ['active'], {
       'backgroundColor': ['0.5s', 'linear'],
       'transform': ['0.75s', 'linear']
     },
-    'exportedVariables': {},
     'animation': null,
     'style': _csstaStyle[0]
   }, {
@@ -45,7 +43,6 @@ _withEnhancers([_Transition])(Animated.View, ['active'], {
       return !!p['active'];
     },
     'transitions': {},
-    'exportedVariables': {},
     'animation': null,
     'style': _csstaStyle[1]
   }]

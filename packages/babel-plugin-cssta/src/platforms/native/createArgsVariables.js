@@ -6,6 +6,10 @@ module.exports = (path, substitutionMap, rulesBody, args) =>
   t.objectExpression([
     ...commonArgs(args),
     t.objectProperty(
+      t.stringLiteral('importedVariables'),
+      jsonToNode(args.importedVariables)
+    ),
+    t.objectProperty(
       t.stringLiteral('keyframesStyleTuples'),
       jsonToNode(args.keyframesStyleTuples)
     ),

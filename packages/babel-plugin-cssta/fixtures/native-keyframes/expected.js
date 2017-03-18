@@ -11,7 +11,6 @@ var _csstaStyle = _StyleSheet.create({
 });
 
 _withEnhancers([_Animation])(Animated.View, [], {
-  'importedVariables': [],
   'transitionedProperties': [],
   'keyframes': {
     'test': [{
@@ -36,7 +35,6 @@ _withEnhancers([_Animation])(Animated.View, [], {
       return true;
     },
     'transitions': {},
-    'exportedVariables': {},
     'animation': ['test', '1s', 'linear'],
     'style': _csstaStyle[0]
   }]

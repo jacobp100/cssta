@@ -124,7 +124,7 @@ module.exports = (inputCss /*: string */) /*: ({ propTypes: Object, args: RawVar
 
   const importedVariables = getImportedVariables(root);
 
-  const args = { importedVariables, transitionedProperties, keyframesStyleTuples, ruleTuples };
+  const args = { transitionedProperties, importedVariables, keyframesStyleTuples, ruleTuples };
 
   return { propTypes, args };
 };

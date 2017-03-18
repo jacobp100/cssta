@@ -4,16 +4,16 @@ import _VariablesStyleSheetManager from 'cssta/lib/native/enhancers/VariablesSty
 import { View } from 'react-native';
 
 _withEnhancers([_VariablesStyleSheetManager])(View, [], {
-  'importedVariables': ['color'],
   'transitionedProperties': [],
+  'importedVariables': ['color'],
   'keyframesStyleTuples': {},
   'ruleTuples': [{
     'validate': function (p) {
       return true;
     },
-    'transitions': {},
     'exportedVariables': {},
-    'animation': null,
+    'transitionParts': {},
+    'animationParts': null,
     'styleTuples': [['color', 'var(--color)']]
   }]
 });

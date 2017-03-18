@@ -15,7 +15,6 @@ var _csstaStyle = _StyleSheet.create({
 });
 
 _createComponent(View, [], {
-  'importedVariables': [],
   'transitionedProperties': [],
   'keyframes': {},
   'rules': [{
@@ -23,7 +22,6 @@ _createComponent(View, [], {
       return true;
     },
     'transitions': {},
-    'exportedVariables': {},
     'animation': null,
     'style': _csstaStyle[0]
   }]

@@ -4,6 +4,7 @@ const _ = require('lodash/fp');
 const { getPropertyName } = require('css-to-react-native');
 const { getStringWithSubstitutedValues } = require('./util');
 const { baseRuleElements } = require('./createUtil');
+const { jsonObjectProperties } = require('./util');
 
 const createStyleTuples = (
   substitutionMap,
@@ -18,6 +19,10 @@ const createStyleTuples = (
 module.exports = (path, substitutionMap, rules) =>
   t.arrayExpression(_.map(rule => t.objectExpression([
     ...baseRuleElements(rule),
+    ..._.flow(
+      _.pick(['exportedVariables', 'transitionParts', 'animationParts']),
+      jsonObjectProperties
+    )(rule),
     t.objectProperty(
       t.stringLiteral('styleTuples'),
       createStyleTuples(substitutionMap, rule)

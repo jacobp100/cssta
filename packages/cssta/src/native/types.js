@@ -12,8 +12,8 @@ export type VariablesStore = { [key:string]: string }
 export type StyleTuple = [string, string]
 
 export type BaseVariableArgs = {
-  importedVariables: string[],
   transitionedProperties: string[],
+  importedVariables: string[],
   keyframesStyleTuples: { [key:string]: VariableKeyframeTuple[] },
 }
 

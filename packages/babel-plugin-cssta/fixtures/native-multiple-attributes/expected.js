@@ -19,7 +19,6 @@ var _csstaStyle = _StyleSheet.create({
 });
 
 _createComponent(View, ['booleanAttribute', 'stringAttribute'], {
-  'importedVariables': [],
   'transitionedProperties': [],
   'keyframes': {},
   'rules': [{
@@ -27,7 +26,6 @@ _createComponent(View, ['booleanAttribute', 'stringAttribute'], {
       return true;
     },
     'transitions': {},
-    'exportedVariables': {},
     'animation': null,
     'style': _csstaStyle[0]
   }, {
@@ -35,7 +33,6 @@ _createComponent(View, ['booleanAttribute', 'stringAttribute'], {
       return !!p['booleanAttribute'];
     },
     'transitions': {},
-    'exportedVariables': {},
     'animation': null,
     'style': _csstaStyle[1]
   }, {
@@ -43,7 +40,6 @@ _createComponent(View, ['booleanAttribute', 'stringAttribute'], {
       return p['stringAttribute'] === '1';
     },
     'transitions': {},
-    'exportedVariables': {},
     'animation': null,
     'style': _csstaStyle[2]
   }, {
@@ -51,7 +47,6 @@ _createComponent(View, ['booleanAttribute', 'stringAttribute'], {
       return p['stringAttribute'] === '2';
     },
     'transitions': {},
-    'exportedVariables': {},
     'animation': null,
     'style': _csstaStyle[3]
   }]
