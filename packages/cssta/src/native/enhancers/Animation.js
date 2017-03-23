@@ -23,7 +23,7 @@ const getAnimation = (props) => {
 };
 
 const getKeyframe = animationValues => animationValues
-    .find(value => !durationRegExp.test(value) && !easingRegExp.test(value));
+  .find(value => !durationRegExp.test(value) && !easingRegExp.test(value));
 
 const noAnimations = { duration: null, easing: null, animations: null, animationValues: null };
 
