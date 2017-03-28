@@ -32,11 +32,11 @@ it('scopes multiple top-level declarations into one class', () => runTestFor(`
 }]));
 
 it('scopes boolean attribute selectors', () => runTestFor(`
-  [attribute] {
+  [*attribute] {
     color: red;
   }
 `, [{
-  selector: '[attribute]',
+  selector: '[*attribute]',
   styleTuples: [['color', 'red']],
   exportedVariables: {},
   transitionParts: {},
@@ -44,11 +44,11 @@ it('scopes boolean attribute selectors', () => runTestFor(`
 }]));
 
 it('scopes string attribute selectors', () => runTestFor(`
-  [stringAttribute = "red"] {
+  [*stringAttribute = "red"] {
     color: red;
   }
 `, [{
-  selector: '[stringAttribute = "red"]',
+  selector: '[*stringAttribute = "red"]',
   styleTuples: [['color', 'red']],
   exportedVariables: {},
   transitionParts: {},
@@ -56,51 +56,51 @@ it('scopes string attribute selectors', () => runTestFor(`
 }]));
 
 it('scopes attribute selectors', () => runTestFor(`
-  [booleanValue1] {
+  [*booleanValue1] {
     color: red;
   }
 
-  [booleanValue2] {
+  [*booleanValue2] {
     color: green;
   }
 
-  [stringValue1 = "a"] {
+  [*stringValue1 = "a"] {
     color: red;
   }
 
-  [stringValue1 = "b"] {
+  [*stringValue1 = "b"] {
     color: green;
   }
 
-  [stringValue2 = "c"] {
+  [*stringValue2 = "c"] {
     color: blue;
   }
 `, [{
-  selector: '[booleanValue1]',
+  selector: '[*booleanValue1]',
   styleTuples: [['color', 'red']],
   exportedVariables: {},
   transitionParts: {},
   animationParts: null,
 }, {
-  selector: '[booleanValue2]',
+  selector: '[*booleanValue2]',
   styleTuples: [['color', 'green']],
   exportedVariables: {},
   transitionParts: {},
   animationParts: null,
 }, {
-  selector: '[stringValue1 = "a"]',
+  selector: '[*stringValue1 = "a"]',
   styleTuples: [['color', 'red']],
   exportedVariables: {},
   transitionParts: {},
   animationParts: null,
 }, {
-  selector: '[stringValue1 = "b"]',
+  selector: '[*stringValue1 = "b"]',
   styleTuples: [['color', 'green']],
   exportedVariables: {},
   transitionParts: {},
   animationParts: null,
 }, {
-  selector: '[stringValue2 = "c"]',
+  selector: '[*stringValue2 = "c"]',
   styleTuples: [['color', 'blue']],
   exportedVariables: {},
   transitionParts: {},
@@ -171,7 +171,7 @@ it('returns all imported variables without duplicates', () => {
   const { args } = extractRules(`
     color: var(--color);
 
-    [inverted] {
+    [*inverted] {
       backgroundColor: var(--color);
       color: var(--background);
     }

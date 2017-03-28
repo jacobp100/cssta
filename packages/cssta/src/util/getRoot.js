@@ -61,31 +61,31 @@ module.exports = (inputCss /*: string */, allowCombinators /*: boolean */ = fals
           didScopeNode = true;
         }
 
-        if (node.type === 'attribute') {
-          const attribute = node.attribute.trim();
+        if (node.type === 'attribute' && node.attribute.trim()[0] === '*') {
+          const prop = node.attribute.trim().slice(1); // Remove *
           const propType = node.value ? 'oneOf' : 'bool';
 
           if (propType === 'oneOf' && node.operator !== '=') {
-            throw new Error(`You cannot use operator ${node.operator} in an attribute selector`);
+            throw new Error(`You cannot use operator ${node.operator} in a prop selector`);
           }
 
           if (propType === 'oneOf' && node.raws.insensitive) {
-            throw new Error('You cannot use case-insensitive attribute selectors');
+            throw new Error('You cannot use case-insensitive prop selectors');
           }
 
-          if (attribute === 'component') {
-            throw new Error('You cannot name an attribute "component"');
+          if (prop === 'component') {
+            throw new Error('You cannot name an prop "component"');
           }
 
-          if (!(attribute in propTypes)) {
-            propTypes[attribute] = { type: propType };
-          } else if (propTypes[attribute].type !== propType) {
-            throw new Error(`Attribute "${attribute}" defined as both bool and a string`);
+          if (!(prop in propTypes)) {
+            propTypes[prop] = { type: propType };
+          } else if (propTypes[prop].type !== propType) {
+            throw new Error(`Prop "${prop}" defined as both bool and a string`);
           }
 
           if (propType === 'oneOf') {
             const value = node.raws.unquoted.trim();
-            propTypes[attribute].values = (propTypes[attribute].values || [])
+            propTypes[prop].values = (propTypes[prop].values || [])
               .concat(value)
               .reduce((accum, elem) => (
                 accum.indexOf(elem) === -1 ? accum.concat(elem) : accum

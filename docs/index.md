@@ -37,36 +37,31 @@ Note that while we are using template strings, interpolation (`${value}`) is not
 
 ## 📝 CSS
 
-The CSS input is *mostly* regular CSS—but you should look at the platform guides for more information.
-
-However, selectors are changed on all platforms: only the following selector parts are permitted:
+The CSS input is regular CSS—but you should look at the platform guides for more information. You’ve also got the following,
 
 * `&` to refer to the current component
-* `:hover`, `::before`, `:not(…)`, `:nth-child(…)` etc. pseudo selectors (platform dependent)
-* `[attribute]` and `[attribute="value"]` (these refer to React Props—see below)
-
-Combinators (`a b`, `a > b` etc.) are not permitted.
+* `[*attribute]` and `[*attribute="value"]` to query React props (see below)
 
 ## 🎛 Props
 
-Attribute selectors have their meaning redefined to refer to React props. Defined as `[stringAttribute="stringValue"]` for string props, and `[booleanAttribute]` for boolean props, these apply conditional styling.
+We extend the attribute selector syntax in CSS. Now when your attribute name starts with an asterisk, we’ll query the React props instead of the DOM element’s. You can use `[*stringAttribute="stringValue"]` for string props, and `[*booleanAttribute]` for boolean props. We call this a prop selector.
 
 ```jsx
 const Button = cssta.button`
   padding: 0.5em 1em;
 
-  [large] {
+  [*large] {
     font-size: 2em;
   }
 
-  :not([noOutline]) {
+  :not([*noOutline]) {
     border: 1px solid currentColor;
   }
 
-  [priority="critical"] {
+  [*priority="critical"] {
     color: red;
   }
-  [priority="important"] {
+  [*priority="important"] {
     color: orange;
   }
 `
@@ -81,11 +76,11 @@ const Button = cssta.button`
 </Button>
 ```
 
-The properties you defined in the CSS determine the style applied, and are not passed down to the base component. All other props get passed down.
+All properties defined in prop selectors are not passed down to the component—they’re really only for styling. All other props get passed down.
 
 ```jsx
 const button = `
-  [large] { font-size: 12pt; }
+  [*large] { font-size: 12pt; }
 `
 
 <Button large onClick={() => alert('clicked')}>
@@ -93,7 +88,7 @@ const button = `
 </Button>
 ```
 
-The properties defined in your CSS are type checked with `propTypes` to check for typos.
+In addition, we’ll automatically type check all your prop selectors with React’s `propTypes` to check for typos.
 
 ## 💗 Composition
 

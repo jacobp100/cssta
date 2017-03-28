@@ -21,9 +21,14 @@ const createLogicalValidator = (nodes, operator) => {
 const createNestingValidator = () => null;
 
 const createAttributeValidator = (node) => {
-  const { attribute, raws, value } = node;
+  const { raws, value } = node;
+  const attribute = node.attribute.trim();
+  if (attribute[0] !== '*') {
+    throw new Error(`You can only use prop selectors (did you forget a * before ${attribute})`);
+  }
 
-  const memberExpression = `${propArg}[${JSON.stringify(attribute.trim())}]`;
+  const prop = attribute.slice(1);
+  const memberExpression = `${propArg}[${JSON.stringify(prop)}]`;
 
   if (!value) return `!!${memberExpression}`;
 
