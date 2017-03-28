@@ -67,11 +67,14 @@ const createRuleStylesUsingStylesheet = (
   ));
 
   const keyframes = Object.keys(keyframesStyleTuples).reduce((accum, keyframeName) => {
-    const keyframeStyles /*: Keyframe[] */ = keyframesStyleTuples[keyframeName]
-      .map(({ time, styleTuples }) => ({
-        time,
-        styles: transformStyleTuples(styleTuples, appliedVariables),
-      }));
+    const keyframeStyles /*: Keyframe[] */ = keyframesStyleTuples[keyframeName].map(keyframe => (
+      keyframe.styleTuples
+        ? {
+          time: keyframe.time,
+          styles: transformStyleTuples(keyframe.styleTuples, appliedVariables),
+        }
+        : keyframe
+    ));
     accum[keyframeName] = keyframeStyles;
     return accum;
   }, {});

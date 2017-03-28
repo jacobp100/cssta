@@ -18,7 +18,7 @@ export type VariableWithValidator = {
 export type BaseVariableArgs = {|
   transitionedProperties: string[],
   importedVariables: string[],
-  keyframesStyleTuples: { [key:string]: VariableKeyframeTuple[] },
+  keyframesStyleTuples: { [key:string]: (VariableKeyframeTuple | Keyframe)[] },
 |}
 
 export type RawVariableArgs = {|
