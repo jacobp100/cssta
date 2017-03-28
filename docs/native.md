@@ -49,7 +49,7 @@ For more information, see [css-to-react-native](https://www.npmjs.com/package/cs
 
 The only selectors supported on React Native are,
 
-* Prop selectors (`[*boolAttribute]` and `[*stringAttribute="stringValue"]`)
+* Prop selectors (`[@boolAttribute]` and `[@stringAttribute="stringValue"]`)
 * `:not(…)`
 * `:matches(…)`
 
@@ -57,11 +57,11 @@ And these selectors work as normal.
 
 ```jsx
 cssta(Text)`
-  [*color="red"] { ... }
+  [@color="red"] { ... }
 
-  :matches([*color="red"], [*color="blue"]) { ... }
+  :matches([@color="red"], [@color="blue"]) { ... }
 
-  :not([*allowOverflow]) { ... }
+  :not([@allowOverflow]) { ... }
 `
 ```
 
@@ -88,7 +88,7 @@ const ButtonWithTransition = cssta(Animated.View)`
     background-color 0.5s ease-in,
     color 0.7s ease-in;
 
-  [*disabled] {
+  [@disabled] {
     background-color: gray;
     color: light-gray;
   }

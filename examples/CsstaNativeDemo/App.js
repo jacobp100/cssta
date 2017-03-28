@@ -31,7 +31,7 @@ const DemoBody = cssta(View)`
   border-color: #bdc3c7;
   border-top-width: ${StyleSheet.hairlineWidth}px;
 
-  [*noCode] {
+  [@noCode] {
     border-bottom-width: ${StyleSheet.hairlineWidth}px;
   }
 `;

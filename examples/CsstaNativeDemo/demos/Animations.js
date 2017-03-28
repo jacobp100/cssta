@@ -16,15 +16,15 @@ const Palette = cssta(Animated.View)`
   width: 50px;
   margin-bottom: 20px;
 
-  [*animation = "fade-in"] {
+  [@animation = "fade-in"] {
     animation: 0.5s fade-in;
   }
 
-  [*animation = "slide-in"] {
+  [@animation = "slide-in"] {
     animation: 0.5s slide-in;
   }
 
-  [*animation = "zoom-in"] {
+  [@animation = "zoom-in"] {
     animation: 0.5s zoom-in;
   }
 

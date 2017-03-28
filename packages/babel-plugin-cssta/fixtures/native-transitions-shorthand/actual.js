@@ -8,7 +8,7 @@ cssta(Animated.View)`
   transform: scaleX(1) rotate(0deg);
   transition: background-color 0.5s linear, transform 0.75s linear;
 
-  [*active] {
+  [@active] {
     background-color: #1abc9c;
     transform: scaleX(0.5) rotate(6deg);
   }

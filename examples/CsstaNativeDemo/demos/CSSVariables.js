@@ -11,9 +11,9 @@ const PickerRow = cssta(View)`
 const DynamicContainer = cssta(View)`
   --color: black;
 
-  [*color="red"] { --color: #e74c3c; }
-  [*color="green"] { --color: #2ecc71; }
-  [*color="blue"] { --color: #3498db; }
+  [@color="red"] { --color: #e74c3c; }
+  [@color="green"] { --color: #2ecc71; }
+  [@color="blue"] { --color: #3498db; }
 `;
 
 class DynamicPicker extends Component {

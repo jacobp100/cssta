@@ -15,7 +15,7 @@ const ButtonContainer = cssta(Animated.View)`
   background-color: var(--background);
   transition: background-color 0.2s;
 
-  [*active] {
+  [@active] {
     --foreground: white;
     --background: var(--primary);
   }

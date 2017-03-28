@@ -5,7 +5,12 @@ const getRoot = require('../getRoot');
 const trim = str =>
   str.split('\n').map(line => line.trim()).filter(line => line !== '').join('\n');
 
-const runTestFor = (inputCss, expectedCss = inputCss, expectedPropTypes = {}, allowCombinators) => {
+const runTestFor = (
+  inputCss,
+  expectedCss = inputCss.replace(/(\[\s*)@(\w)/g, '$1*$2'),
+  expectedPropTypes = {},
+  allowCombinators
+) => {
   const { root, propTypes: actualPropTypes } = getRoot(inputCss, allowCombinators);
   const actualCss = root.toString();
 
@@ -54,7 +59,7 @@ it('does not re-nest nested rules', () => runTestFor(`
 `));
 
 it('generates prop type for bool attributes', () => runTestFor(`
-  [*attribute] {
+  [@attribute] {
     color: red;
   }
 `, undefined, {
@@ -62,11 +67,11 @@ it('generates prop type for bool attributes', () => runTestFor(`
 }));
 
 it('generates prop type for string attributes', () => runTestFor(`
-  [*attribute = "1"] {
+  [@attribute = "1"] {
     color: red;
   }
 
-  [*attribute = "2"] {
+  [@attribute = "2"] {
     color: red;
   }
 `, undefined, {
@@ -74,15 +79,15 @@ it('generates prop type for string attributes', () => runTestFor(`
 }));
 
 it('generates multile prop types for multiple attributes', () => runTestFor(`
-  [*boolAttribute] {
+  [@boolAttribute] {
     color: red;
   }
 
-  [*stringAttribute = "1"] {
+  [@stringAttribute = "1"] {
     color: red;
   }
 
-  [*stringAttribute = "2"] {
+  [@stringAttribute = "2"] {
     color: red;
   }
 `, undefined, {
@@ -91,11 +96,11 @@ it('generates multile prop types for multiple attributes', () => runTestFor(`
 }));
 
 it('only defines values for string attribute once', () => runTestFor(`
-  [*attribute = "1"] {
+  [@attribute = "1"] {
     color: red;
   }
 
-  [*attribute = "1"] {
+  [@attribute = "1"] {
     color: red;
   }
 `, undefined, {
@@ -131,7 +136,7 @@ it('optionally allows combinators before scoping with &', () => runTestFor(`
 `, undefined, undefined, true));
 
 it('optionally allows combinators before scoping with attribute selectors', () => runTestFor(`
-  :fullscreen [*attribute] {
+  :fullscreen [@attribute] {
     color: red;
   }
 `, undefined, {
@@ -161,35 +166,35 @@ it('does not allow combinators after scoping with &', () => shouldThrow(`
 `));
 
 it('does not allow combinators after scoping with attribute selectors', () => shouldThrow(`
-  [*attribute] :fullscreen {
+  [@attribute] :fullscreen {
     color: red;
   }
 `));
 
 it('does not allow case-insensitive attributes', () => shouldThrow(`
-  [*attribute = "value" i] {
+  [@attribute = "value" i] {
     color: red;
   }
 `));
 
 it('only allows = as operator in attribute', () => shouldThrow(`
-  [*attribute ~= "value"] {
+  [@attribute ~= "value"] {
     color: red;
   }
 `));
 
 it('does not allow attributes to be called "component"', () => shouldThrow(`
-  [*component] {
+  [@component] {
     color: red;
   }
 `));
 
 it('enforces consistent prop types', () => shouldThrow(`
-  [*mixedAttribute] {
+  [@mixedAttribute] {
     color: red;
   }
 
-  [*mixedAttribute = "value"] {
+  [@mixedAttribute = "value"] {
     color: red;
   }
 `));

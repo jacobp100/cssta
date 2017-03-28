@@ -42,7 +42,9 @@ const nestNode = (node) => {
 const scopingTypes = ['nesting', 'attribute'];
 
 module.exports = (inputCss /*: string */, allowCombinators /*: boolean */ = false) => {
-  const root = postcss.parse(inputCss);
+  // Allow @ or *
+  const transformedInput = inputCss.replace(/(\[\s*)@(\w)/g, '$1*$2');
+  const root = postcss.parse(transformedInput);
 
   iterateChildren(root, nestNode);
 

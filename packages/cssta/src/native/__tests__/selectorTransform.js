@@ -16,6 +16,8 @@ const runTest = (selector, { valid = [], invalid = [] }) => {
   });
 };
 
+// Note that getRoot replaces @ with * (so it parses). We have to use * here.
+
 it('creates a function that validates boolean attributes', () => runTest('[*bool]', {
   valid: [{ bool: true }, { bool: true, otherAttribute: true }],
   invalid: [{}, { bool: false }, { otherAttribute: true }],

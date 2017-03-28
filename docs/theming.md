@@ -60,7 +60,7 @@ const LightBox = cssta.div`
   background-color: black;
   --primary: white;
 
-  [*inverted] {
+  [@inverted] {
     background-color: white;
     --primary: black;
   }

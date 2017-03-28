@@ -3,15 +3,15 @@ import cssta from 'cssta';
 cssta.button`
   color: red;
 
-  [*booleanAttribute] {
+  [@booleanAttribute] {
     color: green;
   }
 
-  [*stringAttribute = "1"] {
+  [@stringAttribute = "1"] {
     color: blue;
   }
 
-  [*stringAttribute = "2"] {
+  [@stringAttribute = "2"] {
     color: yellow;
   }
 `;
