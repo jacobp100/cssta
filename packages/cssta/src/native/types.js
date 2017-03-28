@@ -8,59 +8,66 @@ These might have variables
 
 /*::
 export type VariablesStore = { [key:string]: string }
-
 export type StyleTuple = [string, string]
-
-export type BaseVariableArgs = {
-  transitionedProperties: string[],
-  importedVariables: string[],
-  keyframesStyleTuples: { [key:string]: VariableKeyframeTuple[] },
-}
-
-export type RawVariableArgs = BaseVariableArgs & {
-  ruleTuples: RawVariableRuleTuple[]
-}
-
-export type VariableArgs = BaseVariableArgs & {
-  ruleTuples: VariableRuleTuple[]
-}
-
-export type BaseVariableRuleTuple = {
-  exportedVariables: VariablesStore,
-  transitionParts: ?{ [key:string]: string[] },
-  animationParts: ?string[],
-  styleTuples: StyleTuple[],
-}
-
-export type RawVariableRuleTuple = BaseVariableRuleTuple & {
-  selector: string,
-}
+export type Style = { [key:string]: any } | string
 
 export type VariableWithValidator = {
   validate?: (props: Object) => boolean,
 }
 
-export type VariableRuleTuple = BaseVariableRuleTuple & VariableWithValidator
+export type BaseVariableArgs = {|
+  transitionedProperties: string[],
+  importedVariables: string[],
+  keyframesStyleTuples: { [key:string]: VariableKeyframeTuple[] },
+|}
 
-export type VariableKeyframeTuple = {
+export type RawVariableArgs = {|
+  ...BaseVariableArgs,
+  ruleTuples: RawVariableRuleTuple[],
+|}
+
+export type VariableArgs = {|
+  ...BaseVariableArgs,
+  ruleTuples: (VariableRuleTuple | Rule)[],
+|}
+
+export type BaseVariableRuleTuple = {|
+  exportedVariables: VariablesStore,
+  transitionParts: ?{ [key:string]: string[] },
+  animationParts: ?string[],
+  styleTuples: StyleTuple[],
+|}
+
+export type RawVariableRuleTuple = {|
+  ...BaseVariableRuleTuple ,
+  selector: string,
+|}
+
+export type VariableRuleTuple = {|
+  ...BaseVariableRuleTuple,
+  ...$Exact<VariableWithValidator>,
+|}
+
+export type VariableKeyframeTuple = {|
   time: number,
   styleTuples: StyleTuple[],
-}
+|}
 
-export type Args = {
+export type Args = {|
   transitionedProperties: string[],
   keyframes: { [key:string]: Keyframe[] },
-  rules: Rule[]
-}
+  rules: Rule[],
+|}
 
-export type Rule = VariableWithValidator & {
-  style: any,
+export type Rule = {|
+  ...$Exact<VariableWithValidator>,
+  style: Style,
   transitions?: ?{ [key:string]: string[] },
   animation?: ?string[],
-}
+|}
 
-export type Keyframe = {
+export type Keyframe = {|
   time: number,
   styles: any,
-}
+|}
 */

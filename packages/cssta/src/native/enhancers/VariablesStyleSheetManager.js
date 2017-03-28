@@ -12,7 +12,7 @@ const transformVariables = require('../../css-transforms/variables');
 const { mapValues } = require('../../util');
 /*::
 import type {
-  VariableArgs, VariableRuleTuple, Args, VariablesStore, Rule, Keyframe,
+  VariableArgs, VariableRuleTuple, Args, VariablesStore, Style, Rule, Keyframe,
 } from '../types'
 */
 
@@ -52,16 +52,19 @@ const createRuleStylesUsingStylesheet = (
   args /*: VariableArgs */
 ) /*: Args */ => {
   const { transitionedProperties, keyframesStyleTuples, ruleTuples } = args;
-  const styles = ruleTuples.map(rule => transformStyleTuples(rule.styleTuples, appliedVariables));
+  const styles /*: (Style | null)[] */ = ruleTuples.map(rule => (
+    rule.styleTuples ? transformStyleTuples(rule.styleTuples, appliedVariables) : null
+  ));
 
   const styleBody = styles.reduce((accum, style, index) => {
-    accum[index] = style;
+    if (style != null) accum[index] = style;
     return accum;
   }, {});
   const stylesheet = StyleSheet.create(styleBody);
 
-  const rules = ruleTuples
-    .map((rule, index) => createRule(rule, stylesheet[index], appliedVariables));
+  const rules = ruleTuples.map((rule, index) => (
+    rule.styleTuples ? createRule(rule, stylesheet[index], appliedVariables) : rule
+  ));
 
   const keyframes = Object.keys(keyframesStyleTuples).reduce((accum, keyframeName) => {
     const keyframeStyles /*: Keyframe[] */ = keyframesStyleTuples[keyframeName]
