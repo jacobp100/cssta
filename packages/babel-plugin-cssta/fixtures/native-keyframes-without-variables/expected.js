@@ -10,10 +10,14 @@ _withEnhancers([_VariablesStyleSheetManager, _Animation])(Animated.View, [], {
   'keyframesStyleTuples': {
     'test': [{
       'time': 0,
-      'styleTuples': [['color', 'rgba(0, 0, 0, 0)']]
+      'styles': {
+        'color': 'rgba(0, 0, 0, 0)'
+      }
     }, {
       'time': 1,
-      'styleTuples': [['color', 'var(--primary)']]
+      'styles': {
+        'rgba': 'rgba(0, 0, 0, 1)'
+      }
     }]
   },
   'ruleTuples': [{
@@ -23,6 +27,6 @@ _withEnhancers([_VariablesStyleSheetManager, _Animation])(Animated.View, [], {
     'exportedVariables': {},
     'transitionParts': {},
     'animationParts': ['test', '1s', 'linear'],
-    'styleTuples': [['color', 'red']]
+    'styleTuples': [['color', 'var(--primary)']]
   }]
 });

@@ -1,6 +1,7 @@
 const t = require('babel-types');
 const _ = require('lodash/fp');
 const { jsonToNode, getSubstitutionRegExp } = require('../../util');
+const { varRegExp } = require('cssta/lib/util');
 
 const getTemplateValues = cooked => ({
   cooked,
@@ -30,6 +31,9 @@ const getStringWithSubstitutedValues = (substitutionMap, value) => {
   return t.templateLiteral(quasis, expressions);
 };
 
+const styleTupleHasVariable = styleTuple => varRegExp.test(styleTuple[1]);
+
 module.exports.getTemplateValues = getTemplateValues;
 module.exports.jsonObjectProperties = jsonObjectProperties;
 module.exports.getStringWithSubstitutedValues = getStringWithSubstitutedValues;
+module.exports.styleTupleHasVariable = styleTupleHasVariable;

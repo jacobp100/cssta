@@ -1,5 +1,6 @@
 const t = require('babel-types');
 const { jsonToNode } = require('../../util');
+const createKeyframes = require('./createKeyframes');
 const { commonArgs } = require('./createUtil');
 
 module.exports = (path, substitutionMap, rulesBody, args) =>
@@ -11,7 +12,7 @@ module.exports = (path, substitutionMap, rulesBody, args) =>
     ),
     t.objectProperty(
       t.stringLiteral('keyframesStyleTuples'),
-      jsonToNode(args.keyframesStyleTuples)
+      createKeyframes(path, substitutionMap, args.keyframesStyleTuples)
     ),
     t.objectProperty(
       t.stringLiteral('ruleTuples'),
