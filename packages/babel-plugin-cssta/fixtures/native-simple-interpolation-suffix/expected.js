@@ -1,5 +1,5 @@
-import _createComponent from 'cssta/lib/native/createComponent';
 import { transformRawValue as _transformRawValue } from 'cssta/lib/native/cssUtil';
+import _createComponent from 'cssta/lib/native/createComponent';
 
 import { View, StyleSheet } from 'react-native';
 

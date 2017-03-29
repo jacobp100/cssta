@@ -4,32 +4,32 @@ const _ = require('lodash/fp');
 const resolveVariableDependencies = require('cssta/src/util/resolveVariableDependencies');
 const extractRules = require('cssta/src/native/extractRules');
 const { getOrCreateImportReference, jsonToNode } = require('../../util');
-const createStyleSheetStatic = require('./createStyleSheetStatic');
-const createStyleSheetVariables = require('./createStyleSheetVariables');
 const createArgsStatic = require('./createArgsStatic');
 const createArgsVariables = require('./createArgsVariables');
 
 
 const everyIsEmpty = _.every(_.isEmpty);
-const argsIsEmpty = (args, singleSourceOfVariables) => {
-  const argsOmissions = singleSourceOfVariables ? ['importedVariables'] : [];
-  const ruleOmissions = singleSourceOfVariables ? ['exportedVariables'] : [];
-
-  return _.flow(
-    _.omit(argsOmissions),
-    _.update('ruleTuples', _.map(_.omit(['selector', ...ruleOmissions]))),
-    _.update('ruleTuples', _.reject(everyIsEmpty)),
-    everyIsEmpty
-  )(args);
-};
+const argsIsEmpty = _.flow(
+  _.update('ruleTuples', _.map(_.omit(['selector']))),
+  _.update('ruleTuples', _.reject(everyIsEmpty)),
+  everyIsEmpty
+);
 
 module.exports = (path, state, component, cssText, substitutionMap) => {
+  const { singleSourceOfVariables } = state;
   // eslint-disable-next-line
   let { propTypes, args } = extractRules(cssText);
+
+  if (singleSourceOfVariables) {
+    args = _.flow(
+      _.set('importedVariables', []),
+      _.update('ruleTuples', _.map(_.set('exportedVariables', {})))
+    )(args);
+  }
+
   const exportedVariables = _.reduce(_.assign, {}, _.map('exportedVariables', args.ruleTuples));
   const exportsVariables = !_.isEmpty(exportedVariables);
 
-  const { singleSourceOfVariables } = state;
   const resolvedVariables = (singleSourceOfVariables && exportsVariables)
     ? resolveVariableDependencies(exportedVariables, {})
     : null;
@@ -40,30 +40,29 @@ module.exports = (path, state, component, cssText, substitutionMap) => {
 
   // If we end up with nothing after removing configs, and we don't filter props,
   // we can just return the component
-  if (argsIsEmpty(args, singleSourceOfVariables) && _.isEmpty(propTypes)) {
+  if (argsIsEmpty(args) && _.isEmpty(propTypes)) {
     path.replaceWith(component);
     return;
   }
 
   const hasVariables =
-    !singleSourceOfVariables &&
-    (!_.isEmpty(args.importedVariables) || !_.isEmpty(exportedVariables));
+    exportsVariables || !_.isEmpty(args.importedVariables) || !_.isEmpty(exportedVariables);
+
+  if (hasVariables && singleSourceOfVariables) {
+    throw new Error('Internal error: expected no variables with singleSourceOfVariables');
+  }
+
   const hasKeyframes = !_.isEmpty(args.keyframesStyleTuples);
   const hasTransitions = !_.isEmpty(args.transitionedProperties);
 
   const componentRoot = 'cssta/lib/native';
   const enhancersRoot = `${componentRoot}/enhancers`;
   const enhancers = [];
-  let rulesBody;
 
   if (hasVariables) {
     const variablesEnhancer =
       getOrCreateImportReference(path, `${enhancersRoot}/VariablesStyleSheetManager`, 'default');
     enhancers.push(variablesEnhancer);
-
-    rulesBody = createStyleSheetVariables(path, substitutionMap, args.ruleTuples, args);
-  } else {
-    rulesBody = createStyleSheetStatic(path, substitutionMap, args.ruleTuples);
   }
 
   if (hasTransitions) {
@@ -88,8 +87,8 @@ module.exports = (path, state, component, cssText, substitutionMap) => {
   }
 
   const argsNode = hasVariables
-    ? createArgsVariables(path, substitutionMap, rulesBody, args)
-    : createArgsStatic(path, substitutionMap, rulesBody, args);
+    ? createArgsVariables(path, substitutionMap, args)
+    : createArgsStatic(path, substitutionMap, args);
 
   const newElement = t.callExpression(componentConstructor, [
     component,

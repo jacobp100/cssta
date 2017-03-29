@@ -1,8 +1,15 @@
+import { StyleSheet as _StyleSheet } from 'react-native';
 import _withEnhancers from 'cssta/lib/native/withEnhancers';
 import _Transition from 'cssta/lib/native/enhancers/Transition';
 import _VariablesStyleSheetManager from 'cssta/lib/native/enhancers/VariablesStyleSheetManager';
 
 import { Animated } from 'react-native';
+
+var _csstaStyle = _StyleSheet.create({
+  0: {
+    'color': 'var(--secondary)'
+  }
+});
 
 _withEnhancers([_VariablesStyleSheetManager, _Transition])(Animated.View, ['boolAttr'], {
   'transitionedProperties': ['color'],
@@ -22,9 +29,8 @@ _withEnhancers([_VariablesStyleSheetManager, _Transition])(Animated.View, ['bool
     'validate': function (p) {
       return !!p["boolAttr"];
     },
-    'exportedVariables': {},
-    'transitionParts': {},
-    'animationParts': null,
-    'styleTuples': [['color', 'var(--secondary)']]
+    'transitions': {},
+    'animation': null,
+    'style': _csstaStyle[0]
   }]
 });

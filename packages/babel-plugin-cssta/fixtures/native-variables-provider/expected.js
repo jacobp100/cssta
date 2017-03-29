@@ -1,5 +1,5 @@
-import _createComponent from 'cssta/lib/native/createComponent';
 import { StyleSheet as _StyleSheet } from 'react-native';
+import _createComponent from 'cssta/lib/native/createComponent';
 import VariablesProvider from 'cssta/lib/native/VariablesProvider';
 
 import { View } from 'react-native';

@@ -1,6 +1,6 @@
+import { StyleSheet as _StyleSheet } from 'react-native';
 import _withEnhancers from 'cssta/lib/native/withEnhancers';
 import _Animation from 'cssta/lib/native/enhancers/Animation';
-import { StyleSheet as _StyleSheet } from 'react-native';
 
 import { Animated } from 'react-native';
 

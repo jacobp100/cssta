@@ -31,9 +31,11 @@ const getStringWithSubstitutedValues = (substitutionMap, value) => {
   return t.templateLiteral(quasis, expressions);
 };
 
-const styleTupleHasVariable = styleTuple => varRegExp.test(styleTuple[1]);
+const styleHasVariable = style => style && varRegExp.test(style);
+const styleTupleHasVariable = styleTuple => styleHasVariable(styleTuple[1]);
 
 module.exports.getTemplateValues = getTemplateValues;
 module.exports.jsonObjectProperties = jsonObjectProperties;
 module.exports.getStringWithSubstitutedValues = getStringWithSubstitutedValues;
+module.exports.styleHasVariable = styleHasVariable;
 module.exports.styleTupleHasVariable = styleTupleHasVariable;
