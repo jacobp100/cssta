@@ -7,8 +7,8 @@ const tempfile = require('tempfile');
 const plugin = require('.');
 
 const approve = process.argv.includes('--approve');
-const skipTest = process.argv.includes('--skip-test');
-const print = process.argv.includes('--print');
+const printJs = process.argv.includes('--print-js');
+const printCss = process.argv.includes('--print-css');
 const filterIndex = process.argv.indexOf('--filter');
 const filter = filterIndex === -1 ? '' : process.argv[filterIndex + 1];
 const baseDir = path.join(__dirname, '..');
@@ -21,10 +21,13 @@ const normaliseCss = (str) => {
   return output;
 };
 
-const getActual = (testPath, actualJsPath, expectedCssPath, optionsPath) => {
+const getMockCssPath = () => tempfile('.css');
+
+const getActual = (testPath, actualJsPath, optionsPath) => {
   plugin.resetGenerators();
 
-  const options = { output: expectedCssPath, cwd: testPath };
+  const dummyCssPath = getMockCssPath();
+  const options = { output: dummyCssPath, cwd: testPath };
 
   if (fs.existsSync(optionsPath)) {
     const userOptions = JSON.parse(fs.readFileSync(optionsPath, 'utf8'));
@@ -35,15 +38,13 @@ const getActual = (testPath, actualJsPath, expectedCssPath, optionsPath) => {
     plugins: [[plugin, options]],
   }).code;
 
-  let actualCss = fs.existsSync(expectedCssPath)
-    ? fs.readFileSync(expectedCssPath, 'utf8')
+  let actualCss = fs.existsSync(dummyCssPath)
+    ? fs.readFileSync(dummyCssPath, 'utf8')
     : '';
   actualCss = normaliseCss(actualCss);
 
   return { actualJs, actualCss };
 };
-
-const getMockCssPath = () => tempfile('.css');
 
 glob.sync(path.join(baseDir, 'fixtures/*/')).filter(name => (
   !filter || name.indexOf(filter) !== -1
@@ -51,29 +52,29 @@ glob.sync(path.join(baseDir, 'fixtures/*/')).filter(name => (
   const testName = path.relative(path.join(baseDir, 'fixtures'), testPath);
 
   const expectedJsPath = path.join(testPath, 'expected.js');
+  const expectedCssPath = path.join(testPath, 'expected.css');
   const actualJsPath = path.join(testPath, 'actual.js');
   const optionsPath = path.join(testPath, 'options.json');
 
-  if (approve) {
-    const expectedCssPath = path.join(testPath, 'expected.css');
-    const { actualJs, actualCss } = getActual(testPath, actualJsPath, expectedCssPath, optionsPath);
-
-    const options = { flag: 'w+', encoding: 'utf8' };
-    fs.writeFileSync(expectedJsPath, actualJs, options);
-    if (actualCss) fs.writeFileSync(expectedCssPath, actualCss, options);
-  } else if (skipTest) {
-    const { actualJs } = getActual(testPath, actualJsPath, getMockCssPath(), optionsPath);
-    if (print) console.log(actualJs); // eslint-disable-line
-  } else {
+  if (global.it) {
     it(`should work with ${testName}`, () => {
-      const expectedCssPath = getMockCssPath();
-      const { actualJs, actualCss } =
-        getActual(testPath, actualJsPath, expectedCssPath, optionsPath);
+      const { actualJs, actualCss } = getActual(testPath, actualJsPath, optionsPath);
       const expectedJs = fs.readFileSync(expectedJsPath, 'utf8');
       const expectedCss = actualCss && fs.readFileSync(expectedCssPath, 'utf8');
 
       expect(actualJs.trim()).toEqual(expectedJs.trim());
       if (actualCss) expect(actualCss.trim()).toEqual(expectedCss.trim());
     });
+  } else {
+    const { actualJs, actualCss } = getActual(testPath, actualJsPath, optionsPath);
+
+    if (approve) {
+      const options = { flag: 'w+', encoding: 'utf8' };
+      fs.writeFileSync(expectedJsPath, actualJs, options);
+      if (actualCss) fs.writeFileSync(expectedCssPath, actualCss, options);
+    }
+
+    if (printJs) console.log(actualJs); // eslint-disable-line
+    if (printCss) console.log(actualCss); // eslint-disable-line
   }
 });
