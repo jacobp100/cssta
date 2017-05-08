@@ -52,26 +52,16 @@ module.exports = (path, state, component, cssText, substitutionMap) => {
     throw new Error('Internal error: expected no variables with singleSourceOfVariables');
   }
 
-  const hasKeyframes = !_.isEmpty(args.keyframesStyleTuples);
-  const hasTransitions = !_.isEmpty(args.transitionedProperties);
-
   const componentRoot = 'cssta/lib/native';
   const enhancersRoot = `${componentRoot}/enhancers`;
   const enhancers = [];
 
-  if (hasVariables) {
-    const variablesEnhancer =
-      getOrCreateImportReference(path, `${enhancersRoot}/VariablesStyleSheetManager`, 'default');
-    enhancers.push(variablesEnhancer);
-  }
+  const addEnhancer = enhancer =>
+    enhancers.push(getOrCreateImportReference(path, `${enhancersRoot}/${enhancer}`, 'default'));
 
-  if (hasTransitions) {
-    enhancers.push(getOrCreateImportReference(path, `${enhancersRoot}/Transition`, 'default'));
-  }
-
-  if (hasKeyframes) {
-    enhancers.push(getOrCreateImportReference(path, `${enhancersRoot}/Animation`, 'default'));
-  }
+  if (hasVariables) addEnhancer('VariablesStyleSheetManager');
+  if (!_.isEmpty(args.transitionedProperties)) addEnhancer('Transition');
+  if (!_.isEmpty(args.keyframesStyleTuples)) addEnhancer('Animation');
 
   let componentConstructor;
   if (_.isEmpty(enhancers)) {
