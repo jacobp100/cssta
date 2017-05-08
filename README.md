@@ -9,12 +9,12 @@ There’s also a tonne of stuff for React Native, including CSS transitions and 
 It is almost identical in concept to [styled-components](https://github.com/styled-components/styled-components), but makes different trade-offs.
 
 ```jsx
-import cssta from 'cssta';
+import cssta from 'cssta'
 
 const Button = cssta.button`
   background: blue;
   color: white;
-`;
+`
 
 <Button>I am a blue button with white text</Button>
 ```
@@ -32,39 +32,34 @@ Note that while we are using template strings, interpolation (`${value}`) is not
 
 ## 📝 CSS
 
-The CSS input is *mostly* regular CSS—but you should look at the platform guides for more information.
+The CSS input is regular CSS—but you should look at the platform guides for more information. You’ve also got the following,
 
-However, selectors are changed on all platforms: only the following selector parts are permitted:
-
-* `&` to refer to the current component
-* `:hover`, `::before`, `:not(...)`, `:nth-child(...)` etc. pseudo selectors (platform dependent)
-* `[attribute]` and `[attribute="value"]` (these refer to React Props—see below)
-
-Combinators (`a b`, `a > b` etc.) are not permitted.
+* `&` to refer to the current component (you’ll need this in every selector)
+* `[@attribute]` and `[@attribute="value"]` to query React props (see below)
 
 ## 🎛 Props
 
-Attribute selectors have their meaning redefined to refer to React props. Defined as `[stringAttribute="stringValue"]` for string props, and `[booleanAttribute]` for boolean props, these apply conditional styling.
+We extend the attribute selector syntax in CSS. Now when your attribute name starts with an at symbol, we’ll query the React props instead of the DOM element’s. You can use `[@stringAttribute="stringValue"]` for string props, and `[@booleanAttribute]` for boolean props. We call this a prop selector.
 
 ```jsx
 const Button = cssta.button`
   padding: 0.5em 1em;
 
-  [large] {
+  &[@large] {
     font-size: 2em;
   }
 
-  :not([noOutline]) {
+  &:not([@noOutline]) {
     border: 1px solid currentColor;
   }
 
-  [priority="critical"] {
+  &[@priority="critical"] {
     color: red;
   }
-  [priority="important"] {
+  &[@priority="important"] {
     color: orange;
   }
-`;
+`
 
 <Button large>Large Button with an Outline</Button>
 <Button noOutline>Button with no Outline</Button>
@@ -76,33 +71,31 @@ const Button = cssta.button`
 </Button>
 ```
 
-Note that only the attribute formats shown are valid: `[value~="invalid" i]` is invalid.
-
-The properties you defined in the CSS determine the style applied, and are not passed down to the base component. All other props get passed down.
+All properties defined in prop selectors are not passed down to the component—they’re really only for styling. All other props get passed down.
 
 ```jsx
 const button = `
-  [large] { font-size: 12pt; }
-`;
+  &[@large] { font-size: 12pt; }
+`
 
 <Button large onClick={() => alert('clicked')}>
   onClick Prop Passed Down
 </Button>
 ```
 
-The properties defined in your CSS are type checked with `propTypes` to check for typos.
+In addition, we’ll automatically type check all your prop selectors with React’s `propTypes` to check for typos.
 
 ## 💗 Composition
 
 It is possible React components only when the component accepts the prop `className` for web, and `style` for React Native.
 
 ```jsx
-import { Link }  from 'react-router';
+import { Link } from 'react-router'
 
 const StyledLink = cssta(Link)`
   color: rebeccapurple;
   text-decoration: none;
-`;
+`
 ```
 
 It is also possible to compose your own components.
@@ -112,18 +105,18 @@ const OutlineButton = cssta.button`
   padding: 0.5rem 1rem;
   border: 2px solid currentColor;
   border-radius: 1000px;
-`;
+`
 
 const RedButton = cssta(OutlineButton)`
   color: red;
-`;
+`
 
 const BlueButton = cssta(OutlineButton)`
   color: blue;
-`;
+`
 ```
 
-**Note that for the moment, this only works when the components get defined in the same file!**
+**For the moment, this only works when the components get defined in the same file!**
 
 ## 🏳️‍🌈 Theming
 
@@ -133,22 +126,22 @@ The best way to do theming in Cssta is by using [CSS custom properties](https://
 const LightBox = cssta.div`
   background-color: black;
   --primary: white;
-`;
+`
 
 const Button = cssta.button`
   color: var(--primary);
   border: 1px solid var(--primary);
   padding: 0.5rem 1rem;
-`;
+`
 
 const Example = (
   <LightBox>
     <Button>I am white on black!</Button>
   </LightBox>
-);
+)
 ```
 
-There's a few extra examples in [theming](https://jacobp100.github.io/cssta/theming).
+There’s a few extra examples in [theming](https://jacobp100.github.io/cssta/theming).
 
 ## 🖌 Overriding Styles
 
@@ -161,14 +154,12 @@ The properties `className` on web, and `style` on React Native have special beha
 </Button>
 
 // Web and React Native
-<Button style={{ marginRight: 0 }}>
+<Button style={% raw %}{{ marginRight: 0 }}{% endraw %}>
   Composing Styles
 </Button>
 ```
 
-Note that you cannot remove the classes otherwise set by the component.
-
-For class names, it is your responsibility to resolve the specificity. I recommend you only add util classes, and each declaration in those util classes uses `!important` for everything.
+When doing this on the web, watch out for specificity conflicts!
 
 ## ✂️ Overriding the Component
 
@@ -177,7 +168,7 @@ You can define `component` property on any Cssta elements to override the base c
 ```jsx
 const Div = cssta.div`
   background: red;
-`;
+`
 
 <Div component="span">I am a span now</Div>
 ```
