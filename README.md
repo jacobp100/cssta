@@ -154,7 +154,7 @@ The properties `className` on web, and `style` on React Native have special beha
 </Button>
 
 // Web and React Native
-<Button style={% raw %}{{ marginRight: 0 }}{% endraw %}>
+<Button style={{ marginRight: 0 }}>
   Composing Styles
 </Button>
 ```
