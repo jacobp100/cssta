@@ -3,11 +3,11 @@
 /* Start <dirname>/fixtures/string-attribute/actual.js */
 
 
-  .A {
+  .A.B {
     color: red;
   }
 
-  .B {
+  .A.C {
     color: red;
   }
 

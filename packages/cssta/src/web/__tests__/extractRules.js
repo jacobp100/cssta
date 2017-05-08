@@ -7,10 +7,10 @@ const trim = str =>
 
 const runTestFor = (inputCss, expectedCss, {
   scopedClassNames = [],
-  defaultClassName: expectedDefaultClassName = null,
+  defaultClassName: expectedDefaultClassName = 'default',
   classNameMap: expectedClassNameMap = {},
 } = {}) => {
-  const classNames = expectedDefaultClassName
+  const classNames = expectedDefaultClassName !== null
     ? [expectedDefaultClassName, ...scopedClassNames]
     : scopedClassNames;
 
@@ -54,11 +54,11 @@ it('scopes multiple top-level declarations into one class', () => runTestFor(`
 }));
 
 it('scopes boolean attribute selectors', () => runTestFor(`
-  [@booleanAttribute] {
+  &[@booleanAttribute] {
     color: red;
   }
 `, `
-  .scoped-1 {
+  .default.scoped-1 {
     color: red;
   }
 `, {
@@ -69,11 +69,11 @@ it('scopes boolean attribute selectors', () => runTestFor(`
 }));
 
 it('scopes string attribute selectors', () => runTestFor(`
-  [@stringAttribute = "red"] {
+  &[@stringAttribute = "red"] {
     color: red;
   }
 `, `
-  .scoped-1 {
+  .default.scoped-1 {
     color: red;
   }
 `, {
@@ -86,27 +86,27 @@ it('scopes string attribute selectors', () => runTestFor(`
 }));
 
 it('scopes multiple string attribute selectors', () => runTestFor(`
-  [@stringAttribute = "red"] {
+  &[@stringAttribute = "red"] {
     color: red;
   }
 
-  [@stringAttribute = "green"] {
+  &[@stringAttribute = "green"] {
     color: green;
   }
 
-  [@stringAttribute = "blue"] {
+  &[@stringAttribute = "blue"] {
     color: blue;
   }
 `, `
-  .scoped-1 {
+  .default.scoped-1 {
     color: red;
   }
 
-  .scoped-2 {
+  .default.scoped-2 {
     color: green;
   }
 
-  .scoped-3 {
+  .default.scoped-3 {
     color: blue;
   }
 `, {
@@ -121,27 +121,27 @@ it('scopes multiple string attribute selectors', () => runTestFor(`
 }));
 
 it('scopes different boolean attributes', () => runTestFor(`
-  [@value1] {
+  &[@value1] {
     color: red;
   }
 
-  [@value2] {
+  &[@value2] {
     color: green;
   }
 
-  [@value3] {
+  &[@value3] {
     color: blue;
   }
 `, `
-  .scoped-1 {
+  .default.scoped-1 {
     color: red;
   }
 
-  .scoped-2 {
+  .default.scoped-2 {
     color: green;
   }
 
-  .scoped-3 {
+  .default.scoped-3 {
     color: blue;
   }
 `, {
@@ -154,27 +154,27 @@ it('scopes different boolean attributes', () => runTestFor(`
 }));
 
 it('scopes different string attributes', () => runTestFor(`
-  [@value1 = "a"] {
+  &[@value1 = "a"] {
     color: red;
   }
 
-  [@value1 = "b"] {
+  &[@value1 = "b"] {
     color: green;
   }
 
-  [@value2 = "c"] {
+  &[@value2 = "c"] {
     color: blue;
   }
 `, `
-  .scoped-1 {
+  .default.scoped-1 {
     color: red;
   }
 
-  .scoped-2 {
+  .default.scoped-2 {
     color: green;
   }
 
-  .scoped-3 {
+  .default.scoped-3 {
     color: blue;
   }
 `, {
@@ -190,20 +190,20 @@ it('scopes different string attributes', () => runTestFor(`
   },
 }));
 
-it('only scopes boolean attributes once', () => runTestFor(`
-  [@booleanAttribute] {
+it('maintains scoping with attributes', () => runTestFor(`
+  &[@booleanAttribute] {
     color: red;
   }
 
-  :not([@booleanAttribute]) {
+  &:not([@booleanAttribute]) {
     color: blue;
   }
 `, `
-  .scoped-1 {
+  .default.scoped-1 {
     color: red;
   }
 
-  :not(.scoped-1) {
+  .default:not(.scoped-1) {
     color: blue;
   }
 `, {
@@ -213,45 +213,20 @@ it('only scopes boolean attributes once', () => runTestFor(`
   },
 }));
 
-it('only scopes string attributes once', () => runTestFor(`
-  [@stringAttribute = "value"] {
-    color: red;
-  }
-
-  :not([@stringAttribute = "value"]) {
-    color: blue;
-  }
-`, `
-  .scoped-1 {
-    color: red;
-  }
-
-  :not(.scoped-1) {
-    color: blue;
-  }
-`, {
-  scopedClassNames: ['scoped-1'],
-  classNameMap: {
-    stringAttribute: {
-      value: 'scoped-1',
-    },
-  },
-}));
-
 it('mixes boolean and string attributes', () => runTestFor(`
-  [@booleanAttribute] {
+  &[@booleanAttribute] {
     color: red;
   }
 
-  [@stringAttribute = "value"] {
+  &[@stringAttribute = "value"] {
     color: green;
   }
 `, `
-  .scoped-1 {
+  .default.scoped-1 {
     color: red;
   }
 
-  .scoped-2 {
+  .default.scoped-2 {
     color: green;
   }
 `, {
@@ -265,7 +240,7 @@ it('mixes boolean and string attributes', () => runTestFor(`
 }));
 
 it('scopes keyframes', () => runTestFor(`
-  [@class] {
+  &[@class] {
     animation: 1s test;
   }
 
@@ -273,7 +248,7 @@ it('scopes keyframes', () => runTestFor(`
     0% { opacity: 0; }
   }
 `, `
-  .class {
+  .default.class {
     animation: 1s animation;
   }
 
@@ -281,7 +256,7 @@ it('scopes keyframes', () => runTestFor(`
     0% { opacity: 0; }
   }
 `, {
-  scopedClassNames: ['animation', 'class'],
+  scopedClassNames: ['class', 'animation'],
   classNameMap: {
     class: { true: 'class' },
   },
@@ -313,13 +288,13 @@ it('allows @media for top-level declarations', () => runTestFor(`
 
 it('allows @media for rules', () => runTestFor(`
   @media (screen) {
-    [@attribute] {
+    &[@attribute] {
       color: red;
     }
   }
 `, `
   @media (screen) {
-    .scoped {
+    .default.scoped {
       color: red;
     }
   }
@@ -346,13 +321,13 @@ it('allows @supports for top-level declarations', () => runTestFor(`
 
 it('allows @supports for rules', () => runTestFor(`
   @supports (color: red) {
-    [@attribute] {
+    &[@attribute] {
       color: red;
     }
   }
 `, `
   @supports (color: red) {
-    .scoped {
+    .default.scoped {
       color: red;
     }
   }
@@ -367,12 +342,14 @@ it('leaves @import unchanged', () => runTestFor(`
   @import 'external.css';
 `, `
   @import 'external.css';
-`));
+`, {
+  defaultClassName: null
+}));
 
 it('maintains order precedence', () => runTestFor(`
   color: red;
 
-  [@attribute] {
+  &[@attribute] {
     color: blue;
   }
 
@@ -382,7 +359,7 @@ it('maintains order precedence', () => runTestFor(`
     color: red;
   }
 
-  .scoped-1 {
+  .default.scoped-1 {
     color: blue;
   }
 
@@ -400,8 +377,8 @@ it('maintains order precedence', () => runTestFor(`
 it('throws if one attribute is both a boolean and a string', () => {
   expect(() => {
     extractRules(`
-      [@attribute] {}
-      [@attribute = "string"] {}
+      &[@attribute] {}
+      &[@attribute = "string"] {}
     `);
   }).toThrow();
 });

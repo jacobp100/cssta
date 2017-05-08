@@ -12,7 +12,7 @@ Except for the limitations of selectors, CSS otherwise works as normal. This  in
 const Button = cssta.button`
   font-size: 12pt;
 
-  :hover {
+  &:hover {
     font-weight: bold;
   }
 
@@ -21,7 +21,7 @@ const Button = cssta.button`
   }
 
   @supports (background: linear-gradient(to bottom, red, green)) {
-    [@christmas] {
+    &[@christmas] {
       background: linear-gradient(to bottom, red, green);
     }
   }

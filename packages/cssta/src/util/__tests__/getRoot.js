@@ -58,8 +58,13 @@ it('does not re-nest nested rules', () => runTestFor(`
   }
 `));
 
+it('requires nesting', () => {
+  expect(() => { getRoot(':hover {}'); }).toThrow();
+  expect(() => { getRoot('[@attribute] {}'); }).toThrow();
+});
+
 it('generates prop type for bool attributes', () => runTestFor(`
-  [@attribute] {
+  &[@attribute] {
     color: red;
   }
 `, undefined, {
@@ -67,11 +72,11 @@ it('generates prop type for bool attributes', () => runTestFor(`
 }));
 
 it('generates prop type for string attributes', () => runTestFor(`
-  [@attribute = "1"] {
+  &[@attribute = "1"] {
     color: red;
   }
 
-  [@attribute = "2"] {
+  &[@attribute = "2"] {
     color: red;
   }
 `, undefined, {
@@ -79,15 +84,15 @@ it('generates prop type for string attributes', () => runTestFor(`
 }));
 
 it('generates multile prop types for multiple attributes', () => runTestFor(`
-  [@boolAttribute] {
+  &[@boolAttribute] {
     color: red;
   }
 
-  [@stringAttribute = "1"] {
+  &[@stringAttribute = "1"] {
     color: red;
   }
 
-  [@stringAttribute = "2"] {
+  &[@stringAttribute = "2"] {
     color: red;
   }
 `, undefined, {
@@ -96,11 +101,11 @@ it('generates multile prop types for multiple attributes', () => runTestFor(`
 }));
 
 it('only defines values for string attribute once', () => runTestFor(`
-  [@attribute = "1"] {
+  &[@attribute = "1"] {
     color: red;
   }
 
-  [@attribute = "1"] {
+  &[@attribute = "1"] {
     color: red;
   }
 `, undefined, {
@@ -119,39 +124,24 @@ it('does not nest nested rules', () => runTestFor(`
   }
 `));
 
-it('scopes pseudo-selectors', () => runTestFor(`
-  :hover {
-    color: red;
-  }
-`, `
-  :hover& {
-    color: red;
-  }
-`));
-
-it('optionally allows combinators before scoping with &', () => runTestFor(`
+it('optionally allows combinators scoping with &', () => runTestFor(`
   :fullscreen & {
     color: red;
   }
 `, undefined, undefined, true));
 
-it('optionally allows combinators before scoping with attribute selectors', () => runTestFor(`
-  :fullscreen [@attribute] {
+it('optionally allows combinators scoping with prop selectors', () => runTestFor(`
+  :fullscreen &[@attribute] {
     color: red;
   }
 `, undefined, {
   attribute: { type: 'bool' },
 }, true));
 
-it('scopes the last selector part when allowing and using combinators', () => runTestFor(`
-  :fullscreen :hover {
-    color: red;
-  }
-`, `
-  :fullscreen :hover& {
-    color: red;
-  }
-`, undefined, true));
+it('when allowing combinators, prop selectors must be tied to an &', () => {
+  expect(() => { getRoot('& [@prop] {}'); }).toThrow()
+  expect(() => { getRoot(':not(&[@prop]) {}'); }).toThrow()
+});
 
 it('does not allow combinators by default', () => shouldThrow(`
   & & {
@@ -165,36 +155,36 @@ it('does not allow combinators after scoping with &', () => shouldThrow(`
   }
 `));
 
-it('does not allow combinators after scoping with attribute selectors', () => shouldThrow(`
-  [@attribute] :fullscreen {
+it('does not allow combinators after scoping with prop selectors', () => shouldThrow(`
+  &[@attribute] :fullscreen {
     color: red;
   }
 `));
 
 it('does not allow case-insensitive attributes', () => shouldThrow(`
-  [@attribute = "value" i] {
+  &[@attribute = "value" i] {
     color: red;
   }
 `));
 
 it('only allows = as operator in attribute', () => shouldThrow(`
-  [@attribute ~= "value"] {
+  &[@attribute ~= "value"] {
     color: red;
   }
 `));
 
 it('does not allow attributes to be called "component"', () => shouldThrow(`
-  [@component] {
+  &[@component] {
     color: red;
   }
 `));
 
 it('enforces consistent prop types', () => shouldThrow(`
-  [@mixedAttribute] {
+  &[@mixedAttribute] {
     color: red;
   }
 
-  [@mixedAttribute = "value"] {
+  &[@mixedAttribute = "value"] {
     color: red;
   }
 `));

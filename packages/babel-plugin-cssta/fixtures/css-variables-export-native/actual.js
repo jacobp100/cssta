@@ -4,7 +4,7 @@ import { View } from 'react-native';
 cssta(View)`
   --color: red;
 
-  [@blue] {
+  &[@blue] {
     --color: blue;
   }
 `;

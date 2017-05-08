@@ -1,7 +1,8 @@
+// @flow
 /* eslint-disable no-param-reassign */
 const React = require('react');
-
-const { PropTypes } = React;
+const PropTypes = require('prop-types');
+/*:: import type { ComponentFactory, Props, EnhancerConstructor } from './types' */
 
 const getOwnPropKeys = propTypes =>
   (Array.isArray(propTypes) ? propTypes : Object.keys(propTypes));
@@ -47,7 +48,9 @@ if (process.env.NODE_ENV !== 'production') {
   });
 }
 
-module.exports = (transformProps) => {
+module.exports = (
+  transformProps /*: (ownProps: Object, passedProps: Object, args: any) => Object */
+) /*: ComponentFactory */ => {
   const baseRender = ({ Element, ownProps, passedProps, args }) =>
     React.createElement(Element, transformProps(ownProps, passedProps, args));
 
@@ -55,7 +58,7 @@ module.exports = (transformProps) => {
     const render = enhancer ? enhancer(baseRender) : baseRender;
     const ownPropKeys = getOwnPropKeys(propTypes);
 
-    const StaticComponent = (props) => {
+    const StaticComponent = (props /*: Object */) => {
       const { Element, ownProps, passedProps } = getComponentProps(ownPropKeys, component, props);
       return render({ Element, ownProps, passedProps, args });
     };

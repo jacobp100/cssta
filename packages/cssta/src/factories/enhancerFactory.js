@@ -1,4 +1,6 @@
+// @flow
 const React = require('react');
+/*:: import type { ComponentFactory, ComponentPropTypes, Props, Enhancer } from './types' */
 
 const mergeTransformers = (enhancers, EndNode) =>
   enhancers.reduceRight((NextElement, CurrentElement) => (
@@ -6,22 +8,38 @@ const mergeTransformers = (enhancers, EndNode) =>
   ), EndNode);
 
 const nextCacheNode = (node, transform) => {
-  if (!node.has(transform)) node.set(transform, new Map());
-  return node.get(transform);
+  let value = node.get(transform);
+
+  if (!value) {
+    value = new Map();
+    node.set(transform, value);
+  }
+
+  return value;
 };
 
 const LEAF = 'leaf';
-const mergeTransformersCached = (getTransformer, enhancers, cache) => {
+const mergeTransformersCached = (getTransformer, enhancers, cache) /*: any */ => {
   const cacheEntry = enhancers.reduce(nextCacheNode, cache);
 
-  if (!cacheEntry.has(LEAF)) cacheEntry.set(LEAF, getTransformer(enhancers));
-  return cacheEntry.get(LEAF);
+  let value = cacheEntry.get(LEAF);
+
+  if (!value) {
+    value = new Map();
+    cacheEntry.set(LEAF, value);
+  }
+
+  return value;
 };
 
-module.exports = (constructor) => {
+module.exports = (constructor /*: ComponentFactory */) => {
   const cache = new Map();
 
-  return enhancers => (...args) => constructor(...args, (EndNode) => {
+  return (enhancers /*: Enhancer[] */) => (
+    component /*: any */,
+    propTypes /*: ComponentPropTypes */,
+    args /*: any */
+  ) => constructor(component, propTypes, args, (EndNode) => {
     const RootNode = mergeTransformersCached(
       passedEnhancers => mergeTransformers(passedEnhancers, EndNode),
       enhancers,

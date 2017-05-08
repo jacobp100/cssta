@@ -22,7 +22,7 @@ module.exports = (
 
   let defaultClassName = null;
   const getDefaultClassName = () => {
-    if (!defaultClassName) defaultClassName = generateClassName();
+    if (defaultClassName === null) defaultClassName = generateClassName();
     return defaultClassName;
   };
 
@@ -60,6 +60,12 @@ module.exports = (
 
   const { root, propTypes } = getRoot(inputCss, true);
 
+  root.walkRules((node) => {
+    if (!isDirectChildOfKeyframes(node)) {
+      node.selector = transformSelectors.process(node.selector).result;
+    }
+  });
+
   transformAnimationNames({
     transform: (value) => {
       if (value in animationNameMap) return animationNameMap[value];
@@ -69,12 +75,6 @@ module.exports = (
       return transformValue;
     },
   }, root);
-
-  root.walkRules((node) => {
-    if (!isDirectChildOfKeyframes(node)) {
-      node.selector = transformSelectors.process(node.selector).result;
-    }
-  });
 
   const css = root.toString();
   const args = { defaultClassName, classNameMap };

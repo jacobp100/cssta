@@ -39,8 +39,6 @@ const nestNode = (node) => {
   }
 };
 
-const scopingTypes = ['nesting', 'attribute'];
-
 module.exports = (inputCss /*: string */, allowCombinators /*: boolean */ = false) => {
   // Allow @ or *
   const transformedInput = inputCss.replace(/(\[\s*)@(\w)/g, '$1*$2');
@@ -54,16 +52,21 @@ module.exports = (inputCss /*: string */, allowCombinators /*: boolean */ = fals
       let didScopeNode = false;
 
       selector.walk((node) => {
-        if (node.type === 'combinator' && (!allowCombinators || didScopeNode)) {
-          /* Allow `:fullscreen &`, or `.ie9 &`, or even `:fullscreen :hover` */
-          /* But don't allow the reverse: `& .ie9`---that makes literally no sense */
+        if (node.type === 'combinator' && !allowCombinators) {
           throw new Error('Invalid use of combinator in selector');
-        }
-        if (scopingTypes.indexOf(node.type) !== -1) {
+        } else if (node.type === 'nesting') {
           didScopeNode = true;
-        }
+        } else if (node.type === 'attribute' && node.attribute.trim()[0] === '*') {
+          const isInNot =
+            node.parent.parent.type === 'pseudo' && node.parent.parent.value === ':not';
+          const nodeThatMustBeTiedToNesting = isInNot ? node.parent.parent.parent : node.parent;
+          const isTiedToNesting =
+            nodeThatMustBeTiedToNesting.nodes.some(child => child.type === 'nesting');
 
-        if (node.type === 'attribute' && node.attribute.trim()[0] === '*') {
+          if (!isTiedToNesting) {
+            throw new Error('Prop selectors ([@prop]) must be scoped using an "&"');
+          }
+
           const prop = node.attribute.trim().slice(1); // Remove *
           const propType = node.value ? 'oneOf' : 'bool';
 
@@ -97,7 +100,7 @@ module.exports = (inputCss /*: string */, allowCombinators /*: boolean */ = fals
       });
 
       if (!didScopeNode) {
-        selector.append(selectorParser.nesting());
+        throw new Error('You must use "&" in every selector');
       }
     });
   });

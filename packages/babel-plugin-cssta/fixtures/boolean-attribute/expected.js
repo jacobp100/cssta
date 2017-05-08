@@ -2,10 +2,10 @@ import _createComponent from 'cssta/lib/web/createComponent';
 
 
 _createComponent('button', null, {
-  'defaultClassName': null,
+  'defaultClassName': 'A',
   'classNameMap': {
     'booleanAttribute': {
-      'true': 'A'
+      'true': 'B'
     }
   }
 });

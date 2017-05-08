@@ -6,15 +6,15 @@
     color: red;
 }
 
-  .B {
+  .A.B {
     color: green;
   }
 
-  .C {
+  .A.C {
     color: blue;
   }
 
-  .D {
+  .A.D {
     color: yellow;
   }
 

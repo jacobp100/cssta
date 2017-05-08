@@ -3,7 +3,7 @@
 /* Start <dirname>/fixtures/boolean-attribute/actual.js */
 
 
-  .A {
+  .A.B {
     color: red;
   }
 

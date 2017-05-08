@@ -39,29 +39,29 @@ Note that while we are using template strings, interpolation (`${value}`) is not
 
 The CSS input is regular CSS—but you should look at the platform guides for more information. You’ve also got the following,
 
-* `&` to refer to the current component
+* `&` to refer to the current component (you’ll need this in every selector)
 * `[@attribute]` and `[@attribute="value"]` to query React props (see below)
 
 ## 🎛 Props
 
-We extend the attribute selector syntax in CSS. Now when your attribute name starts with an asterisk, we’ll query the React props instead of the DOM element’s. You can use `[@stringAttribute="stringValue"]` for string props, and `[@booleanAttribute]` for boolean props. We call this a prop selector.
+We extend the attribute selector syntax in CSS. Now when your attribute name starts with an at symbol, we’ll query the React props instead of the DOM element’s. You can use `[@stringAttribute="stringValue"]` for string props, and `[@booleanAttribute]` for boolean props. We call this a prop selector.
 
 ```jsx
 const Button = cssta.button`
   padding: 0.5em 1em;
 
-  [@large] {
+  &[@large] {
     font-size: 2em;
   }
 
-  :not([@noOutline]) {
+  &:not([@noOutline]) {
     border: 1px solid currentColor;
   }
 
-  [@priority="critical"] {
+  &[@priority="critical"] {
     color: red;
   }
-  [@priority="important"] {
+  &[@priority="important"] {
     color: orange;
   }
 `
@@ -80,7 +80,7 @@ All properties defined in prop selectors are not passed down to the component—
 
 ```jsx
 const button = `
-  [@large] { font-size: 12pt; }
+  &[@large] { font-size: 12pt; }
 `
 
 <Button large onClick={() => alert('clicked')}>

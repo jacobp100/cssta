@@ -4,17 +4,17 @@ import { View } from 'react-native';
 const font = '10px "Helvetica"';
 
 cssta(View)`
-  [@attr1] {
+  &[@attr1] {
     margin-top: 10px;
     font: ${font};
   }
 
-  [@attr2] {
+  &[@attr2] {
     font: ${font};
     margin-top: 10px;
   }
 
-  [@attr3] {
+  &[@attr3] {
     margin-top: 10px;
     font: ${font};
     margin-bottom: 10px;
