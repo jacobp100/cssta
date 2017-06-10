@@ -43,7 +43,7 @@ if (process.env.NODE_ENV !== 'production') {
   }, {
     component: PropTypes.oneOfType([
       PropTypes.string,
-      PropTypes.function,
+      PropTypes.func,
     ]),
   });
 }
