@@ -7,7 +7,7 @@ layout: page
 
 Cssta is a way to co-locate your CSS with your React components, and lets you define components using isolated units of style.
 
-It is available both for [React for web 🌍](web.md) and [React Native 📱](native.md). For web, it generates **real CSS files** with **<1kb JS overhead**.
+It is available both for [React for web 🌍]({{ site.github.url }}/web.md) and [React Native 📱](native.md). For web, it generates **real CSS files** with **<1kb JS overhead**.
 
 There’s also a tonne of stuff for React Native, including CSS transitions and CSS custom properties.
 
