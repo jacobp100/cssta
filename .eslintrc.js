@@ -3,7 +3,6 @@ module.exports = {
   plugins: ["import", "flowtype"],
   rules: {
     "react/jsx-filename-extension": [0],
-    "flowtype/require-valid-file-annotation": [2, "always"],
     "comma-dangle": [
       "error",
       {
@@ -16,5 +15,11 @@ module.exports = {
     ],
     "spaced-comment": [0],
     "arrow-parens": [0]
-  }
+  },
+  "overrides": [{
+    files: "packages/cssta/**/*.js",
+    rules: {
+      "flowtype/require-valid-file-annotation": [2, "always"],
+    }
+  }]
 };

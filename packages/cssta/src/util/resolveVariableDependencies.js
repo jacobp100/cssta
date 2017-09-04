@@ -1,6 +1,6 @@
 // @flow
 /* eslint-disable no-param-reassign */
-const DepGraph = require('dependency-graph').DepGraph;
+const { DepGraph } = require('dependency-graph');
 const { varRegExp, varRegExpNonGlobal } = require('./index');
 
 module.exports = (
