@@ -87,12 +87,10 @@ type AnimationState = {
 }
 */
 
-module.exports = class AnimationEnhancer extends Component {
-  /*::
-  state: AnimationState
-  props: DynamicProps<Args>
-  */
-
+module.exports = class AnimationEnhancer extends Component /*::<
+  DynamicProps<Args>,
+  AnimationState
+>*/ {
   constructor(props /*: DynamicProps<Args> */) {
     super();
 

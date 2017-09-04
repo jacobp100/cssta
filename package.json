@@ -3,8 +3,12 @@
     "readme": "cp ./docs/index.md ./README.md; sed -i -e 's%\\./%https://jacobp100.github.io/cssta/%g' ./README.md; sed -i -e 's/\\.md//g' ./README.md; sed -i -e 's/{% raw %}//g' ./README.md; sed -i -e 's/{% endraw %}//g' ./README.md; sed -i -e '1,5d' ./README.md; rm ./README.md-e"
   },
   "devDependencies": {
-    "eslint-config-prettier": "^1.5.0",
-    "lerna": "2.0.0-beta.37",
-    "prettier": "^0.22.0"
+    "eslint": "^4.6.1",
+    "eslint-config-airbnb-base": "^12.0.0",
+    "eslint-config-prettier": "^2.4.0",
+    "eslint-plugin-flowtype": "^2.35.1",
+    "eslint-plugin-import": "^2.7.0",
+    "lerna": "^2.1.2",
+    "prettier": "^1.6.1"
   }
 }

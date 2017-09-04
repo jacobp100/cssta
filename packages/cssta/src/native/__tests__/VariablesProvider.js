@@ -1,6 +1,7 @@
 /* eslint-disable flowtype/require-valid-file-annotation */
 /* global jest it, expect */
 const React = require('react');
+const PropTypes = require('prop-types');
 const renderer = require('react-test-renderer'); // eslint-disable-line
 const VariablesProvider = require('../VariablesProvider');
 
@@ -24,8 +25,8 @@ class ReturnsVariables extends React.Component {
   }
 }
 ReturnsVariables.contextTypes = {
-  cssta: React.PropTypes.object,
-  csstaInitialVariables: React.PropTypes.object,
+  cssta: PropTypes.object,
+  csstaInitialVariables: PropTypes.object,
 };
 
 it('should generate context', () => {

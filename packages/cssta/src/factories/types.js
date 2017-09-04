@@ -13,18 +13,19 @@ export type ComponentFactory = (
   enhancer: ?EnhancerConstructor
 ) => (props: Object) => any // a React element
 
-export type Props<T> = {
+export type Props<T> = {|
   Element: any,
   ownProps: Object,
   passedProps: Object,
   args: T,
-}
+|}
 
-export type DynamicProps<T> = Props<T> & {
+export type DynamicProps<T> = {|
+  ...Props<T>,
   children: any,// (props: Props<T>) => any,
-}
+|}
 
 export type EnhancerConstructor = (endNode: any) => (props: Object) => any // a react Element
 
-export type Enhancer = Class<React.Component<*, DynamicProps<*>, *>>
+export type Enhancer = Class<React.Component<DynamicProps<*>, *>>
 */

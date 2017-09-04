@@ -1,11 +1,12 @@
 // @flow
 /* eslint-disable no-param-reassign */
 const React = require('react');
+const PropTypes = require('prop-types');
 const { EventEmitter } = require('events');
 const { shallowEqual } = require('../util');
 /*:: import type { VariablesStore } from './types' */
 
-const { Component, Children, PropTypes } = React;
+const { Component, Children } = React;
 
 const STYLES_UPDATED = 'styles-updated';
 
@@ -36,11 +37,8 @@ const getStyles = (
   return { variablesFromScope, appliedVariables };
 };
 
-class VariablesProvider extends Component {
+class VariablesProvider extends Component /*:: <VariablesProviderProps, VariablesProviderState> */ {
   /*::
-  state: VariablesProviderState
-  // $FlowFixMe
-  props: VariablesProviderProps
   styleUpdateHandler: any
   styleEmitter: any
   updateState: (variablesFromScope: VariablesStore, inputVariables: InputVariables) => void

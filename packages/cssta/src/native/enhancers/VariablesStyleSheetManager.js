@@ -10,6 +10,7 @@ const resolveVariableDependencies = require('../../util/resolveVariableDependenc
 const { transformStyleTuples } = require('../cssUtil');
 const transformVariables = require('../../css-transforms/variables');
 const { mapValues } = require('../../util');
+/*:: import type { DynamicProps } from '../../factories/types' */
 /*::
 import type {
   VariableArgs, VariableRuleTuple, Args, VariablesStore, Style, Rule, Keyframe,
@@ -21,6 +22,7 @@ const { Component } = React;
 /* eslint-disable no-param-reassign */
 const getExportedVariables = (props, variablesFromScope) => {
   const appliedRuleVariables = getAppliedRules(props.args.ruleTuples, props.ownProps)
+    // $FlowFixMe
     .map(rule => rule.exportedVariables);
   const definedVariables = Object.assign({}, ...appliedRuleVariables);
   return resolveVariableDependencies(definedVariables, variablesFromScope);
@@ -82,7 +84,9 @@ const createRuleStylesUsingStylesheet = (
   return { transitionedProperties, keyframes, rules };
 };
 
-module.exports = class VariablesStyleSheetManager extends Component {
+module.exports = class VariablesStyleSheetManager extends Component /*::<
+  DynamicProps<VariableArgs>
+>*/ {
   /*::
   styleCache: Object
   getExportedVariables: (variables: VariablesStore) => VariablesStore

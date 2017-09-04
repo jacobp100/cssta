@@ -37,12 +37,11 @@ type TransitionState = {
 }
 */
 
-module.exports = class TransitionEnhancer extends Component {
-  /*::
-  state: TransitionState
-  props: DynamicProps<Args>
-  animationValues: { [key:string]: AnimatedValue }
-  */
+module.exports = class TransitionEnhancer extends Component /*::<
+  DynamicProps<Args>,
+  TransitionState
+>*/ {
+  /*:: animationValues: { [key:string]: AnimatedValue } */
 
   constructor(props /*: DynamicProps<Args> */) {
     super();

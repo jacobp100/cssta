@@ -3,11 +3,11 @@ const React = require('react');
 /*:: import type { ComponentFactory, ComponentPropTypes, Props, Enhancer } from './types' */
 
 const mergeTransformers = (enhancers, EndNode) =>
-  enhancers.reduceRight((NextElement, CurrentElement) => (
+  enhancers.reduceRight((NextElement, CurrentElement) /*: any */ => (
     props => React.createElement(CurrentElement, props, NextElement)
   ), EndNode);
 
-const nextCacheNode = (node, transform) => {
+const nextCacheNode = (node, transform) /*: any */ => {
   let value = node.get(transform);
 
   if (!value) {
@@ -25,7 +25,7 @@ const mergeTransformersCached = (getTransformer, enhancers, cache) /*: any */ =>
   let value = cacheEntry.get(LEAF);
 
   if (!value) {
-    value = new Map();
+    value = getTransformer(enhancers);
     cacheEntry.set(LEAF, value);
   }
 
