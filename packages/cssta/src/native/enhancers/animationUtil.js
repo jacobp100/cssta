@@ -39,7 +39,8 @@ module.exports.interpolateValue = (
     });
 
     if (!transformsAreConsistent) {
-      throw new Error('Expected transforms to have same shape between transitions');
+      // eslint-disable-next-line no-console
+      console.error('Expected transforms to have same shape between transitions');
     }
   }
 

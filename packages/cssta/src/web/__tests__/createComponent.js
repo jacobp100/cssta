@@ -1,5 +1,5 @@
 /* eslint-disable flowtype/require-valid-file-annotation */
-/* global jest it, expect */
+/* global it, expect */
 const React = require('react');
 const renderer = require('react-test-renderer'); // eslint-disable-line
 const createComponent = require('../createComponent');

@@ -1,5 +1,5 @@
 /* eslint-disable flowtype/require-valid-file-annotation */
-/* global it, expect */
+/* global jest, it, expect */
 const React = require('react');
 const renderer = require('react-test-renderer'); // eslint-disable-line
 const withEnhancers = require('../withEnhancers');
@@ -243,11 +243,14 @@ it('does not allow animating between divergent transforms', () => {
   };
   const Element = defaultDynamicComponent('button', ['active'], args);
 
-  const instance = renderer.create(React.createElement(Element, {}));
+  const { console } = global;
+  global.console = { error: jest.fn() };
 
-  expect(() => {
-    instance.update(React.createElement(Element, { active: true }));
-  }).toThrow();
+  const instance = renderer.create(React.createElement(Element, {}));
+  instance.update(React.createElement(Element, { active: true }));
+
+  expect(global.console.error).toBeCalled();
+  global.console = console;
 });
 
 it('animates values', () => runTest({

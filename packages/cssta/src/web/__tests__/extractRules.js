@@ -343,7 +343,7 @@ it('leaves @import unchanged', () => runTestFor(`
 `, `
   @import 'external.css';
 `, {
-  defaultClassName: null
+  defaultClassName: null,
 }));
 
 it('maintains order precedence', () => runTestFor(`
