@@ -17,7 +17,7 @@ const StyledView = cssta(Text)`
 `
 ```
 
-You’ll still want to run your code through the babel plugin, as we do a lot of optimisations. See [Production Builds](/production-builds#-native) for how to do this.
+You’ll still want to run your code through the babel plugin, as we do a lot of optimisations. See [Production Builds]({{ site.github.url }}/production-builds#-native) for how to do this.
 
 ## 📝 CSS Support
 

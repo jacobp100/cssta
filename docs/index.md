@@ -3,7 +3,7 @@ title: Introduction
 layout: page
 ---
 
-# [🌞 Cssta](./)
+# [🌞 Cssta]({{ site.github.url }})
 
 Cssta is a way to co-locate your CSS with your React components, and lets you define components using isolated units of style.
 

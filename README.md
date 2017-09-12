@@ -1,4 +1,4 @@
-# [🌞 Cssta](https://jacobp100.github.io/cssta/)
+# [🌞 Cssta](https://jacobp100.github.io/cssta)
 
 Cssta is a way to co-locate your CSS with your React components, and lets you define components using isolated units of style.
 
