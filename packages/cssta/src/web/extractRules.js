@@ -1,9 +1,9 @@
 // @flow
 /* eslint-disable no-param-reassign */
-const selectorParser = require('postcss-selector-parser');
-const { transformAnimationNames } = require('postcss-transform-animations');
-const getRoot = require('../util/getRoot');
-const { isDirectChildOfKeyframes } = require('../util');
+const selectorParser = require("postcss-selector-parser");
+const { transformAnimationNames } = require("postcss-transform-animations");
+const getRoot = require("../util/getRoot");
+const { isDirectChildOfKeyframes } = require("../util");
 /*:: import type { Args } from './types' */
 
 /*::
@@ -38,19 +38,19 @@ module.exports = (
     return classNameMap[attribute][value];
   };
 
-  const transformSelectors = selectorParser((container) => {
-    container.each((selector) => {
-      container.walkNesting((node) => {
+  const transformSelectors = selectorParser(container => {
+    container.each(selector => {
+      container.walkNesting(node => {
         const className = getDefaultClassName();
         const replacementNode = selectorParser.className({ value: className });
         node.replaceWith(replacementNode);
       });
 
-      selector.walkAttributes((node) => {
+      selector.walkAttributes(node => {
         const attribute = node.attribute.trim();
-        if (attribute[0] !== '*') return;
+        if (attribute[0] !== "*") return;
         const prop = attribute.slice(1);
-        const value = node.value ? node.raws.unquoted : 'true';
+        const value = node.value ? node.raws.unquoted : "true";
         const className = getClassNameFor(prop, value);
         const replacementNode = selectorParser.className({ value: className });
         node.replaceWith(replacementNode);
@@ -60,21 +60,24 @@ module.exports = (
 
   const { root, propTypes } = getRoot(inputCss, true);
 
-  root.walkRules((node) => {
+  root.walkRules(node => {
     if (!isDirectChildOfKeyframes(node)) {
       node.selector = transformSelectors.process(node.selector).result;
     }
   });
 
-  transformAnimationNames({
-    transform: (value) => {
-      if (value in animationNameMap) return animationNameMap[value];
+  transformAnimationNames(
+    {
+      transform: value => {
+        if (value in animationNameMap) return animationNameMap[value];
 
-      const transformValue = generateAnimationName();
-      animationNameMap[value] = transformValue;
-      return transformValue;
+        const transformValue = generateAnimationName();
+        animationNameMap[value] = transformValue;
+        return transformValue;
+      }
     },
-  }, root);
+    root
+  );
 
   const css = root.toString();
   const args = { defaultClassName, classNameMap };

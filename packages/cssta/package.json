@@ -49,7 +49,7 @@
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-preset-es2015": "^6.18.0",
-    "flow-bin": "^0.54.0",
+    "flow-bin": "^0.63.1",
     "jest": "^21.0.1",
     "react": "^15.4.1",
     "react-test-renderer": "^15.4.1",
