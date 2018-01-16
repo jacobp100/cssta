@@ -1,30 +1,35 @@
-const t = require('babel-types');
-const _ = require('lodash/fp');
-const { csstaModules } = require('../util');
-
+const t = require("babel-types");
+const _ = require("lodash/fp");
+const { csstaModules } = require("../util");
 
 const interpolationTypes = {
   ALLOW: 0,
   IGNORE: 1,
-  DISALLOW: 2,
+  DISALLOW: 2
 };
 
 const csstaConstructorExpressionTypes = {
   CallExpression: node => [node.callee, node.arguments[0]],
   MemberExpression: node => [
     node.object,
-    node.computed ? node.property : t.stringLiteral(node.property.name),
-  ],
+    node.computed ? node.property : t.stringLiteral(node.property.name)
+  ]
 };
 
 const getCsstaTypeForCallee = (path, callee) => {
   if (!t.isIdentifier(callee)) return null;
 
-  const importScopePath = path.findParent(_.has(['scope', 'bindings', callee.name]));
+  const importScopePath = path.findParent(
+    _.has(["scope", "bindings", callee.name])
+  );
   if (!importScopePath) return null;
 
-  const importSpecifier = _.get(['scope', 'bindings', callee.name, 'path'], importScopePath);
-  if (!importSpecifier || !t.isImportDefaultSpecifier(importSpecifier)) return null;
+  const importSpecifier = _.get(
+    ["scope", "bindings", callee.name, "path"],
+    importScopePath
+  );
+  if (!importSpecifier || !t.isImportDefaultSpecifier(importSpecifier))
+    return null;
 
   const importDeclaration = importSpecifier.findParent(t.isImportDeclaration);
   if (!importDeclaration) return null;
@@ -51,13 +56,17 @@ module.exports.getCsstaReferences = (path, node) => {
 
 module.exports.interpolationTypes = interpolationTypes;
 module.exports.extractCsstaCallParts = (stringArg, interpolationType) => {
-  if (!t.isTemplateLiteral(stringArg) && !t.isStringLiteral(stringArg)) return null;
+  if (!t.isTemplateLiteral(stringArg) && !t.isStringLiteral(stringArg))
+    return null;
 
-  const hasInterpolation = t.isTemplateLiteral(stringArg) && !_.isEmpty(stringArg.expressions);
+  const hasInterpolation =
+    t.isTemplateLiteral(stringArg) && !_.isEmpty(stringArg.expressions);
 
   if (hasInterpolation && interpolationType === interpolationTypes.DISALLOW) {
-    const ex = '`color: ${primary}`'; // eslint-disable-line
-    throw new Error(`You cannot interpolation in template strings (i.e. ${ex})`);
+    const ex = "`color: ${primary}`"; // eslint-disable-line
+    throw new Error(
+      `You cannot interpolation in template strings (i.e. ${ex})`
+    );
   }
 
   const allowInterpolation = interpolationType === interpolationTypes.ALLOW;
@@ -65,12 +74,19 @@ module.exports.extractCsstaCallParts = (stringArg, interpolationType) => {
   let cssText = null;
   let substitutionMap = {};
 
-  if (t.isTemplateLiteral(stringArg) && (allowInterpolation || !hasInterpolation)) {
+  if (
+    t.isTemplateLiteral(stringArg) &&
+    (allowInterpolation || !hasInterpolation)
+  ) {
     const { quasis, expressions } = stringArg;
-    const substitutionNames = expressions.map((value, index) => `__substitution-${index}__`);
+    const substitutionNames = expressions.map(
+      (value, index) => `__substitution-${index}__`
+    );
     cssText =
       quasis[0].value.cooked +
-      substitutionNames.map((name, index) => name + quasis[index + 1].value.cooked).join('');
+      substitutionNames
+        .map((name, index) => name + quasis[index + 1].value.cooked)
+        .join("");
     substitutionMap = _.fromPairs(_.zip(substitutionNames, expressions));
   } else if (t.isStringLiteral(stringArg)) {
     cssText = stringArg.value;

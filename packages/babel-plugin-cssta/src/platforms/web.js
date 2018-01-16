@@ -1,11 +1,10 @@
 /* eslint-disable no-param-reassign */
-const t = require('babel-types');
-const _ = require('lodash/fp');
-const extractRules = require('cssta/src/web/extractRules');
-const cssNameGenerator = require('css-class-generator');
-const { jsonToNode, getOrCreateImportReference } = require('../util');
-const { startEndMarkers, fileStartEndCommentMarkers } = require('../webUtil');
-
+const t = require("babel-types");
+const _ = require("lodash/fp");
+const extractRules = require("cssta/src/web/extractRules");
+const cssNameGenerator = require("css-class-generator");
+const { jsonToNode, getOrCreateImportReference } = require("../util");
+const { startEndMarkers, fileStartEndCommentMarkers } = require("../webUtil");
 
 // Make sure we don't somehow generate an animation name that's a keyword
 // This is almost impossible anyway, but whatever
@@ -20,23 +19,27 @@ let animationGenerator = null;
 const resetGenerators = () => {
   classGenerator = cssNameGenerator();
   animationGenerator = (function* gen() {
-    for (const value of cssNameGenerator()) { // eslint-disable-line
+    for (const value of cssNameGenerator()) {
+      // eslint-disable-line
       if (!_.includes(value, animationKeywords)) yield value;
     }
-  }());
+  })();
 };
 
 resetGenerators();
 
 module.exports = (path, state, component, cssText, substititionMap) => {
   if (!_.isEmpty(substititionMap)) {
-    throw new Error('You cannot use interpolation in template strings (i.e. `color: ${primary}`)'); // eslint-disable-line
+    throw new Error(
+      "You cannot use interpolation in template strings (i.e. `color: ${primary}`)"
+    ); // eslint-disable-line
   }
 
-  const isInjectGlobal = t.isStringLiteral(component) && component.value === 'injectGlobal';
+  const isInjectGlobal =
+    t.isStringLiteral(component) && component.value === "injectGlobal";
 
   const { commentStartMarker, commentEndMarker } = isInjectGlobal
-    ? startEndMarkers('Injected Globals')
+    ? startEndMarkers("Injected Globals")
     : fileStartEndCommentMarkers(state);
 
   let { currentWebCss } = state;
@@ -45,7 +48,7 @@ module.exports = (path, state, component, cssText, substititionMap) => {
   if (!isInjectGlobal) {
     const { css: output, args } = extractRules(cssText, {
       generateClassName: () => classGenerator.next().value,
-      generateAnimationName: () => animationGenerator.next().value,
+      generateAnimationName: () => animationGenerator.next().value
     });
 
     const cssBefore = _.endsWith(commentEndMarker, currentWebCss)
@@ -55,14 +58,14 @@ module.exports = (path, state, component, cssText, substititionMap) => {
 
     const createComponent = getOrCreateImportReference(
       path,
-      'cssta/lib/web/createComponent',
-      'default'
+      "cssta/lib/web/createComponent",
+      "default"
     );
 
     newElement = t.callExpression(createComponent, [
       component,
       t.nullLiteral(), // Gets replaced with Object.keys(classNameMap)
-      jsonToNode(args),
+      jsonToNode(args)
     ]);
   } else {
     currentWebCss = `${commentStartMarker}${cssText}\n${commentEndMarker}${currentWebCss}`;
