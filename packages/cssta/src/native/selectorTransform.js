@@ -88,10 +88,12 @@ module.exports.createValidatorForSelector = (
   selector /*: string */
 ) /*: (props: Object) => boolean */ => {
   const source = getBaseValidatorSourceForSelector(selector);
+  /* eslint-disable no-new-func */
   // $FlowFixMe
   const validator /*: (props: Object) => boolean */ = new Function(
     propArg,
     source
   ); // eslint-disable-line
+  /* eslint-enable */
   return validator;
 };
