@@ -1,16 +1,16 @@
 /* eslint-disable no-param-reassign */
-const p = require('path');
-const singleSourceOfVariables = require('../../optimizations/singleSourceOfVariables');
-const { getOptimisationOpts } = require('../../util');
+const p = require("path");
+const singleSourceOfVariables = require("../../optimizations/singleSourceOfVariables");
+const { getOptimisationOpts } = require("../../util");
 
 module.exports = (path, state) => {
   const singleSourceVariableOpts = !state.singleSourceOfVariables
-    ? getOptimisationOpts(state, 'singleSourceOfVariables')
+    ? getOptimisationOpts(state, "singleSourceOfVariables")
     : null;
 
   if (singleSourceVariableOpts && !singleSourceVariableOpts.sourceFilename) {
     throw new Error(
-      'You must provide `sourceFilename` in the options for singleSourceOfVariables'
+      "You must provide `sourceFilename` in the options for singleSourceOfVariables"
     );
   }
 
@@ -19,8 +19,10 @@ module.exports = (path, state) => {
       state.opts.cwd || process.cwd(),
       singleSourceVariableOpts.sourceFilename
     );
-    const exportedVariables =
-      singleSourceOfVariables(fileContainingVariables, state.file.opts);
+    const exportedVariables = singleSourceOfVariables(
+      fileContainingVariables,
+      state.file.opts
+    );
     state.singleSourceOfVariables = exportedVariables;
   }
 };

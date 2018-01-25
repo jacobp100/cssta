@@ -1,95 +1,103 @@
 /* eslint-disable flowtype/require-valid-file-annotation */
 /* global jest it, expect */
-const React = require('react');
-const PropTypes = require('prop-types');
-const renderer = require('react-test-renderer'); // eslint-disable-line
-const VariablesProvider = require('../VariablesProvider');
+const React = require("react");
+const PropTypes = require("prop-types");
+const renderer = require("react-test-renderer"); // eslint-disable-line
+const VariablesProvider = require("../VariablesProvider");
 
 class ReturnsVariables extends React.Component {
   constructor(props, context) {
     super();
     this.state = { variables: context.csstaInitialVariables };
-    this.styleUpdater = (variables) => { this.setState({ variables }); };
+    this.styleUpdater = variables => {
+      this.setState({ variables });
+    };
   }
 
   componentDidMount() {
-    this.context.cssta.on('styles-updated', this.styleUpdater);
+    this.context.cssta.on("styles-updated", this.styleUpdater);
   }
 
   componentWillUnmount() {
-    this.context.cssta.off('styles-updated', this.styleUpdater);
+    this.context.cssta.off("styles-updated", this.styleUpdater);
   }
 
   render() {
-    return React.createElement('dummy', this.state.variables);
+    return React.createElement("dummy", this.state.variables);
   }
 }
 ReturnsVariables.contextTypes = {
   cssta: PropTypes.object,
-  csstaInitialVariables: PropTypes.object,
+  csstaInitialVariables: PropTypes.object
 };
 
-it('should generate context', () => {
-  const component = renderer.create(
-    React.createElement(
-      VariablesProvider,
-      { exportedVariables: { color: 'red' } },
-      React.createElement(ReturnsVariables)
+it("should generate context", () => {
+  const component = renderer
+    .create(
+      React.createElement(
+        VariablesProvider,
+        { exportedVariables: { color: "red" } },
+        React.createElement(ReturnsVariables)
+      )
     )
-  ).toJSON();
+    .toJSON();
 
-  expect(component.props).toEqual({ color: 'red' });
+  expect(component.props).toEqual({ color: "red" });
 });
 
-it('should update variables', () => {
+it("should update variables", () => {
   const instance = renderer.create(
     React.createElement(
       VariablesProvider,
-      { exportedVariables: { color: 'red' } },
+      { exportedVariables: { color: "red" } },
       React.createElement(ReturnsVariables)
     )
   );
   instance.update(
     React.createElement(
       VariablesProvider,
-      { exportedVariables: { color: 'green' } },
+      { exportedVariables: { color: "green" } },
       React.createElement(ReturnsVariables)
     )
   );
   const component = instance.toJSON();
 
-  expect(component.props).toEqual({ color: 'green' });
+  expect(component.props).toEqual({ color: "green" });
 });
 
-it('sets variables from function', () => {
-  const component = renderer.create(
-    React.createElement(
-      VariablesProvider,
-      { exportedVariables: () => ({ color: 'red' }) },
-      React.createElement(ReturnsVariables)
-    )
-  ).toJSON();
-
-  expect(component.props).toEqual({ color: 'red' });
-});
-
-it('sets variables using scope from function', () => {
-  const component = renderer.create(
-    React.createElement(
-      VariablesProvider,
-      { exportedVariables: () => ({ primary: 'red' }) },
+it("sets variables from function", () => {
+  const component = renderer
+    .create(
       React.createElement(
         VariablesProvider,
-        { exportedVariables: scope => ({ color: scope.primary }) },
+        { exportedVariables: () => ({ color: "red" }) },
         React.createElement(ReturnsVariables)
       )
     )
-  ).toJSON();
+    .toJSON();
 
-  expect(component.props).toEqual({ primary: 'red', color: 'red' });
+  expect(component.props).toEqual({ color: "red" });
 });
 
-it('updates variables using scope from function', () => {
+it("sets variables using scope from function", () => {
+  const component = renderer
+    .create(
+      React.createElement(
+        VariablesProvider,
+        { exportedVariables: () => ({ primary: "red" }) },
+        React.createElement(
+          VariablesProvider,
+          { exportedVariables: scope => ({ color: scope.primary }) },
+          React.createElement(ReturnsVariables)
+        )
+      )
+    )
+    .toJSON();
+
+  expect(component.props).toEqual({ primary: "red", color: "red" });
+});
+
+it("updates variables using scope from function", () => {
   const inner = React.createElement(
     VariablesProvider,
     { exportedVariables: scope => ({ color: scope.primary }) },
@@ -99,7 +107,7 @@ it('updates variables using scope from function', () => {
   const instance = renderer.create(
     React.createElement(
       VariablesProvider,
-      { exportedVariables: { primary: 'red' } },
+      { exportedVariables: { primary: "red" } },
       inner
     )
   );
@@ -107,11 +115,11 @@ it('updates variables using scope from function', () => {
   instance.update(
     React.createElement(
       VariablesProvider,
-      { exportedVariables: { primary: 'green' } },
+      { exportedVariables: { primary: "green" } },
       inner
     )
   );
   const component = instance.toJSON();
 
-  expect(component.props).toEqual({ primary: 'green', color: 'green' });
+  expect(component.props).toEqual({ primary: "green", color: "green" });
 });

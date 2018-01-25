@@ -1,15 +1,15 @@
 // @flow
-const React = require('react');
+const React = require("react");
 /* eslint-disable */
 // $FlowFixMe
-const { StyleSheet } = require('react-native');
+const { StyleSheet } = require("react-native");
 /* eslint-enable */
-const VariablesProvider = require('../VariablesProvider');
-const { getAppliedRules } = require('../util');
-const resolveVariableDependencies = require('../../util/resolveVariableDependencies');
-const { transformStyleTuples } = require('../cssUtil');
-const transformVariables = require('../../css-transforms/variables');
-const { mapValues } = require('../../util');
+const VariablesProvider = require("../VariablesProvider");
+const { getAppliedRules } = require("../util");
+const resolveVariableDependencies = require("../../util/resolveVariableDependencies");
+const { transformStyleTuples } = require("../cssUtil");
+const transformVariables = require("../../css-transforms/variables");
+const { mapValues } = require("../../util");
 /*:: import type { DynamicProps } from '../../factories/types' */
 /*::
 import type {
@@ -21,7 +21,10 @@ const { Component } = React;
 
 /* eslint-disable no-param-reassign */
 const getExportedVariables = (props, variablesFromScope) => {
-  const appliedRuleVariables = getAppliedRules(props.args.ruleTuples, props.ownProps)
+  const appliedRuleVariables = getAppliedRules(
+    props.args.ruleTuples,
+    props.ownProps
+  )
     // $FlowFixMe
     .map(rule => rule.exportedVariables);
   const definedVariables = Object.assign({}, ...appliedRuleVariables);
@@ -39,8 +42,9 @@ const createRule = (
   const { validate, transitionParts, animationParts } = inputRule;
   const transitions = transitionParts
     ? mapValues(
-      parts => substitutePartsVariables(appliedVariables, parts),
-      transitionParts)
+        parts => substitutePartsVariables(appliedVariables, parts),
+        transitionParts
+      )
     : null;
   const animation = animationParts
     ? substitutePartsVariables(appliedVariables, animationParts)
@@ -54,9 +58,12 @@ const createRuleStylesUsingStylesheet = (
   args /*: VariableArgs */
 ) /*: Args */ => {
   const { transitionedProperties, keyframesStyleTuples, ruleTuples } = args;
-  const styles /*: (Style | null)[] */ = ruleTuples.map(rule => (
-    rule.styleTuples ? transformStyleTuples(rule.styleTuples, appliedVariables) : null
-  ));
+  const styles /*: (Style | null)[] */ = ruleTuples.map(
+    rule =>
+      rule.styleTuples
+        ? transformStyleTuples(rule.styleTuples, appliedVariables)
+        : null
+  );
 
   const styleBody = styles.reduce((accum, style, index) => {
     if (style != null) accum[index] = style;
@@ -64,22 +71,34 @@ const createRuleStylesUsingStylesheet = (
   }, {});
   const stylesheet = StyleSheet.create(styleBody);
 
-  const rules = ruleTuples.map((rule, index) => (
-    rule.styleTuples ? createRule(rule, stylesheet[index], appliedVariables) : rule
-  ));
+  const rules = ruleTuples.map(
+    (rule, index) =>
+      rule.styleTuples
+        ? createRule(rule, stylesheet[index], appliedVariables)
+        : rule
+  );
 
-  const keyframes = Object.keys(keyframesStyleTuples).reduce((accum, keyframeName) => {
-    const keyframeStyles /*: Keyframe[] */ = keyframesStyleTuples[keyframeName].map(keyframe => (
-      keyframe.styleTuples
-        ? {
-          time: keyframe.time,
-          styles: transformStyleTuples(keyframe.styleTuples, appliedVariables),
-        }
-        : keyframe
-    ));
-    accum[keyframeName] = keyframeStyles;
-    return accum;
-  }, {});
+  const keyframes = Object.keys(keyframesStyleTuples).reduce(
+    (accum, keyframeName) => {
+      const keyframeStyles /*: Keyframe[] */ = keyframesStyleTuples[
+        keyframeName
+      ].map(
+        keyframe =>
+          keyframe.styleTuples
+            ? {
+                time: keyframe.time,
+                styles: transformStyleTuples(
+                  keyframe.styleTuples,
+                  appliedVariables
+                )
+              }
+            : keyframe
+      );
+      accum[keyframeName] = keyframeStyles;
+      return accum;
+    },
+    {}
+  );
 
   return { transitionedProperties, keyframes, rules };
 };
@@ -105,10 +124,13 @@ module.exports = class VariablesStyleSheetManager extends Component /*::<
   renderWithVariables(appliedVariables /*: VariablesStore */) {
     const { styleCache } = this;
 
-    const ownAppliedVariables = this.props.args.importedVariables.reduce((accum, key) => {
-      accum[key] = appliedVariables[key];
-      return accum;
-    }, {});
+    const ownAppliedVariables = this.props.args.importedVariables.reduce(
+      (accum, key) => {
+        accum[key] = appliedVariables[key];
+        return accum;
+      },
+      {}
+    );
     const styleCacheKey = JSON.stringify(ownAppliedVariables);
     const styleCached = styleCacheKey in styleCache;
 

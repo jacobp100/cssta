@@ -1,28 +1,33 @@
 // @flow
 /* eslint-disable no-param-reassign */
-const React = require('react');
+const React = require("react");
 /* eslint-disable */
 // $FlowFixMe
-const { StyleSheet, Animated, Easing } = require('react-native');
+const { StyleSheet, Animated, Easing } = require("react-native");
 /* eslint-enable */
-const { getAppliedRules } = require('../util');
-const { shallowEqual } = require('../../util');
+const { getAppliedRules } = require("../util");
+const { shallowEqual } = require("../../util");
 const {
-  mergeStyles, interpolateValue, getDurationInMs, easingFunctions,
-  durationRegExp, easingRegExp,
-} = require('./animationUtil');
+  mergeStyles,
+  interpolateValue,
+  getDurationInMs,
+  easingFunctions,
+  durationRegExp,
+  easingRegExp
+} = require("./animationUtil");
 /*:: import type { DynamicProps } from '../../factories/types' */
 /*:: import type { Args } from '../types' */
 /*:: import type { Interpolation } from './animationUtil' */
 
 const { Component } = React;
 
-const getInitialValue = targetValue => (typeof targetValue === 'number' ? targetValue : 0);
+const getInitialValue = targetValue =>
+  typeof targetValue === "number" ? targetValue : 0;
 
-const mergeTransitions = (props) => {
+const mergeTransitions = props => {
   const transitions = getAppliedRules(props.args.rules, props.ownProps)
     .map(rule => rule.transitions)
-    .filter(transition => typeof transition === 'object');
+    .filter(transition => typeof transition === "object");
   return Object.assign({}, ...transitions);
 };
 
@@ -51,19 +56,28 @@ module.exports = class TransitionEnhancer extends Component /*::<
 
     this.state = { styles, previousStyles: styles };
 
-    this.animationValues = transitionedProperties.reduce((animationValues, transitionName) => {
-      animationValues[transitionName] = new Animated.Value(getInitialValue(styles[transitionName]));
-      return animationValues;
-    }, {});
+    this.animationValues = transitionedProperties.reduce(
+      (animationValues, transitionName) => {
+        animationValues[transitionName] = new Animated.Value(
+          getInitialValue(styles[transitionName])
+        );
+        return animationValues;
+      },
+      {}
+    );
   }
 
   componentWillReceiveProps(nextProps /*: DynamicProps<Args> */) {
     const previousStyles = this.state.styles;
     const styles = mergeStyles(nextProps);
-    if (!shallowEqual(previousStyles, styles)) this.setState({ styles, previousStyles });
+    if (!shallowEqual(previousStyles, styles))
+      this.setState({ styles, previousStyles });
   }
 
-  componentDidUpdate(prevProps /*: DynamicProps<Args> */, prevState /*: TransitionState */) {
+  componentDidUpdate(
+    prevProps /*: DynamicProps<Args> */,
+    prevState /*: TransitionState */
+  ) {
     const { styles } = this.state;
 
     if (prevState.styles === styles) return;
@@ -72,19 +86,25 @@ module.exports = class TransitionEnhancer extends Component /*::<
 
     const currentTransitions = mergeTransitions(this.props);
 
-    const animations = Object.keys(animationValues).map((transitionProperty) => {
+    const animations = Object.keys(animationValues).map(transitionProperty => {
       const transitionValues = currentTransitions[transitionProperty] || [];
 
-      const durationMatch = transitionValues.find(value => durationRegExp.test(value));
+      const durationMatch = transitionValues.find(value =>
+        durationRegExp.test(value)
+      );
       const duration = durationMatch ? getDurationInMs(durationMatch) : 0;
 
-      const easingMatch = transitionValues.find(value => easingRegExp.test(value));
-      const easing = easingMatch ? easingFunctions[easingMatch] : easingFunctions.linear;
+      const easingMatch = transitionValues.find(value =>
+        easingRegExp.test(value)
+      );
+      const easing = easingMatch
+        ? easingFunctions[easingMatch]
+        : easingFunctions.linear;
 
       const animation = animationValues[transitionProperty];
 
       const targetValue = styles[transitionProperty];
-      const needsInterpolation = typeof targetValue !== 'number';
+      const needsInterpolation = typeof targetValue !== "number";
       const toValue = !needsInterpolation ? targetValue : 1;
 
       if (needsInterpolation) animation.setValue(0);
@@ -117,7 +137,11 @@ module.exports = class TransitionEnhancer extends Component /*::<
 
       const newRule = { style: fixedAnimations };
       const { transitionedProperties, keyframes, rules } = args;
-      const nextArgs = { transitionedProperties, keyframes, rules: rules.concat(newRule) };
+      const nextArgs = {
+        transitionedProperties,
+        keyframes,
+        rules: rules.concat(newRule)
+      };
       nextProps = Object.assign({}, this.props, { args: nextArgs });
     } else {
       nextProps = this.props;

@@ -1,35 +1,40 @@
 /* eslint-disable no-param-reassign */
-const t = require('babel-types');
-const _ = require('lodash/fp');
-const { getPropertyName } = require('css-to-react-native');
-const { getOrCreateImportReference } = require('../../util');
-const { baseRuleElements } = require('./createUtil');
+const t = require("babel-types");
+const _ = require("lodash/fp");
+const { getPropertyName } = require("css-to-react-native");
+const { getOrCreateImportReference } = require("../../util");
+const { baseRuleElements } = require("./createUtil");
 const {
-  jsonObjectProperties, getStringWithSubstitutedValues, styleHasVariable, styleTupleHasVariable,
-} = require('./util');
-const createStyleBody = require('./createStyleBody');
+  jsonObjectProperties,
+  getStringWithSubstitutedValues,
+  styleHasVariable,
+  styleTupleHasVariable
+} = require("./util");
+const createStyleBody = require("./createStyleBody");
 
-const createStyleTuples = (
-  substitutionMap,
-  { styleTuples }
-) => t.arrayExpression(_.map(([prop, value]) => (
-  t.arrayExpression([
-    t.stringLiteral(getPropertyName(prop)),
-    getStringWithSubstitutedValues(substitutionMap, value),
-  ])
-), styleTuples));
+const createStyleTuples = (substitutionMap, { styleTuples }) =>
+  t.arrayExpression(
+    _.map(
+      ([prop, value]) =>
+        t.arrayExpression([
+          t.stringLiteral(getPropertyName(prop)),
+          getStringWithSubstitutedValues(substitutionMap, value)
+        ]),
+      styleTuples
+    )
+  );
 
 const variableRuleGenerator = (path, substitutionMap) => rule =>
   t.objectExpression([
     ...baseRuleElements(rule),
     ..._.flow(
-      _.pick(['exportedVariables', 'transitionParts', 'animationParts']),
+      _.pick(["exportedVariables", "transitionParts", "animationParts"]),
       jsonObjectProperties
     )(rule),
     t.objectProperty(
-      t.stringLiteral('styleTuples'),
+      t.stringLiteral("styleTuples"),
       createStyleTuples(substitutionMap, rule)
-    ),
+    )
   ]);
 
 const staticRuleGenerator = (path, substitutionMap) => {
@@ -41,28 +46,39 @@ const staticRuleGenerator = (path, substitutionMap) => {
   };
 
   const statementPath = path.getStatementParent();
-  const styleSheetReference = statementPath.scope.generateUidIdentifier('csstaStyle');
+  const styleSheetReference = statementPath.scope.generateUidIdentifier(
+    "csstaStyle"
+  );
 
   let existingStyleSheetElement = null;
   const existingRuleBases = [];
 
-  const addStyle = (ruleBase) => {
+  const addStyle = ruleBase => {
     if (!ruleBase.styleSheetReference) return;
 
     existingRuleBases.push(ruleBase);
 
-    const reactNativeStyleSheetRef =
-      getOrCreateImportReference(path, 'react-native', 'StyleSheet');
+    const reactNativeStyleSheetRef = getOrCreateImportReference(
+      path,
+      "react-native",
+      "StyleSheet"
+    );
 
-    const styleSheetBody = t.objectExpression(_.map(rule => (
-      t.objectProperty(rule.styleSheetReference, rule.styleBody)
-    ), existingRuleBases));
+    const styleSheetBody = t.objectExpression(
+      _.map(
+        rule => t.objectProperty(rule.styleSheetReference, rule.styleBody),
+        existingRuleBases
+      )
+    );
 
-    const styleSheetElement = t.variableDeclaration('var', [
-      t.variableDeclarator(styleSheetReference, t.callExpression(
-        t.memberExpression(reactNativeStyleSheetRef, t.identifier('create')),
-        [styleSheetBody]
-      )),
+    const styleSheetElement = t.variableDeclaration("var", [
+      t.variableDeclarator(
+        styleSheetReference,
+        t.callExpression(
+          t.memberExpression(reactNativeStyleSheetRef, t.identifier("create")),
+          [styleSheetBody]
+        )
+      )
     ]);
 
     if (existingStyleSheetElement) {
@@ -73,12 +89,16 @@ const staticRuleGenerator = (path, substitutionMap) => {
     }
   };
 
-  return (rule) => {
-    const styleBody = createStyleBody(statementPath, substitutionMap, rule.styleTuples);
+  return rule => {
+    const styleBody = createStyleBody(
+      statementPath,
+      substitutionMap,
+      rule.styleTuples
+    );
 
     const ruleBase = _.flow(
-      _.set('styleBody', styleBody),
-      _.set('styleSheetReference', styleBody ? getStyleSheetReference() : null)
+      _.set("styleBody", styleBody),
+      _.set("styleSheetReference", styleBody ? getStyleSheetReference() : null)
     )(rule);
 
     addStyle(ruleBase);
@@ -87,14 +107,18 @@ const staticRuleGenerator = (path, substitutionMap) => {
       ...baseRuleElements(ruleBase),
       ...jsonObjectProperties({
         transitions: ruleBase.transitionParts,
-        animation: ruleBase.animationParts,
+        animation: ruleBase.animationParts
       }),
       t.objectProperty(
-        t.stringLiteral('style'),
+        t.stringLiteral("style"),
         ruleBase.styleSheetReference
-          ? t.memberExpression(styleSheetReference, ruleBase.styleSheetReference, true)
+          ? t.memberExpression(
+              styleSheetReference,
+              ruleBase.styleSheetReference,
+              true
+            )
           : t.nullLiteral()
-      ),
+      )
     ]);
 
     return ruleBody;
@@ -108,16 +132,18 @@ const ruleIsStatic = _.conforms({
   styleTuples: _.every(styleTupleIsStatic),
   exportedVariables: _.isEmpty,
   transitionParts: _.every(styleIsStatic),
-  animationParts: styleIsStatic,
+  animationParts: styleIsStatic
 });
 
 module.exports = (path, substitutionMap, rules) => {
   const createStaticRule = staticRuleGenerator(path, substitutionMap);
   const createVariableRule = variableRuleGenerator(path, substitutionMap);
 
-  return t.arrayExpression(_.map(rule => (
-    ruleIsStatic(rule)
-      ? createStaticRule(rule)
-      : createVariableRule(rule)
-  ), rules));
+  return t.arrayExpression(
+    _.map(
+      rule =>
+        ruleIsStatic(rule) ? createStaticRule(rule) : createVariableRule(rule),
+      rules
+    )
+  );
 };

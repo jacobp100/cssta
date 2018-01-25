@@ -1,24 +1,30 @@
 /* eslint-disable no-param-reassign */
-const t = require('babel-types');
-const { getOrCreateImportReference } = require('../../util');
+const t = require("babel-types");
+const { getOrCreateImportReference } = require("../../util");
 
 const convertValue = transform => (path, value) =>
   t.callExpression(t.identifier(transform), [value]);
 
 const stringInterpolation = (path, value) =>
-  t.callExpression(t.memberExpression(convertValue('String')(path, value), t.identifier('trim')), []);
+  t.callExpression(
+    t.memberExpression(
+      convertValue("String")(path, value),
+      t.identifier("trim")
+    ),
+    []
+  );
 
 const lengthInterpolation = (path, value) => {
   const transformRawValue = getOrCreateImportReference(
     path,
-    'cssta/lib/native/cssUtil',
-    'transformRawValue'
+    "cssta/lib/native/cssUtil",
+    "transformRawValue"
   );
 
   return t.callExpression(transformRawValue, [value]);
 };
 
-const numberInterpolation = convertValue('Number');
+const numberInterpolation = convertValue("Number");
 
 /*
 All the values we can work out easily.
@@ -92,5 +98,5 @@ module.exports = {
   letterSpacing: lengthInterpolation,
   textDecorationColor: stringInterpolation,
   textDecorationStyle: stringInterpolation,
-  writingDirection: stringInterpolation,
+  writingDirection: stringInterpolation
 };

@@ -4,26 +4,31 @@
 
 module.exports.StyleSheet = {
   create: body => body,
-  flatten: styles => Object.assign({}, ...[].concat(styles)),
+  flatten: styles => Object.assign({}, ...[].concat(styles))
 };
 
 class Value {
-  constructor() { this.isAnimatedValue = true; }
+  constructor() {
+    this.isAnimatedValue = true;
+  }
 
-  interpolate(value) { // eslint-disable-line
+  interpolate(value) {
+    // eslint-disable-line
     const nextValue = new Value();
     nextValue.interpolation = value;
     return nextValue;
   }
 
-  setValue() { return this; }
+  setValue() {
+    return this;
+  }
 }
 
 module.exports.Animated = {
   timing: jest.fn().mockImplementation(() => module.exports.Animated),
   parallel: jest.fn().mockImplementation(() => module.exports.Animated),
   start: jest.fn().mockImplementation(() => module.exports.Animated),
-  Value,
+  Value
 };
 
 module.exports.Easing = {
@@ -31,5 +36,5 @@ module.exports.Easing = {
   ease: () => {},
   in: () => {},
   out: () => {},
-  inOut: () => {},
+  inOut: () => {}
 };

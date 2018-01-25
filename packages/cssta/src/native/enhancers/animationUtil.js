@@ -1,13 +1,15 @@
 // @flow
 /* eslint-disable */
 // $FlowFixMe
-const { StyleSheet, Easing } = require('react-native');
+const { StyleSheet, Easing } = require("react-native");
 /* eslint-enable */
-const { getAppliedRules } = require('../util');
+const { getAppliedRules } = require("../util");
 /*:: import type { Args } from '../types' */
 
 module.exports.mergeStyles = (props /*: { ownProps: Object, args: Args } */) =>
-  StyleSheet.flatten(getAppliedRules(props.args.rules, props.ownProps).map(rule => rule.style));
+  StyleSheet.flatten(
+    getAppliedRules(props.args.rules, props.ownProps).map(rule => rule.style)
+  );
 
 /*::
 export type Interpolation = number | string | [{ [key:string]: Interpolation }]
@@ -22,17 +24,17 @@ module.exports.interpolateValue = (
   interpolateNumbers /*: boolean */ = false
 ) /*: InterpolatedValue */ => {
   const firstValue = outputRange[0];
-  if (interpolateNumbers && typeof firstValue === 'number') {
+  if (interpolateNumbers && typeof firstValue === "number") {
     return animation;
   } else if (!Array.isArray(firstValue)) {
     return animation.interpolate({ inputRange, outputRange });
   }
 
   // transforms
-  if (process.env.NODE_ENV !== 'production') {
+  if (process.env.NODE_ENV !== "production") {
     const currentProperties = String(firstValue.map(Object.keys));
     // Not the *best* practise here...
-    const transformsAreConsistent = outputRange.every((range) => {
+    const transformsAreConsistent = outputRange.every(range => {
       // $FlowFixMe
       const rangeProperties = String(range.map(Object.keys));
       return currentProperties === rangeProperties;
@@ -40,7 +42,9 @@ module.exports.interpolateValue = (
 
     if (!transformsAreConsistent) {
       // eslint-disable-next-line no-console
-      console.error('Expected transforms to have same shape between transitions');
+      console.error(
+        "Expected transforms to have same shape between transitions"
+      );
     }
   }
 
@@ -50,7 +54,10 @@ module.exports.interpolateValue = (
     const innerOutputRange = outputRange.map(range => range[index][property]);
 
     // We *have* to interpolate even numeric values, as we will always animate between 0--1
-    const interpolation = animation.interpolate({ inputRange, outputRange: innerOutputRange });
+    const interpolation = animation.interpolate({
+      inputRange,
+      outputRange: innerOutputRange
+    });
 
     return { [property]: interpolation };
   });
@@ -65,9 +72,9 @@ module.exports.getDurationInMs = (duration /*: string */) /*: number */ => {
 module.exports.easingFunctions = {
   linear: Easing.linear,
   ease: Easing.ease,
-  'ease-in': Easing.in,
-  'ease-out': Easing.out,
-  'ease-in-out': Easing.inOut,
+  "ease-in": Easing.in,
+  "ease-out": Easing.out,
+  "ease-in-out": Easing.inOut
 };
 
 module.exports.durationRegExp = /^\d/;

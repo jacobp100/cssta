@@ -1,15 +1,17 @@
-const t = require('babel-types');
-const _ = require('lodash/fp');
-const { jsonToNode, getSubstitutionRegExp } = require('../../util');
-const { varRegExp } = require('cssta/lib/util');
+const t = require("babel-types");
+const _ = require("lodash/fp");
+const { jsonToNode, getSubstitutionRegExp } = require("../../util");
+const { varRegExp } = require("cssta/lib/util");
 
 const getTemplateValues = cooked => ({
   cooked,
-  raw: JSON.stringify(cooked).slice(1, -1),
+  raw: JSON.stringify(cooked).slice(1, -1)
 });
 const jsonObjectProperties = _.flow(
   _.toPairs,
-  _.map(([key, value]) => t.objectProperty(t.stringLiteral(key), jsonToNode(value)))
+  _.map(([key, value]) =>
+    t.objectProperty(t.stringLiteral(key), jsonToNode(value))
+  )
 );
 
 const getStringWithSubstitutedValues = (substitutionMap, value) => {
@@ -23,7 +25,10 @@ const getStringWithSubstitutedValues = (substitutionMap, value) => {
   if (_.isEmpty(expressionValues)) return t.stringLiteral(quasiValues[0]);
 
   const quasis = [].concat(
-    _.map(cooked => t.templateElement(getTemplateValues(cooked)), _.initial(quasiValues)),
+    _.map(
+      cooked => t.templateElement(getTemplateValues(cooked)),
+      _.initial(quasiValues)
+    ),
     t.templateElement(getTemplateValues(_.last(quasiValues)), true)
   );
   const expressions = _.map(_.propertyOf(substitutionMap), expressionValues);

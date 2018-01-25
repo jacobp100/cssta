@@ -1,10 +1,9 @@
 /* eslint-disable no-param-reassign */
-const programWeb = require('./visitors/program/web');
-const singleSourceOfVariables = require('./visitors/program/singleSourceOfVariables');
-const removeUnusedCsstaImports = require('./visitors/program/removeUnusedCsstaImports');
-const redirectImports = require('./visitors/importSpecifier/redirectImports');
-const csstaCall = require('./visitors/csstaCall');
-
+const programWeb = require("./visitors/program/web");
+const singleSourceOfVariables = require("./visitors/program/singleSourceOfVariables");
+const removeUnusedCsstaImports = require("./visitors/program/removeUnusedCsstaImports");
+const redirectImports = require("./visitors/importSpecifier/redirectImports");
+const csstaCall = require("./visitors/csstaCall");
 
 module.exports = () => ({
   visitor: {
@@ -16,7 +15,7 @@ module.exports = () => ({
       exit(path, state) {
         programWeb.exit(path, state);
         removeUnusedCsstaImports(path, state);
-      },
+      }
     },
     ImportSpecifier(path, state) {
       redirectImports(path, state);
@@ -26,8 +25,8 @@ module.exports = () => ({
     },
     TaggedTemplateExpression(path, state) {
       csstaCall.TaggedTemplateExpression(path, state);
-    },
-  },
+    }
+  }
 });
 
 module.exports.resetGenerators = csstaCall.resetGenerators;

@@ -4,7 +4,7 @@
     "readme":
       "cp ./docs/index.md ./README.md; sed -i -e 's%{{ site.github.url }}%https://jacobp100.github.io/cssta%g' ./README.md; sed -i -e 's/{% raw %}//g' ./README.md; sed -i -e 's/{% endraw %}//g' ./README.md; sed -i -e '1,5d' ./README.md; rm ./README.md-e",
     "lint": "eslint ./packages/*/src/**/*.js",
-    "prettier": "prettier --write ./packages/*/src/**/*.js"
+    "prettier": "prettier --write './packages/*/src/**/*.js'"
   },
   "devDependencies": {
     "eslint": "^4.6.1",

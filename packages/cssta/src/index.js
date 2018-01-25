@@ -1,2 +1,2 @@
 // @flow
-module.exports = require('./web/index');
+module.exports = require("./web/index");
