@@ -7,6 +7,6 @@ const startEndMarkers = commentMarkerBody => {
 module.exports.startEndMarkers = startEndMarkers;
 
 module.exports.fileStartEndCommentMarkers = state => {
-  const filename = state.file.opts.filename;
+  const { filename } = state.file.opts;
   return startEndMarkers(filename.replace(/\*/g, ""));
 };

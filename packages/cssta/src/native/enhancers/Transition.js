@@ -1,5 +1,4 @@
 // @flow
-/* eslint-disable no-param-reassign */
 const React = require("react");
 /* eslint-disable */
 // $FlowFixMe
@@ -58,6 +57,7 @@ module.exports = class TransitionEnhancer extends Component /*::<
 
     this.animationValues = transitionedProperties.reduce(
       (animationValues, transitionName) => {
+        /* eslint-disable no-param-reassign */
         animationValues[transitionName] = new Animated.Value(
           getInitialValue(styles[transitionName])
         );

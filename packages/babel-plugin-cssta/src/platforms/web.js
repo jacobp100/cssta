@@ -1,4 +1,4 @@
-/* eslint-disable no-param-reassign */
+/* eslint-disable no-param-reassign, no-restricted-syntax, no-template-curly-in-string */
 const t = require("babel-types");
 const _ = require("lodash/fp");
 const extractRules = require("cssta/src/web/extractRules");
@@ -20,7 +20,6 @@ const resetGenerators = () => {
   classGenerator = cssNameGenerator();
   animationGenerator = (function* gen() {
     for (const value of cssNameGenerator()) {
-      // eslint-disable-line
       if (!_.includes(value, animationKeywords)) yield value;
     }
   })();
@@ -32,7 +31,7 @@ module.exports = (path, state, component, cssText, substititionMap) => {
   if (!_.isEmpty(substititionMap)) {
     throw new Error(
       "You cannot use interpolation in template strings (i.e. `color: ${primary}`)"
-    ); // eslint-disable-line
+    );
   }
 
   const isInjectGlobal =

@@ -1,5 +1,5 @@
 // @flow
-/* eslint-disable no-param-reassign */
+/* eslint-disable no-param-reassign, no-restricted-syntax */
 
 const keyframesRegExp = /keyframes$/i;
 
@@ -9,7 +9,6 @@ module.exports.shallowEqual = (
 ) /*: boolean */ => {
   if (tom === jerry) return true;
 
-  /* eslint-disable */
   for (const key in jerry) {
     if (!(key in tom)) return false;
   }
@@ -17,7 +16,6 @@ module.exports.shallowEqual = (
   for (const key in tom) {
     if (!(key in jerry) || tom[key] !== jerry[key]) return false;
   }
-  /* eslint-enable */
 
   return true;
 };

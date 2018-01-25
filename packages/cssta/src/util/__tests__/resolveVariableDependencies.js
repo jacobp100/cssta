@@ -1,5 +1,5 @@
 /* eslint-disable flowtype/require-valid-file-annotation */
-/* global jest it, expect */
+/* global it, expect */
 const resolveVariableDependencies = require("../resolveVariableDependencies");
 
 it("should resolve a single variable", () => {

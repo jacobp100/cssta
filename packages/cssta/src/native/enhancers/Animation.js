@@ -1,5 +1,4 @@
 // @flow
-/* eslint-disable no-param-reassign */
 const React = require("react");
 /* eslint-disable */
 // $FlowFixMe
@@ -67,6 +66,7 @@ const getAnimationState = props => {
 
   const animationValues = animatedProperties.reduce(
     (accum, animationProperty) => {
+      /* eslint-disable no-param-reassign */
       accum[animationProperty] = new Animated.Value(0);
       return accum;
     },

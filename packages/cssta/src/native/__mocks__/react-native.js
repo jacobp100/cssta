@@ -1,6 +1,6 @@
 /* eslint-disable flowtype/require-valid-file-annotation */
 /* global jest */
-/* eslint-disable no-param-reassign */
+/* eslint-disable no-param-reassign, class-methods-use-this */
 
 module.exports.StyleSheet = {
   create: body => body,
