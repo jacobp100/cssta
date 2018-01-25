@@ -1,0 +1,20 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`macros 1. macros: 1. macros 1`] = `
+"
+import cssta from '../dev.macro'
+
+cssta('div')\`
+  color: red;
+\`
+
+      ↓ ↓ ↓ ↓ ↓ ↓
+
+import devcssta from 'cssta';
+
+
+devcssta('div')\`
+  color: red;
+\`;
+"
+`;
