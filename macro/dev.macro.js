@@ -2,7 +2,7 @@ const { createMacro } = require("babel-plugin-macros");
 const { addImport } = require("./util");
 
 module.exports = createMacro(arg => {
-  addImport(arg, "__devcssta_web__");
+  addImport(arg, { default: "__devcssta_web__" }, "cssta");
 
   /* eslint-disable no-param-reassign */
   arg.references.default.forEach(path => {

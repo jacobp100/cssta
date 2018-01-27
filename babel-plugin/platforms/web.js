@@ -46,15 +46,20 @@ module.exports = (babel, path, state, component, cssText, substititionMap) => {
   let newElement = null;
 
   if (!isInjectGlobal) {
-    const { css: output, args } = extractRules(cssText, {
+    const { css, args } = extractRules(cssText, {
       generateClassName: () => classGenerator.next().value,
       generateAnimationName: () => animationGenerator.next().value
     });
+    const output = css.trim();
 
-    const cssBefore = _.endsWith(commentEndMarker, currentWebCss)
-      ? currentWebCss.slice(0, -commentEndMarker.length)
-      : `${currentWebCss}\n${commentStartMarker}`;
-    currentWebCss = `${cssBefore}\n${output}\n${commentEndMarker}`;
+    const startIndex = currentWebCss.indexOf(commentEndMarker);
+    if (startIndex !== -1) {
+      const cssBefore = currentWebCss.slice(0, startIndex);
+      const cssAfter = currentWebCss.slice(startIndex);
+      currentWebCss = `${cssBefore}${output}\n${cssAfter}`;
+    } else {
+      currentWebCss = `${currentWebCss}\n${commentStartMarker}${output}\n${commentEndMarker}`;
+    }
 
     const createComponent = getOrCreateImportReference(
       babel,

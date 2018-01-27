@@ -1,12 +1,32 @@
-module.exports.addImport = (arg, importName) => {
+module.exports.addImport = (
+  arg,
+  { default: defaultName },
+  filename,
+  { atEndOfProgram = false } = {}
+) => {
   const t = arg.babel.types;
-  const identifier = t.identifier(importName);
-  const importDefaultSpecifier = t.importDefaultSpecifier(identifier);
+
+  const specifiers = [];
+  if (defaultName) {
+    const identifier = t.identifier(defaultName);
+    const importDefaultSpecifier = t.importDefaultSpecifier(identifier);
+    specifiers.push(importDefaultSpecifier);
+  }
+
   const importDeclaration = t.importDeclaration(
-    [importDefaultSpecifier],
-    t.stringLiteral("cssta")
+    specifiers,
+    t.stringLiteral(filename)
   );
   const program = arg.references.default[0].findParent(p => p.isProgram());
-  const [importPath] = program.unshiftContainer("body", importDeclaration);
-  program.scope.registerDeclaration(importPath.get("specifiers.0"));
+
+  let importPath;
+  if (atEndOfProgram) {
+    program.pushContainer("body", importDeclaration);
+  } else {
+    [importPath] = program.unshiftContainer("body", importDeclaration);
+  }
+
+  specifiers.forEach((unused, index) => {
+    program.scope.registerDeclaration(importPath.get(`specifiers.${index}`));
+  });
 };
