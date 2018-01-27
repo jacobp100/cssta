@@ -8,6 +8,10 @@ cssta('div')\`
   color: red;
 \`
 
+cssta('div')\`
+  color: blue;
+\`
+
       ↓ ↓ ↓ ↓ ↓ ↓
 
 import devcssta from 'cssta';
@@ -16,5 +20,39 @@ import devcssta from 'cssta';
 devcssta('div')\`
   color: red;
 \`;
+
+devcssta('div')\`
+  color: blue;
+\`;
+"
+`;
+
+exports[`1. macros 2`] = `
+"
+import cssta from '../prod.macro'
+
+cssta('div')\`
+  color: red;
+\`
+
+cssta('div')\`
+  color: blue;
+\`
+
+      ↓ ↓ ↓ ↓ ↓ ↓
+
+import _createComponent from 'cssta/lib/web/createComponent';
+import prodcssta from 'cssta';
+
+
+_createComponent('div', null, {
+  'defaultClassName': 'A',
+  'classNameMap': {}
+});
+
+_createComponent('div', null, {
+  'defaultClassName': 'B',
+  'classNameMap': {}
+});
 "
 `;

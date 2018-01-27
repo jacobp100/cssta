@@ -18,17 +18,10 @@ const csstaConstructorExpressionTypes = {
 const getCsstaTypeForCallee = ({ types: t }, path, callee) => {
   if (!t.isIdentifier(callee)) return null;
 
-  const importScopePath = path.findParent(
-    _.has(["scope", "bindings", callee.name])
-  );
-  if (!importScopePath) return null;
-
-  const importSpecifier = _.get(
-    ["scope", "bindings", callee.name, "path"],
-    importScopePath
-  );
-  if (!importSpecifier || !t.isImportDefaultSpecifier(importSpecifier))
+  const importSpecifier = _.get("path", path.scope.getBinding(callee.name));
+  if (!importSpecifier || !t.isImportDefaultSpecifier(importSpecifier)) {
     return null;
+  }
 
   const importDeclaration = importSpecifier.findParent(t.isImportDeclaration);
   if (!importDeclaration) return null;

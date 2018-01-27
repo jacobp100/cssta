@@ -1,16 +1,11 @@
 const { createMacro } = require("babel-plugin-macros");
+const { addImport } = require("./util");
 
 module.exports = createMacro(arg => {
-  const path = arg.references.default[0];
-  path.node.name = "devcssta";
+  addImport(arg, "devcssta");
 
-  const t = arg.babel.types;
-  const identifier = t.identifier("devcssta");
-  const importDefaultSpecifier = t.importDefaultSpecifier(identifier);
-  const importDeclaration = t.importDeclaration(
-    [importDefaultSpecifier],
-    t.stringLiteral("cssta")
-  );
-  const program = path.findParent(p => p.isProgram());
-  program.unshiftContainer("body", importDeclaration);
+  /* eslint-disable no-param-reassign */
+  arg.references.default.forEach(path => {
+    path.node.name = "devcssta";
+  });
 });
