@@ -1543,7 +1543,7 @@ css-to-react-native@^1.0.6:
     fbjs "^0.8.5"
     nearley "^2.7.7"
 
-css-to-react-native@^2.0.0:
+css-to-react-native@^2.0.0, css-to-react-native@^2.0.4:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/css-to-react-native/-/css-to-react-native-2.0.4.tgz#cf4cc407558b3474d4ba8be1a2cd3b6ce713101b"
   dependencies:

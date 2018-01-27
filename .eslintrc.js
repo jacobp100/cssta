@@ -8,7 +8,7 @@ module.exports = {
   },
   overrides: [
     {
-      files: "packages/cssta/**/*.js",
+      files: "packages/cssta/src/**/*.js",
       rules: {
         "flowtype/require-valid-file-annotation": [2, "always"]
       }

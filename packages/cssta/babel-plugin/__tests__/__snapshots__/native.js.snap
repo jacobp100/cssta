@@ -1,0 +1,824 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Boolean attributes 1`] = `
+"import { StyleSheet as _StyleSheet } from 'react-native';
+import _createComponent from 'cssta/lib/native/createComponent';
+
+import { View } from 'react-native';
+
+var _csstaStyle = _StyleSheet.create({
+  0: {
+    'color': 'red'
+  }
+});
+
+const Component = _createComponent('button', ['booleanAttribute'], {
+  'transitionedProperties': [],
+  'keyframes': {},
+  'rules': [{
+    'validate': function (p) {
+      return !!p[\\"booleanAttribute\\"];
+    },
+    'transitions': {},
+    'animation': null,
+    'style': _csstaStyle[0]
+  }]
+});"
+`;
+
+exports[`CSS color function 1`] = `
+"import { StyleSheet as _StyleSheet } from 'react-native';
+import _createComponent from 'cssta/lib/native/createComponent';
+
+import { View } from 'react-native';
+
+var _csstaStyle = _StyleSheet.create({
+  0: {
+    'color': 'rgb(255, 128, 128)'
+  }
+});
+
+const Component = _createComponent(View, [], {
+  'transitionedProperties': [],
+  'keyframes': {},
+  'rules': [{
+    'validate': function (p) {
+      return true;
+    },
+    'transitions': {},
+    'animation': null,
+    'style': _csstaStyle[0]
+  }]
+});"
+`;
+
+exports[`CSS shorthands 1`] = `
+"import { StyleSheet as _StyleSheet } from 'react-native';
+import _createComponent from 'cssta/lib/native/createComponent';
+
+import { View } from 'react-native';
+
+var _csstaStyle = _StyleSheet.create({
+  0: {
+    'marginTop': 0,
+    'marginRight': 10,
+    'marginBottom': 0,
+    'marginLeft': 10,
+    'fontStyle': 'italic',
+    'fontWeight': 'bold',
+    'fontVariant': [],
+    'fontSize': 12,
+    'fontFamily': 'Helvetica',
+    'lineHeight': 18
+  }
+});
+
+const Component = _createComponent(View, [], {
+  'transitionedProperties': [],
+  'keyframes': {},
+  'rules': [{
+    'validate': function (p) {
+      return true;
+    },
+    'transitions': {},
+    'animation': null,
+    'style': _csstaStyle[0]
+  }]
+});"
+`;
+
+exports[`Compose component 1`] = `
+"import { StyleSheet as _StyleSheet } from 'react-native';
+import _createComponent from 'cssta/lib/native/createComponent';
+
+import Link from 'react-router';
+
+var _csstaStyle = _StyleSheet.create({
+  0: {
+    'color': 'red'
+  }
+});
+
+const Component = _createComponent(Link, [], {
+  'transitionedProperties': [],
+  'keyframes': {},
+  'rules': [{
+    'validate': function (p) {
+      return true;
+    },
+    'transitions': {},
+    'animation': null,
+    'style': _csstaStyle[0]
+  }]
+});"
+`;
+
+exports[`Create within closure 1`] = `
+"import { StyleSheet as _StyleSheet } from 'react-native';
+import _createComponent from 'cssta/lib/native/createComponent';
+
+import { View } from 'react-native';
+
+function test() {
+  var _csstaStyle = _StyleSheet.create({
+    0: {
+      'color': 'red'
+    }
+  });
+
+  return _createComponent(View, [], {
+    'transitionedProperties': [],
+    'keyframes': {},
+    'rules': [{
+      'validate': function (p) {
+        return true;
+      },
+      'transitions': {},
+      'animation': null,
+      'style': _csstaStyle[0]
+    }]
+  });
+}"
+`;
+
+exports[`Default 1`] = `
+"import { StyleSheet as _StyleSheet } from 'react-native';
+import _createComponent from 'cssta/lib/native/createComponent';
+
+import { View } from 'react-native';
+
+var _csstaStyle = _StyleSheet.create({
+  0: {
+    'color': 'red'
+  }
+});
+
+const Component = _createComponent(View, [], {
+  'transitionedProperties': [],
+  'keyframes': {},
+  'rules': [{
+    'validate': function (p) {
+      return true;
+    },
+    'transitions': {},
+    'animation': null,
+    'style': _csstaStyle[0]
+  }]
+});"
+`;
+
+exports[`Empty rules 1`] = `
+"
+import { View } from 'react-native';
+
+const Component = View;"
+`;
+
+exports[`Interpolation complex 1`] = `
+"import { transformStyleTuples as _transformStyleTuples } from 'cssta/lib/native/cssUtil';
+import _createComponent from 'cssta/lib/native/createComponent';
+
+import { View, StyleSheet } from 'react-native';
+
+const marginSmall = 10;
+const marginLarge = 10;
+
+var _csstaStyle = StyleSheet.create({
+  0: Object.assign({
+    'paddingTop': 10
+  }, _transformStyleTuples([['margin', \`\${marginLarge}px \${marginSmall}px\`]])),
+  1: Object.assign(_transformStyleTuples([['margin', \`\${marginLarge}px \${marginSmall}px\`]]), {
+    'paddingTop': 10
+  }),
+  2: Object.assign({
+    'paddingTop': 10
+  }, _transformStyleTuples([['margin', \`\${marginLarge}px \${marginSmall}px\`]]), {
+    'paddingBottom': 10
+  })
+});
+
+_createComponent(View, ['attr1', 'attr2', 'attr3'], {
+  'transitionedProperties': [],
+  'keyframes': {},
+  'rules': [{
+    'validate': function (p) {
+      return !!p[\\"attr1\\"];
+    },
+    'transitions': {},
+    'animation': null,
+    'style': _csstaStyle[0]
+  }, {
+    'validate': function (p) {
+      return !!p[\\"attr2\\"];
+    },
+    'transitions': {},
+    'animation': null,
+    'style': _csstaStyle[1]
+  }, {
+    'validate': function (p) {
+      return !!p[\\"attr3\\"];
+    },
+    'transitions': {},
+    'animation': null,
+    'style': _csstaStyle[2]
+  }]
+});"
+`;
+
+exports[`Interpolation in shorthand 1`] = `
+"import { StyleSheet as _StyleSheet } from 'react-native';
+import { transformStyleTuples as _transformStyleTuples } from 'cssta/lib/native/cssUtil';
+import _createComponent from 'cssta/lib/native/createComponent';
+
+import { View } from 'react-native';
+
+const font = '10px \\"Helvetica\\"';
+
+var _csstaStyle = _StyleSheet.create({
+  0: Object.assign({
+    'marginTop': 10
+  }, _transformStyleTuples([['font', \`\${font}\`]])),
+  1: Object.assign(_transformStyleTuples([['font', \`\${font}\`]]), {
+    'marginTop': 10
+  }),
+  2: Object.assign({
+    'marginTop': 10
+  }, _transformStyleTuples([['font', \`\${font}\`]]), {
+    'marginBottom': 10
+  })
+});
+
+_createComponent(View, ['attr1', 'attr2', 'attr3'], {
+  'transitionedProperties': [],
+  'keyframes': {},
+  'rules': [{
+    'validate': function (p) {
+      return !!p[\\"attr1\\"];
+    },
+    'transitions': {},
+    'animation': null,
+    'style': _csstaStyle[0]
+  }, {
+    'validate': function (p) {
+      return !!p[\\"attr2\\"];
+    },
+    'transitions': {},
+    'animation': null,
+    'style': _csstaStyle[1]
+  }, {
+    'validate': function (p) {
+      return !!p[\\"attr3\\"];
+    },
+    'transitions': {},
+    'animation': null,
+    'style': _csstaStyle[2]
+  }]
+});"
+`;
+
+exports[`Interpolation simple 1`] = `
+"import { StyleSheet as _StyleSheet } from 'react-native';
+import _createComponent from 'cssta/lib/native/createComponent';
+
+import { View } from 'react-native';
+
+const color = 'red';
+
+var _csstaStyle = _StyleSheet.create({
+  0: {
+    'marginTop': 10,
+    'color': String(color).trim()
+  },
+  1: {
+    'color': String(color).trim(),
+    'marginTop': 10
+  },
+  2: {
+    'marginTop': 10,
+    'color': String(color).trim(),
+    'marginBottom': 10
+  }
+});
+
+_createComponent(View, ['attr1', 'attr2', 'attr3'], {
+  'transitionedProperties': [],
+  'keyframes': {},
+  'rules': [{
+    'validate': function (p) {
+      return !!p[\\"attr1\\"];
+    },
+    'transitions': {},
+    'animation': null,
+    'style': _csstaStyle[0]
+  }, {
+    'validate': function (p) {
+      return !!p[\\"attr2\\"];
+    },
+    'transitions': {},
+    'animation': null,
+    'style': _csstaStyle[1]
+  }, {
+    'validate': function (p) {
+      return !!p[\\"attr3\\"];
+    },
+    'transitions': {},
+    'animation': null,
+    'style': _csstaStyle[2]
+  }]
+});"
+`;
+
+exports[`Interpolation with unit suffix 1`] = `
+"import { transformRawValue as _transformRawValue } from 'cssta/lib/native/cssUtil';
+import _createComponent from 'cssta/lib/native/createComponent';
+
+import { View, StyleSheet } from 'react-native';
+
+var _csstaStyle = StyleSheet.create({
+  0: {
+    'borderBottomWidth': _transformRawValue(\`\${StyleSheet.hairlineWidth}px\`)
+  }
+});
+
+_createComponent(View, [], {
+  'transitionedProperties': [],
+  'keyframes': {},
+  'rules': [{
+    'validate': function (p) {
+      return true;
+    },
+    'transitions': {},
+    'animation': null,
+    'style': _csstaStyle[0]
+  }]
+});"
+`;
+
+exports[`Keyframes 1`] = `
+"import { StyleSheet as _StyleSheet } from 'react-native';
+import _withEnhancers from 'cssta/lib/native/withEnhancers';
+import _Animation from 'cssta/lib/native/enhancers/Animation';
+
+import { View } from 'react-native';
+
+var _csstaStyle = _StyleSheet.create({
+  0: {
+    'color': 'red'
+  }
+});
+
+_withEnhancers([_Animation])(Animated.View, [], {
+  'transitionedProperties': [],
+  'keyframes': {
+    'test': [{
+      'time': 0,
+      'styles': {
+        'opacity': 0
+      }
+    }, {
+      'time': 0.5,
+      'styles': {
+        'opacity': 0.2
+      }
+    }, {
+      'time': 1,
+      'styles': {
+        'opacity': 1
+      }
+    }]
+  },
+  'rules': [{
+    'validate': function (p) {
+      return true;
+    },
+    'transitions': {},
+    'animation': ['test', '1s', 'linear'],
+    'style': _csstaStyle[0]
+  }]
+});"
+`;
+
+exports[`Keyframes with variables 1`] = `
+"import { StyleSheet as _StyleSheet } from 'react-native';
+import _withEnhancers from 'cssta/lib/native/withEnhancers';
+import _Animation from 'cssta/lib/native/enhancers/Animation';
+import _VariablesStyleSheetManager from 'cssta/lib/native/enhancers/VariablesStyleSheetManager';
+
+import { View } from 'react-native';
+
+var _csstaStyle = _StyleSheet.create({
+  0: {
+    'color': 'red'
+  }
+});
+
+_withEnhancers([_VariablesStyleSheetManager, _Animation])(Animated.View, [], {
+  'transitionedProperties': [],
+  'importedVariables': ['primary'],
+  'keyframesStyleTuples': {
+    'test': [{
+      'time': 0,
+      'styleTuples': [['color', 'rgba(0, 0, 0, 0)']]
+    }, {
+      'time': 1,
+      'styleTuples': [['color', 'var(--primary)']]
+    }]
+  },
+  'ruleTuples': [{
+    'validate': function (p) {
+      return true;
+    },
+    'transitions': {},
+    'animation': ['test', '1s', 'linear'],
+    'style': _csstaStyle[0]
+  }]
+});"
+`;
+
+exports[`Keyframes without variables 1`] = `
+"import _withEnhancers from 'cssta/lib/native/withEnhancers';
+import _Animation from 'cssta/lib/native/enhancers/Animation';
+import _VariablesStyleSheetManager from 'cssta/lib/native/enhancers/VariablesStyleSheetManager';
+
+import { View } from 'react-native';
+
+_withEnhancers([_VariablesStyleSheetManager, _Animation])(Animated.View, [], {
+  'transitionedProperties': [],
+  'importedVariables': ['primary'],
+  'keyframesStyleTuples': {
+    'test': [{
+      'time': 0,
+      'styles': {
+        'color': 'rgba(0, 0, 0, 0)'
+      }
+    }, {
+      'time': 1,
+      'styles': {
+        'rgba': 'rgba(0, 0, 0, 1)'
+      }
+    }]
+  },
+  'ruleTuples': [{
+    'validate': function (p) {
+      return true;
+    },
+    'exportedVariables': {},
+    'transitionParts': {},
+    'animationParts': ['test', '1s', 'linear'],
+    'styleTuples': [['color', 'var(--primary)']]
+  }]
+});"
+`;
+
+exports[`Multiple attributes 1`] = `
+"import { StyleSheet as _StyleSheet } from 'react-native';
+import _createComponent from 'cssta/lib/native/createComponent';
+
+import { View } from 'react-native';
+
+var _csstaStyle = _StyleSheet.create({
+  0: {
+    'color': 'red'
+  },
+  1: {
+    'color': 'green'
+  },
+  2: {
+    'color': 'blue'
+  },
+  3: {
+    'color': 'yellow'
+  }
+});
+
+const Component = _createComponent('button', ['booleanAttribute', 'stringAttribute'], {
+  'transitionedProperties': [],
+  'keyframes': {},
+  'rules': [{
+    'validate': function (p) {
+      return true;
+    },
+    'transitions': {},
+    'animation': null,
+    'style': _csstaStyle[0]
+  }, {
+    'validate': function (p) {
+      return !!p[\\"booleanAttribute\\"];
+    },
+    'transitions': {},
+    'animation': null,
+    'style': _csstaStyle[1]
+  }, {
+    'validate': function (p) {
+      return p[\\"stringAttribute\\"] === \\"1\\";
+    },
+    'transitions': {},
+    'animation': null,
+    'style': _csstaStyle[2]
+  }, {
+    'validate': function (p) {
+      return p[\\"stringAttribute\\"] === \\"2\\";
+    },
+    'transitions': {},
+    'animation': null,
+    'style': _csstaStyle[3]
+  }]
+});"
+`;
+
+exports[`String attributes 1`] = `
+"import { StyleSheet as _StyleSheet } from 'react-native';
+import _createComponent from 'cssta/lib/native/createComponent';
+
+import { View } from 'react-native';
+
+var _csstaStyle = _StyleSheet.create({
+  0: {
+    'color': 'red'
+  },
+  1: {
+    'color': 'blue'
+  }
+});
+
+const Component = _createComponent('button', ['stringAttribute'], {
+  'transitionedProperties': [],
+  'keyframes': {},
+  'rules': [{
+    'validate': function (p) {
+      return p[\\"stringAttribute\\"] === \\"1\\";
+    },
+    'transitions': {},
+    'animation': null,
+    'style': _csstaStyle[0]
+  }, {
+    'validate': function (p) {
+      return p[\\"stringAttribute\\"] === \\"2\\";
+    },
+    'transitions': {},
+    'animation': null,
+    'style': _csstaStyle[1]
+  }]
+});"
+`;
+
+exports[`Transitions 1`] = `
+"import { StyleSheet as _StyleSheet } from 'react-native';
+import _withEnhancers from 'cssta/lib/native/withEnhancers';
+import _Transition from 'cssta/lib/native/enhancers/Transition';
+
+import { View } from 'react-native';
+
+var _csstaStyle = _StyleSheet.create({
+  0: {
+    'color': 'red'
+  },
+  1: {
+    'color': 'blue'
+  }
+});
+
+_withEnhancers([_Transition])(Animated.View, ['boolAttr'], {
+  'transitionedProperties': ['color'],
+  'keyframes': {},
+  'rules': [{
+    'validate': function (p) {
+      return true;
+    },
+    'transitions': {
+      'color': ['1s', 'linear']
+    },
+    'animation': null,
+    'style': _csstaStyle[0]
+  }, {
+    'validate': function (p) {
+      return !!p[\\"boolAttr\\"];
+    },
+    'transitions': {},
+    'animation': null,
+    'style': _csstaStyle[1]
+  }]
+});"
+`;
+
+exports[`Transitions with shorthand 1`] = `
+"import { StyleSheet as _StyleSheet } from 'react-native';
+import _withEnhancers from 'cssta/lib/native/withEnhancers';
+import _Transition from 'cssta/lib/native/enhancers/Transition';
+
+import { View } from 'react-native';
+
+var _csstaStyle = _StyleSheet.create({
+  0: {
+    'backgroundColor': '#e74c3c',
+    'height': 20,
+    'marginBottom': 20,
+    'transform': [{
+      'rotate': '0deg'
+    }, {
+      'scaleX': 1
+    }]
+  },
+  1: {
+    'backgroundColor': '#1abc9c',
+    'transform': [{
+      'rotate': '6deg'
+    }, {
+      'scaleX': 0.5
+    }]
+  }
+});
+
+_withEnhancers([_Transition])(Animated.View, ['active'], {
+  'transitionedProperties': ['backgroundColor', 'transform'],
+  'keyframes': {},
+  'rules': [{
+    'validate': function (p) {
+      return true;
+    },
+    'transitions': {
+      'backgroundColor': ['0.5s', 'linear'],
+      'transform': ['0.75s', 'linear']
+    },
+    'animation': null,
+    'style': _csstaStyle[0]
+  }, {
+    'validate': function (p) {
+      return !!p[\\"active\\"];
+    },
+    'transitions': {},
+    'animation': null,
+    'style': _csstaStyle[1]
+  }]
+});"
+`;
+
+exports[`Transitions with variables 1`] = `
+"import { StyleSheet as _StyleSheet } from 'react-native';
+import _withEnhancers from 'cssta/lib/native/withEnhancers';
+import _Transition from 'cssta/lib/native/enhancers/Transition';
+import _VariablesStyleSheetManager from 'cssta/lib/native/enhancers/VariablesStyleSheetManager';
+
+import { View } from 'react-native';
+
+var _csstaStyle = _StyleSheet.create({
+  0: {
+    'color': 'var(--secondary)'
+  }
+});
+
+_withEnhancers([_VariablesStyleSheetManager, _Transition])(Animated.View, ['boolAttr'], {
+  'transitionedProperties': ['color'],
+  'importedVariables': ['primary', 'secondary'],
+  'keyframesStyleTuples': {},
+  'ruleTuples': [{
+    'validate': function (p) {
+      return true;
+    },
+    'exportedVariables': {},
+    'transitionParts': {
+      'color': ['1s', 'linear']
+    },
+    'animationParts': null,
+    'styleTuples': [['color', 'var(--primary)']]
+  }, {
+    'validate': function (p) {
+      return !!p[\\"boolAttr\\"];
+    },
+    'transitions': {},
+    'animation': null,
+    'style': _csstaStyle[0]
+  }]
+});"
+`;
+
+exports[`Variables 1`] = `
+"import _withEnhancers from 'cssta/lib/native/withEnhancers';
+import _VariablesStyleSheetManager from 'cssta/lib/native/enhancers/VariablesStyleSheetManager';
+
+import { View } from 'react-native';
+
+const Component = _withEnhancers([_VariablesStyleSheetManager])(View, [], {
+  'transitionedProperties': [],
+  'importedVariables': ['color'],
+  'keyframesStyleTuples': {},
+  'ruleTuples': [{
+    'validate': function (p) {
+      return true;
+    },
+    'exportedVariables': {
+      'color': 'red'
+    },
+    'transitionParts': {},
+    'animationParts': null,
+    'styleTuples': [['color', 'var(--color)']]
+  }]
+});"
+`;
+
+exports[`Variables CSS color function 1`] = `
+"import _withEnhancers from 'cssta/lib/native/withEnhancers';
+import _VariablesStyleSheetManager from 'cssta/lib/native/enhancers/VariablesStyleSheetManager';
+
+import { View } from 'react-native';
+
+const Component = _withEnhancers([_VariablesStyleSheetManager])(View, [], {
+  'transitionedProperties': [],
+  'importedVariables': ['red'],
+  'keyframesStyleTuples': {},
+  'ruleTuples': [{
+    'validate': function (p) {
+      return true;
+    },
+    'exportedVariables': {},
+    'transitionParts': {},
+    'animationParts': null,
+    'styleTuples': [['color', 'color(var(--red) l(+ 25%))']]
+  }]
+});"
+`;
+
+exports[`Variables export 1`] = `
+"import _withEnhancers from 'cssta/lib/native/withEnhancers';
+import _VariablesStyleSheetManager from 'cssta/lib/native/enhancers/VariablesStyleSheetManager';
+
+import { View } from 'react-native';
+
+const Component = _withEnhancers([_VariablesStyleSheetManager])(View, ['blue'], {
+  'transitionedProperties': [],
+  'importedVariables': [],
+  'keyframesStyleTuples': {},
+  'ruleTuples': [{
+    'validate': function (p) {
+      return true;
+    },
+    'exportedVariables': {
+      'color': 'red'
+    },
+    'transitionParts': {},
+    'animationParts': null,
+    'styleTuples': []
+  }, {
+    'validate': function (p) {
+      return !!p[\\"blue\\"];
+    },
+    'exportedVariables': {
+      'color': 'blue'
+    },
+    'transitionParts': {},
+    'animationParts': null,
+    'styleTuples': []
+  }]
+});"
+`;
+
+exports[`Variables import 1`] = `
+"import _withEnhancers from 'cssta/lib/native/withEnhancers';
+import _VariablesStyleSheetManager from 'cssta/lib/native/enhancers/VariablesStyleSheetManager';
+
+import { View } from 'react-native';
+
+const Component = _withEnhancers([_VariablesStyleSheetManager])(View, [], {
+  'transitionedProperties': [],
+  'importedVariables': ['color'],
+  'keyframesStyleTuples': {},
+  'ruleTuples': [{
+    'validate': function (p) {
+      return true;
+    },
+    'exportedVariables': {},
+    'transitionParts': {},
+    'animationParts': null,
+    'styleTuples': [['color', 'var(--color)']]
+  }]
+});"
+`;
+
+exports[`VariablesProvider 1`] = `
+"import { StyleSheet as _StyleSheet } from 'react-native';
+import _createComponent from 'cssta/lib/native/createComponent';
+import VariablesProvider from 'cssta/lib/native/VariablesProvider';
+
+import { View } from 'react-native';
+
+var _csstaStyle = _StyleSheet.create({
+  0: {
+    'color': 'red'
+  }
+});
+
+_createComponent(View, [], {
+  'transitionedProperties': [],
+  'keyframes': {},
+  'rules': [{
+    'validate': function (p) {
+      return true;
+    },
+    'transitions': {},
+    'animation': null,
+    'style': _csstaStyle[0]
+  }]
+});
+
+VariablesProvider;"
+`;

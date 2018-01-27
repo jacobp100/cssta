@@ -1,5 +1,0 @@
-{
-  "optimizations": [
-    ["singleSourceOfVariables", { "sourceFilename": "actual.js" }]
-  ]
-}
