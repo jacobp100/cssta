@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`macros 1. macros: 1. macros 1`] = `
+exports[`1. macros 1`] = `
 "
 import cssta from '../dev.macro'
 

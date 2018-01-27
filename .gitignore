@@ -67,10 +67,9 @@ android/app/libs
 # CUSTOM #
 ##########
 
-packages/cssta/lib
-packages/cssta/vendor
-packages/cssta/README.md
-packages/babel-plugin-cssta/README.md
+lib
+vendor
+README.md
 examples/cssta-demo/dist
 
 package-lock.json

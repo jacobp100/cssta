@@ -1,7 +1,7 @@
 const t = require("babel-types");
 const _ = require("lodash/fp");
 const { jsonToNode, getSubstitutionRegExp } = require("../../util");
-const { varRegExp } = require("cssta/lib/util");
+const { varRegExp } = require("../../../src/util");
 
 const getTemplateValues = cooked => ({
   cooked,

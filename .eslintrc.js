@@ -8,13 +8,13 @@ module.exports = {
   },
   overrides: [
     {
-      files: "packages/cssta/src/**/*.js",
+      files: "src/**/*.js",
       rules: {
         "flowtype/require-valid-file-annotation": [2, "always"]
       }
     },
     {
-      files: "packages/cssta/src/**/__tests__/*.js",
+      files: "**/__tests__/*.js",
       env: { jest: true },
       rules: {
         "flowtype/require-valid-file-annotation": [0]

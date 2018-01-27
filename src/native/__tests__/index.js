@@ -11,7 +11,7 @@ const runTest = csstaFactory => {
   expect(component.children).toEqual(null);
 };
 
-it("creates a component", () =>
+test("creates a component", () =>
   runTest(
     () =>
       cssta("dummy")`
@@ -19,21 +19,10 @@ it("creates a component", () =>
   `
   ));
 
-it("allows value interpolation", () =>
+test("allows value interpolation", () =>
   runTest(() => {
     const color = "red";
     return cssta("dummy")`
     color: ${color};
   `;
   }));
-
-it("allows rule interpolation", () =>
-  runTest(() => {
-    const rule = "color: red;";
-    return cssta("dummy")`
-    ${rule}
-  `;
-  }));
-
-it("allows non-template-literals", () =>
-  runTest(() => cssta("dummy")("color: red;")));
