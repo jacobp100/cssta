@@ -17,7 +17,7 @@ title: Cssta
 email: your-email@domain.com
 description: > # this means to ignore newlines until "baseurl:"
   Documentation for cssta
-baseurl: "" # the subpath of your site, e.g. /blog
+baseurl: "https://jacobp100.github.io/cssta/" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: jacobp100
 github_username:  jacobp100
