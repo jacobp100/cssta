@@ -3,7 +3,7 @@
 const selectorParser = require("postcss-selector-parser");
 const { transformAnimationNames } = require("postcss-transform-animations");
 const getRoot = require("../util/getRoot");
-const { isDirectChildOfKeyframes } = require("../util");
+const { isDirectChildOfKeyframes } = require("../util/cssAst");
 /*:: import type { Args } from './types' */
 
 /*::

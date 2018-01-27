@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-const { varRegExp } = require("../../src/util");
+const { varRegExp } = require("../../src/util/cssRegExp");
 const transformWeb = require("../platforms/web");
 const transformNative = require("../platforms/native");
 const {
@@ -18,8 +18,9 @@ const transformCsstaTypes = {
   native: transformNative
 };
 
-const transformCsstaCall = (path, state, target, stringArg) => {
-  const csstaReferenceParts = getCsstaReferences(path, target);
+// THIS
+const transformCsstaCall = (babel, path, state, target, stringArg) => {
+  const csstaReferenceParts = getCsstaReferences(babel, path, target);
   if (!csstaReferenceParts) return;
 
   const { callee, component, csstaType } = csstaReferenceParts;
@@ -28,7 +29,7 @@ const transformCsstaCall = (path, state, target, stringArg) => {
     ? interpolationTypes.ALLOW
     : interpolationTypes.DISALLOW;
 
-  const callParts = extractCsstaCallParts(stringArg, interpolationType);
+  const callParts = extractCsstaCallParts(babel, stringArg, interpolationType);
   if (!callParts) return;
 
   let { cssText, substitutionMap } = callParts; // eslint-disable-line
@@ -42,6 +43,7 @@ const transformCsstaCall = (path, state, target, stringArg) => {
   }
 
   transformCsstaTypes[csstaType](
+    babel,
     path,
     state,
     component,
@@ -53,15 +55,15 @@ const transformCsstaCall = (path, state, target, stringArg) => {
 };
 
 module.exports = {
-  CallExpression(path, state) {
+  CallExpression(babel, path, state) {
     const { node } = path;
     const { callee } = node;
     const [arg] = node.arguments;
-    transformCsstaCall(path, state, callee, arg);
+    transformCsstaCall(babel, path, state, callee, arg);
   },
-  TaggedTemplateExpression(path, state) {
+  TaggedTemplateExpression(babel, path, state) {
     const { quasi, tag } = path.node;
-    transformCsstaCall(path, state, tag, quasi);
+    transformCsstaCall(babel, path, state, tag, quasi);
   }
 };
 module.exports.resetGenerators = transformWeb.resetGenerators;

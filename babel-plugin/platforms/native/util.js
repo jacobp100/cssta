@@ -1,20 +1,27 @@
-const t = require("babel-types");
 const _ = require("lodash/fp");
+const { varRegExp } = require("../../../src/util/cssRegExp");
 const { jsonToNode, getSubstitutionRegExp } = require("../../util");
-const { varRegExp } = require("../../../src/util");
 
 const getTemplateValues = cooked => ({
   cooked,
   raw: JSON.stringify(cooked).slice(1, -1)
 });
-const jsonObjectProperties = _.flow(
-  _.toPairs,
-  _.map(([key, value]) =>
-    t.objectProperty(t.stringLiteral(key), jsonToNode(value))
+const jsonObjectProperties = _.curry((babel, object) =>
+  _.map(
+    ([key, value]) =>
+      babel.types.objectProperty(
+        babel.types.stringLiteral(key),
+        jsonToNode(babel, value)
+      ),
+    _.toPairs(object)
   )
 );
 
-const getStringWithSubstitutedValues = (substitutionMap, value) => {
+const getStringWithSubstitutedValues = (
+  { types: t },
+  substitutionMap,
+  value
+) => {
   /* Don't attempt to optimise `${value}`: it converts to a string and we need that */
   const allValues = !_.isEmpty(substitutionMap)
     ? _.chunk(2, value.split(getSubstitutionRegExp(substitutionMap)))

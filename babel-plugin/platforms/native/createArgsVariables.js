@@ -1,22 +1,21 @@
-const t = require("babel-types");
 const { jsonToNode } = require("../../util");
 const createKeyframes = require("./createKeyframes");
 const createStyleSheet = require("./createStyleSheet");
 const { commonArgs } = require("./createUtil");
 
-module.exports = (path, substitutionMap, args) =>
-  t.objectExpression([
-    ...commonArgs(args),
-    t.objectProperty(
-      t.stringLiteral("importedVariables"),
-      jsonToNode(args.importedVariables)
+module.exports = (babel, path, substitutionMap, args) =>
+  babel.types.objectExpression([
+    ...commonArgs(babel, args),
+    babel.types.objectProperty(
+      babel.types.stringLiteral("importedVariables"),
+      jsonToNode(babel, args.importedVariables)
     ),
-    t.objectProperty(
-      t.stringLiteral("keyframesStyleTuples"),
-      createKeyframes(path, substitutionMap, args.keyframesStyleTuples)
+    babel.types.objectProperty(
+      babel.types.stringLiteral("keyframesStyleTuples"),
+      createKeyframes(babel, path, substitutionMap, args.keyframesStyleTuples)
     ),
-    t.objectProperty(
-      t.stringLiteral("ruleTuples"),
-      createStyleSheet(path, substitutionMap, args.ruleTuples)
+    babel.types.objectProperty(
+      babel.types.stringLiteral("ruleTuples"),
+      createStyleSheet(babel, path, substitutionMap, args.ruleTuples)
     )
   ]);

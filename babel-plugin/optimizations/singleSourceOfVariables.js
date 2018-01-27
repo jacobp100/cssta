@@ -3,7 +3,7 @@ const { parse } = require("babylon");
 const { default: traverse } = require("babel-traverse");
 const _ = require("lodash/fp");
 const extractRules = require("../../src/native/extractRules"); // Is this really native-only?
-const resolveVariableDependencies = require("../../src/util/resolveVariableDependencies");
+const resolveVariableDependencies = require("../../src/native/enhancers/resolveVariableDependencies");
 const {
   getCsstaReferences,
   interpolationTypes,
@@ -11,11 +11,15 @@ const {
 } = require("../transformUtil/extractCsstaCallParts");
 const { containsSubstitution } = require("../util");
 
-const extractVariables = (path, target, stringArg) => {
-  const csstaReferenceParts = getCsstaReferences(path, target);
+const extractVariables = (babel, path, target, stringArg) => {
+  const csstaReferenceParts = getCsstaReferences(babel, path, target);
   if (!csstaReferenceParts) return null;
 
-  const callParts = extractCsstaCallParts(stringArg, interpolationTypes.ALLOW);
+  const callParts = extractCsstaCallParts(
+    babel,
+    stringArg,
+    interpolationTypes.ALLOW
+  );
   if (!callParts) return null;
 
   const { cssText, substitutionMap } = callParts;
@@ -53,13 +57,13 @@ const extractVariables = (path, target, stringArg) => {
   return exportedVariables;
 };
 
-module.exports = (filename, fileOpts) => {
+module.exports = (babel, filename, fileOpts) => {
   const source = fs.readFileSync(filename, "utf-8");
   const ast = parse(source, fileOpts);
 
   let exportedVariables = null;
   const doExtractVariables = (path, node, stringArg) => {
-    const newExportedVariables = extractVariables(path, node, stringArg);
+    const newExportedVariables = extractVariables(babel, path, node, stringArg);
     if (exportedVariables && newExportedVariables) {
       throw new Error(
         "When using singleSourceOfVariables, only one component can define variables"

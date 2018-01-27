@@ -1,5 +1,4 @@
 /* eslint-disable no-param-reassign */
-const t = require("babel-types");
 const _ = require("lodash/fp");
 const { getPropertyName } = require("css-to-react-native");
 const { transformStyleTuples } = require("../../../src/native/cssUtil");
@@ -47,6 +46,7 @@ const createStyleTupleGroups = _.curry((path, substitutionMap, styleTuples) =>
 );
 
 const createSimpleNoInterpolationStyleMap = (
+  babel,
   path,
   substitutionMap,
   styleTuplesGroup
@@ -63,17 +63,17 @@ const createSimpleNoInterpolationStyleMap = (
 
       if (!substitutionMatches) {
         const styles = transformStyleTuples([[propertyName, value]]);
-        const styleToValue = _.mapValues(jsonToNode, styles);
+        const styleToValue = _.mapValues(jsonToNode(babel), styles);
         return _.assign(accum, styleToValue);
       } else if (substitutionMatches.length === 1) {
         const substitutionNode =
           substitutionMatches[0] === value.trim()
             ? substitutionMap[value]
-            : getStringWithSubstitutedValues(substitutionMap, value);
+            : getStringWithSubstitutedValues(babel, substitutionMap, value);
 
         return _.set(
           propertyName,
-          simpleInterpolationMap[propertyName](path, substitutionNode),
+          simpleInterpolationMap[propertyName](babel, path, substitutionNode),
           accum
         );
       }
@@ -88,9 +88,11 @@ const createSimpleNoInterpolationStyleMap = (
 };
 
 const transformStyleTupleGroup = _.curry(
-  (path, substitutionMap, { styleTuplesGroup, interpolationType }) => {
+  (babel, path, substitutionMap, { styleTuplesGroup, interpolationType }) => {
+    const { types: t } = babel;
     if (interpolationType === SIMPLE_OR_NO_INTERPOLATION) {
       const styleMap = createSimpleNoInterpolationStyleMap(
+        babel,
         path,
         substitutionMap,
         styleTuplesGroup
@@ -104,6 +106,7 @@ const transformStyleTupleGroup = _.curry(
       );
     } else if (interpolationType === TEMPLATE_INTERPOLATION) {
       const cssToReactNativeReference = getOrCreateImportReference(
+        babel,
         path,
         "cssta/lib/native/cssUtil",
         "transformStyleTuples"
@@ -114,7 +117,7 @@ const transformStyleTupleGroup = _.curry(
           ([prop, value]) =>
             t.arrayExpression([
               t.stringLiteral(getPropertyName(prop)),
-              getStringWithSubstitutedValues(substitutionMap, value)
+              getStringWithSubstitutedValues(babel, substitutionMap, value)
             ]),
           styleTuplesGroup
         )
@@ -126,10 +129,11 @@ const transformStyleTupleGroup = _.curry(
   }
 );
 
-module.exports = _.curry((path, substitutionMap, styleTuples) => {
+module.exports = _.curry((babel, path, substitutionMap, styleTuples) => {
+  const { types: t } = babel;
   const transformedGroups = _.flow(
     createStyleTupleGroups(path, substitutionMap),
-    _.map(transformStyleTupleGroup(path, substitutionMap))
+    _.map(transformStyleTupleGroup(babel, path, substitutionMap))
   )(styleTuples);
 
   if (_.isEmpty(transformedGroups)) {

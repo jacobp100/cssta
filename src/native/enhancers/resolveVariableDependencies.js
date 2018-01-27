@@ -8,7 +8,7 @@ Make sure you don't import large libraries.
 */
 /* eslint-disable no-param-reassign */
 const { DepGraph } = require("dependency-graph");
-const { varRegExp, varRegExpNonGlobal } = require("./index");
+const { varRegExp, varRegExpNonGlobal } = require("../../util/cssRegExp");
 
 module.exports = (
   definedVariables /*: { [key:string]: string } */,

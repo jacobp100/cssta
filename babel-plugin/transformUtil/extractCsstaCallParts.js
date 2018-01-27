@@ -1,4 +1,3 @@
-const t = require("babel-types");
 const _ = require("lodash/fp");
 const { csstaModules } = require("../util");
 
@@ -9,14 +8,14 @@ const interpolationTypes = {
 };
 
 const csstaConstructorExpressionTypes = {
-  CallExpression: node => [node.callee, node.arguments[0]],
-  MemberExpression: node => [
+  CallExpression: (babel, node) => [node.callee, node.arguments[0]],
+  MemberExpression: ({ types: t }, node) => [
     node.object,
     node.computed ? node.property : t.stringLiteral(node.property.name)
   ]
 };
 
-const getCsstaTypeForCallee = (path, callee) => {
+const getCsstaTypeForCallee = ({ types: t }, path, callee) => {
   if (!t.isIdentifier(callee)) return null;
 
   const importScopePath = path.findParent(
@@ -41,12 +40,15 @@ const getCsstaTypeForCallee = (path, callee) => {
   return { csstaType, importDeclaration };
 };
 
-module.exports.getCsstaReferences = (path, node) => {
+module.exports.getCsstaReferences = (babel, path, node) => {
   if (!(node.type in csstaConstructorExpressionTypes)) return null;
 
-  const [callee, component] = csstaConstructorExpressionTypes[node.type](node);
+  const [callee, component] = csstaConstructorExpressionTypes[node.type](
+    babel,
+    node
+  );
 
-  const csstaTypeParts = getCsstaTypeForCallee(path, callee);
+  const csstaTypeParts = getCsstaTypeForCallee(babel, path, callee);
   if (!csstaTypeParts) return null;
 
   const { csstaType, importBinding } = csstaTypeParts;
@@ -55,7 +57,11 @@ module.exports.getCsstaReferences = (path, node) => {
 };
 
 module.exports.interpolationTypes = interpolationTypes;
-module.exports.extractCsstaCallParts = (stringArg, interpolationType) => {
+module.exports.extractCsstaCallParts = (
+  { types: t },
+  stringArg,
+  interpolationType
+) => {
   if (!t.isTemplateLiteral(stringArg) && !t.isStringLiteral(stringArg))
     return null;
 

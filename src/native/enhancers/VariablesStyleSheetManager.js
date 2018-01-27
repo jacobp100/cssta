@@ -13,7 +13,7 @@ const { StyleSheet } = require("react-native");
 /* eslint-enable */
 const VariablesProvider = require("../VariablesProvider");
 const { getAppliedRules } = require("../util");
-const resolveVariableDependencies = require("../../util/resolveVariableDependencies");
+const resolveVariableDependencies = require("./resolveVariableDependencies");
 const { transformStyleTuples } = require("../cssUtil");
 const transformVariables = require("../../css-transforms/variables");
 const { mapValues } = require("../../util");

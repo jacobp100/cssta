@@ -8,8 +8,6 @@ Make sure you don't import large libraries.
 */
 /* eslint-disable no-param-reassign, no-restricted-syntax */
 
-const keyframesRegExp = /keyframes$/i;
-
 module.exports.shallowEqual = (
   tom /*: Object */,
   jerry /*: Object */
@@ -26,14 +24,6 @@ module.exports.shallowEqual = (
 
   return true;
 };
-
-module.exports.keyframesRegExp = keyframesRegExp;
-module.exports.isDirectChildOfKeyframes = (node /*: Object */) /*: boolean */ =>
-  node.parent &&
-  node.parent.type === "atrule" &&
-  keyframesRegExp.test(node.parent.name);
-module.exports.varRegExp = /var\s*\(\s*--([_a-z0-9-]+)\s*(?:,\s*([^)]+))?\)/gi;
-module.exports.varRegExpNonGlobal = /var\s*\(\s*--([_a-z0-9-]+)\s*(?:,\s*([^)]+))?\)/i;
 
 module.exports.mapValues = (
   iteratee /*: (value: any) => any */,

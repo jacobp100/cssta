@@ -1,5 +1,4 @@
 const _ = require("lodash/fp");
-const t = require("babel-types");
 const { jsonToNode } = require("../../util");
 const createStyleBody = require("./createStyleBody");
 const { styleTupleHasVariable } = require("./util");
@@ -9,32 +8,35 @@ const keyframeStyleTupleHasVariables = _.flow(
   _.some(styleTupleHasVariable)
 );
 
-const createKeyframeStatic = _.curry((path, substitutionMap, keyframe) =>
-  t.objectExpression([
-    t.objectProperty(t.stringLiteral("time"), t.numericLiteral(keyframe.time)),
-    t.objectProperty(
-      t.stringLiteral("styles"),
-      createStyleBody(path, substitutionMap, keyframe.styleTuples)
+const createKeyframeStatic = _.curry((babel, path, substitutionMap, keyframe) =>
+  babel.types.objectExpression([
+    babel.types.objectProperty(
+      babel.types.stringLiteral("time"),
+      babel.types.numericLiteral(keyframe.time)
+    ),
+    babel.types.objectProperty(
+      babel.types.stringLiteral("styles"),
+      createStyleBody(babel, path, substitutionMap, keyframe.styleTuples)
     )
   ])
 );
 
 const convertKeyframeStyleTuple = _.curry(
-  (path, substitutionMap, keyframes) =>
+  (babel, path, substitutionMap, keyframes) =>
     _.some(keyframeStyleTupleHasVariables, keyframes)
-      ? jsonToNode(keyframes)
-      : t.arrayExpression(
-          _.map(createKeyframeStatic(path, substitutionMap), keyframes)
+      ? jsonToNode(babel, keyframes)
+      : babel.types.arrayExpression(
+          _.map(createKeyframeStatic(babel, path, substitutionMap), keyframes)
         )
 );
 
-module.exports = (path, substitutionMap, keyframesStyleTuples) =>
-  t.objectExpression(
+module.exports = (babel, path, substitutionMap, keyframesStyleTuples) =>
+  babel.types.objectExpression(
     _.map(
       ([keyframeName, keyframes]) =>
-        t.objectProperty(
-          t.stringLiteral(keyframeName),
-          convertKeyframeStyleTuple(path, substitutionMap, keyframes)
+        babel.types.objectProperty(
+          babel.types.stringLiteral(keyframeName),
+          convertKeyframeStyleTuple(babel, path, substitutionMap, keyframes)
         ),
       _.toPairs(keyframesStyleTuples)
     )

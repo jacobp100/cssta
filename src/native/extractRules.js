@@ -2,11 +2,8 @@
 /* eslint-disable no-param-reassign */
 const { getPropertyName } = require("css-to-react-native");
 const getRoot = require("../util/getRoot");
-const {
-  varRegExp,
-  varRegExpNonGlobal,
-  isDirectChildOfKeyframes
-} = require("../util");
+const { varRegExp, varRegExpNonGlobal } = require("../util/cssRegExp");
+const { isDirectChildOfKeyframes } = require("../util/cssAst");
 /*:: import type { RawVariableArgs, RawVariableRuleTuple } from './types' */
 
 const variableRegExp = /^--/;

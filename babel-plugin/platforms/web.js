@@ -1,5 +1,4 @@
 /* eslint-disable no-param-reassign, no-restricted-syntax, no-template-curly-in-string */
-const t = require("babel-types");
 const _ = require("lodash/fp");
 const cssNameGenerator = require("css-class-generator");
 const extractRules = require("../../src/web/extractRules");
@@ -27,7 +26,9 @@ const resetGenerators = () => {
 
 resetGenerators();
 
-module.exports = (path, state, component, cssText, substititionMap) => {
+module.exports = (babel, path, state, component, cssText, substititionMap) => {
+  const { types: t } = babel;
+
   if (!_.isEmpty(substititionMap)) {
     throw new Error(
       "You cannot use interpolation in template strings (i.e. `color: ${primary}`)"
@@ -56,6 +57,7 @@ module.exports = (path, state, component, cssText, substititionMap) => {
     currentWebCss = `${cssBefore}\n${output}\n${commentEndMarker}`;
 
     const createComponent = getOrCreateImportReference(
+      babel,
       path,
       "cssta/lib/web/createComponent",
       "default"
@@ -64,7 +66,7 @@ module.exports = (path, state, component, cssText, substititionMap) => {
     newElement = t.callExpression(createComponent, [
       component,
       t.nullLiteral(), // Gets replaced with Object.keys(classNameMap)
-      jsonToNode(args)
+      jsonToNode(babel, args)
     ]);
   } else {
     currentWebCss = `${commentStartMarker}${cssText}\n${commentEndMarker}${currentWebCss}`;

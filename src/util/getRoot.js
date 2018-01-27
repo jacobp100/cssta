@@ -2,7 +2,7 @@
 /* eslint-disable no-param-reassign */
 const postcss = require("../../vendor/postcss");
 const selectorParser = require("postcss-selector-parser");
-const { keyframesRegExp, isDirectChildOfKeyframes } = require("./index");
+const { keyframesRegExp, isDirectChildOfKeyframes } = require("./cssAst");
 
 // Don't use root.each, because when we remove nodes, we'll skip them
 const iterateChildren = (root, callback) => {

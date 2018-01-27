@@ -1,7 +1,6 @@
 /* eslint-disable no-param-reassign */
-const t = require("babel-types");
 const _ = require("lodash/fp");
-const resolveVariableDependencies = require("../../../src/util/resolveVariableDependencies");
+const resolveVariableDependencies = require("../../../src/native/enhancers/resolveVariableDependencies");
 const extractRules = require("../../../src/native/extractRules");
 const { getOrCreateImportReference, jsonToNode } = require("../../util");
 const createArgsStatic = require("./createArgsStatic");
@@ -14,7 +13,8 @@ const argsIsEmpty = _.flow(
   everyIsEmpty
 );
 
-module.exports = (path, state, component, cssText, substitutionMap) => {
+module.exports = (babel, path, state, component, cssText, substitutionMap) => {
+  const { types: t } = babel;
   const { singleSourceOfVariables } = state;
   // eslint-disable-next-line
   let { propTypes, args } = extractRules(cssText);
@@ -72,6 +72,7 @@ module.exports = (path, state, component, cssText, substitutionMap) => {
   const addEnhancer = enhancer =>
     enhancers.push(
       getOrCreateImportReference(
+        babel,
         path,
         `${enhancersRoot}/${enhancer}`,
         "default"
@@ -85,6 +86,7 @@ module.exports = (path, state, component, cssText, substitutionMap) => {
   let componentConstructor;
   if (_.isEmpty(enhancers)) {
     const createComponent = getOrCreateImportReference(
+      babel,
       path,
       `${componentRoot}/createComponent`,
       "default"
@@ -92,6 +94,7 @@ module.exports = (path, state, component, cssText, substitutionMap) => {
     componentConstructor = createComponent;
   } else {
     const withEnhancers = getOrCreateImportReference(
+      babel,
       path,
       `${componentRoot}/withEnhancers`,
       "default"
@@ -102,12 +105,12 @@ module.exports = (path, state, component, cssText, substitutionMap) => {
   }
 
   const argsNode = hasVariables
-    ? createArgsVariables(path, substitutionMap, args)
-    : createArgsStatic(path, substitutionMap, args);
+    ? createArgsVariables(babel, path, substitutionMap, args)
+    : createArgsStatic(babel, path, substitutionMap, args);
 
   const newElement = t.callExpression(componentConstructor, [
     component,
-    jsonToNode(Object.keys(propTypes)),
+    jsonToNode(babel, Object.keys(propTypes)),
     argsNode
   ]);
 

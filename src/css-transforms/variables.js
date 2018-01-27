@@ -6,7 +6,7 @@ This file could be included even after running the babel plugin.
 
 Make sure you don't import large libraries.
 */
-const { varRegExp } = require("../util");
+const { varRegExp } = require("../util/cssRegExp");
 
 module.exports = (
   value /*: string */,

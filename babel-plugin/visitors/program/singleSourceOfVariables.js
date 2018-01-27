@@ -3,7 +3,7 @@ const p = require("path");
 const singleSourceOfVariables = require("../../optimizations/singleSourceOfVariables");
 const { getOptimisationOpts } = require("../../util");
 
-module.exports = (path, state) => {
+module.exports = (babel, path, state) => {
   const singleSourceVariableOpts = !state.singleSourceOfVariables
     ? getOptimisationOpts(state, "singleSourceOfVariables")
     : null;
@@ -20,6 +20,7 @@ module.exports = (path, state) => {
       singleSourceVariableOpts.sourceFilename
     );
     const exportedVariables = singleSourceOfVariables(
+      babel,
       fileContainingVariables,
       state.file.opts
     );

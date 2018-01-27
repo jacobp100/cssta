@@ -1,5 +1,4 @@
 /* eslint-disable no-param-reassign */
-const t = require("babel-types");
 const _ = require("lodash/fp");
 const { getPropertyName } = require("css-to-react-native");
 const { getOrCreateImportReference } = require("../../util");
@@ -12,32 +11,34 @@ const {
 } = require("./util");
 const createStyleBody = require("./createStyleBody");
 
-const createStyleTuples = (substitutionMap, { styleTuples }) =>
-  t.arrayExpression(
+const createStyleTuples = (babel, substitutionMap, { styleTuples }) =>
+  babel.types.arrayExpression(
     _.map(
       ([prop, value]) =>
-        t.arrayExpression([
-          t.stringLiteral(getPropertyName(prop)),
-          getStringWithSubstitutedValues(substitutionMap, value)
+        babel.types.arrayExpression([
+          babel.types.stringLiteral(getPropertyName(prop)),
+          getStringWithSubstitutedValues(babel, substitutionMap, value)
         ]),
       styleTuples
     )
   );
 
-const variableRuleGenerator = (path, substitutionMap) => rule =>
-  t.objectExpression([
-    ...baseRuleElements(rule),
+const variableRuleGenerator = (babel, path, substitutionMap) => rule =>
+  babel.types.objectExpression([
+    ...baseRuleElements(babel, rule),
     ..._.flow(
       _.pick(["exportedVariables", "transitionParts", "animationParts"]),
-      jsonObjectProperties
+      jsonObjectProperties(babel)
     )(rule),
-    t.objectProperty(
-      t.stringLiteral("styleTuples"),
-      createStyleTuples(substitutionMap, rule)
+    babel.types.objectProperty(
+      babel.types.stringLiteral("styleTuples"),
+      createStyleTuples(babel, substitutionMap, rule)
     )
   ]);
 
-const staticRuleGenerator = (path, substitutionMap) => {
+const staticRuleGenerator = (babel, path, substitutionMap) => {
+  const { types: t } = babel;
+
   let i = 0;
   const getStyleSheetReference = () => {
     const value = i;
@@ -59,6 +60,7 @@ const staticRuleGenerator = (path, substitutionMap) => {
     existingRuleBases.push(ruleBase);
 
     const reactNativeStyleSheetRef = getOrCreateImportReference(
+      babel,
       path,
       "react-native",
       "StyleSheet"
@@ -91,6 +93,7 @@ const staticRuleGenerator = (path, substitutionMap) => {
 
   return rule => {
     const styleBody = createStyleBody(
+      babel,
       statementPath,
       substitutionMap,
       rule.styleTuples
@@ -104,8 +107,8 @@ const staticRuleGenerator = (path, substitutionMap) => {
     addStyle(ruleBase);
 
     const ruleBody = t.objectExpression([
-      ...baseRuleElements(ruleBase),
-      ...jsonObjectProperties({
+      ...baseRuleElements(babel, ruleBase),
+      ...jsonObjectProperties(babel, {
         transitions: ruleBase.transitionParts,
         animation: ruleBase.animationParts
       }),
@@ -135,9 +138,14 @@ const ruleIsStatic = _.conforms({
   animationParts: styleIsStatic
 });
 
-module.exports = (path, substitutionMap, rules) => {
-  const createStaticRule = staticRuleGenerator(path, substitutionMap);
-  const createVariableRule = variableRuleGenerator(path, substitutionMap);
+module.exports = (babel, path, substitutionMap, rules) => {
+  const { types: t } = babel;
+  const createStaticRule = staticRuleGenerator(babel, path, substitutionMap);
+  const createVariableRule = variableRuleGenerator(
+    babel,
+    path,
+    substitutionMap
+  );
 
   return t.arrayExpression(
     _.map(

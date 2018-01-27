@@ -5,26 +5,27 @@ const removeUnusedCsstaImports = require("./visitors/program/removeUnusedCsstaIm
 const redirectImports = require("./visitors/importSpecifier/redirectImports");
 const csstaCall = require("./visitors/csstaCall");
 
-module.exports = () => ({
+module.exports = babel => ({
+  name: "cssta",
   visitor: {
     Program: {
       enter(path, state) {
-        singleSourceOfVariables(path, state);
+        singleSourceOfVariables(babel, path, state);
         programWeb.enter(path, state);
       },
       exit(path, state) {
         programWeb.exit(path, state);
-        removeUnusedCsstaImports(path, state);
+        removeUnusedCsstaImports(babel, path, state);
       }
     },
     ImportSpecifier(path, state) {
-      redirectImports(path, state);
+      redirectImports(babel, path, state);
     },
     CallExpression(path, state) {
-      csstaCall.CallExpression(path, state);
+      csstaCall.CallExpression(babel, path, state);
     },
     TaggedTemplateExpression(path, state) {
-      csstaCall.TaggedTemplateExpression(path, state);
+      csstaCall.TaggedTemplateExpression(babel, path, state);
     }
   }
 });

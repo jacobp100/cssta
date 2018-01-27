@@ -1,23 +1,23 @@
 /* eslint-disable no-param-reassign */
-const t = require("babel-types");
 const _ = require("lodash/fp");
 
-const jsonToNode = object => {
+const jsonToNode = _.curry((babel, object) => {
+  const { types: t } = babel;
   if (typeof object === "string") {
     return t.stringLiteral(object);
   } else if (typeof object === "number") {
     return t.numericLiteral(object);
   } else if (Array.isArray(object)) {
-    return t.arrayExpression(object.map(jsonToNode));
+    return t.arrayExpression(object.map(jsonToNode(babel)));
   } else if (object === null) {
     return t.nullLiteral();
   }
   return t.objectExpression(
     Object.keys(object).map(key =>
-      t.objectProperty(t.stringLiteral(key), jsonToNode(object[key]))
+      t.objectProperty(t.stringLiteral(key), jsonToNode(babel, object[key]))
     )
   );
-};
+});
 module.exports.jsonToNode = jsonToNode;
 
 module.exports.csstaModules = {
@@ -26,7 +26,7 @@ module.exports.csstaModules = {
   "cssta/native": "native"
 };
 
-const getImportReferences = (path, moduleName, importedName) => {
+const getImportReferences = ({ types: t }, path, moduleName, importedName) => {
   const allBindings = _.values(path.scope.bindings);
   const allImportBindings =
     importedName === "default"
@@ -51,11 +51,18 @@ module.exports.getImportReferences = getImportReferences;
 const getImportReference = _.flow(getImportReferences, _.first);
 module.exports.getImportReference = getImportReference;
 module.exports.getOrCreateImportReference = (
+  babel,
   path,
   moduleName,
   importedName
 ) => {
-  const existingReference = getImportReference(path, moduleName, importedName);
+  const { types: t } = babel;
+  const existingReference = getImportReference(
+    babel,
+    path,
+    moduleName,
+    importedName
+  );
   if (existingReference) return existingReference.path.node.local;
 
   let reference;

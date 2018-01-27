@@ -1,5 +1,4 @@
 /* eslint-disable no-param-reassign */
-const t = require("babel-types");
 const _ = require("lodash/fp");
 
 const redirectImports = {
@@ -8,7 +7,7 @@ const redirectImports = {
   }
 };
 
-module.exports = path => {
+module.exports = ({ types: t }, path) => {
   const importName = path.node.imported.name;
   const importDeclaration = path.findParent(t.isImportDeclaration);
   const moduleName = importDeclaration.node.source.value;

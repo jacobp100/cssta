@@ -1,27 +1,27 @@
 /* eslint-disable no-param-reassign */
-const t = require("babel-types");
 const { getOrCreateImportReference } = require("../../util");
 
-const convertValue = transform => (path, value) =>
+const convertValue = transform => ({ types: t }, path, value) =>
   t.callExpression(t.identifier(transform), [value]);
 
-const stringInterpolation = (path, value) =>
-  t.callExpression(
-    t.memberExpression(
-      convertValue("String")(path, value),
-      t.identifier("trim")
+const stringInterpolation = (babel, path, value) =>
+  babel.types.callExpression(
+    babel.types.memberExpression(
+      convertValue("String")(babel, path, value),
+      babel.types.identifier("trim")
     ),
     []
   );
 
-const lengthInterpolation = (path, value) => {
+const lengthInterpolation = (babel, path, value) => {
   const transformRawValue = getOrCreateImportReference(
+    babel,
     path,
     "cssta/lib/native/cssUtil",
     "transformRawValue"
   );
 
-  return t.callExpression(transformRawValue, [value]);
+  return babel.types.callExpression(transformRawValue, [value]);
 };
 
 const numberInterpolation = convertValue("Number");
