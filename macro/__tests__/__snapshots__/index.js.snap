@@ -14,14 +14,14 @@ cssta('div')\`
 
       ↓ ↓ ↓ ↓ ↓ ↓
 
-import devcssta from 'cssta';
+import __devcssta_web__ from 'cssta';
 
 
-devcssta('div')\`
+__devcssta_web__('div')\`
   color: red;
 \`;
 
-devcssta('div')\`
+__devcssta_web__('div')\`
   color: blue;
 \`;
 "
@@ -42,7 +42,6 @@ cssta('div')\`
       ↓ ↓ ↓ ↓ ↓ ↓
 
 import _createComponent from 'cssta/lib/web/createComponent';
-import prodcssta from 'cssta';
 
 
 _createComponent('div', null, {

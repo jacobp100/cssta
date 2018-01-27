@@ -18,7 +18,6 @@ const transformCsstaTypes = {
   native: transformNative
 };
 
-// THIS
 const transformCsstaCall = (babel, path, state, target, stringArg) => {
   const csstaReferenceParts = getCsstaReferences(babel, path, target);
   if (!csstaReferenceParts) return;

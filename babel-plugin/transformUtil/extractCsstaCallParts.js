@@ -30,7 +30,7 @@ const getCsstaTypeForCallee = ({ types: t }, path, callee) => {
   const csstaType = csstaModules[source];
   if (!csstaType) return null;
 
-  return { csstaType, importDeclaration };
+  return csstaType;
 };
 
 module.exports.getCsstaReferences = (babel, path, node) => {
@@ -41,12 +41,10 @@ module.exports.getCsstaReferences = (babel, path, node) => {
     node
   );
 
-  const csstaTypeParts = getCsstaTypeForCallee(babel, path, callee);
-  if (!csstaTypeParts) return null;
+  const csstaType = getCsstaTypeForCallee(babel, path, callee);
+  if (csstaType == null) return null;
 
-  const { csstaType, importBinding } = csstaTypeParts;
-
-  return { callee, importBinding, component, csstaType };
+  return { callee, component, csstaType };
 };
 
 module.exports.interpolationTypes = interpolationTypes;

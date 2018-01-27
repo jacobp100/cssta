@@ -23,7 +23,10 @@ module.exports.jsonToNode = jsonToNode;
 module.exports.csstaModules = {
   cssta: "web",
   "cssta/web": "web",
-  "cssta/native": "native"
+  "cssta/native": "native",
+  "cssta/macro": "web",
+  // Used in tests
+  "../prod.macro": "web"
 };
 
 const getImportReferences = ({ types: t }, path, moduleName, importedName) => {
