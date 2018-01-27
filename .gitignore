@@ -69,7 +69,6 @@ android/app/libs
 
 lib
 vendor
-README.md
 examples/cssta-demo/dist
 
 package-lock.json
