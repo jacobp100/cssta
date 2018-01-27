@@ -9,15 +9,15 @@ permalink: /native
 For React Native, you need to import `cssta/native`, and unlike the web version, there’s no `cssta.View` syntax. Other than that, it works as normal.
 
 ```jsx
-import { cssta } from 'cssta/native'
-import { Text } from 'react-native'
+import { cssta } from "cssta/native";
+import { Text } from "react-native";
 
 const StyledView = cssta(Text)`
   color: red;
-`
+`;
 ```
 
-You’ll still want to run your code through the babel plugin, as we do a lot of optimisations. See [Production Builds]({{ site.github.url }}/production-builds#-native) for how to do this.
+You’ll still want to run your code through the babel plugin, as we do a lot of optimisations. See [Production Builds]({{ site.baseurl }}/production-builds#-native) for how to do this.
 
 ## 📝 CSS Support
 
@@ -38,7 +38,7 @@ font: bold italic 12px/18px "Helvetica";
 And support for more complicated attributes.
 
 ```css
-shadow-offset: 10px 5px;  /* { width: 10, height: 5 } */
+shadow-offset: 10px 5px; /* { width: 10, height: 5 } */
 font-variant: small-caps; /* ['small-caps'] */
 transform: scale(3) rotate(30deg); /* [{ scale: 3 }, { rotate: '30deg' }] */
 ```
@@ -62,7 +62,7 @@ cssta(Text)`
   &:matches([@color="red"], [@color="blue"]) { ... }
 
   &:not([@allowOverflow]) { ... }
-`
+`;
 ```
 
 Cssta for React Native does not use specificity: rules get applied in the order defined.
@@ -92,7 +92,7 @@ const ButtonWithTransition = cssta(Animated.View)`
     background-color: gray;
     color: light-gray;
   }
-`
+`;
 
 const ButtonWithKeyframes = cssta(Animated.View)`
   animation: fade-in 1s ease-in;
@@ -101,7 +101,7 @@ const ButtonWithKeyframes = cssta(Animated.View)`
       0% { opacity: 0; }
     100% { opacity: 1; }
   }
-`
+`;
 ```
 
 You can even use CSS custom properties!
@@ -110,7 +110,7 @@ You can even use CSS custom properties!
 const ButtonWithVariablesTransition = cssta(Animated.View)`
   color: var(--primary);
   transition: color 1s;
-`
+`;
 ```
 
 Check the [React Native documentation](https://facebook.github.io/react-native/docs/animations.html) for what you can and can’t animate.

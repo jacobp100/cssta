@@ -3,11 +3,11 @@ title: Introduction
 layout: page
 ---
 
-# [🌞 Cssta]({{ site.github.url }})
+# [🌞 Cssta]({{ site.baseurl }})
 
 Cssta is a way to co-locate your CSS with your React components, and lets you define components using isolated units of style.
 
-It is available both for [React for web 🌍]({{ site.github.url }}/web) and [React Native 📱]({{ site.github.url }}/native). For web, it generates **real CSS files** with **<1kb JS overhead**.
+It is available both for [React for web 🌍]({{ site.baseurl }}/web) and [React Native 📱]({{ site.baseurl }}/native). For web, it generates **real CSS files** with **<1kb JS overhead**.
 
 There’s also a tonne of stuff for React Native, including CSS transitions and CSS custom properties.
 
@@ -146,7 +146,7 @@ const Example = (
 );
 ```
 
-There’s a few extra examples in [theming]({{ site.github.url }}/theming).
+There’s a few extra examples in [theming]({{ site.baseurl }}/theming).
 
 ## 🖌 Overriding Styles
 
