@@ -1,18 +1,87 @@
 {
-  "private": true,
+  "name": "cssta",
+  "version": "0.8.0",
+  "description": "",
+  "main": "index.js",
   "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "flow": "flow; test $? -eq 0 -o $? -eq 2",
+    "lint": "eslint ./src/**/*.js",
+    "clean": "npm run clean:lib; npm run clean:vendor",
+    "clean:lib": "rm -rf ./lib || :;",
+    "clean:vendor": "rm -rf ./vendor || :;",
+    "build": "npm run clean; npm run build:lib; npm run build:vendor",
+    "build:lib": "babel ./src --out-dir ./lib --ignore __tests__,__mocks__",
+    "build:vendor": "webpack --config ./webpack.config.js",
+    "prepublish": "npm run build; cp ../../docs/index.md README.md",
     "readme":
-      "cp ./docs/index.md ./README.md; sed -i -e 's%{{ site.github.url }}%https://jacobp100.github.io/cssta%g' ./README.md; sed -i -e 's/{% raw %}//g' ./README.md; sed -i -e 's/{% endraw %}//g' ./README.md; sed -i -e '1,5d' ./README.md; rm ./README.md-e",
-    "lint": "eslint './packages/*/src/**/*.js'",
-    "prettier": "prettier --write './packages/*/src/**/*.js'"
+      "cp ./docs/index.md ./README.md; sed -i -e 's%{{ site.baseurl }}%https://jacobp100.github.io/cssta%g' ./README.md; sed -i -e 's/{% raw %}//g' ./README.md; sed -i -e 's/{% endraw %}//g' ./README.md; sed -i -e '1,5d' ./README.md; rm ./README.md-e",
+    "lint": "eslint './packages/{src,babel-plugin,macros}/src/**/*.js'",
+    "prettier": "prettier --write './{src,babel-plugin,macros}/**/*.js'"
+  },
+  "keywords": [
+    "postcss",
+    "modules",
+    "css-modules",
+    "css",
+    "minify",
+    "min",
+    "class",
+    "className",
+    "react",
+    "css-in-js"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jacobp100/cssta"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "babel-plugin-macros": "^2.0.1",
+    "babel-traverse": "^6.26.0",
+    "babel-types": "^6.26.0",
+    "babylon": "^6.18.0",
+    "css-class-generator": "^1.0.1",
+    "css-color-function": "^1.3.0",
+    "css-to-react-native": "^2.0.4",
+    "dependency-graph": "^0.5.0",
+    "events": "^1.1.1",
+    "fbjs": "^0.8.14",
+    "lodash": "^4.17.4",
+    "mkdirp": "^0.5.1",
+    "postcss": "^5.2.6",
+    "postcss-selector-parser": "^2.2.2",
+    "postcss-transform-animations": "^1.0.1",
+    "prop-types": "^15.5.10"
   },
   "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-es2015": "^6.18.0",
     "eslint": "^4.6.1",
     "eslint-config-airbnb-base": "^12.0.0",
     "eslint-config-prettier": "^2.4.0",
     "eslint-plugin-flowtype": "^2.35.1",
     "eslint-plugin-import": "^2.7.0",
-    "prettier": "^1.10.2"
+    "flow-bin": "^0.63.1",
+    "jest": "^21.0.1",
+    "prettier": "^1.10.2",
+    "react": "^15.4.1",
+    "react-test-renderer": "^15.4.1",
+    "webpack": "^1.14.0"
   },
-  "workspaces": ["packages/*"]
+  "peerDependencies": {
+    "react": "^15.0.0 || ^16.0.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "!src/index.js",
+      "!src/web/index.js",
+      "!src/packages/**/*.js"
+    ]
+  }
 }
