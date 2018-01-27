@@ -181,7 +181,7 @@ const InnerRef = cssta.div`
 />
 ```
 
-You can also add the `component` prop on any Cssta element to override the base component.
+You can also add the `component` prop on any Cssta element to override the base component. This can be a string or another component.
 
 ```jsx
 const Div = cssta.div`
@@ -189,4 +189,10 @@ const Div = cssta.div`
 `
 
 <Div component="span">I am a span now</Div>
+```
+
+```jsx
+import Link from 'react-router'
+
+<Div component={Link}>I am a Link now</Div>
 ```
