@@ -1,5 +1,3 @@
-/* eslint-disable flowtype/require-valid-file-annotation */
-/* global jest it, expect */
 const extractRules = require("../extractRules");
 
 const trim = str =>

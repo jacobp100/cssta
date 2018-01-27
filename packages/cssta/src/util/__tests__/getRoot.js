@@ -1,5 +1,3 @@
-/* eslint-disable flowtype/require-valid-file-annotation */
-/* global it, expect */
 const getRoot = require("../getRoot");
 
 const trim = str =>

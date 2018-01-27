@@ -1,5 +1,3 @@
-/* eslint-disable flowtype/require-valid-file-annotation */
-/* global it, expect */
 const React = require("react");
 const renderer = require("react-test-renderer"); // eslint-disable-line
 const componentFactory = require("../componentFactory");
