@@ -22,30 +22,20 @@ exports[`Css output 2`] = `
 `;
 
 exports[`Css output overwriting files 1`] = `
-"'use strict';
+"import _createComponent from 'cssta/lib/web/createComponent';
 
-var _createComponent2 = require('cssta/lib/web/createComponent');
 
-var _createComponent3 = _interopRequireDefault(_createComponent2);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var Component = (0, _createComponent3.default)('button', null, {
+const Component = _createComponent('button', null, {
   'defaultClassName': 'A',
   'classNameMap': {}
 });"
 `;
 
 exports[`Css output overwriting files 2`] = `
-"'use strict';
+"import _createComponent from 'cssta/lib/web/createComponent';
 
-var _createComponent2 = require('cssta/lib/web/createComponent');
 
-var _createComponent3 = _interopRequireDefault(_createComponent2);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var Component = (0, _createComponent3.default)('button', null, {
+const Component = _createComponent('button', null, {
   'defaultClassName': 'B',
   'classNameMap': {}
 });"
@@ -63,45 +53,27 @@ exports[`Css output overwriting files 3`] = `
 `;
 
 exports[`Css output overwriting files with multiple files 1`] = `
-"'use strict';
+"import _createComponent from 'cssta/lib/web/createComponent';
 
-var _createComponent2 = require('cssta/lib/web/createComponent');
-
-var _createComponent3 = _interopRequireDefault(_createComponent2);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var Component = (0, _createComponent3.default)('button', null, {
+const Component = _createComponent('button', null, {
       'defaultClassName': 'A',
       'classNameMap': {}
 });"
 `;
 
 exports[`Css output overwriting files with multiple files 2`] = `
-"'use strict';
+"import _createComponent from 'cssta/lib/web/createComponent';
 
-var _createComponent2 = require('cssta/lib/web/createComponent');
-
-var _createComponent3 = _interopRequireDefault(_createComponent2);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var Component = (0, _createComponent3.default)('button', null, {
+const Component = _createComponent('button', null, {
       'defaultClassName': 'D',
       'classNameMap': {}
 });"
 `;
 
 exports[`Css output overwriting files with multiple files 3`] = `
-"'use strict';
+"import _createComponent from 'cssta/lib/web/createComponent';
 
-var _createComponent2 = require('cssta/lib/web/createComponent');
-
-var _createComponent3 = _interopRequireDefault(_createComponent2);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var Component = (0, _createComponent3.default)('button', null, {
+const Component = _createComponent('button', null, {
       'defaultClassName': 'C',
       'classNameMap': {}
 });"
@@ -131,30 +103,20 @@ exports[`Css output overwriting files with multiple files 4`] = `
 `;
 
 exports[`Css output with multiple files 1`] = `
-"'use strict';
+"import _createComponent from 'cssta/lib/web/createComponent';
 
-var _createComponent2 = require('cssta/lib/web/createComponent');
 
-var _createComponent3 = _interopRequireDefault(_createComponent2);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var Component = (0, _createComponent3.default)('button', null, {
+const Component = _createComponent('button', null, {
   'defaultClassName': 'A',
   'classNameMap': {}
 });"
 `;
 
 exports[`Css output with multiple files 2`] = `
-"'use strict';
+"import _createComponent from 'cssta/lib/web/createComponent';
 
-var _createComponent2 = require('cssta/lib/web/createComponent');
 
-var _createComponent3 = _interopRequireDefault(_createComponent2);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var Component = (0, _createComponent3.default)('button', null, {
+const Component = _createComponent('button', null, {
   'defaultClassName': 'B',
   'classNameMap': {}
 });"

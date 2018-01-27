@@ -1,46 +1,52 @@
 const fs = require("fs");
 const path = require("path");
-const pluginTester = require("babel-plugin-tester");
-const plugin = require("babel-plugin-macros");
+const { transform } = require("babel-core");
+const macrosPlugin = require("babel-plugin-macros");
+const babelPlugin = require("../../babel-plugin");
 
-pluginTester({
-  plugin,
-  snapshot: true,
-  babelOptions: { filename: __filename },
-  tests: [
-    {
-      title: "Development",
-      code: `
-        import cssta from '../dev.macro'
+const run = input => {
+  babelPlugin.resetGenerators();
+  const { code } = transform(input, {
+    plugins: [macrosPlugin],
+    filename: __filename,
+    babelrc: false
+  });
+  return code;
+};
 
-        cssta('div')\`
-          color: red;
-        \`
+test("Development", () => {
+  const jsCode = run`
+    import cssta from '../dev.macro'
 
-        cssta('div')\`
-          color: blue;
-        \`
-      `
-    },
-    {
-      title: "Production",
-      code: `
-        import cssta from '../prod.macro'
+    cssta('div')\`
+      color: red;
+    \`
 
-        cssta('div')\`
-          color: red;
-        \`
+    cssta('div')\`
+      color: blue;
+    \`
+  `;
+  expect(jsCode).toMatchSnapshot();
+});
 
-        cssta('div')\`
-          color: blue;
-        \`
-      `,
-      teardown() {
-        const cssPath = path.join(__dirname, ".cssta-index.css");
-        const css = fs.readFileSync(cssPath, "utf-8");
-        expect(css).toMatchSnapshot();
-        fs.unlinkSync(cssPath);
-      }
-    }
-  ]
+test("Production", () => {
+  const jsCode = run`
+    import cssta from '../prod.macro'
+
+    cssta('div')\`
+      color: red;
+    \`
+
+    cssta('div')\`
+      color: blue;
+    \`
+  `;
+  expect(jsCode.replace(__dirname, "<dirname>")).toMatchSnapshot();
+  const cssPath = path.join(__dirname, ".cssta-index.css");
+  const css = fs
+    .readFileSync(cssPath, "utf-8")
+    .replace(__dirname, "<dirname>")
+    .replace(__dirname, "<dirname>");
+  expect(css).toMatchSnapshot();
+  fs.unlinkSync(cssPath);
 });

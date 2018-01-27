@@ -13,7 +13,8 @@ const run = (input, options) => {
   plugin.resetGenerators();
   const cssOutput = getOutput();
   const { code } = transform(input, {
-    plugins: [[plugin, { output: cssOutput, ...options }]]
+    plugins: [[plugin, { output: cssOutput, ...options }]],
+    babelrc: false
   });
 
   return { jsOutput: code, cssOutput: cssOutput.value };

@@ -4,7 +4,8 @@ const plugin = require("..");
 const run = (input, options) => {
   plugin.resetGenerators();
   const { code } = transform(input, {
-    plugins: [[plugin, options]]
+    plugins: [[plugin, options]],
+    babelrc: false
   });
 
   return code;

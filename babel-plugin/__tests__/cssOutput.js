@@ -6,6 +6,7 @@ const plugin = require("..");
 const run = (input, filename, options) => {
   const { code } = transform(input, {
     plugins: [[plugin, { output: filename, preserveCssFile: true }]],
+    babelrc: false,
     ...options
   });
 
