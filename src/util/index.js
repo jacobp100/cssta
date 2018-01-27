@@ -1,4 +1,11 @@
 // @flow
+/*
+CAUTION!
+
+This file could be included even after running the babel plugin.
+
+Make sure you don't import large libraries.
+*/
 /* eslint-disable no-param-reassign, no-restricted-syntax */
 
 const keyframesRegExp = /keyframes$/i;

@@ -1,5 +1,11 @@
+[include]
+.*/src/.*
+
 [ignore]
 .*/lib/.*
+.*/babel-plugin/.*
+.*/macro/.*
+.*/benchmark/.*
 
 [libs]
 flow-typed
