@@ -236,12 +236,12 @@ exports[`Single source of variables 1`] = `
 "import _createComponent from 'cssta/lib/web/createComponent';
 
 
-_createComponent('div', null, {
+const Component1 = _createComponent('div', null, {
   'defaultClassName': 'A',
   'classNameMap': {}
 });
 
-_createComponent('div', null, {
+const Component2 = _createComponent('div', null, {
   'defaultClassName': 'B',
   'classNameMap': {}
 });"
@@ -255,13 +255,13 @@ exports[`Single source of variables 2`] = `
 .A {
     --large: 100;
     --small: 50;
-    --margin: var(--large) var(--small);
-    width: var(--large)
+    --margin: 100 50;
+    width: 100
 }
     
 
 .B {
-    width: var(--small)
+    width: 50
 }
     
 /* End unknown */

@@ -1,6 +1,3 @@
-const fs = require("fs");
-const { parse } = require("babylon");
-const { default: traverse } = require("babel-traverse");
 const _ = require("lodash/fp");
 const extractRules = require("../../src/native/extractRules"); // Is this really native-only?
 const resolveVariableDependencies = require("../../src/native/enhancers/resolveVariableDependencies");
@@ -57,9 +54,8 @@ const extractVariables = (babel, path, target, stringArg) => {
   return exportedVariables;
 };
 
-module.exports = (babel, filename, fileOpts) => {
-  const source = fs.readFileSync(filename, "utf-8");
-  const ast = parse(source, fileOpts);
+module.exports = (babel, contents) => {
+  const { ast } = babel.transform(contents);
 
   let exportedVariables = null;
   const doExtractVariables = (path, node, stringArg) => {
@@ -73,7 +69,7 @@ module.exports = (babel, filename, fileOpts) => {
     }
   };
 
-  traverse(
+  babel.traverse(
     ast,
     {
       CallExpression(path) {

@@ -172,8 +172,7 @@ test("No imports", () => {
 });
 
 test("Single source of variables", () => {
-  const { jsOutput, cssOutput } = run(
-    `
+  const contents = `
     import cssta from 'cssta';
 
     const Component1 = cssta.div\`
@@ -187,13 +186,11 @@ test("Single source of variables", () => {
     const Component2 = cssta.div\`
       width: var(--small);
     \`;
-  `,
-    {
-      optimizations: [
-        ["singleSourceOfVariables", { sourceFilename: "actual.js" }]
-      ]
-    }
-  );
+  `;
+
+  const { jsOutput, cssOutput } = run(contents, {
+    optimizations: [["singleSourceOfVariables", { sourceContents: contents }]]
+  });
 
   expect(jsOutput).toMatchSnapshot();
   expect(cssOutput).toMatchSnapshot();
