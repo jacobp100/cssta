@@ -42,6 +42,17 @@ module.exports = (element /*: any */) => (
   cssTextFragments /*: string */,
   ...substitutions /*: string[] */
 ) => {
+  substitutions.forEach(sub => {
+    if (sub.includes(";")) {
+      /* eslint-disable no-template-curly-in-string */
+      throw new Error(
+        "You can only interpolate singlevalues using ${value} notation. " +
+          "See https://jacobp100.github.io/cssta/native"
+      );
+      /* eslint-enable */
+    }
+  });
+
   const cssText =
     typeof cssTextFragments === "string"
       ? cssTextFragments
