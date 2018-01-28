@@ -47,7 +47,7 @@ module.exports = (element /*: any */) => (
       /* eslint-disable no-template-curly-in-string */
       throw new Error(
         "You can only interpolate singlevalues using ${value} notation. " +
-          "See https://jacobp100.github.io/cssta/native"
+          "See https://jacobp100.github.io/cssta/native#custom-properties-interpolation"
       );
       /* eslint-enable */
     }

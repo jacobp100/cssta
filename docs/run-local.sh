@@ -1,2 +1,2 @@
 #!/bin/bash
-bundle exec jekyll serve --githuburl ''
+bundle exec jekyll serve --baseurl ''

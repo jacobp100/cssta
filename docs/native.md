@@ -72,8 +72,51 @@ Cssta for React Native does not use specificity: rules get applied in the order 
 There are built-in polyfills for the following.
 
 * Transitions and Animations (see below)
-* CSS custom properties: `var(--property)`
+* [CSS custom properties]: `var(--property)`
 * [CSS color function](https://drafts.csswg.org/css-color/#modifying-colors): `color(red tint(50%))`
+
+## ✏️ Custom Properties and Interpolation
+{: #custom-properties-interpolation}
+
+Cssta supports CSS custom properties almost exactly like in native CSS.
+
+```jsx
+const Component = cssta(View)`
+  color: var(--color);
+  --color: red;
+`
+
+The only difference from native CSS is that you cannot pass in custom properties through the `style` prop. We have a `<VariablesProvider>` component for that. Just pass in your custom properties (without the first double dash: `--`).
+
+```jsx
+import { VariablesProvider } from 'cssta/native'
+
+<VariablesProvider exportedVariables={% raw %}{{ color: 'red' }}{% endraw %}>
+  <ComponentsThatUseColorVariable />
+</Variables>
+```
+
+You can also pass a function for `exportedVariables`, which is called with an object of the parent scope, and should return a new scope for its children.
+
+```jsx
+const getExportedVariables = (variablesFromScope) => {
+  const { marginHorizontal, marginVertical } = variablesFromScope
+  const margin = `${marginHorizontal} ${marginVertical}`
+  return { margin }
+}
+
+<VariablesProvider exportedVariables={getExportedVariables}>
+  <ComponentsThatUseColorVariable />
+</Variables>
+```
+
+In addition to CSS custom properties, you can use JavaScript’s `${value}` syntax to interpolate values. Note that you can only interpolate values or parts of values, and not entire rules or mixins. This is mostly useful for using platform constants.
+
+```jsx
+const Component = cssta(View)`
+  border-bottom: ${StyleSheet.hairlineWidth}px solid grey;
+`;
+```
 
 ## 📹 Transitions and Animations
 
@@ -158,30 +201,4 @@ class AnimateOpacity extends Component {
     return <BaseStyles style={% raw %}{{ opacity }}{% endraw %} />
   }
 }
-```
-
-## 💉 Injecting Variables
-
-You can use `VariablesProvider` to dynamically set variables. This accepts an `exportedVariables` property, which is a map of variables to inject.
-
-```jsx
-import { VariablesProvider } from 'cssta/native'
-
-<VariablesProvider exportedVariables={% raw %}{{ color: 'red' }}{% endraw %}>
-  <ComponentsThatUseColorVariable />
-</Variables>
-```
-
-You can also pass a function for `exportedVariables`, which is called with an object of the parent scope.
-
-```jsx
-const getExportedVariables = (variablesFromScope) => {
-  const { marginHorizontal, marginVertical } = variablesFromScope
-  const margin = `${marginHorizontal} ${marginVertical}`
-  return { margin }
-}
-
-<VariablesProvider exportedVariables={getExportedVariables}>
-  <ComponentsThatUseColorVariable />
-</Variables>
 ```

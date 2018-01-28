@@ -81,7 +81,7 @@ const Example = (
 );
 ```
 
-For React Native, there’s a `VariablesProvider` component. Just pass in an object of your variables omitting the double dash. You can see more information over in the [native docs]({{ site.baseurl }}/native).
+For React Native, there’s a `VariablesProvider` component. Just pass in an object of your variables omitting the double dash. You can see more information over in the [native docs]({{ site.baseurl }}/native#custom-properties-interpolation).
 
 ```jsx
 import { VariablesProvider } from 'cssta/native'
