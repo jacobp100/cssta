@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "cssnano-cli": "^1.0.5",
-    "cssta": "^0.4.0",
+    "cssta": "file:../..",
     "react": "^15.3.2",
     "react-dom": "^15.3.2"
   },

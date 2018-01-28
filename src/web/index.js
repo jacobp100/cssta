@@ -3,12 +3,6 @@
 const extractRules = require("./extractRules");
 const createComponent = require("./createComponent");
 
-let devId = 0;
-const getDevId = name => () => {
-  devId += 1;
-  return `${name}-${devId}`;
-};
-
 const assertNoTemplateParams = cssTextFragments => {
   if (!Array.isArray(cssTextFragments)) {
     return cssTextFragments;
@@ -33,9 +27,13 @@ const updateCss = cssText => {
   }
 };
 
-const opts = {
-  generateClassName: getDevId("rule"),
-  generateAnimationName: getDevId("animation")
+let componentIndex = 1;
+const generateClassName = element => {
+  const name =
+    typeof element === "string" ? element : element.displayName || "unknown";
+  const className = `${name}-${componentIndex}`;
+  componentIndex += 1;
+  return className;
 };
 
 let styleContents = "";
@@ -44,7 +42,12 @@ const style = (element /*: any */) => (
 ) => {
   const cssText = assertNoTemplateParams(cssTextFragments);
 
-  const { css, propTypes, args } = extractRules(cssText, opts);
+  const defaultClassName = generateClassName(element);
+  const { css, propTypes, args } = extractRules(cssText, {
+    generateClassName: (prop, value) =>
+      prop != null ? `${defaultClassName}-${prop}-${value}` : defaultClassName,
+    generateAnimationName: value => `${defaultClassName}-keyframe-${value}`
+  });
 
   styleContents += css;
   updateCss(styleContents);

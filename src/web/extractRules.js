@@ -26,16 +26,16 @@ module.exports = (
     return defaultClassName;
   };
 
-  const getClassNameFor = (attribute, value) => {
-    if (!classNameMap[attribute]) {
-      classNameMap[attribute] = {};
+  const getClassNameFor = (prop, value) => {
+    if (!classNameMap[prop]) {
+      classNameMap[prop] = {};
     }
 
-    if (!classNameMap[attribute][value]) {
-      classNameMap[attribute][value] = generateClassName();
+    if (!classNameMap[prop][value]) {
+      classNameMap[prop][value] = generateClassName(prop, value);
     }
 
-    return classNameMap[attribute][value];
+    return classNameMap[prop][value];
   };
 
   const transformSelectors = selectorParser(container => {
@@ -71,7 +71,7 @@ module.exports = (
       transform: value => {
         if (value in animationNameMap) return animationNameMap[value];
 
-        const transformValue = generateAnimationName();
+        const transformValue = generateAnimationName(value);
         animationNameMap[value] = transformValue;
         return transformValue;
       }

@@ -71,49 +71,6 @@ You can enable certain build optimizations in the `optimizations` parameter in t
 }
 ```
 
-### `interpolateValuesOnly` (Recommended)
-
-Template interpolation (`${value}`) in React Native is permitted anywhere. However, this makes it impossible to pre-parse, since you could be interpolating entire rules. As a result, when you interpolate values, we have to bundle postCSS, and perform parsing at run-time.
-
-The most common use-case for interpolation is interpolating values. If you limit interpolation to only values this, we can pre-parse your CSS at build-time, and won’t bundle postCSS. CSS short-hands are still supported using this optimization.
-
-You cannot interpolate property names or entire declarations.
-
-###### Examples
-
-```jsx
-// ✅
-const color = 'red'
-const small = 5
-const large = 10
-
-const RedView = cssta(View)`
-  color: ${color};
-  margin: ${small} ${large};
-  border: ${1 / PixelRatio.get()} solid red;
-`
-```
-
-```jsx
-// ❌ Not interpolating a value
-const prop = 'font'
-
-const invalid = cssta(Text)`
-  ${prop}: 12 "Helvetica";
-`
-```
-
-```jsx
-// ❌ Not interpolating a value
-const mixin = `
-  color: blue;
-`
-
-const invalid = cssta(Text)`
-  ${mixin}
-`
-```
-
 ### `singleSourceOfVariables`
 
 This is for you define all CSS custom properties in a single component, and do not define properties elsewhere. We can substitute the values in and perform more pre-compilation. You cannot use template interpolation in the component that defines variables.

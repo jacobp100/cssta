@@ -23,7 +23,7 @@ const Button = cssta.button`
     }
   }
 
-  :hover {
+  &:hover {
     background: lightgray;
   }
 
