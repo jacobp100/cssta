@@ -20,7 +20,7 @@ const { mapValues } = require("../../util");
 /*:: import type { DynamicProps } from '../../factories/types' */
 /*::
 import type {
-  VariableArgs, VariableRuleTuple, Args, VariablesStore, Style, Rule, Keyframe,
+  VariableArgs, VariableRuleTuple, Args, VariablesStore, Style, Rule, Keyframe, TransitionParts,
 } from '../types'
 */
 
@@ -41,19 +41,36 @@ const getExportedVariables = (props, variablesFromScope) => {
 const substitutePartsVariables = (appliedVariables, parts) =>
   parts.map(part => transformVariables(part, appliedVariables));
 
+const transformShorthand = (appliedVariables, shorthand) =>
+  shorthand != null
+    ? shorthand.map(s => substitutePartsVariables(appliedVariables, s))
+    : null;
+
+const transformString = (appliedVariables, part) =>
+  part != null ? transformVariables(part, appliedVariables) : null;
+
+const transformProperty = (appliedVariables, property) =>
+  property != null
+    ? {
+        property: property.property,
+        shorthand: transformShorthand(appliedVariables, property.shorthand),
+        attributes: mapValues(
+          s => transformString(appliedVariables, s),
+          property.attributes
+        )
+      }
+    : null;
+
 const createRule = (
   inputRule /*: VariableRuleTuple */,
   style /*: string */,
   appliedVariables /*: Object */
 ) /*: Rule */ => {
   const { validate, transitionParts, animationParts } = inputRule;
-  const transitions = transitionParts
-    ? mapValues(
-        parts => substitutePartsVariables(appliedVariables, parts),
-        transitionParts
-      )
+  const transitions /*: ?TransitionParts */ = transitionParts
+    ? transformProperty(appliedVariables, transitionParts)
     : null;
-  const animation = animationParts
+  const animation /*: ?string[] */ = animationParts
     ? substitutePartsVariables(appliedVariables, animationParts)
     : null;
 

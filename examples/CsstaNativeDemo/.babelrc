@@ -2,9 +2,7 @@
   "presets": ["react-native"],
   "env": {
     "production": {
-      "plugins": [
-        ["babel-plugin-cssta", { "optimizations": ["interpolateValuesOnly"] }]
-      ]
+      "plugins": ["babel-plugin-cssta"]
     }
   }
 }

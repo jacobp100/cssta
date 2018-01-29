@@ -8,8 +8,8 @@ const { isDirectChildOfKeyframes } = require("../util/cssAst");
 
 /*::
 type Generators = {
-  generateClassName: () => string,
-  generateAnimationName: () => string,
+  generateClassName: (?string, ?string) => string,
+  generateAnimationName: (string) => string,
 }
 */
 
@@ -32,7 +32,10 @@ module.exports = (
     }
 
     if (!classNameMap[prop][value]) {
-      classNameMap[prop][value] = generateClassName(prop, value);
+      classNameMap[prop][value] = generateClassName(
+        prop,
+        value !== "true" ? value : null
+      );
     }
 
     return classNameMap[prop][value];

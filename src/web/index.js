@@ -44,8 +44,14 @@ const style = (element /*: any */) => (
 
   const defaultClassName = generateClassName(element);
   const { css, propTypes, args } = extractRules(cssText, {
-    generateClassName: (prop, value) =>
-      prop != null ? `${defaultClassName}-${prop}-${value}` : defaultClassName,
+    generateClassName: (prop, value) => {
+      if (prop == null) {
+        return defaultClassName;
+      } else if (value == null) {
+        return `${defaultClassName}--${prop}`;
+      }
+      return `${defaultClassName}--${prop}-${value}`;
+    },
     generateAnimationName: value => `${defaultClassName}-keyframe-${value}`
   });
 

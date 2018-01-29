@@ -11,6 +11,18 @@ export type VariablesStore = { [key:string]: string }
 export type StyleTuple = [string, string]
 export type Style = { [key:string]: any } | string
 
+export type TransitionAttributes = {
+  delay: ?string,
+  duration: ?string,
+  timingFunction: ?string,
+}
+
+export type TransitionParts = {
+  property: ?string[],
+  shorthand: ?string[][],
+  attributes: TransitionAttributes,
+}
+
 export type VariableWithValidator = {
   validate?: (props: Object) => boolean,
 }
@@ -33,7 +45,7 @@ export type VariableArgs = {|
 
 export type BaseVariableRuleTuple = {|
   exportedVariables: VariablesStore,
-  transitionParts: ?{ [key:string]: string[] },
+  transitionParts: ?TransitionParts,
   animationParts: ?string[],
   styleTuples: StyleTuple[],
 |}
@@ -62,7 +74,7 @@ export type Args = {|
 export type Rule = {|
   ...$Exact<VariableWithValidator>,
   style: Style,
-  transitions?: ?{ [key:string]: string[] },
+  transitions?: ?TransitionParts,
   animation?: ?string[],
 |}
 
