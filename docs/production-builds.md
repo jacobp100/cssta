@@ -1,7 +1,7 @@
 ---
 layout: page
 title: Production Builds
-permalink: /production-builds
+permalink: /production-builds/
 ---
 
 # ⛵️ Production Builds
@@ -59,13 +59,7 @@ You can enable certain build optimizations in the `optimizations` parameter in t
 {
   "plugins": [
     ["babel-plugin-cssta", {
-      "optimizations": [
-        "name1",
-        "name2",
-        ["name3", {
-          "optimizationConfigName": "optimizationConfigValue"
-        }],
-      ]
+      "optimization1": { "option1": "value "}
     }]
   ]
 }
@@ -102,7 +96,7 @@ const Component = cssta(View)`
 
 ```jsx
 // ❌ Interpolating values
-const red = 'red';
+const red = "red"
 
 const Component = cssta(View)`
   --primary: ${red};

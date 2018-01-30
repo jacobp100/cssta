@@ -96,24 +96,14 @@ module.exports.getOrCreateImportReference = (
   return reference;
 };
 
-const findOptionsForKey = (optimisations, name) => {
-  const optimisation = _.find(
-    optimisationName =>
-      Array.isArray(optimisationName)
-        ? optimisationName[0] === name
-        : optimisationName === name,
-    optimisations
-  );
-  if (Array.isArray(optimisation)) return optimisation[1];
-  if (optimisation) return {};
-  return null;
-};
 module.exports.getOptimisationOpts = (state, name) => {
-  const optimisations = state.opts.optimizations;
-  return (
-    findOptionsForKey(optimisations, name) ||
-    findOptionsForKey(optimisations, "all")
-  );
+  const value = state.opts[name]
+  if (value === true) {
+    return {}
+  } else if (value != null && typeof value === "object") {
+    return value
+  }
+  return null
 };
 
 const getSubstitutionRegExp = substitutionMap => {

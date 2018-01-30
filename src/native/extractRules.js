@@ -4,18 +4,18 @@ const { getPropertyName } = require("css-to-react-native");
 const getRoot = require("../util/getRoot");
 const { varRegExp, varRegExpNonGlobal } = require("../util/cssRegExp");
 const { isDirectChildOfKeyframes } = require("../util/cssAst");
-/*:: import type { RawVariableArgs, RawVariableRuleTuple } from './types' */
+/*:: import type {
+  RawVariableArgs,
+  RawVariableRuleTuple,
+  TransitionParts,
+  AnimationParts,
+} from './types' */
 
 const variableRegExp = /^--/;
 // Matches whole words, or whole functions (i.e. `var(--hello, with spaces here)`)
 const transitionPartRegExp = /([^\s(]+(?:\([^)]*\))?)/g;
 const nonTransitionPropertyRegExp = /(?:ease(?:-in)?(?:-out)?|linear|^\d|\()/;
 
-const findLast = (array, cb) =>
-  array
-    .slice()
-    .reverse()
-    .find(cb);
 const walkToArray = walker => {
   const nodes = [];
   walker(node => nodes.push(node));
@@ -36,57 +36,121 @@ const getExportedVariables = nodes =>
       return accum;
     }, {});
 
-const getTransitions = declValue =>
-  declValue.split(",").reduce((transitions, value) => {
-    const parts = value.match(transitionPartRegExp);
+const transitionAttributes = {
+  transition: "_",
+  "transition-delay": "delay",
+  "transition-duration": "duration",
+  "transition-property": "property",
+  "transition-timing-function": "timingFunction"
+};
 
-    if (!parts) return transitions;
+const animationAttributes = {
+  animation: "_",
+  "animation-delay": "delay",
+  "animation-duration": "duration",
+  "animation-name": "name",
+  "animation-timing-function": "timingFunction"
+};
 
-    const properties = parts
-      .filter(part => !nonTransitionPropertyRegExp.test(part))
-      .map(getPropertyName);
-    const transitionParts = parts.filter(part =>
-      nonTransitionPropertyRegExp.test(part)
-    );
+// TODO: Animation long-hands
+const specialTupleNames = [].concat(
+  Object.keys(transitionAttributes),
+  Object.keys(animationAttributes)
+);
 
-    return properties.reduce((accum, property) => {
-      accum[property] = transitionParts;
+const getTransitionShorthand = (declValue) /*: TransitionParts */ =>
+  declValue.split(/\s*,\s*/).reduce(
+    (accum, value) => {
+      const parts = value.match(transitionPartRegExp) || [];
+
+      const property =
+        parts != null
+          ? parts.filter(part => !nonTransitionPropertyRegExp.test(part))
+          : [];
+
+      if (property.length > 1) {
+        throw new Error(
+          "Expected shorthand transition to be able to statically determine transitioned properties"
+        );
+      }
+
+      const transitionParts = parts
+        .filter(part => nonTransitionPropertyRegExp.test(part))
+        .join(" ");
+
+      accum._ =
+        accum._.length !== 0
+          ? `${accum._}, ${transitionParts}`
+          : transitionParts;
+
+      if (property.length === 1) {
+        accum.property.push(getPropertyName(property[0]));
+      }
+
       return accum;
-    }, transitions);
+    },
+    { _: "", property: [] }
+  );
+
+const getTransition = (styleTuples) /*: ?TransitionParts */ => {
+  const transitionTuples = styleTuples.filter(
+    styleTuple => styleTuple[0] in transitionAttributes
+  );
+
+  if (transitionTuples.length === 0) return null;
+
+  return transitionTuples.reduce((accum, [key, value]) => {
+    switch (key) {
+      case "transition":
+        return getTransitionShorthand(value);
+      case "transition-property":
+        return { ...accum, property: value.split(/\s*,\s*/) };
+      default: {
+        return { ...accum, [transitionAttributes[key]]: value };
+      }
+    }
   }, {});
+};
 
-const getAnimation = declValue => declValue.match(transitionPartRegExp);
+const getAnimation = styleTuples => {
+  const animationTuples = styleTuples.filter(
+    styleTuple => styleTuple[0] in animationAttributes
+  );
 
-const specialTuples = ["transition", "animation"];
+  if (animationTuples.length === 0) return null;
+
+  return animationTuples.reduce(
+    (accum, [key, value]) => ({ ...accum, [animationAttributes[key]]: value }),
+    {}
+  );
+};
 
 const getRuleBody = (rule) /*: RawVariableRuleTuple */ => {
   const { selector } = rule;
+
+  let mediaQuery = null;
+  if (
+    rule.parent &&
+    rule.parent.type === "atrule" &&
+    rule.parent.name === "media"
+  ) {
+    mediaQuery = rule.parent.params;
+  }
+
   let styleTuples = getStyleTuples(rule.nodes);
 
-  const transitionDeclValue = findLast(
-    styleTuples,
-    styleTuple => styleTuple[0] === "transition"
-  );
-  const transitionParts = transitionDeclValue
-    ? getTransitions(transitionDeclValue[1])
-    : {};
-
-  const animationDeclValue = findLast(
-    styleTuples,
-    styleTuple => styleTuple[0] === "animation"
-  );
-  const animationParts = animationDeclValue
-    ? getAnimation(animationDeclValue[1])
-    : null;
+  const transitionParts /*: ?TransitionParts */ = getTransition(styleTuples);
+  const animationParts /*: ?AnimationParts */ = getAnimation(styleTuples);
 
   styleTuples = styleTuples.filter(
-    styleTuple => !specialTuples.includes(styleTuple[0])
+    styleTuple => !specialTupleNames.includes(styleTuple[0])
   );
 
   const exportedVariables = getExportedVariables(rule.nodes);
 
   return {
     selector,
+    mediaQuery,
     exportedVariables,
     transitionParts,
     animationParts,
@@ -153,9 +217,14 @@ module.exports = (
       return accum;
     }, {});
 
-  const transitionedProperties = Object.keys(
-    Object.assign({}, ...ruleTuples.map(rule => rule.transitionParts))
+  let transitionedProperties = ruleTuples.reduce(
+    (accum, rule) =>
+      rule.transitionParts && rule.transitionParts.property
+        ? accum.concat(rule.transitionParts.property)
+        : accum,
+    []
   );
+  transitionedProperties = Array.from(new Set(transitionedProperties));
 
   const importedVariables = getImportedVariables(root);
 

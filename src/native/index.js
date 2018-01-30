@@ -23,7 +23,7 @@ const createValidatorsForRules = (
     keyframesStyleTuples
   } = args;
   const ruleTuples = args.ruleTuples.map(rule => ({
-    validate: createValidatorForSelector(rule.selector),
+    validate: createValidatorForSelector(rule.selector, rule.mediaQuery),
     styleTuples: rule.styleTuples,
     transitionParts: rule.transitionParts,
     animationParts: rule.animationParts,
@@ -43,7 +43,7 @@ module.exports = (element /*: any */) => (
   ...substitutions /*: string[] */
 ) => {
   substitutions.forEach(sub => {
-    if (sub.includes(";")) {
+    if (String(sub).indexOf(";") !== -1) {
       /* eslint-disable no-template-curly-in-string */
       throw new Error(
         "You can only interpolate singlevalues using ${value} notation. " +

@@ -25,6 +25,7 @@ h2,
 .menu__title {
   /* Note, includes non-base style */
   font-size: 18pt;
+  line-height: 24pt;
   font-weight: 300;
   margin: 32pt 0 12pt;
   letter-spacing: -0.3pt;
@@ -96,7 +97,8 @@ pre {
 #menu {
   /* Use an id so we can make use of :target */
   margin: calc(-1 * var(--gutter));
-  padding: var(--gutter);
+  /* .menu__list has a margin-top of var(--gutter), which adds on to here even when it's hidden */
+  padding: var(--gutter) var(--gutter) 0;
   border-bottom: 1px solid #eee;
 }
 
@@ -108,15 +110,23 @@ pre {
 
   .menu__show,
   .menu__hide {
-    position: relative;
-    top: 2pt;
     float: right;
   }
 
-  .menu__list {
+  .menu__list,
+  .menu__sublist {
     list-style: none;
     padding: 0;
     margin: 0;
+  }
+
+  .menu__list {
+    margin-top: 12pt;
+  }
+
+  .menu__sublist {
+    padding-left: 18pt;
+    font-size: 10pt;
   }
 
   .menu__title,
@@ -125,13 +135,17 @@ pre {
   .menu__hide,
   .menu__show {
     display: block;
-    padding: 6pt 12pt;
+    padding: 0 12pt;
+    line-height: 24pt;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     text-decoration: none;
     color: black;
   }
 
   .menu__image {
-    margin: 12pt 0;
+    margin: 6pt 0;
     height: 32pt;
   }
 
@@ -159,6 +173,26 @@ pre {
   .menu__link--active {
     color: var(--primary);
   }
+
+.u-mono {
+  font: 10pt/12pt 'Source Code Pro', monospace;
+}
+
+.u-center {
+  text-align: center !important;
+}
+
+.u-m-t-0 {
+  margin-top: 0 !important;
+}
+
+.u-m-b-lg {
+  margin-bottom: 32pt !important;
+}
+
+.u-full-width {
+  width: 100% !important;
+}
 
 /***************\
 * MEDIA QUERIES *
@@ -208,7 +242,11 @@ pre {
     .menu__title,
     .menu__link,
     .menu__image-section {
-      padding: 2pt 24pt;
+      padding: 0 24pt;
+    }
+
+    .menu__image {
+      margin: 12pt 0;
     }
 }
 

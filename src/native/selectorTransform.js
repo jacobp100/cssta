@@ -28,14 +28,14 @@ const createAttributeValidator = node => {
   const attribute = node.attribute.trim();
   if (attribute[0] !== "*") {
     throw new Error(
-      `You can only use prop selectors (did you forget a * before ${attribute})`
+      `You can only use prop selectors (did you forget an @ before ${attribute})`
     );
   }
 
   const prop = attribute.slice(1);
   const memberExpression = `${propArg}[${JSON.stringify(prop)}]`;
 
-  if (!value) return `!!${memberExpression}`;
+  if (!value) return `(${memberExpression} === true)`;
 
   const unquoted = raws.unquoted.trim();
   return `(${memberExpression} === ${JSON.stringify(unquoted)})`;
@@ -70,24 +70,78 @@ const createValidator = node => {
   return validators[node.type](node);
 };
 
-const getBaseValidatorSourceForSelector = selector => {
+const createMediaFeatureValidator = query => {
+  const match = query.match(/(\w+)/g) || [];
+  switch (match[0]) {
+    case "width":
+      return `(${parseInt(match[1], 10)} === ${propArg}.$ScreenWidth)`;
+    case "min-width":
+      return `(${parseInt(match[1], 10)} < ${propArg}.$ScreenWidth)`;
+    case "max-width":
+      return `(${parseInt(match[1], 10)} > ${propArg}.$ScreenWidth)`;
+    case "height":
+      return `(${parseInt(match[1], 10)} === ${propArg}.$ScreenHeight)`;
+    case "min-height":
+      return `(${parseInt(match[1], 10)} < ${propArg}.$ScreenHeight)`;
+    case "max-height":
+      return `(${parseInt(match[1], 10)} > ${propArg}.$ScreenHeight)`;
+    case "aspect-ratio": {
+      const [w, h] = match[1].split("/").map(Number);
+      return `(${w} / ${h} === ${propArg}.$ScreenWidth / ${propArg}.$ScreenHeight)`;
+    }
+    case "min-aspect-ratio": {
+      const [w, h] = match[1].split("/").map(Number);
+      return `(${w} / ${h} < ${propArg}.$ScreenWidth / ${propArg}.$ScreenHeight)`;
+    }
+    case "max-aspect-ratio": {
+      const [w, h] = match[1].split("/").map(Number);
+      return `(${w} / ${h} > ${propArg}.$ScreenWidth / ${propArg}.$ScreenHeight)`;
+    }
+    case "orientation":
+      if (/landscape/i.test(match[1])) {
+        return `(${propArg}.$ScreenWidth > ${propArg}.$ScreenHeight)`;
+      } else if (/portrait/i.test(match[1])) {
+        return `(${propArg}.$ScreenWidth < ${propArg}.$ScreenHeight)`;
+      }
+    // fallthrough
+    default:
+      throw new Error(`Could not parse media query: ${query}`);
+  }
+};
+
+const getBaseValidatorSourceForSelector = (selector, mediaQuery) => {
   let selectorNode;
   selectorParser(node => {
     selectorNode = node;
   }).process(selector);
   if (!selectorNode) throw new Error("Expected to parse selector");
-  const validatorNode = createValidator(selectorNode) || "true";
+
+  let validatorNode = createValidator(selectorNode) || "true";
+  if (mediaQuery != null) {
+    validatorNode = (mediaQuery.match(/(\w+)\s*:\s*(\w+)/g) || []).reduce(
+      (accum, query) => `(${accum} && ${createMediaFeatureValidator(query)})`,
+      validatorNode
+    );
+  }
+
   const returnNode = `return ${validatorNode};`;
   return returnNode;
 };
 
-module.exports.getValidatorSourceForSelector = (selector /*: string */) =>
-  `(function(${propArg}) {${getBaseValidatorSourceForSelector(selector)}})`;
+module.exports.getValidatorSourceForSelector = (
+  selector /*: string */,
+  mediaQuery /*: ?string */
+) =>
+  `(function(${propArg}) {${getBaseValidatorSourceForSelector(
+    selector,
+    mediaQuery
+  )}})`;
 
 module.exports.createValidatorForSelector = (
-  selector /*: string */
+  selector /*: string */,
+  mediaQuery /*: ?string */
 ) /*: (props: Object) => boolean */ => {
-  const source = getBaseValidatorSourceForSelector(selector);
+  const source = getBaseValidatorSourceForSelector(selector, mediaQuery);
   /* eslint-disable no-new-func */
   // $FlowFixMe
   const validator /*: (props: Object) => boolean */ = new Function(

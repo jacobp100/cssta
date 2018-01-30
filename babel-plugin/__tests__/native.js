@@ -279,6 +279,33 @@ test("Transitions with variables", () => {
   expect(jsOutput).toMatchSnapshot();
 });
 
+test("Transitions with shorthand and long hand", () => {
+  const jsOutput = run`
+    import cssta from 'cssta/native';
+    import { View } from 'react-native';
+
+    cssta(Animated.View)\`
+      background-color: #e74c3c;
+      height: 20px;
+      margin-bottom: 20px;
+      transform: scaleX(1) rotate(0deg);
+      transition: 0.5s linear;
+      transition-property:
+        border-top-color,
+        border-right-color,
+        border-bottom-color,
+        border-left-color;
+
+      &[@active] {
+        background-color: #1abc9c;
+        transform: scaleX(0.5) rotate(6deg);
+      }
+    \`
+  `;
+
+  expect(jsOutput).toMatchSnapshot();
+});
+
 test("Keyframes", () => {
   const jsOutput = run`
     import cssta from 'cssta/native';
@@ -291,6 +318,44 @@ test("Keyframes", () => {
       @keyframes test {
         start { opacity: 0; }
         50% { opacity: 0.2; }
+        end { opacity: 1; }
+      }
+    \`
+  `;
+
+  expect(jsOutput).toMatchSnapshot();
+});
+
+test("Animations with shorthand and long hand", () => {
+  const jsOutput = run`
+    import cssta from 'cssta/native';
+    import { View } from 'react-native';
+
+    cssta(Animated.View)\`
+      animation: test 1s;
+      animation-timing-function: linear;
+
+      @keyframes test {
+        start { opacity: 0; }
+        end { opacity: 1; }
+      }
+    \`
+  `;
+
+  expect(jsOutput).toMatchSnapshot();
+});
+
+test("Animations with variables", () => {
+  const jsOutput = run`
+    import cssta from 'cssta/native';
+    import { View } from 'react-native';
+
+    cssta(Animated.View)\`
+      animation: test 1s var(--timing-function);
+      --timing-function: linear;
+
+      @keyframes test {
+        start { opacity: 0; }
         end { opacity: 1; }
       }
     \`
@@ -330,6 +395,34 @@ test("Keyframes without variables", () => {
       @keyframes test {
         start { color: rgba(0, 0, 0, 0); }
         end { rgba: rgba(0, 0, 0, 1); }
+      }
+    \`
+  `;
+
+  expect(jsOutput).toMatchSnapshot();
+});
+
+test("Media queries", () => {
+  const jsOutput = run`
+    import cssta from 'cssta/native';
+
+    cssta(View)\`
+      @media (min-width: 500px) {
+        color: red;
+      }
+    \`
+  `;
+
+  expect(jsOutput).toMatchSnapshot();
+});
+
+test("Media queries with variables", () => {
+  const jsOutput = run`
+    import cssta from 'cssta/native';
+
+    cssta(View)\`
+      @media (min-width: 500px) {
+        color: var(--red);
       }
     \`
   `;

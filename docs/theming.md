@@ -1,7 +1,7 @@
 ---
 layout: page
 title: Theming
-permalink: /theming
+permalink: /theming/
 ---
 
 # 🏳️‍🌈 Theming
@@ -16,12 +16,12 @@ cssta.injectGlobal`
   :root {
     --primary: red;
   }
-`;
+`
 
 // Native
 const Root = cssta(View)`
   --primary: red;
-`;
+`
 ```
 
 You can then use the variables using the `var` function. Note that the variable can be combined with other values, including more variables.
@@ -31,7 +31,7 @@ const Button = cssta.button`
   color: var(--primary);
   border: 1px solid var(--primary);
   padding: 0.5rem 1rem;
-`;
+`
 ```
 
 You can redefine variables in any component, and their descendants will use the updated values.
@@ -40,13 +40,13 @@ You can redefine variables in any component, and their descendants will use the 
 const LightBox = cssta.div`
   background-color: black;
   --primary: white;
-`;
+`
 
 const Example = (
   <LightBox>
     <Button>I am white on black!</Button>
   </LightBox>
-);
+)
 ```
 
 You can also dynamically change the values of the variables through prop selectors.
@@ -60,13 +60,13 @@ const LightBox = cssta.div`
     background-color: white;
     --primary: black;
   }
-`;
+`
 
 const Example = (
   <LightBox inverted>
     <Button>I am black on white!</Button>
   </LightBox>
-);
+)
 ```
 
 ## 💉 Using JavaScript Variables
@@ -75,18 +75,18 @@ You can pass variables from JavaScript to CSS. For the web, just use the `style`
 
 ```jsx
 const Example = (
-  <div style={{ "--primary": mainColor }}>
+  <div style={% raw %}{{ "--primary": mainColor }}{% endraw %}>
     <Button>I have the color "mainColor"</Button>
   </div>
-);
+)
 ```
 
 For React Native, there’s a `VariablesProvider` component. Just pass in an object of your variables omitting the double dash. You can see more information over in the [native docs]({{ site.baseurl }}/native#custom-properties-interpolation).
 
 ```jsx
-import { VariablesProvider } from 'cssta/native'
+import { VariablesProvider } from "cssta/native"
 
-<VariablesProvider exportedVariables={% raw %}{{ primary: 'red' }}{% endraw %}>
+<VariablesProvider exportedVariables={% raw %}{{ primary: "red" }}{% endraw %}>
   <Button />
 </Variables>
 ```

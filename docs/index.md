@@ -14,7 +14,7 @@ There’s also a tonne of stuff for React Native, including CSS transitions and 
 It is almost identical in concept to [styled-components](https://github.com/styled-components/styled-components), but makes different trade-offs.
 
 ```jsx
-import cssta from 'cssta'
+import cssta from "cssta"
 
 const Button = cssta.button`
   background: blue;
@@ -83,7 +83,7 @@ const button = `
   &[@large] { font-size: 12pt; }
 `
 
-<Button large onClick={() => alert('clicked')}>
+<Button large onClick={() => alert("clicked")}>
   onClick Prop Passed Down
 </Button>
 ```
@@ -95,12 +95,12 @@ In addition, we’ll automatically type check all your prop selectors with React
 It is possible React components only when the component accepts the prop `className` for web, and `style` for React Native.
 
 ```jsx
-import { Link } from "react-router";
+import { Link } from "react-router"
 
 const StyledLink = cssta(Link)`
   color: rebeccapurple;
   text-decoration: none;
-`;
+`
 ```
 
 It is also possible to compose your own components.
@@ -110,15 +110,15 @@ const OutlineButton = cssta.button`
   padding: 0.5rem 1rem;
   border: 2px solid currentColor;
   border-radius: 1000px;
-`;
+`
 
 const RedButton = cssta(OutlineButton)`
   color: red;
-`;
+`
 
 const BlueButton = cssta(OutlineButton)`
   color: blue;
-`;
+`
 ```
 
 **For the moment, this only works when the components get defined in the same file!**
@@ -131,19 +131,19 @@ The best way to do theming in Cssta is by using [CSS custom properties](https://
 const LightBox = cssta.div`
   background-color: black;
   --primary: white;
-`;
+`
 
 const Button = cssta.button`
   color: var(--primary);
   border: 1px solid var(--primary);
   padding: 0.5rem 1rem;
-`;
+`
 
 const Example = (
   <LightBox>
     <Button>I am white on black!</Button>
   </LightBox>
-);
+)
 ```
 
 There’s a few extra examples in [theming]({{ site.baseurl }}/theming).
@@ -192,7 +192,7 @@ const Div = cssta.div`
 ```
 
 ```jsx
-import Link from 'react-router'
+import Link from "react-router"
 
 <Div component={Link}>I am a Link now</Div>
 ```
