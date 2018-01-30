@@ -190,7 +190,7 @@ test("Single source of variables", () => {
   `;
 
   const { jsOutput, cssOutput } = run(contents, {
-    optimizations: [["singleSourceOfVariables", { sourceContents: contents }]]
+    "singleSourceOfVariables": { sourceContents: contents }
   });
 
   expect(jsOutput).toMatchSnapshot();

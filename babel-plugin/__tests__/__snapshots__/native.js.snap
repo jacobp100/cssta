@@ -1,5 +1,79 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Animations with shorthand and long hand 1`] = `
+"import _withEnhancers from 'cssta/lib/native/withEnhancers';
+import _Animation from 'cssta/lib/native/enhancers/Animation';
+
+import { View } from 'react-native';
+
+_withEnhancers([_Animation])(Animated.View, [], {
+  'transitionedProperties': [],
+  'keyframes': {
+    'test': [{
+      'time': 0,
+      'styles': {
+        'opacity': 0
+      }
+    }, {
+      'time': 1,
+      'styles': {
+        'opacity': 1
+      }
+    }]
+  },
+  'rules': [{
+    'validate': function (p) {
+      return true;
+    },
+    'transitions': null,
+    'animation': {
+      '_': 'test 1s',
+      'timingFunction': 'linear'
+    },
+    'style': null
+  }]
+});"
+`;
+
+exports[`Animations with variables 1`] = `
+"import _withEnhancers from 'cssta/lib/native/withEnhancers';
+import _Animation from 'cssta/lib/native/enhancers/Animation';
+import _VariablesStyleSheetManager from 'cssta/lib/native/enhancers/VariablesStyleSheetManager';
+
+import { View } from 'react-native';
+
+_withEnhancers([_VariablesStyleSheetManager, _Animation])(Animated.View, [], {
+  'transitionedProperties': [],
+  'importedVariables': ['timing-function'],
+  'keyframesStyleTuples': {
+    'test': [{
+      'time': 0,
+      'styles': {
+        'opacity': 0
+      }
+    }, {
+      'time': 1,
+      'styles': {
+        'opacity': 1
+      }
+    }]
+  },
+  'ruleTuples': [{
+    'validate': function (p) {
+      return true;
+    },
+    'exportedVariables': {
+      'timing-function': 'linear'
+    },
+    'transitionParts': null,
+    'animationParts': {
+      '_': 'test 1s var(--timing-function)'
+    },
+    'styleTuples': []
+  }]
+});"
+`;
+
 exports[`Boolean attributes 1`] = `
 "import { StyleSheet as _StyleSheet } from 'react-native';
 import _createComponent from 'cssta/lib/native/createComponent';
@@ -17,9 +91,9 @@ const Component = _createComponent('button', ['booleanAttribute'], {
   'keyframes': {},
   'rules': [{
     'validate': function (p) {
-      return !!p[\\"booleanAttribute\\"];
+      return p[\\"booleanAttribute\\"] === true;
     },
-    'transitions': {},
+    'transitions': null,
     'animation': null,
     'style': _csstaStyle[0]
   }]
@@ -45,7 +119,7 @@ const Component = _createComponent(View, [], {
     'validate': function (p) {
       return true;
     },
-    'transitions': {},
+    'transitions': null,
     'animation': null,
     'style': _csstaStyle[0]
   }]
@@ -80,7 +154,7 @@ const Component = _createComponent(View, [], {
     'validate': function (p) {
       return true;
     },
-    'transitions': {},
+    'transitions': null,
     'animation': null,
     'style': _csstaStyle[0]
   }]
@@ -106,7 +180,7 @@ const Component = _createComponent(Link, [], {
     'validate': function (p) {
       return true;
     },
-    'transitions': {},
+    'transitions': null,
     'animation': null,
     'style': _csstaStyle[0]
   }]
@@ -133,7 +207,7 @@ function test() {
       'validate': function (p) {
         return true;
       },
-      'transitions': {},
+      'transitions': null,
       'animation': null,
       'style': _csstaStyle[0]
     }]
@@ -160,7 +234,7 @@ const Component = _createComponent(View, [], {
     'validate': function (p) {
       return true;
     },
-    'transitions': {},
+    'transitions': null,
     'animation': null,
     'style': _csstaStyle[0]
   }]
@@ -202,23 +276,23 @@ _createComponent(View, ['attr1', 'attr2', 'attr3'], {
   'keyframes': {},
   'rules': [{
     'validate': function (p) {
-      return !!p[\\"attr1\\"];
+      return p[\\"attr1\\"] === true;
     },
-    'transitions': {},
+    'transitions': null,
     'animation': null,
     'style': _csstaStyle[0]
   }, {
     'validate': function (p) {
-      return !!p[\\"attr2\\"];
+      return p[\\"attr2\\"] === true;
     },
-    'transitions': {},
+    'transitions': null,
     'animation': null,
     'style': _csstaStyle[1]
   }, {
     'validate': function (p) {
-      return !!p[\\"attr3\\"];
+      return p[\\"attr3\\"] === true;
     },
-    'transitions': {},
+    'transitions': null,
     'animation': null,
     'style': _csstaStyle[2]
   }]
@@ -253,23 +327,23 @@ _createComponent(View, ['attr1', 'attr2', 'attr3'], {
   'keyframes': {},
   'rules': [{
     'validate': function (p) {
-      return !!p[\\"attr1\\"];
+      return p[\\"attr1\\"] === true;
     },
-    'transitions': {},
+    'transitions': null,
     'animation': null,
     'style': _csstaStyle[0]
   }, {
     'validate': function (p) {
-      return !!p[\\"attr2\\"];
+      return p[\\"attr2\\"] === true;
     },
-    'transitions': {},
+    'transitions': null,
     'animation': null,
     'style': _csstaStyle[1]
   }, {
     'validate': function (p) {
-      return !!p[\\"attr3\\"];
+      return p[\\"attr3\\"] === true;
     },
-    'transitions': {},
+    'transitions': null,
     'animation': null,
     'style': _csstaStyle[2]
   }]
@@ -305,23 +379,23 @@ _createComponent(View, ['attr1', 'attr2', 'attr3'], {
   'keyframes': {},
   'rules': [{
     'validate': function (p) {
-      return !!p[\\"attr1\\"];
+      return p[\\"attr1\\"] === true;
     },
-    'transitions': {},
+    'transitions': null,
     'animation': null,
     'style': _csstaStyle[0]
   }, {
     'validate': function (p) {
-      return !!p[\\"attr2\\"];
+      return p[\\"attr2\\"] === true;
     },
-    'transitions': {},
+    'transitions': null,
     'animation': null,
     'style': _csstaStyle[1]
   }, {
     'validate': function (p) {
-      return !!p[\\"attr3\\"];
+      return p[\\"attr3\\"] === true;
     },
-    'transitions': {},
+    'transitions': null,
     'animation': null,
     'style': _csstaStyle[2]
   }]
@@ -347,7 +421,7 @@ _createComponent(View, [], {
     'validate': function (p) {
       return true;
     },
-    'transitions': {},
+    'transitions': null,
     'animation': null,
     'style': _csstaStyle[0]
   }]
@@ -391,8 +465,10 @@ _withEnhancers([_Animation])(Animated.View, [], {
     'validate': function (p) {
       return true;
     },
-    'transitions': {},
-    'animation': ['test', '1s', 'linear'],
+    'transitions': null,
+    'animation': {
+      '_': 'test 1s linear'
+    },
     'style': _csstaStyle[0]
   }]
 });"
@@ -428,8 +504,10 @@ _withEnhancers([_VariablesStyleSheetManager, _Animation])(Animated.View, [], {
     'validate': function (p) {
       return true;
     },
-    'transitions': {},
-    'animation': ['test', '1s', 'linear'],
+    'transitions': null,
+    'animation': {
+      '_': 'test 1s linear'
+    },
     'style': _csstaStyle[0]
   }]
 });"
@@ -463,9 +541,58 @@ _withEnhancers([_VariablesStyleSheetManager, _Animation])(Animated.View, [], {
       return true;
     },
     'exportedVariables': {},
-    'transitionParts': {},
-    'animationParts': ['test', '1s', 'linear'],
+    'transitionParts': null,
+    'animationParts': {
+      '_': 'test 1s linear'
+    },
     'styleTuples': [['color', 'var(--primary)']]
+  }]
+});"
+`;
+
+exports[`Media queries 1`] = `
+"import { StyleSheet as _StyleSheet } from 'react-native';
+import _withEnhancers from 'cssta/lib/native/withEnhancers';
+import _MediaQuery from 'cssta/lib/native/enhancers/MediaQuery';
+
+var _csstaStyle = _StyleSheet.create({
+  0: {
+    'color': 'red'
+  }
+});
+
+_withEnhancers([_MediaQuery])(View, [], {
+  'transitionedProperties': [],
+  'keyframes': {},
+  'rules': [{
+    'validate': function (p) {
+      return true && 500 === p.$ScreenWidth;
+    },
+    'transitions': null,
+    'animation': null,
+    'style': _csstaStyle[0]
+  }]
+});"
+`;
+
+exports[`Media queries with variables 1`] = `
+"import _withEnhancers from 'cssta/lib/native/withEnhancers';
+import _VariablesStyleSheetManager from 'cssta/lib/native/enhancers/VariablesStyleSheetManager';
+import _MediaQuery from 'cssta/lib/native/enhancers/MediaQuery';
+
+
+_withEnhancers([_MediaQuery, _VariablesStyleSheetManager])(View, [], {
+  'transitionedProperties': [],
+  'importedVariables': ['red'],
+  'keyframesStyleTuples': {},
+  'ruleTuples': [{
+    'validate': function (p) {
+      return true && 500 === p.$ScreenWidth;
+    },
+    'exportedVariables': {},
+    'transitionParts': null,
+    'animationParts': null,
+    'styleTuples': [['color', 'var(--red)']]
   }]
 });"
 `;
@@ -498,28 +625,28 @@ const Component = _createComponent('button', ['booleanAttribute', 'stringAttribu
     'validate': function (p) {
       return true;
     },
-    'transitions': {},
+    'transitions': null,
     'animation': null,
     'style': _csstaStyle[0]
   }, {
     'validate': function (p) {
-      return !!p[\\"booleanAttribute\\"];
+      return p[\\"booleanAttribute\\"] === true;
     },
-    'transitions': {},
+    'transitions': null,
     'animation': null,
     'style': _csstaStyle[1]
   }, {
     'validate': function (p) {
       return p[\\"stringAttribute\\"] === \\"1\\";
     },
-    'transitions': {},
+    'transitions': null,
     'animation': null,
     'style': _csstaStyle[2]
   }, {
     'validate': function (p) {
       return p[\\"stringAttribute\\"] === \\"2\\";
     },
-    'transitions': {},
+    'transitions': null,
     'animation': null,
     'style': _csstaStyle[3]
   }]
@@ -548,14 +675,14 @@ const Component = _createComponent('button', ['stringAttribute'], {
     'validate': function (p) {
       return p[\\"stringAttribute\\"] === \\"1\\";
     },
-    'transitions': {},
+    'transitions': null,
     'animation': null,
     'style': _csstaStyle[0]
   }, {
     'validate': function (p) {
       return p[\\"stringAttribute\\"] === \\"2\\";
     },
-    'transitions': {},
+    'transitions': null,
     'animation': null,
     'style': _csstaStyle[1]
   }]
@@ -586,15 +713,16 @@ _withEnhancers([_Transition])(Animated.View, ['boolAttr'], {
       return true;
     },
     'transitions': {
-      'color': ['1s', 'linear']
+      '_': '1s linear',
+      'property': ['color']
     },
     'animation': null,
     'style': _csstaStyle[0]
   }, {
     'validate': function (p) {
-      return !!p[\\"boolAttr\\"];
+      return p[\\"boolAttr\\"] === true;
     },
-    'transitions': {},
+    'transitions': null,
     'animation': null,
     'style': _csstaStyle[1]
   }]
@@ -637,16 +765,68 @@ _withEnhancers([_Transition])(Animated.View, ['active'], {
       return true;
     },
     'transitions': {
-      'backgroundColor': ['0.5s', 'linear'],
-      'transform': ['0.75s', 'linear']
+      '_': '0.5s linear, 0.75s linear',
+      'property': ['backgroundColor', 'transform']
     },
     'animation': null,
     'style': _csstaStyle[0]
   }, {
     'validate': function (p) {
-      return !!p[\\"active\\"];
+      return p[\\"active\\"] === true;
     },
-    'transitions': {},
+    'transitions': null,
+    'animation': null,
+    'style': _csstaStyle[1]
+  }]
+});"
+`;
+
+exports[`Transitions with shorthand and long hand 1`] = `
+"import { StyleSheet as _StyleSheet } from 'react-native';
+import _withEnhancers from 'cssta/lib/native/withEnhancers';
+import _Transition from 'cssta/lib/native/enhancers/Transition';
+
+import { View } from 'react-native';
+
+var _csstaStyle = _StyleSheet.create({
+  0: {
+    'backgroundColor': '#e74c3c',
+    'height': 20,
+    'marginBottom': 20,
+    'transform': [{
+      'rotate': '0deg'
+    }, {
+      'scaleX': 1
+    }]
+  },
+  1: {
+    'backgroundColor': '#1abc9c',
+    'transform': [{
+      'rotate': '6deg'
+    }, {
+      'scaleX': 0.5
+    }]
+  }
+});
+
+_withEnhancers([_Transition])(Animated.View, ['active'], {
+  'transitionedProperties': ['border-top-color', 'border-right-color', 'border-bottom-color', 'border-left-color'],
+  'keyframes': {},
+  'rules': [{
+    'validate': function (p) {
+      return true;
+    },
+    'transitions': {
+      '_': '0.5s linear',
+      'property': ['border-top-color', 'border-right-color', 'border-bottom-color', 'border-left-color']
+    },
+    'animation': null,
+    'style': _csstaStyle[0]
+  }, {
+    'validate': function (p) {
+      return p[\\"active\\"] === true;
+    },
+    'transitions': null,
     'animation': null,
     'style': _csstaStyle[1]
   }]
@@ -677,15 +857,16 @@ _withEnhancers([_VariablesStyleSheetManager, _Transition])(Animated.View, ['bool
     },
     'exportedVariables': {},
     'transitionParts': {
-      'color': ['1s', 'linear']
+      '_': '1s linear',
+      'property': ['color']
     },
     'animationParts': null,
     'styleTuples': [['color', 'var(--primary)']]
   }, {
     'validate': function (p) {
-      return !!p[\\"boolAttr\\"];
+      return p[\\"boolAttr\\"] === true;
     },
-    'transitions': {},
+    'transitions': null,
     'animation': null,
     'style': _csstaStyle[0]
   }]
@@ -709,7 +890,7 @@ const Component = _withEnhancers([_VariablesStyleSheetManager])(View, [], {
     'exportedVariables': {
       'color': 'red'
     },
-    'transitionParts': {},
+    'transitionParts': null,
     'animationParts': null,
     'styleTuples': [['color', 'var(--color)']]
   }]
@@ -731,7 +912,7 @@ const Component = _withEnhancers([_VariablesStyleSheetManager])(View, [], {
       return true;
     },
     'exportedVariables': {},
-    'transitionParts': {},
+    'transitionParts': null,
     'animationParts': null,
     'styleTuples': [['color', 'color(var(--red) l(+ 25%))']]
   }]
@@ -755,17 +936,17 @@ const Component = _withEnhancers([_VariablesStyleSheetManager])(View, ['blue'], 
     'exportedVariables': {
       'color': 'red'
     },
-    'transitionParts': {},
+    'transitionParts': null,
     'animationParts': null,
     'styleTuples': []
   }, {
     'validate': function (p) {
-      return !!p[\\"blue\\"];
+      return p[\\"blue\\"] === true;
     },
     'exportedVariables': {
       'color': 'blue'
     },
-    'transitionParts': {},
+    'transitionParts': null,
     'animationParts': null,
     'styleTuples': []
   }]
@@ -787,7 +968,7 @@ const Component = _withEnhancers([_VariablesStyleSheetManager])(View, [], {
       return true;
     },
     'exportedVariables': {},
-    'transitionParts': {},
+    'transitionParts': null,
     'animationParts': null,
     'styleTuples': [['color', 'var(--color)']]
   }]
@@ -814,7 +995,7 @@ _createComponent(View, [], {
     'validate': function (p) {
       return true;
     },
-    'transitions': {},
+    'transitions': null,
     'animation': null,
     'style': _csstaStyle[0]
   }]

@@ -79,6 +79,7 @@ module.exports = (babel, path, state, component, cssText, substitutionMap) => {
       )
     );
 
+  if (_.some(_.get("mediaQuery"), args.ruleTuples)) addEnhancer("MediaQuery");
   if (hasVariables) addEnhancer("VariablesStyleSheetManager");
   if (!_.isEmpty(args.transitionedProperties)) addEnhancer("Transition");
   if (!_.isEmpty(args.keyframesStyleTuples)) addEnhancer("Animation");

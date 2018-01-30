@@ -20,7 +20,15 @@ const { mapValues } = require("../../util");
 /*:: import type { DynamicProps } from '../../factories/types' */
 /*::
 import type {
-  VariableArgs, VariableRuleTuple, Args, VariablesStore, Style, Rule, Keyframe, TransitionParts,
+  VariableArgs,
+  VariableRuleTuple,
+  Args,
+  VariablesStore,
+  Style,
+  Rule,
+  Keyframe,
+  TransitionParts,
+  AnimationParts,
 } from '../types'
 */
 
@@ -38,27 +46,14 @@ const getExportedVariables = (props, variablesFromScope) => {
   return resolveVariableDependencies(definedVariables, variablesFromScope);
 };
 
-const substitutePartsVariables = (appliedVariables, parts) =>
-  parts.map(part => transformVariables(part, appliedVariables));
+const transformPart = (appliedVariables, part) =>
+  Array.isArray(part)
+    ? part /* Pre-processed */
+    : transformVariables(part, appliedVariables);
 
-const transformShorthand = (appliedVariables, shorthand) =>
-  shorthand != null
-    ? shorthand.map(s => substitutePartsVariables(appliedVariables, s))
-    : null;
-
-const transformString = (appliedVariables, part) =>
-  part != null ? transformVariables(part, appliedVariables) : null;
-
-const transformProperty = (appliedVariables, property) =>
-  property != null
-    ? {
-        property: property.property,
-        shorthand: transformShorthand(appliedVariables, property.shorthand),
-        attributes: mapValues(
-          s => transformString(appliedVariables, s),
-          property.attributes
-        )
-      }
+const transformParts = (appliedVariables, parts) =>
+  parts != null
+    ? mapValues(part => transformPart(appliedVariables, part), parts)
     : null;
 
 const createRule = (
@@ -67,14 +62,16 @@ const createRule = (
   appliedVariables /*: Object */
 ) /*: Rule */ => {
   const { validate, transitionParts, animationParts } = inputRule;
-  const transitions /*: ?TransitionParts */ = transitionParts
-    ? transformProperty(appliedVariables, transitionParts)
-    : null;
-  const animation /*: ?string[] */ = animationParts
-    ? substitutePartsVariables(appliedVariables, animationParts)
-    : null;
+  const transitions /*: ?TransitionParts */ = transformParts(
+    appliedVariables,
+    transitionParts
+  );
+  const animations /*: ?AnimationParts */ = transformParts(
+    appliedVariables,
+    animationParts
+  );
 
-  return { validate, transitions, animation, style };
+  return { validate, transitions, animations, style };
 };
 
 const createRuleStylesUsingStylesheet = (

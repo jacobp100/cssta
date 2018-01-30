@@ -11,16 +11,20 @@ export type VariablesStore = { [key:string]: string }
 export type StyleTuple = [string, string]
 export type Style = { [key:string]: any } | string
 
-export type TransitionAttributes = {
-  delay: ?string,
-  duration: ?string,
-  timingFunction: ?string,
+export type TransitionParts = {
+  _?: string,
+  delay?: string,
+  duration?: string,
+  property?: string[], // Pre-processed
+  timingFunction?: string,
 }
 
-export type TransitionParts = {
-  property: ?string[],
-  shorthand: ?string[][],
-  attributes: TransitionAttributes,
+export type AnimationParts = {
+  _?: string,
+  delay?: string,
+  duration?: string,
+  name?: string,
+  timingFunction?: string,
 }
 
 export type VariableWithValidator = {
@@ -46,13 +50,14 @@ export type VariableArgs = {|
 export type BaseVariableRuleTuple = {|
   exportedVariables: VariablesStore,
   transitionParts: ?TransitionParts,
-  animationParts: ?string[],
+  animationParts: ?AnimationParts,
   styleTuples: StyleTuple[],
 |}
 
 export type RawVariableRuleTuple = {|
   ...BaseVariableRuleTuple ,
   selector: string,
+  mediaQuery: ?string,
 |}
 
 export type VariableRuleTuple = {|
@@ -73,9 +78,9 @@ export type Args = {|
 
 export type Rule = {|
   ...$Exact<VariableWithValidator>,
-  style: Style,
   transitions?: ?TransitionParts,
-  animation?: ?string[],
+  animations?: ?AnimationParts,
+  style: Style,
 |}
 
 export type Keyframe = {|

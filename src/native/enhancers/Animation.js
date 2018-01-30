@@ -13,6 +13,7 @@ const { StyleSheet, Animated, Easing } = require("react-native");
 /* eslint-enable */
 const { getAppliedRules } = require("../util");
 const {
+  mergeShorthandProps,
   mergeStyles,
   interpolateValue,
   getDurationInMs,
@@ -26,46 +27,94 @@ const {
 
 const { Component } = React;
 
-const getAnimation = props => {
-  const animations = getAppliedRules(props.args.rules, props.ownProps)
-    .map(rule => rule.animation)
-    .filter(animation => animation !== null);
-  return animations.length ? animations[animations.length - 1] : null;
-};
+/*::
+type AnimatedValue = {
+  setValue: (value: number) => void,
+}
 
-const getKeyframe = animationValues =>
-  animationValues.find(
-    value => !durationRegExp.test(value) && !easingRegExp.test(value)
+type AnimationState = {
+  animations: ?{ [key:string]: InterpolatedValue },
+  animationValues: ?{ [key:string]: AnimatedValue },
+  delay: number,
+  duration: number,
+  name: ?string,
+  easing: any,
+}
+*/
+
+/* eslint-disable no-bitwise, no-param-reassign */
+const DELAY = 1;
+const DURATION = 1 << 1;
+const NAME = 1 << 2;
+const TIMING_FUNCTION = 1 << 3;
+
+const getAnimationShorthand = shorthandParts => {
+  let set = 0;
+  return shorthandParts.reduce(
+    (accum, part) => {
+      if (!(set & TIMING_FUNCTION) && easingRegExp.test(part)) {
+        accum.timingFunction = part;
+        set &= TIMING_FUNCTION;
+      } else if (!(set & DURATION) && durationRegExp.test(part)) {
+        accum.duration = part;
+        set &= DURATION;
+      } else if (!(set & DELAY) && durationRegExp.test(part)) {
+        accum.delay = part;
+        set &= DURATION;
+      } else if (!(set & NAME)) {
+        accum.name = part;
+        set &= NAME;
+      } else {
+        throw new Error("Failed to parse shorthand");
+      }
+      return accum;
+    },
+    { delay: "0", duration: "0", name: "none", timingFunction: "ease" }
+  );
+};
+/* eslint-enable */
+
+const getAnimations = props =>
+  mergeShorthandProps(
+    getAnimationShorthand,
+    { delay: [], duration: [], name: [], timingFunction: [] },
+    getAppliedRules(props.args.rules, props.ownProps).map(
+      rule => rule.animations
+    )
   );
 
-const noAnimations = {
-  duration: null,
-  easing: null,
+const noAnimations /*: AnimationState */ = {
   animations: null,
-  animationValues: null
+  animationValues: null,
+  delay: 0,
+  duration: 0,
+  name: null,
+  easing: Easing.ease
 };
 
-const getAnimationState = props => {
+const getAnimationParameters = props => {
+  const animations = getAnimations(props);
+
+  if (animations.name.length === 0) {
+    return { delay: 0, duration: 0, name: null, easing: easingFunctions.ease };
+  }
+
+  const delay = getDurationInMs(animations.delay[0]);
+  const duration = getDurationInMs(animations.duration[0]);
+  const name = animations.name[0] !== "none" ? animations.name[0] : null;
+  const timingFunction =
+    animations.timingFunction.length > 0
+      ? animations.timingFunction[0].toLowerCase()
+      : "ease";
+  const easing = easingFunctions[timingFunction];
+  return { delay, duration, name, easing };
+};
+
+const getAnimationState = (props, { delay, duration, name, easing }) => {
   const currentStyles = mergeStyles(props);
 
-  const currentAnimationValues = getAnimation(props) || [];
-  const keyframe = getKeyframe(currentAnimationValues);
-
-  const animationSequence = keyframe ? props.args.keyframes[keyframe] : null;
-
-  if (!animationSequence) return noAnimations;
-
-  const durationMatch = currentAnimationValues.find(value =>
-    durationRegExp.test(value)
-  );
-  const duration = durationMatch ? getDurationInMs(durationMatch) : 0;
-
-  const easingMatch = currentAnimationValues.find(value =>
-    easingRegExp.test(value)
-  );
-  const easing = easingMatch
-    ? easingFunctions[easingMatch]
-    : easingFunctions.linear;
+  const animationSequence = name != null ? props.args.keyframes[name] : null;
+  if (animationSequence == null) return noAnimations;
 
   const animatedProperties = Object.keys(
     Object.assign({}, ...animationSequence.map(frame => frame.styles))
@@ -106,21 +155,8 @@ const getAnimationState = props => {
     return accum;
   }, {});
 
-  return { duration, easing, animations, animationValues };
+  return { animations, animationValues, delay, duration, name, easing };
 };
-
-/*::
-type AnimatedValue = {
-  setValue: (value: number) => void,
-}
-
-type AnimationState = {
-  duration: ?number,
-  easing: ?any,
-  animations: ?{ [key:string]: InterpolatedValue },
-  animationValues: ?{ [key:string]: AnimatedValue },
-}
-*/
 
 module.exports = class AnimationEnhancer extends Component /*::<
   DynamicProps<Args>,
@@ -129,21 +165,18 @@ module.exports = class AnimationEnhancer extends Component /*::<
   constructor(props /*: DynamicProps<Args> */) {
     super();
 
-    this.state = getAnimationState(props);
+    this.state = getAnimationState(props, getAnimationParameters(props));
   }
 
   componentDidMount() {
-    this.runAnimation();
+    this.animate();
   }
 
   componentWillReceiveProps(nextProps /*: DynamicProps<Args> */) {
-    const nextAnimationValues = getAnimation(nextProps) || [];
-    const currentAnimationValues = getAnimation(this.props) || [];
+    const nextAnimationParameters = getAnimationParameters(nextProps);
 
-    if (
-      getKeyframe(nextAnimationValues) !== getKeyframe(currentAnimationValues)
-    ) {
-      this.setState(getAnimationState(nextProps));
+    if (this.state.name !== nextAnimationParameters.name) {
+      this.setState(getAnimationState(nextProps, nextAnimationParameters));
     }
   }
 
@@ -151,12 +184,12 @@ module.exports = class AnimationEnhancer extends Component /*::<
     prevProps /*: DynamicProps<Args> */,
     prevState /*: AnimationState */
   ) {
-    if (this.state.animationValues !== prevState.animationValues)
-      this.runAnimation();
+    if (this.state.name !== prevState.name) this.animate();
   }
 
-  runAnimation() {
+  animate() {
     const {
+      delay,
       duration,
       easing,
       animationValues: animationValuesObject
@@ -172,17 +205,18 @@ module.exports = class AnimationEnhancer extends Component /*::<
     animationValues.forEach(animation => animation.setValue(0));
 
     const timings = animationValues.map(animation =>
-      Animated.timing(animation, { toValue: 1, duration, easing })
+      Animated.timing(animation, { toValue: 1, duration, delay, easing })
     );
 
     Animated.parallel(timings).start(({ finished }) => {
       // FIXME: This doesn't seem to clear the animation
-      if (finished) this.setState(noAnimations);
+      if (finished) {
+        this.setState({
+          animations: null,
+          animationValues: null
+        });
+      }
     });
-  }
-  animate() {
-    // How do we expose this to the user?
-    this.setState(getAnimationState(this.props));
   }
 
   render() {

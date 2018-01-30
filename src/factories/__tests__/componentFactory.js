@@ -51,6 +51,25 @@ it("allows overriding the component", () =>
     expectedProps: {}
   }));
 
+it("allows setting innerRef", () => {
+  // Test renderer doesn't seem to let us set refs on a div
+  class Test extends React.Component {
+    render() {
+      return React.createElement("div", {}, this.props.children);
+    }
+  }
+
+  const fn = jest.fn();
+  runTest({
+    type: Test,
+    expectedType: "div",
+    inputProps: { innerRef: fn },
+    expectedProps: {}
+  });
+  expect(fn).toBeCalled();
+  expect(fn.mock.calls[0][0].constructor).toBe(Test);
+});
+
 it("adds boolean propTypes", () =>
   runTest({
     propTypes: {

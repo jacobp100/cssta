@@ -129,7 +129,8 @@ it("transitions values", () =>
         validate: () => true,
         styleTuples: [["top", "0"]],
         transitionParts: {
-          top: ["1s", "linear"]
+          _: "1s linear",
+          property: ["top"]
         }
       }
     ],
@@ -138,6 +139,7 @@ it("transitions values", () =>
       style: [{ top: 0 }, { top: { isAnimatedValue: true } }]
     }
   }));
+
 it("transitions colors", () =>
   runTest({
     ruleTuples: [
@@ -145,7 +147,8 @@ it("transitions colors", () =>
         validate: () => true,
         styleTuples: [["color", "red"]],
         transitionParts: {
-          color: ["1s", "linear"]
+          _: "1s linear",
+          property: ["color"]
         }
       }
     ],
@@ -173,7 +176,8 @@ it("transitions transforms", () =>
         validate: () => true,
         styleTuples: [["transform", "scaleX(3) rotateX(30deg)"]],
         transitionParts: {
-          transform: ["1s", "linear"]
+          _: "1s linear",
+          property: ["transform"]
         }
       }
     ],
@@ -214,7 +218,8 @@ it("transitions values using custom properties", () =>
         validate: () => true,
         styleTuples: [["color", "var(--color, red)"]],
         transitionParts: {
-          color: ["1s", "linear"]
+          _: "1s linear",
+          property: ["color"]
         }
       }
     ],
@@ -276,7 +281,8 @@ it("does not allow animating between divergent transforms", () => {
       validate: () => true,
       styleTuples: [["transform", "scaleX(2)"]],
       transitionParts: {
-        transform: ["1s", "linear"]
+        _: "1s linear",
+        property: ["transform"]
       }
     },
     {
@@ -309,7 +315,7 @@ it("animates values", () =>
       {
         validate: () => true,
         styleTuples: [],
-        animationParts: ["fade-in", "1s"]
+        animationParts: { _: "fade-in 1s" }
       }
     ],
     keyframesStyleTuples: {
@@ -340,7 +346,7 @@ it("animates colors", () =>
       {
         validate: () => true,
         styleTuples: [],
-        animationParts: ["fade-in", "1s"]
+        animationParts: { _: "fade-in 1s" }
       }
     ],
     keyframesStyleTuples: {
@@ -370,7 +376,7 @@ it("performs keyframe animation on mount", () => {
     {
       validate: () => true,
       styleTuples: [],
-      animationParts: ["fade-in", "1s"]
+      animationParts: { _: "fade-in 1s" }
     }
   ];
   const keyframesStyleTuples = {
@@ -402,12 +408,12 @@ it("performs keyframe animation when changing animation", () => {
     {
       validate: () => true,
       styleTuples: [],
-      animationParts: ["fade-in", "1s"]
+      animationParts: { _: "fade-in 1s" }
     },
     {
       validate: props => props.active,
       styleTuples: [],
-      animationParts: ["fade-out", "1s"]
+      animationParts: { _: "fade-out 1s" }
     }
   ];
   const keyframesStyleTuples = {

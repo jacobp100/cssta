@@ -1,7 +1,7 @@
 ---
 layout: page
 title: Web
-permalink: /web
+permalink: /web/
 ---
 
 # 🌍 Web

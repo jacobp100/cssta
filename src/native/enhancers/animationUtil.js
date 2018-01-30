@@ -85,5 +85,41 @@ module.exports.easingFunctions = {
 };
 
 module.exports.durationRegExp = /^\d/;
-
 module.exports.easingRegExp = /(linear|ease(?:-in)?(?:-out)+)/i;
+
+const separator = /\s*,\s*/;
+
+/* eslint-disable no-param-reassign */
+module.exports.mergeShorthandProps = /*:: <T: Object> */ (
+  getShorthand /*: (shorthandParts: string[]) => Object */,
+  defaultValue /*: T */,
+  rules /*: *[] */
+) /*: T */ =>
+  rules.reduce((accum, ruleValue) => {
+    if (ruleValue == null) return accum;
+
+    if (ruleValue._ != null) {
+      const shorthand = ruleValue._.split(separator).map(s =>
+        getShorthand(s.trim().split(/\s+/))
+      );
+      const keys = Object.keys(shorthand[0]);
+      keys.forEach(key => {
+        accum[key] = shorthand.map(s => s[key]);
+      });
+    }
+
+    Object.keys(accum).forEach(attribute => {
+      // $FlowFixMe
+      const value = ruleValue[attribute];
+      if (Array.isArray(value)) {
+        accum[attribute] = value;
+      } else if (typeof value === "string") {
+        accum[attribute] = value.split(separator);
+      } else if (value != null) {
+        throw new Error("Internal error");
+      }
+    });
+
+    return accum;
+  }, defaultValue);
+/* eslint-enable */

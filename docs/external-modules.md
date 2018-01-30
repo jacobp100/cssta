@@ -1,7 +1,7 @@
 ---
 layout: page
 title: External Modules
-permalink: /external-modules
+permalink: /external-modules/
 ---
 
 # Ⓜ️ External Modules
@@ -17,12 +17,12 @@ To get Cssta modules working, you have to make sure that you are running all fil
   module: {
     loaders: [{
       test: /\.jsx?$/,
-      loader: 'babel-loader',
+      loader: "babel-loader",
       options: {
         // Your normal config, just make sure you include babel-plugin-cssta
-        presets: ['env'],
+        presets: ["env"],
         plugins: [
-          ['babel-plugin-cssta', { output: 'dist/styles.css' }],
+          ["babel-plugin-cssta", { output: "dist/styles.css" }],
         ],
       },
     }],
@@ -34,4 +34,4 @@ However, if this is causing serious performance issues, you can do two runs thro
 
 ## 🅿️ Publishers
 
-All Cssta modules have to use the ES `import … from 'cssta'` syntax for the babel plugin to work. For users, this means ensuring your build process can handle this. For publishers, just make sure your users get this syntax!
+All Cssta modules have to use the ES `import … from "cssta"` syntax for the babel plugin to work. For users, this means ensuring your build process can handle this. For publishers, just make sure your users get this syntax!

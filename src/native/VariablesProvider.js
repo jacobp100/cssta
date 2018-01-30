@@ -79,8 +79,9 @@ class VariablesProvider extends Component /*:: <VariablesProviderProps, Variable
   }
 
   componentDidMount() {
-    if (this.context.cssta)
+    if (this.context.cssta) {
       this.context.cssta.on(STYLES_UPDATED, this.styleUpdateHandler);
+    }
   }
 
   componentWillReceiveProps(nextProps /*: VariablesProviderProps */) {
@@ -101,8 +102,9 @@ class VariablesProvider extends Component /*:: <VariablesProviderProps, Variable
   }
 
   componentWillUnmount() {
-    if (this.context.cssta)
+    if (this.context.cssta) {
       this.context.cssta.off(STYLES_UPDATED, this.styleUpdateHandler);
+    }
   }
 
   updateState(

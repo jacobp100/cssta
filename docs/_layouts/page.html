@@ -11,12 +11,18 @@
   <a href="{{ site.baseurl }}/"><h1 class="menu__title">Cssta</h1></a>
   <ul class="menu__list">
     {% include sidebar-link.html url="/" title="Introduction" %}
-    {% include sidebar-link.html url="/web" title="Web" %}
-    {% include sidebar-link.html url="/native" title="Native" %}
-    {% include sidebar-link.html url="/theming" title="Theming" %}
-    {% include sidebar-link.html url="/production-builds" title="Production Builds" %}
-    {% include sidebar-link.html url="/external-modules" title="External Modules" %}
-    {% include sidebar-link.html url="/editor-integration" title="Editor Integration" %}
+    {% include sidebar-link.html url="/web/" title="Web" %}
+    {% include sidebar-link.html url="/native/" title="Native" %}
+    {% if page.url contains "/native" %}
+      <ul class="menu__sublist">
+        {% include sidebar-link.html url="/native/custom-properties-interpolation/" title="Custom Properties" subsection="true" %}
+        {% include sidebar-link.html url="/native/animations/" title="Animations" %}
+      </ul>
+    {% endif %}
+    {% include sidebar-link.html url="/theming/" title="Theming" %}
+    {% include sidebar-link.html url="/production-builds/" title="Production Builds" %}
+    {% include sidebar-link.html url="/external-modules/" title="External Modules" %}
+    {% include sidebar-link.html url="/editor-integration/" title="Editor Integration" %}
     <li class="menu__image-section"><a href="https://github.com/jacobp100/cssta"><img class="menu__image" alt="Github" src="https://assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png"></a></li>
   </ul>
 </div>

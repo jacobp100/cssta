@@ -11,9 +11,10 @@ const React = require("react");
 // $FlowFixMe
 const { StyleSheet, Animated, Easing } = require("react-native");
 /* eslint-enable */
-const { getAppliedRules } = require("../util");
 const { shallowEqual } = require("../../util");
+const { getAppliedRules } = require("../util");
 const {
+  mergeShorthandProps,
   mergeStyles,
   interpolateValue,
   getDurationInMs,
@@ -35,64 +36,37 @@ const DELAY = 1;
 const DURATION = 1 << 1;
 const TIMING_FUNCTION = 1 << 2;
 
-const getTransitionShorthand = shorthandParts =>
-  shorthandParts.reduce(
+const getTransitionShorthand = shorthandParts => {
+  let set = 0;
+  return shorthandParts.reduce(
     (accum, part) => {
-      if (!(accum.set & TIMING_FUNCTION) && easingRegExp.test(part)) {
+      if (!(set & TIMING_FUNCTION) && easingRegExp.test(part)) {
         accum.timingFunction = part;
-        accum.set &= TIMING_FUNCTION;
-      } else if (!(accum.set & DURATION) && durationRegExp.test(part)) {
+        set &= TIMING_FUNCTION;
+      } else if (!(set & DURATION) && durationRegExp.test(part)) {
         accum.duration = part;
-        accum.set &= DURATION;
-      } else if (!(accum.set & DELAY) && durationRegExp.test(part)) {
+        set &= DURATION;
+      } else if (!(set & DELAY) && durationRegExp.test(part)) {
         accum.delay = part;
-        accum.set &= DURATION;
+        set &= DURATION;
       } else {
         throw new Error("Failed to parse shorthand");
       }
       return accum;
     },
-    { delay: "0", duration: "0", timingFunction: "ease", set: 0 }
+    { delay: "0", duration: "0", timingFunction: "ease" }
   );
-
-const separator = /\s*,\s*/;
-
-const transformAttributes = (accum, attr) => {
-  Object.keys(attr).forEach(key => {
-    if (attr[key] != null) accum.attributes[key] = attr[key].split(separator);
-  });
 };
+/* eslint-enable */
 
 const getTransitions = props =>
-  getAppliedRules(props.args.rules, props.ownProps).reduce(
-    (accum, { transitions }) => {
-      if (transitions == null) return accum;
-      const { property, shorthand, attributes } = transitions;
-
-      if (property != null) accum.property = property;
-
-      if (shorthand) {
-        accum.attributes.delay.length = 0;
-        accum.attributes.duration.length = 0;
-        accum.attributes.timingFunction.length = 0;
-        shorthand.forEach(s => {
-          const parts = getTransitionShorthand(s);
-          accum.attributes.delay.push(parts.delay);
-          accum.attributes.duration.push(parts.duration);
-          accum.attributes.timingFunction.push(parts.timingFunction);
-        });
-      }
-
-      transformAttributes(accum, attributes);
-
-      return accum;
-    },
-    {
-      property: [],
-      attributes: { delay: [], duration: [], timingFunction: [] }
-    }
+  mergeShorthandProps(
+    getTransitionShorthand,
+    { property: [], delay: [], duration: [], timingFunction: [] },
+    getAppliedRules(props.args.rules, props.ownProps).map(
+      rule => rule.transitions
+    )
   );
-/* eslint-enable */
 
 /*::
 type AnimatedValue = {
@@ -118,16 +92,16 @@ module.exports = class TransitionEnhancer extends Component /*::<
 
     this.state = { styles, previousStyles: styles };
 
-    const animationValues = {};
-    props.args.rules.forEach(({ transitions }) => {
-      if (transitions == null || transitions.property == null) return;
-      transitions.property.forEach(transitionName => {
-        if (animationValues[transitionName] != null) return;
-        const initialValue = getInitialValue(styles[transitionName]);
-        animationValues[transitionName] = new Animated.Value(initialValue);
-      });
-    });
-    this.animationValues = animationValues;
+    this.animationValues = props.args.transitionedProperties.reduce(
+      (animationValues, transitionName) => {
+        /* eslint-disable no-param-reassign */
+        animationValues[transitionName] = new Animated.Value(
+          getInitialValue(styles[transitionName])
+        );
+        return animationValues;
+      },
+      {}
+    );
   }
 
   componentWillReceiveProps(nextProps /*: DynamicProps<Args> */) {
@@ -148,13 +122,13 @@ module.exports = class TransitionEnhancer extends Component /*::<
 
     const { animationValues, props } = this;
 
-    const { property, attributes } = getTransitions(props);
-    const delays = attributes.delay.map(getDurationInMs);
-    const durations = attributes.duration.map(getDurationInMs);
-    const easings = attributes.timingFunction.map(
+    const transitions = getTransitions(props);
+    const delays = transitions.delay.map(getDurationInMs);
+    const durations = transitions.duration.map(getDurationInMs);
+    const easings = transitions.timingFunction.map(
       s => easingFunctions[s.toLowerCase()]
     );
-    const animations = property.map((p, index) => {
+    const animations = transitions.property.map((p, index) => {
       const animation = animationValues[p];
       // Per spec, cycle through multiple values if transition-property length exceeds
       // the length of the other property
@@ -169,6 +143,16 @@ module.exports = class TransitionEnhancer extends Component /*::<
       if (needsInterpolation) animation.setValue(0);
 
       return Animated.timing(animation, { toValue, duration, delay, easing });
+    });
+
+    // Set non-transitioned properties to their values
+    Object.keys(this.animationValues).forEach(p => {
+      if (!transitions.property.includes(p)) {
+        const animation = animationValues[p];
+        const targetValue = styles[p];
+        const toValue = typeof targetValue === "number" ? targetValue : 1;
+        animation.setValue(toValue);
+      }
     });
 
     Animated.parallel(animations).start();

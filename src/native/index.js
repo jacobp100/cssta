@@ -23,7 +23,7 @@ const createValidatorsForRules = (
     keyframesStyleTuples
   } = args;
   const ruleTuples = args.ruleTuples.map(rule => ({
-    validate: createValidatorForSelector(rule.selector),
+    validate: createValidatorForSelector(rule.selector, rule.mediaQuery),
     styleTuples: rule.styleTuples,
     transitionParts: rule.transitionParts,
     animationParts: rule.animationParts,
