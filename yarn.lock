@@ -2928,9 +2928,9 @@ postcss-selector-parser@^2.2.2:
     indexes-of "^1.0.1"
     uniq "^1.0.1"
 
-postcss-transform-animations@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/postcss-transform-animations/-/postcss-transform-animations-1.0.1.tgz#bd84cc0ba0d0136e81bad8a8a43ab20994dcf32d"
+postcss-transform-animations@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/postcss-transform-animations/-/postcss-transform-animations-1.0.2.tgz#3507c0fddba5f7d7da24608454d7b1b04f4caf90"
   dependencies:
     lodash "^4.12.0"
     postcss "^5.0.21"

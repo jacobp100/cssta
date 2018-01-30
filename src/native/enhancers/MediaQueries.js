@@ -42,6 +42,14 @@ module.exports = class MediaQueryEnhancer extends Component /*::<
     };
   }
 
+  componentDidMount() {
+    Dimensions.addEventListener("change", this.listener);
+  }
+
+  componentWillUnmount() {
+    Dimensions.removeEventListener("change", this.listener);
+  }
+
   render() {
     const { ownProps, children } = this.props;
     const { width, height } = this.state;

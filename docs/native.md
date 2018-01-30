@@ -69,7 +69,7 @@ Cssta for React Native does not use specificity: rules get applied in the order 
 
 ## 🎚 Polyfills
 
-There are built-in polyfills for the following.
+Cssta includes a load of wrappers around React Native’s built-in features that you from CSS. Any components that aren’t using certain polyfills won’t run any code for them, and even better, if you aren’t using a polyfill at all, the code won’t even be included in your production build!
 
 * [Transitions and Animations]({{ site.baseurl }}/native/animations): `@keyframes` etc.
 * [CSS custom properties]({{ site.baseurl }}/native/custom-properties-interpolation): `var(--property)`

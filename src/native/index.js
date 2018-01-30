@@ -3,12 +3,14 @@ const extractRules = require("./extractRules");
 const { createValidatorForSelector } = require("./selectorTransform");
 const withEnhancers = require("./withEnhancers");
 const VariablesProvider = require("./VariablesProvider");
+const MediaQueries = require("./enhancers/MediaQueries");
 const VariablesStyleSheetManager = require("./enhancers/VariablesStyleSheetManager");
 const Transition = require("./enhancers/Transition");
 const Animation = require("./enhancers/Animation");
 /*:: import type { RawVariableArgs, VariableArgs } from './types' */
 
 const dynamicComponent = withEnhancers([
+  MediaQueries,
   VariablesStyleSheetManager,
   Transition,
   Animation

@@ -9,8 +9,8 @@
   },
   "dependencies": {
     "cssta": "file:../..",
-    "react": "15.4.1",
-    "react-native": "0.38.0"
+    "react": "^16.2.0",
+    "react-native": "^0.52.2"
   },
   "jest": {
     "preset": "react-native"

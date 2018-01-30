@@ -1,15 +1,22 @@
-import React from 'react';
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
-import cssta from 'cssta/native';
-import Basic, { code as basicCode } from './demos/Basic';
-import Animations, { code as animationsCode } from './demos/Animations';
-import Transitions, { code as transitionsCode } from './demos/Transitions';
-import CSSVariables, { code as cssVariablesCode } from './demos/CSSVariables';
-import VariablesProvider, { code as variablesProviderCode } from './demos/VariablesProvider';
-import StyleOverrides, { code as styleOverridesCode } from './demos/StyleOverrides';
-import CustomAnimations from './demos/CustomAnimations';
-import ColorFunction, { code as colorFunctionCode } from './demos/ColorFunction';
-import CustomButton from './demos/CustomButton';
+import React from "react";
+import { View, Text, ScrollView, StyleSheet } from "react-native";
+import cssta from "cssta/native";
+import Basic, { code as basicCode } from "./demos/Basic";
+import Animations, { code as animationsCode } from "./demos/Animations";
+import Transitions, { code as transitionsCode } from "./demos/Transitions";
+import CSSVariables, { code as cssVariablesCode } from "./demos/CSSVariables";
+import VariablesProvider, {
+  code as variablesProviderCode
+} from "./demos/VariablesProvider";
+import StyleOverrides, {
+  code as styleOverridesCode
+} from "./demos/StyleOverrides";
+import CustomAnimations from "./demos/CustomAnimations";
+import ColorFunction, {
+  code as colorFunctionCode
+} from "./demos/ColorFunction";
+import CustomButton from "./demos/CustomButton";
+import MediaQueries from "./demos/MediaQueries";
 
 const App = cssta(ScrollView)`
   padding: 20px 0px;
@@ -51,12 +58,12 @@ const Demo = ({ title, children, code }) => (
     <View>
       <DemoTitle>{title}</DemoTitle>
     </View>
-    <DemoBody noCode={!code}>
-      {children}
-    </DemoBody>
-    {code && <CodeContainer>
-      <CodeBody>{code}</CodeBody>
-    </CodeContainer>}
+    <DemoBody noCode={!code}>{children}</DemoBody>
+    {code && (
+      <CodeContainer>
+        <CodeBody>{code}</CodeBody>
+      </CodeContainer>
+    )}
   </DemoContainer>
 );
 
@@ -88,6 +95,9 @@ export default () => (
     </Demo>
     <Demo title="Custom Button">
       <CustomButton />
+    </Demo>
+    <Demo title="Media Queries">
+      <MediaQueries />
     </Demo>
   </App>
 );
