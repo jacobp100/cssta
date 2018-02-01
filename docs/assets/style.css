@@ -4,6 +4,7 @@
 
 :root {
   font: 12pt/16pt 'Source Sans Pro', sans-serif;
+  -webkit-text-size-adjust: none;
   --sidebar-width: 200pt;
   --gutter: 12pt;
   --primary: #d35400;
@@ -173,26 +174,6 @@ pre {
   .menu__link--active {
     color: var(--primary);
   }
-
-.u-mono {
-  font: 10pt/12pt 'Source Code Pro', monospace;
-}
-
-.u-center {
-  text-align: center !important;
-}
-
-.u-m-t-0 {
-  margin-top: 0 !important;
-}
-
-.u-m-b-lg {
-  margin-bottom: 32pt !important;
-}
-
-.u-full-width {
-  width: 100% !important;
-}
 
 /***************\
 * MEDIA QUERIES *

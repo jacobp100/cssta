@@ -7,7 +7,12 @@ permalink: /native/animations/
 <style>
 .note {
   color: #EA2027;
-  font-family: 'Source Code Pro', monospace;
+  font: 10pt/12pt 'Source Code Pro', monospace;
+}
+
+.feature-table {
+  width: 100%;
+  font: 10pt/12pt 'Source Code Pro', monospace;
 }
 
 @media screen and (min-width: 1279px) {
@@ -24,6 +29,11 @@ permalink: /native/animations/
 
     .split-view__container--last {
       order: 2;
+    }
+
+    .split_view__title {
+      text-align: center;
+      margin: 0 0 32pt;
     }
 
     .split-view__code pre {
@@ -44,14 +54,14 @@ Because we use the CSS spec, you can find a tonne of stuff on [MDN](https://deve
 <div class="split-view__container" markdown="block">
 
 ## Transitions
-{:.u-center.u-m-t-0.u-m-b-lg}
+{:.split-view__title}
 
 | ✅ | transition <span class="note">*</span>          |
 | ✅ | transition-delay                                |
 | ✅ | transition-duration                             |
 | ✅ | transition-property <span class="note">*</span> |
 | ✅ | transition-timing-function                      |
-{:.u-full-width.u-mono}
+{:.feature-table}
 
 </div>
 <div class="split-view__container" markdown="block">
@@ -80,7 +90,7 @@ const ButtonWithTransition = cssta(Animated.View)`
 <div class="split-view__container split-view__container--last" markdown="block">
 
 ## Animations
-{:.u-center.u-m-t-0.u-m-b-lg}
+{:.split-view__title}
 
 | ✅ | animation                                        |
 | ✅ | animation-delay                                  |
@@ -92,7 +102,7 @@ const ButtonWithTransition = cssta(Animated.View)`
 | ✅ | animation-name <span class="note">***</span>     |
 | ✅ | animation-timing-function                        |
 | ✅ | @keyframes                                       |
-{:.u-full-width.u-mono}
+{:.feature-table}
 
 </div>
 <div class="split-view__container" markdown="block">
