@@ -31,7 +31,7 @@ permalink: /native/animations/
       order: 2;
     }
 
-    .split_view__title {
+    .split-view__title {
       text-align: center;
       margin: 0 0 32pt;
     }
