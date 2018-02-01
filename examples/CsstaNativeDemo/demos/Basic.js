@@ -1,6 +1,6 @@
-import React from 'react';
-import { View, Text } from 'react-native';
-import cssta from 'cssta/native';
+import React from "react";
+import { View, Text } from "react-native";
+import cssta from "cssta/native";
 
 const HeadingContainer = cssta(View)`
   margin: 10px 50px;
@@ -19,8 +19,7 @@ export default () => (
   </HeadingContainer>
 );
 
-export const code =
-`       margin: 10px 50px;
+export const code = `       margin: 10px 50px;
       padding: 10px 15px;
 border-radius: 5px;
        border: 1px solid #e67e22;`;

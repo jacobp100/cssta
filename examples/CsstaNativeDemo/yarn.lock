@@ -1545,20 +1545,7 @@ cssom@0.3.x, "cssom@>= 0.3.2 < 0.4.0":
   dependencies:
     cssom "0.3.x"
 
-cssta@^0.4.0:
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/cssta/-/cssta-0.4.0.tgz#4c7c3a921197d396fef37f75f97270842c3fd276"
-  dependencies:
-    css-color-function "^1.3.0"
-    css-to-react-native "^2.0.0"
-    dependency-graph "^0.5.0"
-    events "^1.1.1"
-    fbjs "^0.8.6"
-    postcss "^5.2.6"
-    postcss-selector-parser "^2.2.2"
-    postcss-transform-animations "^1.0.1"
-
-"cssta@file:../..":
+cssta@./cssta:
   version "0.8.0"
   dependencies:
     babel-plugin-macros "^2.0.1"
@@ -1574,6 +1561,37 @@ cssta@^0.4.0:
     postcss-selector-parser "^2.2.2"
     postcss-transform-animations "^1.0.2"
     prop-types "^15.5.10"
+
+cssta@./cssta-0.8.0.tgz:
+  version "0.8.0"
+  resolved "./cssta-0.8.0.tgz#99125ecdb60066e55fe97636f2ab649685fc76b1"
+  dependencies:
+    babel-plugin-macros "^2.0.1"
+    css-class-generator "^1.0.1"
+    css-color-function "^1.3.0"
+    css-to-react-native "^2.0.4"
+    dependency-graph "^0.5.0"
+    events "^1.1.1"
+    fbjs "^0.8.14"
+    lodash "^4.17.4"
+    mkdirp "^0.5.1"
+    postcss "^5.2.6"
+    postcss-selector-parser "^2.2.2"
+    postcss-transform-animations "^1.0.2"
+    prop-types "^15.5.10"
+
+cssta@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/cssta/-/cssta-0.4.0.tgz#4c7c3a921197d396fef37f75f97270842c3fd276"
+  dependencies:
+    css-color-function "^1.3.0"
+    css-to-react-native "^2.0.0"
+    dependency-graph "^0.5.0"
+    events "^1.1.1"
+    fbjs "^0.8.6"
+    postcss "^5.2.6"
+    postcss-selector-parser "^2.2.2"
+    postcss-transform-animations "^1.0.1"
 
 csurf@~1.8.3:
   version "1.8.3"

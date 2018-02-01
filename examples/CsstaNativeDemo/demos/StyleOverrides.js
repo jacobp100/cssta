@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
-import { View, Slider } from 'react-native';
-import cssta from 'cssta/native';
+import React, { Component } from "react";
+import { View, Slider } from "react-native";
+import cssta from "cssta/native";
 
 const Palette = cssta(View)`
   height: 20px;
@@ -26,19 +26,19 @@ export default class VariablesProviderDemo extends Component {
           value={r}
           maximumValue={255}
           minimumTrackTintColor="red"
-          onValueChange={this.setColor('r')}
+          onValueChange={this.setColor("r")}
         />
         <Slider
           value={g}
           maximumValue={255}
           minimumTrackTintColor="green"
-          onValueChange={this.setColor('g')}
+          onValueChange={this.setColor("g")}
         />
         <Slider
           value={b}
           maximumValue={255}
           minimumTrackTintColor="blue"
-          onValueChange={this.setColor('b')}
+          onValueChange={this.setColor("b")}
         />
       </View>
     );

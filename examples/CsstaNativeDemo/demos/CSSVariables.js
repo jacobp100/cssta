@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
-import { View, Button, Animated } from 'react-native';
-import cssta from 'cssta/native';
+import React, { Component } from "react";
+import { View, Button, Animated } from "react-native";
+import cssta from "cssta/native";
 
 const PickerRow = cssta(View)`
   flex-direction: row;
@@ -19,7 +19,7 @@ const DynamicContainer = cssta(View)`
 class DynamicPicker extends Component {
   constructor() {
     super();
-    this.state = { color: 'red' };
+    this.state = { color: "red" };
     this.setColor = color => this.setState({ color });
   }
 
@@ -31,10 +31,34 @@ class DynamicPicker extends Component {
       <DynamicContainer color={color}>
         {children}
         <PickerRow>
-          <Button title="Default" color="black" onPress={() => { this.setColor(null); }} />
-          <Button title="Red" color="black" onPress={() => { this.setColor('red'); }} />
-          <Button title="Green" color="black" onPress={() => { this.setColor('green'); }} />
-          <Button title="Blue" color="black" onPress={() => { this.setColor('blue'); }} />
+          <Button
+            title="Default"
+            color="black"
+            onPress={() => {
+              this.setColor(null);
+            }}
+          />
+          <Button
+            title="Red"
+            color="black"
+            onPress={() => {
+              this.setColor("red");
+            }}
+          />
+          <Button
+            title="Green"
+            color="black"
+            onPress={() => {
+              this.setColor("green");
+            }}
+          />
+          <Button
+            title="Blue"
+            color="black"
+            onPress={() => {
+              this.setColor("blue");
+            }}
+          />
         </PickerRow>
       </DynamicContainer>
     );
@@ -55,6 +79,5 @@ export default () => (
   </DynamicPicker>
 );
 
-export const code =
-`--primary-color: red;
+export const code = `--primary-color: red;
           color: var(--primary-color);`;

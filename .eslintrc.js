@@ -1,8 +1,15 @@
 module.exports = {
   extends: ["airbnb-base", "prettier"],
-  plugins: ["import", "flowtype"],
+  plugins: ["import", "react", "flowtype"],
+  parserOptions: {
+    ecmaFeatures: {
+      jsx: true
+    }
+  },
   rules: {
     "react/jsx-filename-extension": [0],
+    "react/jsx-uses-react": [2],
+    "react/jsx-uses-vars": [2],
     "spaced-comment": [0],
     "arrow-parens": [0]
   },

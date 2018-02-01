@@ -71,6 +71,27 @@ Cssta for React Native does not use specificity: rules get applied in the order 
 
 Cssta includes a load of wrappers around React Native’s built-in features that you from CSS. Any components that aren’t using certain polyfills won’t run any code for them, and even better, if you aren’t using a polyfill at all, the code won’t even be included in your production build!
 
+The ones we include are,
+
+* [Media Queries]({{ site.baseurl }}/native/custom-properties-interpolation): `var(--property)`
 * [Transitions and Animations]({{ site.baseurl }}/native/animations): `@keyframes` etc.
 * [CSS custom properties]({{ site.baseurl }}/native/custom-properties-interpolation): `var(--property)`
 * [CSS color function](https://drafts.csswg.org/css-color/#modifying-colors): `color(red tint(50%))`
+
+### ❓ Media Queries
+
+These work as normal. You don’t need to specify [screen](https://developer.mozilla.org/en-US/docs/Web/CSS/@media#Media_types). The [media features](https://developer.mozilla.org/en-US/docs/Web/CSS/@media#Media_features) we support are,
+
+* Width and height (including min and max)
+* Aspect ratio (including min and max)
+* Orientation
+
+```jsx
+cssta(View)`
+  font-size: 12px;
+
+  @media (max-width: 800px) {
+    font-size: 14px;
+  }
+`
+```

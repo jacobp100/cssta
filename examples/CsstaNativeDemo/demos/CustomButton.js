@@ -1,7 +1,6 @@
-import React, { Component } from 'react';
-import { TouchableWithoutFeedback, Animated } from 'react-native';
-import cssta from 'cssta/native';
-
+import React, { Component } from "react";
+import { TouchableWithoutFeedback, Animated } from "react-native";
+import cssta from "cssta/native";
 
 const ButtonContainer = cssta(Animated.View)`
   --primary: #e67e22;

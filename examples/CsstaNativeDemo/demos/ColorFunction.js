@@ -1,6 +1,6 @@
-import React from 'react';
-import { View, Text } from 'react-native';
-import cssta from 'cssta/native';
+import React from "react";
+import { View, Text } from "react-native";
+import cssta from "cssta/native";
 
 const HeadingContainer = cssta(View)`
   --color: red;
@@ -18,8 +18,10 @@ const Code = cssta(Text)`
 
 export default () => (
   <HeadingContainer>
-    <HeadingText>Text styled using CSS&rsquo;s <Code>color(...)</Code> function</HeadingText>
+    <HeadingText>
+      Text styled using CSS&rsquo;s <Code>color(...)</Code> function
+    </HeadingText>
   </HeadingContainer>
 );
 
-export const code = 'color: color(red tint(50%));';
+export const code = "color: color(red tint(50%));";
