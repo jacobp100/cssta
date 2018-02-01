@@ -5,6 +5,11 @@ permalink: /native/animations/
 ---
 
 <style>
+.note {
+  color: #EA2027;
+  font-family: 'Source Code Pro', monospace;
+}
+
 @media screen and (min-width: 1279px) {
   .split-view {
     display: flex;
@@ -41,11 +46,11 @@ Because we use the CSS spec, you can find a tonne of stuff on [MDN](https://deve
 ## Transitions
 {:.u-center.u-m-t-0.u-m-b-lg}
 
-| transition                 | ✅ * |
-| transition-delay           | ✅   |
-| transition-duration        | ✅   |
-| transition-property        | ✅ * |
-| transition-timing-function | ✅   |
+| ✅ | transition <span class="note">*</span>          |
+| ✅ | transition-delay                                |
+| ✅ | transition-duration                             |
+| ✅ | transition-property <span class="note">*</span> |
+| ✅ | transition-timing-function                      |
 {:.u-full-width.u-mono}
 
 </div>
@@ -77,16 +82,16 @@ const ButtonWithTransition = cssta(Animated.View)`
 ## Animations
 {:.u-center.u-m-t-0.u-m-b-lg}
 
-| animation                 | ✅     |
-| animation-delay           | ✅     |
-| animation-direction       | ❌     |
-| animation-duration        | ✅     |
-| animation-fill-mode       | ❌ **  |
-| animation-iteration-count | ❌     |
-| animation-play-state      | ❌     |
-| animation-name            | ✅ *** |
-| animation-timing-function | ✅     |
-| @keyframes                | ✅     |
+| ✅ | animation                                        |
+| ✅ | animation-delay                                  |
+| ❌ | animation-direction                              |
+| ✅ | animation-duration                               |
+| ❌ | animation-fill-mode <span class="note">**</span> |
+| ❌ | animation-iteration-count                        |
+| ❌ | animation-play-state                             |
+| ✅ | animation-name <span class="note">***</span>     |
+| ✅ | animation-timing-function                        |
+| ✅ | @keyframes                                       |
 {:.u-full-width.u-mono}
 
 </div>
@@ -116,11 +121,11 @@ const ButtonWithKeyframes = cssta(Animated.View)`
 
 You can animate multiple transforms, but the nodes of the transform must not change. I.e, you can animate `transform: scaleX(1) rotateX(0deg)` to `transform: scaleX(5) rotateX(30deg)`, but you cannot then transform to `transform: scaleY(5) skew(30deg)`.
 
-<span class="token function">\*</span> Transition properties cannot currently be shorthands, including things like `border-width`, but you can write `transition-property: border-top-width, border-right-width …`. You also cannot use custom properties to define them.
+<span class="note">\*</span> Transition properties cannot currently be shorthands, including things like `border-width`, but you can write `transition-property: border-top-width, border-right-width …`. You also cannot use custom properties to define them.
 
-<span class="token function">\*\*</span> Currently uses value of `fill-forwards`.
+<span class="note">\*\*</span> Currently uses value of `fill-forwards`.
 
-<span class="token function">\*\*\*</span> Animations currently only support up to one animation.
+<span class="note">\*\*\*</span> Animations currently only support up to one animation.
 
 ## 🎥 Custom Animations via `Animated.Value`
 
