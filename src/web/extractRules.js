@@ -1,9 +1,7 @@
 // @flow
 /* eslint-disable no-param-reassign */
 const selectorParser = require("postcss-selector-parser");
-const {
-  transformAnimationNames
-} = require("postcss-transform-animations/dist/transformAnimationNames");
+const transformAnimationNames = require("postcss-transform-animations/dist/transformAnimationNames");
 const getRoot = require("../util/getRoot");
 const { isDirectChildOfKeyframes } = require("../util/cssAst");
 /*:: import type { Args } from './types' */

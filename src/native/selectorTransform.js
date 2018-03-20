@@ -71,36 +71,39 @@ const createValidator = node => {
 };
 
 const createMediaFeatureValidator = query => {
-  const match = query.match(/(\w+)/g) || [];
-  switch (match[0]) {
+  const match = query.match(/^\s*\(\s*([\w-]+)\s*:\s*(\w+)\s*\)\s*$/);
+
+  if (match == null) throw new Error(`Could not parse media query: ${query}`);
+
+  switch (match[1]) {
     case "width":
-      return `(${parseInt(match[1], 10)} === ${propArg}.$ScreenWidth)`;
+      return `(${parseInt(match[2], 10)} === ${propArg}.$ScreenWidth)`;
     case "min-width":
-      return `(${parseInt(match[1], 10)} < ${propArg}.$ScreenWidth)`;
+      return `(${parseInt(match[2], 10)} >= ${propArg}.$ScreenWidth)`;
     case "max-width":
-      return `(${parseInt(match[1], 10)} > ${propArg}.$ScreenWidth)`;
+      return `(${parseInt(match[2], 10)} <= ${propArg}.$ScreenWidth)`;
     case "height":
-      return `(${parseInt(match[1], 10)} === ${propArg}.$ScreenHeight)`;
+      return `(${parseInt(match[2], 10)} === ${propArg}.$ScreenHeight)`;
     case "min-height":
-      return `(${parseInt(match[1], 10)} < ${propArg}.$ScreenHeight)`;
+      return `(${parseInt(match[2], 10)} >= ${propArg}.$ScreenHeight)`;
     case "max-height":
-      return `(${parseInt(match[1], 10)} > ${propArg}.$ScreenHeight)`;
+      return `(${parseInt(match[2], 10)} <= ${propArg}.$ScreenHeight)`;
     case "aspect-ratio": {
-      const [w, h] = match[1].split("/").map(Number);
+      const [w, h] = match[2].split("/").map(Number);
       return `(${w} / ${h} === ${propArg}.$ScreenWidth / ${propArg}.$ScreenHeight)`;
     }
     case "min-aspect-ratio": {
-      const [w, h] = match[1].split("/").map(Number);
+      const [w, h] = match[2].split("/").map(Number);
       return `(${w} / ${h} < ${propArg}.$ScreenWidth / ${propArg}.$ScreenHeight)`;
     }
     case "max-aspect-ratio": {
-      const [w, h] = match[1].split("/").map(Number);
+      const [w, h] = match[2].split("/").map(Number);
       return `(${w} / ${h} > ${propArg}.$ScreenWidth / ${propArg}.$ScreenHeight)`;
     }
     case "orientation":
-      if (/landscape/i.test(match[1])) {
+      if (/landscape/i.test(match[2])) {
         return `(${propArg}.$ScreenWidth > ${propArg}.$ScreenHeight)`;
-      } else if (/portrait/i.test(match[1])) {
+      } else if (/portrait/i.test(match[2])) {
         return `(${propArg}.$ScreenWidth < ${propArg}.$ScreenHeight)`;
       }
     // fallthrough
@@ -118,7 +121,7 @@ const getBaseValidatorSourceForSelector = (selector, mediaQuery) => {
 
   let validatorNode = createValidator(selectorNode) || "true";
   if (mediaQuery != null) {
-    validatorNode = (mediaQuery.match(/(\w+)\s*:\s*(\w+)/g) || []).reduce(
+    validatorNode = (mediaQuery.match(/\([^()]+\)/g) || []).reduce(
       (accum, query) => `(${accum} && ${createMediaFeatureValidator(query)})`,
       validatorNode
     );

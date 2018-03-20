@@ -6,10 +6,10 @@
     "start": "node node_modules/react-native/local-cli/cli.js start",
     "devtools": "react-devtools",
     "test": "jest",
-    "install-local": "npm pack ../.. && tar xvzf && mv ./package cssta && yarn add cssta && sed -i '' 's%./cssta%cssta%g' package.json && rm -rf cssta*"
+    "install-local": "npm pack ../.. && tar xvzf cssta* && mv ./package cssta && yarn add ./cssta && sed -i '' 's%cssta%cssta%g' package.json && rm -rf cssta*"
   },
   "dependencies": {
-    "cssta": "cssta",
+    "cssta": "./cssta",
     "react": "^16.2.0",
     "react-native": "^0.52.2"
   },

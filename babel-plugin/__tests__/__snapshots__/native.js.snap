@@ -566,7 +566,7 @@ _withEnhancers([_MediaQuery])(View, [], {
   'keyframes': {},
   'rules': [{
     'validate': function (p) {
-      return true && 500 === p.$ScreenWidth;
+      return true && 500 < p.$ScreenWidth;
     },
     'transitions': null,
     'animation': null,
@@ -587,7 +587,7 @@ _withEnhancers([_MediaQuery, _VariablesStyleSheetManager])(View, [], {
   'keyframesStyleTuples': {},
   'ruleTuples': [{
     'validate': function (p) {
-      return true && 500 === p.$ScreenWidth;
+      return true && 500 < p.$ScreenWidth;
     },
     'exportedVariables': {},
     'transitionParts': null,

@@ -21,6 +21,7 @@
   },
   "files": [
     "lib",
+    "src",
     "babel-plugin",
     "macro",
     "vendor",
