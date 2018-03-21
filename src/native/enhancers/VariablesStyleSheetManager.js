@@ -161,11 +161,8 @@ module.exports = class VariablesStyleSheetManager extends Component /*::<
 
     if (!styleCached) styleCache[styleCacheKey] = transformedArgs;
 
-    const { args, children } = this.props;
-    const nextArgs = Object.assign({}, args, transformedArgs);
-    const nextProps = Object.assign({}, this.props, { args: nextArgs });
-
-    return children(nextProps);
+    const nextProps = Object.assign({}, this.props, { args: transformedArgs });
+    return this.props.children(nextProps);
   }
 
   render() {

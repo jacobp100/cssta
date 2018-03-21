@@ -29,16 +29,6 @@ const Example = cssta(View)`
   }
 `;
 
-const Example2 = cssta(View)`
-  width: 20px;
-  height: 20px;
-  background: red;
-
-  @media (orientation: portrait) {
-    background: blue;
-  }
-`;
-
 const ExampleText = cssta(Text)`
   color: var(--color);
   text-align: center;
@@ -52,7 +42,6 @@ export default () => (
     <Example portrait>
       <ExampleText>Portrait</ExampleText>
     </Example>
-    <Example2 />
   </Container>
 );
 

@@ -20,9 +20,10 @@ const factory = componentFactory((ownProps, passedProps, args /*: Args */) => {
   if (passedProps.className) classNames.push(passedProps.className);
 
   const className = classNames.join(" ");
-  if (className) passedProps.className = className;
 
-  return passedProps;
+  return className.length > 0
+    ? Object.assign({}, passedProps, { className })
+    : passedProps;
 });
 
 // Optimisation allows not passing propTypes on prod

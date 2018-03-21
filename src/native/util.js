@@ -12,4 +12,6 @@ module.exports.getAppliedRules = /*:: <T: VariableWithValidator> */ (
   rules /*: T[] */,
   ownProps /*: Object */
 ) /*: T[] */ =>
-  rules.filter(rule => (rule.validate ? rule.validate(ownProps) : true));
+  rules.filter(
+    rule => (rule.validate != null ? rule.validate(ownProps) : true)
+  );

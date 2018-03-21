@@ -11,7 +11,7 @@
   "dependencies": {
     "cssta": "./cssta",
     "react": "^16.2.0",
-    "react-native": "^0.52.2"
+    "react-native": "^0.54.2"
   },
   "jest": {
     "preset": "react-native"
