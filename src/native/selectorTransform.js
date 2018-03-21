@@ -79,15 +79,15 @@ const createMediaFeatureValidator = query => {
     case "width":
       return `(${parseInt(match[2], 10)} === ${propArg}.$ScreenWidth)`;
     case "min-width":
-      return `(${parseInt(match[2], 10)} >= ${propArg}.$ScreenWidth)`;
+      return `(${parseInt(match[2], 10)} < ${propArg}.$ScreenWidth)`;
     case "max-width":
-      return `(${parseInt(match[2], 10)} <= ${propArg}.$ScreenWidth)`;
+      return `(${parseInt(match[2], 10)} > ${propArg}.$ScreenWidth)`;
     case "height":
       return `(${parseInt(match[2], 10)} === ${propArg}.$ScreenHeight)`;
     case "min-height":
-      return `(${parseInt(match[2], 10)} >= ${propArg}.$ScreenHeight)`;
+      return `(${parseInt(match[2], 10)} < ${propArg}.$ScreenHeight)`;
     case "max-height":
-      return `(${parseInt(match[2], 10)} <= ${propArg}.$ScreenHeight)`;
+      return `(${parseInt(match[2], 10)} > ${propArg}.$ScreenHeight)`;
     case "aspect-ratio": {
       const [w, h] = match[2].split("/").map(Number);
       return `(${w} / ${h} === ${propArg}.$ScreenWidth / ${propArg}.$ScreenHeight)`;
