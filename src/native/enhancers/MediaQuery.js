@@ -26,16 +26,13 @@ module.exports = class MediaQueryEnhancer extends Component /*::<
 
   constructor() {
     super();
-    const monitorWidth = true;
-    const monitorHeight = true;
     const initialWindow = Dimensions.get("window");
     this.state = { width: initialWindow.width, height: initialWindow.height };
 
     this.listener = ({ window: { width, height } }) => {
       this.setState(
         state =>
-          (monitorWidth && state.width !== width) ||
-          (monitorHeight && state.height !== height)
+          state.width !== width || state.height !== height
             ? { width, height }
             : null
       );
