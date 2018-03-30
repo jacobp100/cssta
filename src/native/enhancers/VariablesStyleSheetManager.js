@@ -108,7 +108,7 @@ const createRuleStylesUsingStylesheet = (
           keyframe.styleTuples
             ? {
                 time: keyframe.time,
-                styles: transformStyleTuples(
+                style: transformStyleTuples(
                   keyframe.styleTuples,
                   appliedVariables
                 )
@@ -143,23 +143,20 @@ module.exports = class VariablesStyleSheetManager extends Component /*::<
   }
 
   renderWithVariables(appliedVariables /*: VariablesStore */) {
-    const { styleCache } = this;
+    const { styleSheetCache, importedVariables } = this.props.args;
 
-    const ownAppliedVariables = this.props.args.importedVariables.reduce(
-      (accum, key) => {
-        accum[key] = appliedVariables[key];
-        return accum;
-      },
-      {}
-    );
+    const ownAppliedVariables = importedVariables.reduce((accum, key) => {
+      accum[key] = appliedVariables[key];
+      return accum;
+    }, {});
     const styleCacheKey = JSON.stringify(ownAppliedVariables);
-    const styleCached = styleCacheKey in styleCache;
+    const styleCached = styleCacheKey in styleSheetCache;
 
     const transformedArgs = styleCached
-      ? styleCache[styleCacheKey]
+      ? styleSheetCache[styleCacheKey]
       : createRuleStylesUsingStylesheet(ownAppliedVariables, this.props.args);
 
-    if (!styleCached) styleCache[styleCacheKey] = transformedArgs;
+    if (!styleCached) styleSheetCache[styleCacheKey] = transformedArgs;
 
     const nextProps = Object.assign({}, this.props, { args: transformedArgs });
     return this.props.children(nextProps);

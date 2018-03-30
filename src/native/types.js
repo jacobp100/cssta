@@ -1,16 +1,14 @@
 // @flow
-/*
-Arrays of each word in value
-i.e. `transition: color 1s linear` => ['color', '1s', 'linear']
-transitionParts keyed by property name
-These might have variables
-*/
 
 /*::
 export type VariablesStore = { [key:string]: string }
 export type StyleTuple = [string, string]
 export type Style = { [key:string]: any } | string
 
+// Arrays of each word in value
+// i.e. `transition: color 1s linear` => ['color', '1s', 'linear']
+// transitionParts keyed by property name
+// These might have variables
 export type TransitionParts = {
   _?: string,
   delay?: string,
@@ -32,6 +30,7 @@ export type VariableWithValidator = {
 }
 
 export type BaseVariableArgs = {|
+  styleSheetCache: { [key:string]: any },
   transitionedProperties: string[],
   importedVariables: string[],
   keyframesStyleTuples: { [key:string]: (VariableKeyframeTuple | Keyframe)[] },
@@ -55,7 +54,7 @@ export type BaseVariableRuleTuple = {|
 |}
 
 export type RawVariableRuleTuple = {|
-  ...BaseVariableRuleTuple ,
+  ...BaseVariableRuleTuple,
   selector: string,
   mediaQuery: ?string,
 |}
@@ -85,6 +84,6 @@ export type Rule = {|
 
 export type Keyframe = {|
   time: number,
-  styles: any,
+  style: any,
 |}
 */

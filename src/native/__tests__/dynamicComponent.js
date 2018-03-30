@@ -15,6 +15,7 @@ const defaultDynamicComponent = withEnhancers([
 const runTest = ({
   type = "button",
   propTypes = [],
+  styleSheetCache = {},
   importedVariables = [],
   transitionedProperties = [],
   keyframesStyleTuples = {},
@@ -26,6 +27,7 @@ const runTest = ({
   expectedChildren = null
 } = {}) => {
   const args = {
+    styleSheetCache,
     importedVariables,
     transitionedProperties,
     keyframesStyleTuples,
@@ -256,6 +258,7 @@ it("animates between transitioned values", () => {
     }
   ];
   const args = {
+    styleSheetCache: {},
     importedVariables: [],
     transitionedProperties: ["color"],
     keyframesStyleTuples: {},
@@ -292,6 +295,7 @@ it("does not allow animating between divergent transforms", () => {
     }
   ];
   const args = {
+    styleSheetCache: {},
     importedVariables: [],
     transitionedProperties: ["transform"],
     keyframesStyleTuples: {},
@@ -386,6 +390,7 @@ it("performs keyframe animation on mount", () => {
     ]
   };
   const args = {
+    styleSheetCache: {},
     importedVariables: [],
     transitionedProperties: [],
     keyframesStyleTuples,
@@ -427,6 +432,7 @@ it("performs keyframe animation when changing animation", () => {
     ]
   };
   const args = {
+    styleSheetCache: {},
     importedVariables: [],
     transitionedProperties: [],
     keyframesStyleTuples,

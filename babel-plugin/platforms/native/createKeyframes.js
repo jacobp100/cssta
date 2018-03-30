@@ -15,7 +15,7 @@ const createKeyframeStatic = _.curry((babel, path, substitutionMap, keyframe) =>
       babel.types.numericLiteral(keyframe.time)
     ),
     babel.types.objectProperty(
-      babel.types.stringLiteral("styles"),
+      babel.types.stringLiteral("style"),
       createStyleBody(babel, path, substitutionMap, keyframe.styleTuples)
     )
   ])

@@ -7,6 +7,10 @@ module.exports = (babel, path, substitutionMap, args) =>
   babel.types.objectExpression([
     ...commonArgs(babel, args),
     babel.types.objectProperty(
+      babel.types.stringLiteral("styleSheetCache"),
+      jsonToNode(babel, args.styleSheetCache)
+    ),
+    babel.types.objectProperty(
       babel.types.stringLiteral("importedVariables"),
       jsonToNode(babel, args.importedVariables)
     ),

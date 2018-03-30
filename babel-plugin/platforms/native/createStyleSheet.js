@@ -110,7 +110,7 @@ const staticRuleGenerator = (babel, path, substitutionMap) => {
       ...baseRuleElements(babel, ruleBase),
       ...jsonObjectProperties(babel, {
         transitions: ruleBase.transitionParts,
-        animation: ruleBase.animationParts
+        animations: ruleBase.animationParts
       }),
       t.objectProperty(
         t.stringLiteral("style"),
@@ -135,7 +135,7 @@ const ruleIsStatic = _.conforms({
   styleTuples: _.every(styleTupleIsStatic),
   exportedVariables: _.isEmpty,
   transitionParts: _.every(styleIsStatic),
-  animationParts: styleIsStatic
+  animationParts: _.every(styleIsStatic)
 });
 
 module.exports = (babel, path, substitutionMap, rules) => {

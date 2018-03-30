@@ -20,6 +20,7 @@ const createValidatorsForRules = (
   args /*: RawVariableArgs */
 ) /*: VariableArgs */ => {
   const {
+    styleSheetCache,
     transitionedProperties,
     importedVariables,
     keyframesStyleTuples
@@ -32,6 +33,7 @@ const createValidatorsForRules = (
     exportedVariables: rule.exportedVariables
   }));
   return {
+    styleSheetCache,
     transitionedProperties,
     importedVariables,
     keyframesStyleTuples,

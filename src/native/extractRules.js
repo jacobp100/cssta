@@ -228,7 +228,12 @@ module.exports = (
 
   const importedVariables = getImportedVariables(root);
 
+  // We want to share stylesheet caches by component rather than by instance
+  // Just make a mutable object VariablesStyleSheetManager can store cache values in
+  const styleSheetCache = {};
+
   const args = {
+    styleSheetCache,
     transitionedProperties,
     importedVariables,
     keyframesStyleTuples,

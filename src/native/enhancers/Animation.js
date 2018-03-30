@@ -117,7 +117,7 @@ const getAnimationState = (props, { delay, duration, name, easing }) => {
   if (animationSequence == null) return noAnimations;
 
   const animatedProperties = Object.keys(
-    Object.assign({}, ...animationSequence.map(frame => frame.styles))
+    Object.assign({}, ...animationSequence.map(frame => frame.style))
   );
 
   const animationValues = animatedProperties.reduce(
@@ -133,8 +133,8 @@ const getAnimationState = (props, { delay, duration, name, easing }) => {
     const currentValue = currentStyles[animationProperty];
 
     let keyframes = animationSequence
-      .filter(frame => animationProperty in frame.styles)
-      .map(({ time, styles }) => ({ time, value: styles[animationProperty] }));
+      .filter(frame => animationProperty in frame.style)
+      .map(({ time, style }) => ({ time, value: style[animationProperty] }));
     // Fixes missing start/end values
     keyframes = [].concat(
       keyframes[0].time > 0 ? [{ time: 0, value: currentValue }] : [],
