@@ -3,6 +3,7 @@ import { View, Text, ScrollView, StyleSheet } from "react-native";
 import cssta from "cssta/native";
 import Basic, { code as basicCode } from "./demos/Basic";
 import Animations, { code as animationsCode } from "./demos/Animations";
+import InfiniteAnimation, { code as infiniteAnimationCode } from "./demos/InfiniteAnimation";
 import Transitions, { code as transitionsCode } from "./demos/Transitions";
 import CSSVariables, { code as cssVariablesCode } from "./demos/CSSVariables";
 import VariablesProvider, {
@@ -74,6 +75,9 @@ export default () => (
     </Demo>
     <Demo title="Animations" code={animationsCode}>
       <Animations />
+    </Demo>
+    <Demo title="Infinite Animation" code={infiniteAnimationCode}>
+      <InfiniteAnimation />
     </Demo>
     <Demo title="Transitions" code={transitionsCode}>
       <Transitions />

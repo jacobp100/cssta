@@ -26,7 +26,7 @@ _withEnhancers([_Animation])(Animated.View, [], {
       return true;
     },
     'transitions': null,
-    'animation': {
+    'animations': {
       '_': 'test 1s',
       'timingFunction': 'linear'
     },
@@ -95,7 +95,7 @@ const Component = _createComponent('button', ['booleanAttribute'], {
       return p[\\"booleanAttribute\\"] === true;
     },
     'transitions': null,
-    'animation': null,
+    'animations': null,
     'style': _csstaStyle[0]
   }]
 });"
@@ -121,7 +121,7 @@ const Component = _createComponent(View, [], {
       return true;
     },
     'transitions': null,
-    'animation': null,
+    'animations': null,
     'style': _csstaStyle[0]
   }]
 });"
@@ -156,7 +156,7 @@ const Component = _createComponent(View, [], {
       return true;
     },
     'transitions': null,
-    'animation': null,
+    'animations': null,
     'style': _csstaStyle[0]
   }]
 });"
@@ -182,7 +182,7 @@ const Component = _createComponent(Link, [], {
       return true;
     },
     'transitions': null,
-    'animation': null,
+    'animations': null,
     'style': _csstaStyle[0]
   }]
 });"
@@ -209,7 +209,7 @@ function test() {
         return true;
       },
       'transitions': null,
-      'animation': null,
+      'animations': null,
       'style': _csstaStyle[0]
     }]
   });
@@ -236,7 +236,7 @@ const Component = _createComponent(View, [], {
       return true;
     },
     'transitions': null,
-    'animation': null,
+    'animations': null,
     'style': _csstaStyle[0]
   }]
 });"
@@ -280,21 +280,21 @@ _createComponent(View, ['attr1', 'attr2', 'attr3'], {
       return p[\\"attr1\\"] === true;
     },
     'transitions': null,
-    'animation': null,
+    'animations': null,
     'style': _csstaStyle[0]
   }, {
     'validate': function (p) {
       return p[\\"attr2\\"] === true;
     },
     'transitions': null,
-    'animation': null,
+    'animations': null,
     'style': _csstaStyle[1]
   }, {
     'validate': function (p) {
       return p[\\"attr3\\"] === true;
     },
     'transitions': null,
-    'animation': null,
+    'animations': null,
     'style': _csstaStyle[2]
   }]
 });"
@@ -331,21 +331,21 @@ _createComponent(View, ['attr1', 'attr2', 'attr3'], {
       return p[\\"attr1\\"] === true;
     },
     'transitions': null,
-    'animation': null,
+    'animations': null,
     'style': _csstaStyle[0]
   }, {
     'validate': function (p) {
       return p[\\"attr2\\"] === true;
     },
     'transitions': null,
-    'animation': null,
+    'animations': null,
     'style': _csstaStyle[1]
   }, {
     'validate': function (p) {
       return p[\\"attr3\\"] === true;
     },
     'transitions': null,
-    'animation': null,
+    'animations': null,
     'style': _csstaStyle[2]
   }]
 });"
@@ -383,21 +383,21 @@ _createComponent(View, ['attr1', 'attr2', 'attr3'], {
       return p[\\"attr1\\"] === true;
     },
     'transitions': null,
-    'animation': null,
+    'animations': null,
     'style': _csstaStyle[0]
   }, {
     'validate': function (p) {
       return p[\\"attr2\\"] === true;
     },
     'transitions': null,
-    'animation': null,
+    'animations': null,
     'style': _csstaStyle[1]
   }, {
     'validate': function (p) {
       return p[\\"attr3\\"] === true;
     },
     'transitions': null,
-    'animation': null,
+    'animations': null,
     'style': _csstaStyle[2]
   }]
 });"
@@ -423,7 +423,7 @@ _createComponent(View, [], {
       return true;
     },
     'transitions': null,
-    'animation': null,
+    'animations': null,
     'style': _csstaStyle[0]
   }]
 });"
@@ -467,7 +467,7 @@ _withEnhancers([_Animation])(Animated.View, [], {
       return true;
     },
     'transitions': null,
-    'animation': {
+    'animations': {
       '_': 'test 1s linear'
     },
     'style': _csstaStyle[0]
@@ -507,7 +507,7 @@ _withEnhancers([_VariablesStyleSheetManager, _Animation])(Animated.View, [], {
       return true;
     },
     'transitions': null,
-    'animation': {
+    'animations': {
       '_': 'test 1s linear'
     },
     'style': _csstaStyle[0]
@@ -572,7 +572,7 @@ _withEnhancers([_MediaQuery])(View, [], {
       return true && 500 < p.$ScreenWidth;
     },
     'transitions': null,
-    'animation': null,
+    'animations': null,
     'style': _csstaStyle[0]
   }]
 });"
@@ -630,28 +630,28 @@ const Component = _createComponent('button', ['booleanAttribute', 'stringAttribu
       return true;
     },
     'transitions': null,
-    'animation': null,
+    'animations': null,
     'style': _csstaStyle[0]
   }, {
     'validate': function (p) {
       return p[\\"booleanAttribute\\"] === true;
     },
     'transitions': null,
-    'animation': null,
+    'animations': null,
     'style': _csstaStyle[1]
   }, {
     'validate': function (p) {
       return p[\\"stringAttribute\\"] === \\"1\\";
     },
     'transitions': null,
-    'animation': null,
+    'animations': null,
     'style': _csstaStyle[2]
   }, {
     'validate': function (p) {
       return p[\\"stringAttribute\\"] === \\"2\\";
     },
     'transitions': null,
-    'animation': null,
+    'animations': null,
     'style': _csstaStyle[3]
   }]
 });"
@@ -680,14 +680,14 @@ const Component = _createComponent('button', ['stringAttribute'], {
       return p[\\"stringAttribute\\"] === \\"1\\";
     },
     'transitions': null,
-    'animation': null,
+    'animations': null,
     'style': _csstaStyle[0]
   }, {
     'validate': function (p) {
       return p[\\"stringAttribute\\"] === \\"2\\";
     },
     'transitions': null,
-    'animation': null,
+    'animations': null,
     'style': _csstaStyle[1]
   }]
 });"
@@ -720,14 +720,14 @@ _withEnhancers([_Transition])(Animated.View, ['boolAttr'], {
       '_': '1s linear',
       'property': ['color']
     },
-    'animation': null,
+    'animations': null,
     'style': _csstaStyle[0]
   }, {
     'validate': function (p) {
       return p[\\"boolAttr\\"] === true;
     },
     'transitions': null,
-    'animation': null,
+    'animations': null,
     'style': _csstaStyle[1]
   }]
 });"
@@ -772,14 +772,14 @@ _withEnhancers([_Transition])(Animated.View, ['active'], {
       '_': '0.5s linear, 0.75s linear',
       'property': ['backgroundColor', 'transform']
     },
-    'animation': null,
+    'animations': null,
     'style': _csstaStyle[0]
   }, {
     'validate': function (p) {
       return p[\\"active\\"] === true;
     },
     'transitions': null,
-    'animation': null,
+    'animations': null,
     'style': _csstaStyle[1]
   }]
 });"
@@ -824,14 +824,14 @@ _withEnhancers([_Transition])(Animated.View, ['active'], {
       '_': '0.5s linear',
       'property': ['border-top-color', 'border-right-color', 'border-bottom-color', 'border-left-color']
     },
-    'animation': null,
+    'animations': null,
     'style': _csstaStyle[0]
   }, {
     'validate': function (p) {
       return p[\\"active\\"] === true;
     },
     'transitions': null,
-    'animation': null,
+    'animations': null,
     'style': _csstaStyle[1]
   }]
 });"
@@ -872,7 +872,7 @@ _withEnhancers([_VariablesStyleSheetManager, _Transition])(Animated.View, ['bool
       return p[\\"boolAttr\\"] === true;
     },
     'transitions': null,
-    'animation': null,
+    'animations': null,
     'style': _csstaStyle[0]
   }]
 });"
@@ -1005,7 +1005,7 @@ _createComponent(View, [], {
       return true;
     },
     'transitions': null,
-    'animation': null,
+    'animations': null,
     'style': _csstaStyle[0]
   }]
 });

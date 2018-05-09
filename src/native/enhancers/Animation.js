@@ -17,9 +17,11 @@ const {
   mergeStyles,
   interpolateValue,
   getDurationInMs,
+  getIterationCount,
   easingFunctions,
   durationRegExp,
-  easingRegExp
+  easingRegExp,
+  iterationCountRegExp
 } = require("./animationUtil");
 /*:: import type { DynamicProps } from '../../factories/types' */
 /*:: import type { Args } from '../types' */
@@ -37,16 +39,18 @@ type AnimationState = {
   animationValues: ?{ [key:string]: AnimatedValue },
   delay: number,
   duration: number,
+  iterations: number,
   name: ?string,
   easing: any,
 }
 */
 
 /* eslint-disable no-bitwise, no-param-reassign */
-const DELAY = 1;
+const TIMING_FUNCTION = 1 << 0;
 const DURATION = 1 << 1;
-const NAME = 1 << 2;
-const TIMING_FUNCTION = 1 << 3;
+const DELAY = 1 << 2;
+const ITERATION_COUNT = 1 << 3;
+const NAME = 1 << 4;
 
 const getAnimationShorthand = shorthandParts => {
   let set = 0;
@@ -61,6 +65,9 @@ const getAnimationShorthand = shorthandParts => {
       } else if (!(set & DELAY) && durationRegExp.test(part)) {
         accum.delay = part;
         set &= DURATION;
+      } else if (!(set & ITERATION_COUNT) && iterationCountRegExp.test(part)) {
+        accum.iterationCount = part;
+        set &= ITERATION_COUNT;
       } else if (!(set & NAME)) {
         accum.name = part;
         set &= NAME;
@@ -69,7 +76,13 @@ const getAnimationShorthand = shorthandParts => {
       }
       return accum;
     },
-    { delay: "0", duration: "0", name: "none", timingFunction: "ease" }
+    {
+      delay: "0",
+      duration: "0",
+      iterationCount: "1",
+      name: "none",
+      timingFunction: "ease"
+    }
   );
 };
 /* eslint-enable */
@@ -77,7 +90,13 @@ const getAnimationShorthand = shorthandParts => {
 const getAnimations = props =>
   mergeShorthandProps(
     getAnimationShorthand,
-    { delay: [], duration: [], name: [], timingFunction: [] },
+    {
+      delay: [],
+      duration: [],
+      iterationCount: [],
+      name: [],
+      timingFunction: []
+    },
     getAppliedRules(props.args.rules, props.ownProps).map(
       rule => rule.animations
     )
@@ -88,29 +107,40 @@ const noAnimations /*: AnimationState */ = {
   animationValues: null,
   delay: 0,
   duration: 0,
+  iterations: 1,
   name: null,
-  easing: Easing.ease
+  easing: easingFunctions.ease
 };
 
 const getAnimationParameters = props => {
   const animations = getAnimations(props);
 
   if (animations.name.length === 0) {
-    return { delay: 0, duration: 0, name: null, easing: easingFunctions.ease };
+    return {
+      delay: noAnimations.delay,
+      duration: noAnimations.duration,
+      iterations: noAnimations.iterations,
+      name: noAnimations.name,
+      easing: noAnimations.easing
+    };
   }
 
   const delay = getDurationInMs(animations.delay[0]);
   const duration = getDurationInMs(animations.duration[0]);
+  const iterations = getIterationCount(animations.iterationCount[0]);
   const name = animations.name[0] !== "none" ? animations.name[0] : null;
   const timingFunction =
     animations.timingFunction.length > 0
       ? animations.timingFunction[0].toLowerCase()
       : "ease";
   const easing = easingFunctions[timingFunction];
-  return { delay, duration, name, easing };
+  return { delay, duration, iterations, name, easing };
 };
 
-const getAnimationState = (props, { delay, duration, name, easing }) => {
+const getAnimationState = (
+  props,
+  { delay, duration, iterations, name, easing }
+) => {
   const currentStyles = mergeStyles(props);
 
   const animationSequence = name != null ? props.args.keyframes[name] : null;
@@ -155,7 +185,15 @@ const getAnimationState = (props, { delay, duration, name, easing }) => {
     return accum;
   }, {});
 
-  return { animations, animationValues, delay, duration, name, easing };
+  return {
+    animations,
+    animationValues,
+    delay,
+    duration,
+    iterations,
+    name,
+    easing
+  };
 };
 
 module.exports = class AnimationEnhancer extends Component /*::<
@@ -191,6 +229,7 @@ module.exports = class AnimationEnhancer extends Component /*::<
     const {
       delay,
       duration,
+      iterations,
       easing,
       animationValues: animationValuesObject
     } = this.state;
@@ -204,9 +243,20 @@ module.exports = class AnimationEnhancer extends Component /*::<
 
     animationValues.forEach(animation => animation.setValue(0));
 
-    const timings = animationValues.map(animation =>
-      Animated.timing(animation, { toValue: 1, duration, delay, easing })
-    );
+    const timings = animationValues.map(animation => {
+      const config = { toValue: 1, duration, delay, easing };
+      let res = Animated.sequence([
+        Animated.timing(animation, config),
+        // Reset animation
+        Animated.timing(animation, { toValue: 0, duration: 0 })
+      ]);
+
+      if (iterations !== 1) {
+        res = Animated.loop(res, { iterations });
+      }
+
+      return res;
+    });
 
     Animated.parallel(timings).start(({ finished }) => {
       // FIXME: This doesn't seem to clear the animation

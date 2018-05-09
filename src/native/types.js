@@ -23,6 +23,7 @@ export type AnimationParts = {
   duration?: string,
   name?: string,
   timingFunction?: string,
+  iterations?: string,
 }
 
 export type VariableWithValidator = {

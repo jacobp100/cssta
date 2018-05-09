@@ -76,6 +76,9 @@ module.exports.getDurationInMs = (duration /*: string */) /*: number */ => {
   return time * factor;
 };
 
+module.exports.getIterationCount = (iteration /*: string */) /*: number */ =>
+  /infinite/i.test(iteration) ? -1 : parseInt(iteration, 10);
+
 module.exports.easingFunctions = {
   linear: Easing.linear,
   ease: Easing.ease,
@@ -84,8 +87,9 @@ module.exports.easingFunctions = {
   "ease-in-out": Easing.inOut
 };
 
-module.exports.durationRegExp = /^\d/;
-module.exports.easingRegExp = /(linear|ease(?:-in)?(?:-out)+)/i;
+module.exports.durationRegExp = /^\d+(?:m?s)$/;
+module.exports.easingRegExp = /^(linear|ease(?:-in)?(?:-out)+)$/i;
+module.exports.iterationCountRegExp = /^(\d+|infinite)$/i;
 
 const separator = /\s*,\s*/;
 

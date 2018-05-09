@@ -49,7 +49,8 @@ const animationAttributes = {
   "animation-delay": "delay",
   "animation-duration": "duration",
   "animation-name": "name",
-  "animation-timing-function": "timingFunction"
+  "animation-timing-function": "timingFunction",
+  "animation-iteration-count": "iterations"
 };
 
 // TODO: Animation long-hands
@@ -102,6 +103,7 @@ const getTransition = (styleTuples) /*: ?TransitionParts */ => {
   return transitionTuples.reduce((accum, [key, value]) => {
     switch (key) {
       case "transition":
+        // Clear previous transition-* properties
         return getTransitionShorthand(value);
       case "transition-property":
         return { ...accum, property: value.split(/\s*,\s*/) };
@@ -119,10 +121,15 @@ const getAnimation = styleTuples => {
 
   if (animationTuples.length === 0) return null;
 
-  return animationTuples.reduce(
-    (accum, [key, value]) => ({ ...accum, [animationAttributes[key]]: value }),
-    {}
-  );
+  return animationTuples.reduce((accum, [key, value]) => {
+    switch (key) {
+      case "animation":
+        // Clear previous animation-* properties
+        return { _: value };
+      default:
+        return { ...accum, [animationAttributes[key]]: value };
+    }
+  }, {});
 };
 
 const getRuleBody = (rule) /*: RawVariableRuleTuple */ => {

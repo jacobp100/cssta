@@ -27,6 +27,8 @@ class Value {
 module.exports.Animated = {
   timing: jest.fn().mockImplementation(() => module.exports.Animated),
   parallel: jest.fn().mockImplementation(() => module.exports.Animated),
+  sequence: jest.fn().mockImplementation(() => module.exports.Animated),
+  loop: jest.fn().mockImplementation(() => module.exports.Animated),
   start: jest.fn().mockImplementation(() => module.exports.Animated),
   Value
 };

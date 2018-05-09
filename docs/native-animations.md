@@ -54,13 +54,14 @@ Because we use the CSS spec, you can find a tonne of stuff on [MDN](https://deve
 <div class="split-view__container" markdown="block">
 
 ## Transitions
-{:.split-view__title}
 
-| ✅ | transition <span class="note">*</span>          |
-| ✅ | transition-delay                                |
-| ✅ | transition-duration                             |
-| ✅ | transition-property <span class="note">*</span> |
-| ✅ | transition-timing-function                      |
+{:.split-view\_\_title}
+
+| ✅ | transition <span class="note">_</span> |
+| ✅ | transition-delay |
+| ✅ | transition-duration |
+| ✅ | transition-property <span class="note">_</span> |
+| ✅ | transition-timing-function |
 {:.feature-table}
 
 </div>
@@ -79,9 +80,10 @@ const ButtonWithTransition = cssta(Animated.View)`
     background-color: gray;
     color: light-gray;
   }
-`
+`;
 ```
-{:.split-view__code}
+
+{:.split-view\_\_code}
 
 </div>
 </div>
@@ -90,18 +92,19 @@ const ButtonWithTransition = cssta(Animated.View)`
 <div class="split-view__container split-view__container--last" markdown="block">
 
 ## Animations
-{:.split-view__title}
 
-| ✅ | animation                                        |
-| ✅ | animation-delay                                  |
-| ❌ | animation-direction                              |
-| ✅ | animation-duration                               |
+{:.split-view\_\_title}
+
+| ✅ | animation |
+| ✅ | animation-delay |
+| ❌ | animation-direction |
+| ✅ | animation-duration |
 | ❌ | animation-fill-mode <span class="note">**</span> |
-| ❌ | animation-iteration-count                        |
-| ❌ | animation-play-state                             |
-| ✅ | animation-name <span class="note">***</span>     |
-| ✅ | animation-timing-function                        |
-| ✅ | @keyframes                                       |
+| ✅ | animation-iteration-count <span class="note">\***</span> |
+| ❌ | animation-play-state |
+| ✅ | animation-name <span class="note">\*\*\*\*</span> |
+| ✅ | animation-timing-function |
+| ✅ | @keyframes |
 {:.feature-table}
 
 </div>
@@ -120,9 +123,10 @@ const ButtonWithKeyframes = cssta(Animated.View)`
       opacity: 1;
     }
   }
-`
+`;
 ```
-{:.split-view__code}
+
+{:.split-view\_\_code}
 
 </div>
 </div>
@@ -133,9 +137,11 @@ You can animate multiple transforms, but the nodes of the transform must not cha
 
 <span class="note">\*</span> Transition properties cannot currently be shorthands, including things like `border-width`, but you can write `transition-property: border-top-width, border-right-width …`. You also cannot use custom properties to define them.
 
-<span class="note">\*\*</span> Currently uses value of `fill-forwards`.
+<span class="note">\*\*</span> Currently uses value of `fill-forwards`
 
-<span class="note">\*\*\*</span> Animations currently only support up to one animation.
+<span class="note">\*\*\*</span> Must be a whole number or `infinite`
+
+<span class="note">\*\*\*\*</span> Animations currently only support up to one animation
 
 ## 🎥 Custom Animations via `Animated.Value`
 

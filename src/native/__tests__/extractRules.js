@@ -9,7 +9,7 @@ it("scopes top-level declarations", () =>
   runTestFor(
     `
       color: red;
-  `,
+    `,
     [
       {
         selector: "&",
@@ -43,10 +43,10 @@ it("scopes multiple top-level declarations into one class", () =>
 it("scopes boolean attribute selectors", () =>
   runTestFor(
     `
-  &[@attribute] {
-    color: red;
-  }
-`,
+      &[@attribute] {
+        color: red;
+      }
+    `,
     [
       {
         selector: "&[*attribute]",
@@ -347,7 +347,7 @@ it("recognises multiple property transitions", () =>
     ]
   ));
 
-it("overrides previous declarations when using shorthand", () =>
+it("overrides previous transition declarations when using shorthand", () =>
   runTestFor(
     `
       color: red;
@@ -414,6 +414,8 @@ it("recognises animation long hands", () =>
     `
       animation-name: test;
       animation-duration: 1s;
+      animation-delay: 2s;
+      animation-iteration-count: 3;
       animation-timing-function: linear;
     `,
     [
@@ -426,7 +428,32 @@ it("recognises animation long hands", () =>
         animationParts: {
           name: "test",
           duration: "1s",
+          delay: "2s",
+          iterations: "3",
           timingFunction: "linear"
+        }
+      }
+    ]
+  ));
+
+it("overrides previous animation declarations when using shorthand", () =>
+  runTestFor(
+    `
+      color: red;
+      animation-delay: 2s;
+      animation-iteration-count: 3;
+      animation-timing-function: linear;
+      animation: test 1s;
+    `,
+    [
+      {
+        selector: "&",
+        mediaQuery: null,
+        styleTuples: [["color", "red"]],
+        exportedVariables: {},
+        transitionParts: null,
+        animationParts: {
+          _: "test 1s"
         }
       }
     ]

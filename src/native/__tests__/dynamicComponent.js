@@ -453,3 +453,71 @@ it("performs keyframe animation when changing animation", () => {
 
   expect(animationStartMock.mock.calls.length).toBe(2);
 });
+
+it("performs animation loops", () => {
+  const ruleTuples = [
+    {
+      validate: () => true,
+      styleTuples: [],
+      animationParts: { _: "fade-in 1s 3" }
+    }
+  ];
+  const keyframesStyleTuples = {
+    "fade-in": [
+      { time: 0, styleTuples: [["opacity", "0"]] },
+      { time: 1, styleTuples: [["opacity", "1"]] }
+    ]
+  };
+  const args = {
+    styleSheetCache: {},
+    importedVariables: [],
+    transitionedProperties: [],
+    keyframesStyleTuples,
+    ruleTuples
+  };
+  const Element = defaultDynamicComponent("button", [], args);
+
+  const animationLoopMock = reactNativeMock.Animated.loop;
+
+  animationLoopMock.mockClear();
+  expect(animationLoopMock.mock.calls.length).toBe(0);
+
+  renderer.create(React.createElement(Element, {}));
+
+  expect(animationLoopMock.mock.calls.length).toBe(1);
+  expect(animationLoopMock.mock.calls[0][1]).toEqual({ iterations: 3 });
+});
+
+it("performs infinite animation loops", () => {
+  const ruleTuples = [
+    {
+      validate: () => true,
+      styleTuples: [],
+      animationParts: { _: "fade-in 1s infinite" }
+    }
+  ];
+  const keyframesStyleTuples = {
+    "fade-in": [
+      { time: 0, styleTuples: [["opacity", "0"]] },
+      { time: 1, styleTuples: [["opacity", "1"]] }
+    ]
+  };
+  const args = {
+    styleSheetCache: {},
+    importedVariables: [],
+    transitionedProperties: [],
+    keyframesStyleTuples,
+    ruleTuples
+  };
+  const Element = defaultDynamicComponent("button", [], args);
+
+  const animationLoopMock = reactNativeMock.Animated.loop;
+
+  animationLoopMock.mockClear();
+  expect(animationLoopMock.mock.calls.length).toBe(0);
+
+  renderer.create(React.createElement(Element, {}));
+
+  expect(animationLoopMock.mock.calls.length).toBe(1);
+  expect(animationLoopMock.mock.calls[0][1]).toEqual({ iterations: -1 });
+});

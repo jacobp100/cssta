@@ -15,8 +15,8 @@ test("creates a component", () =>
   runTest(
     () =>
       cssta("dummy")`
-    color: red;
-  `
+        color: red;
+      `
   ));
 
 test("allows value interpolation", () =>
