@@ -7,11 +7,11 @@ const selectorParser = require("postcss-selector-parser");
 
 const propArg = "p";
 
-const createLogicalValidator = (nodes, operator) => {
-  if (nodes.length === 0) throw new Error("Cannot construct logical validaton");
-  const nodeValidators = nodes
-    .map(createValidator) // eslint-disable-line
-    .filter(validator => validator !== null);
+const combineLogicalValidators = (validators, operator) => {
+  if (validators.length === 0) {
+    throw new Error("Cannot construct logical validaton");
+  }
+  const nodeValidators = validators.filter(validator => validator != null);
   if (nodeValidators.length === 0) return null;
   return nodeValidators
     .slice(1)
@@ -20,6 +20,9 @@ const createLogicalValidator = (nodes, operator) => {
       nodeValidators[0]
     );
 };
+
+const createLogicalValidator = (nodes, operator) =>
+  combineLogicalValidators(nodes.map(createValidator), operator); // eslint-disable-line
 
 const createNestingValidator = () => null;
 
@@ -57,6 +60,7 @@ const createSelectorValidator = node =>
   createLogicalValidator(node.nodes, "&&");
 
 const validators = {
+  universal: () => null,
   nesting: createNestingValidator,
   attribute: createAttributeValidator,
   pseudo: createPseudoValidator,
@@ -70,35 +74,45 @@ const createValidator = node => {
   return validators[node.type](node);
 };
 
+const aspectRatioWH = str =>
+  str
+    .split("/")
+    .map(x => x.trim())
+    .map(Number);
+
 const createMediaFeatureValidator = query => {
-  const match = query.match(/^\s*\(\s*([\w-]+)\s*:\s*(\w+)\s*\)\s*$/);
+  const match = query.match(/^\s*\(\s*([\w-]+)\s*:\s*(\S+(?:\s\S)*)\s*\)\s*$/);
 
   if (match == null) throw new Error(`Could not parse media query: ${query}`);
 
   switch (match[1]) {
+    case "platform":
+      return `(${JSON.stringify(
+        match[2].toLowerCase()
+      )} === ${propArg}.$Platform)`;
     case "width":
       return `(${parseInt(match[2], 10)} === ${propArg}.$ScreenWidth)`;
     case "min-width":
-      return `(${parseInt(match[2], 10)} < ${propArg}.$ScreenWidth)`;
+      return `(${parseInt(match[2], 10)} <= ${propArg}.$ScreenWidth)`;
     case "max-width":
-      return `(${parseInt(match[2], 10)} > ${propArg}.$ScreenWidth)`;
+      return `(${parseInt(match[2], 10)} >= ${propArg}.$ScreenWidth)`;
     case "height":
       return `(${parseInt(match[2], 10)} === ${propArg}.$ScreenHeight)`;
     case "min-height":
-      return `(${parseInt(match[2], 10)} < ${propArg}.$ScreenHeight)`;
+      return `(${parseInt(match[2], 10)} <= ${propArg}.$ScreenHeight)`;
     case "max-height":
-      return `(${parseInt(match[2], 10)} > ${propArg}.$ScreenHeight)`;
+      return `(${parseInt(match[2], 10)} >= ${propArg}.$ScreenHeight)`;
     case "aspect-ratio": {
-      const [w, h] = match[2].split("/").map(Number);
+      const [w, h] = aspectRatioWH(match[2]);
       return `(${w} / ${h} === ${propArg}.$ScreenWidth / ${propArg}.$ScreenHeight)`;
     }
     case "min-aspect-ratio": {
-      const [w, h] = match[2].split("/").map(Number);
-      return `(${w} / ${h} < ${propArg}.$ScreenWidth / ${propArg}.$ScreenHeight)`;
+      const [w, h] = aspectRatioWH(match[2]);
+      return `(${w} / ${h} <= ${propArg}.$ScreenWidth / ${propArg}.$ScreenHeight)`;
     }
     case "max-aspect-ratio": {
-      const [w, h] = match[2].split("/").map(Number);
-      return `(${w} / ${h} > ${propArg}.$ScreenWidth / ${propArg}.$ScreenHeight)`;
+      const [w, h] = aspectRatioWH(match[2]);
+      return `(${w} / ${h} >= ${propArg}.$ScreenWidth / ${propArg}.$ScreenHeight)`;
     }
     case "orientation":
       if (/landscape/i.test(match[2])) {
@@ -112,6 +126,28 @@ const createMediaFeatureValidator = query => {
   }
 };
 
+const createMediaQueryPartValidator = queryPart =>
+  (queryPart.match(/\([^()]+\)/g) || []).reduce(
+    (accum, query) =>
+      combineLogicalValidators(
+        [accum, createMediaFeatureValidator(query)],
+        "&&"
+      ),
+    null
+  );
+
+const createMediaQueryValidator = mediaQuery => {
+  if (mediaQuery == null) return null;
+  const mediaQueryValidators = mediaQuery
+    .split(",")
+    .map(createMediaQueryPartValidator);
+  const mediaQueryValidator = combineLogicalValidators(
+    mediaQueryValidators,
+    "||"
+  );
+  return mediaQueryValidator;
+};
+
 const getBaseValidatorSourceForSelector = (selector, mediaQuery) => {
   let selectorNode;
   selectorParser(node => {
@@ -119,15 +155,13 @@ const getBaseValidatorSourceForSelector = (selector, mediaQuery) => {
   }).process(selector);
   if (!selectorNode) throw new Error("Expected to parse selector");
 
-  let validatorNode = createValidator(selectorNode) || "true";
-  if (mediaQuery != null) {
-    validatorNode = (mediaQuery.match(/\([^()]+\)/g) || []).reduce(
-      (accum, query) => `(${accum} && ${createMediaFeatureValidator(query)})`,
-      validatorNode
-    );
-  }
+  const validatorNode = combineLogicalValidators([
+    createValidator(selectorNode),
+    createMediaQueryValidator(mediaQuery)
+  ]);
 
-  const returnNode = `return ${validatorNode};`;
+  const returnNode = `return ${validatorNode || "true"};`;
+  // console.log(returnNode);
   return returnNode;
 };
 

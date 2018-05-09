@@ -3,16 +3,22 @@ const {
   createValidatorForSelector
 } = require("../selectorTransform");
 
-const runTest = (selector, { valid = [], invalid = [] }) => {
-  const validator = createValidatorForSelector(selector);
-
+const baseRun = (validator, { valid = [], invalid = [] }) => {
   valid.forEach(props => {
-    expect(validator(props)).toBe(true);
+    expect([validator(props), props]).toEqual([true, props]);
   });
 
   invalid.forEach(props => {
-    expect(validator(props)).toBe(false);
+    expect([validator(props), props]).toEqual([false, props]);
   });
+};
+
+const runTest = (selector, options) => {
+  baseRun(createValidatorForSelector(selector), options);
+};
+
+const runMediaQueryTest = (mediaQuery, options) => {
+  baseRun(createValidatorForSelector("*", `${mediaQuery}`), options);
 };
 
 // Note that getRoot replaces @ with * (so it parses). We have to use * here.
@@ -93,6 +99,108 @@ it("works with :not for different props", () =>
       { bool: true },
       { string: "a", otherAttribute: true }
     ]
+  }));
+
+it("works for min-width", () =>
+  runMediaQueryTest("(min-width: 500)", {
+    valid: [{ $ScreenWidth: 500 }, { $ScreenWidth: 501 }],
+    invalid: [{ $ScreenWidth: 499 }]
+  }));
+
+it("works for max-width", () =>
+  runMediaQueryTest("(max-width: 500)", {
+    valid: [{ $ScreenWidth: 500 }, { $ScreenWidth: 499 }],
+    invalid: [{ $ScreenWidth: 501 }]
+  }));
+
+it("works for width", () =>
+  runMediaQueryTest("(width: 500)", {
+    valid: [{ $ScreenWidth: 500 }],
+    invalid: [{ $ScreenWidth: 501 }, { $ScreenWidth: 499 }]
+  }));
+
+it("works for min-height", () =>
+  runMediaQueryTest("(min-height: 500)", {
+    valid: [{ $ScreenHeight: 500 }, { $ScreenHeight: 501 }],
+    invalid: [{ $ScreenHeight: 499 }]
+  }));
+
+it("works for max-height", () =>
+  runMediaQueryTest("(max-height: 500)", {
+    valid: [{ $ScreenHeight: 500 }, { $ScreenHeight: 499 }],
+    invalid: [{ $ScreenHeight: 501 }]
+  }));
+
+it("works for height", () =>
+  runMediaQueryTest("(height: 500)", {
+    valid: [{ $ScreenHeight: 500 }],
+    invalid: [{ $ScreenHeight: 501 }, { $ScreenHeight: 499 }]
+  }));
+
+it("works for aspect-ratio", () =>
+  runMediaQueryTest("(aspect-ratio: 2 / 1)", {
+    valid: [{ $ScreenWidth: 1000, $ScreenHeight: 500 }],
+    invalid: [
+      { $ScreenWidth: 1500, $ScreenHeight: 500 },
+      { $ScreenWidth: 500, $ScreenHeight: 500 }
+    ]
+  }));
+
+it("works for min-aspect-ratio", () =>
+  runMediaQueryTest("(min-aspect-ratio: 2 / 1)", {
+    valid: [
+      { $ScreenWidth: 1000, $ScreenHeight: 500 },
+      { $ScreenWidth: 1500, $ScreenHeight: 500 }
+    ],
+    invalid: [{ $ScreenWidth: 500, $ScreenHeight: 500 }]
+  }));
+
+it("works for max-aspect-ratio", () =>
+  runMediaQueryTest("(max-aspect-ratio: 2 / 1)", {
+    valid: [
+      { $ScreenWidth: 1000, $ScreenHeight: 500 },
+      { $ScreenWidth: 500, $ScreenHeight: 500 }
+    ],
+    invalid: [{ $ScreenWidth: 1500, $ScreenHeight: 500 }]
+  }));
+
+it("works for orientation landscape", () =>
+  runMediaQueryTest("(orientation: landscape)", {
+    valid: [{ $ScreenWidth: 1000, $ScreenHeight: 500 }],
+    invalid: [{ $ScreenWidth: 500, $ScreenHeight: 1000 }]
+  }));
+
+it("works for orientation portrait", () =>
+  runMediaQueryTest("(orientation: portrait)", {
+    valid: [{ $ScreenWidth: 500, $ScreenHeight: 1000 }],
+    invalid: [{ $ScreenWidth: 1000, $ScreenHeight: 500 }]
+  }));
+
+it("works for platform", () =>
+  runMediaQueryTest("(platform: ios)", {
+    valid: [{ $Platform: "ios" }],
+    invalid: [{ $Platform: "android" }]
+  }));
+
+it("works for combined media queries", () =>
+  runMediaQueryTest("(min-width: 500px) and (max-width: 600px)", {
+    valid: [
+      { $ScreenWidth: 500 },
+      { $ScreenWidth: 501 },
+      { $ScreenWidth: 599 },
+      { $ScreenWidth: 600 }
+    ],
+    invalid: [{ $ScreenWidth: 499 }, { $ScreenWidth: 601 }]
+  }));
+
+it("works for comma delimited media queries", () =>
+  runMediaQueryTest("(min-width: 500px), (orientation: landscape)", {
+    valid: [
+      { $ScreenWidth: 500, $ScreenHeight: 1000 },
+      { $ScreenWidth: 501, $ScreenHeight: 1000 },
+      { $ScreenWidth: 499, $ScreenHeight: 100 }
+    ],
+    invalid: [{ $ScreenWidth: 499, $ScreenHeight: 1000 }]
   }));
 
 it("does not allow other pseudo selectors", () => {

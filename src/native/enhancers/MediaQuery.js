@@ -9,7 +9,7 @@ Make sure you don't import large libraries.
 const React = require("react");
 /* eslint-disable */
 // $FlowFixMe
-const { Dimensions } = require("react-native");
+const { Dimensions, Platform } = require("react-native");
 /* eslint-enable */
 /*:: import type { DynamicProps } from '../../factories/types' */
 /*::
@@ -17,6 +17,8 @@ import type { VariableArgs, Args, } from '../types'
 */
 
 const { Component } = React;
+
+const platform = Platform.OS;
 
 module.exports = class MediaQueryEnhancer extends Component /*::<
   DynamicProps<Args | VariableArgs>,
@@ -52,7 +54,12 @@ module.exports = class MediaQueryEnhancer extends Component /*::<
     const { width, height } = this.state;
     return children({
       ...this.props,
-      ownProps: { ...ownProps, $ScreenWidth: width, $ScreenHeight: height }
+      ownProps: {
+        $ScreenWidth: width,
+        $ScreenHeight: height,
+        $Platform: platform,
+        ...ownProps
+      }
     });
   }
 };

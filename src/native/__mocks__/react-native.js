@@ -45,3 +45,7 @@ module.exports.Dimensions = {
   get: () => ({ width: 1000, height: 1000 }),
   addEventListener: () => {}
 };
+
+module.exports.Platform = {
+  OS: "ios"
+};
