@@ -51,7 +51,7 @@ it("allows overriding the component", () =>
     expectedProps: {}
   }));
 
-it("allows setting innerRef", () => {
+it("allows setting ref", () => {
   // Test renderer doesn't seem to let us set refs on a div
   class Test extends React.Component {
     render() {
@@ -63,7 +63,7 @@ it("allows setting innerRef", () => {
   runTest({
     type: Test,
     expectedType: "div",
-    inputProps: { innerRef: fn },
+    inputProps: { ref: fn },
     expectedProps: {}
   });
   expect(fn).toBeCalled();

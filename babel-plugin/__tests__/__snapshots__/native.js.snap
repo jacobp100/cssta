@@ -6,7 +6,7 @@ import _Animation from 'cssta/lib/native/enhancers/Animation';
 
 import { View } from 'react-native';
 
-_withEnhancers([_Animation])(Animated.View, [], {
+/*#__PURE__*/_withEnhancers([_Animation])(Animated.View, [], {
   'transitionedProperties': [],
   'keyframes': {
     'test': [{
@@ -42,7 +42,7 @@ import _VariablesStyleSheetManager from 'cssta/lib/native/enhancers/VariablesSty
 
 import { View } from 'react-native';
 
-_withEnhancers([_VariablesStyleSheetManager, _Animation])(Animated.View, [], {
+/*#__PURE__*/_withEnhancers([_VariablesStyleSheetManager, _Animation])(Animated.View, [], {
   'transitionedProperties': [],
   'styleSheetCache': {},
   'importedVariables': ['timing-function'],
@@ -87,7 +87,7 @@ var _csstaStyle = _StyleSheet.create({
   }
 });
 
-const Component = _createComponent('button', ['booleanAttribute'], {
+const Component = /*#__PURE__*/_createComponent('button', ['booleanAttribute'], {
   'transitionedProperties': [],
   'keyframes': {},
   'rules': [{
@@ -113,7 +113,7 @@ var _csstaStyle = _StyleSheet.create({
   }
 });
 
-const Component = _createComponent(View, [], {
+const Component = /*#__PURE__*/_createComponent(View, [], {
   'transitionedProperties': [],
   'keyframes': {},
   'rules': [{
@@ -148,7 +148,7 @@ var _csstaStyle = _StyleSheet.create({
   }
 });
 
-const Component = _createComponent(View, [], {
+const Component = /*#__PURE__*/_createComponent(View, [], {
   'transitionedProperties': [],
   'keyframes': {},
   'rules': [{
@@ -174,7 +174,7 @@ var _csstaStyle = _StyleSheet.create({
   }
 });
 
-const Component = _createComponent(Link, [], {
+const Component = /*#__PURE__*/_createComponent(Link, [], {
   'transitionedProperties': [],
   'keyframes': {},
   'rules': [{
@@ -201,18 +201,19 @@ function test() {
     }
   });
 
-  return _createComponent(View, [], {
-    'transitionedProperties': [],
-    'keyframes': {},
-    'rules': [{
-      'validate': function (p) {
-        return true;
-      },
-      'transitions': null,
-      'animations': null,
-      'style': _csstaStyle[0]
-    }]
-  });
+  return (/*#__PURE__*/_createComponent(View, [], {
+      'transitionedProperties': [],
+      'keyframes': {},
+      'rules': [{
+        'validate': function (p) {
+          return true;
+        },
+        'transitions': null,
+        'animations': null,
+        'style': _csstaStyle[0]
+      }]
+    })
+  );
 }"
 `;
 
@@ -228,7 +229,7 @@ var _csstaStyle = _StyleSheet.create({
   }
 });
 
-const Component = _createComponent(View, [], {
+const Component = /*#__PURE__*/_createComponent(View, [], {
   'transitionedProperties': [],
   'keyframes': {},
   'rules': [{
@@ -246,7 +247,7 @@ exports[`Empty rules 1`] = `
 "
 import { View } from 'react-native';
 
-const Component = View;"
+const Component = /*#__PURE__*/View;"
 `;
 
 exports[`Interpolation complex 1`] = `
@@ -272,7 +273,7 @@ var _csstaStyle = StyleSheet.create({
   })
 });
 
-_createComponent(View, ['attr1', 'attr2', 'attr3'], {
+/*#__PURE__*/_createComponent(View, ['attr1', 'attr2', 'attr3'], {
   'transitionedProperties': [],
   'keyframes': {},
   'rules': [{
@@ -323,7 +324,7 @@ var _csstaStyle = _StyleSheet.create({
   })
 });
 
-_createComponent(View, ['attr1', 'attr2', 'attr3'], {
+/*#__PURE__*/_createComponent(View, ['attr1', 'attr2', 'attr3'], {
   'transitionedProperties': [],
   'keyframes': {},
   'rules': [{
@@ -375,7 +376,7 @@ var _csstaStyle = _StyleSheet.create({
   }
 });
 
-_createComponent(View, ['attr1', 'attr2', 'attr3'], {
+/*#__PURE__*/_createComponent(View, ['attr1', 'attr2', 'attr3'], {
   'transitionedProperties': [],
   'keyframes': {},
   'rules': [{
@@ -415,7 +416,7 @@ var _csstaStyle = StyleSheet.create({
   }
 });
 
-_createComponent(View, [], {
+/*#__PURE__*/_createComponent(View, [], {
   'transitionedProperties': [],
   'keyframes': {},
   'rules': [{
@@ -442,7 +443,7 @@ var _csstaStyle = _StyleSheet.create({
   }
 });
 
-_withEnhancers([_Animation])(Animated.View, [], {
+/*#__PURE__*/_withEnhancers([_Animation])(Animated.View, [], {
   'transitionedProperties': [],
   'keyframes': {
     'test': [{
@@ -489,7 +490,7 @@ var _csstaStyle = _StyleSheet.create({
   }
 });
 
-_withEnhancers([_VariablesStyleSheetManager, _Animation])(Animated.View, [], {
+/*#__PURE__*/_withEnhancers([_VariablesStyleSheetManager, _Animation])(Animated.View, [], {
   'transitionedProperties': [],
   'styleSheetCache': {},
   'importedVariables': ['primary'],
@@ -522,7 +523,7 @@ import _VariablesStyleSheetManager from 'cssta/lib/native/enhancers/VariablesSty
 
 import { View } from 'react-native';
 
-_withEnhancers([_VariablesStyleSheetManager, _Animation])(Animated.View, [], {
+/*#__PURE__*/_withEnhancers([_VariablesStyleSheetManager, _Animation])(Animated.View, [], {
   'transitionedProperties': [],
   'styleSheetCache': {},
   'importedVariables': ['primary'],
@@ -564,7 +565,7 @@ var _csstaStyle = _StyleSheet.create({
   }
 });
 
-_withEnhancers([_MediaQuery])(View, [], {
+/*#__PURE__*/_withEnhancers([_MediaQuery])(View, [], {
   'transitionedProperties': [],
   'keyframes': {},
   'rules': [{
@@ -584,7 +585,7 @@ import _VariablesStyleSheetManager from 'cssta/lib/native/enhancers/VariablesSty
 import _MediaQuery from 'cssta/lib/native/enhancers/MediaQuery';
 
 
-_withEnhancers([_MediaQuery, _VariablesStyleSheetManager])(View, [], {
+/*#__PURE__*/_withEnhancers([_MediaQuery, _VariablesStyleSheetManager])(View, [], {
   'transitionedProperties': [],
   'styleSheetCache': {},
   'importedVariables': ['red'],
@@ -622,7 +623,7 @@ var _csstaStyle = _StyleSheet.create({
   }
 });
 
-const Component = _createComponent('button', ['booleanAttribute', 'stringAttribute'], {
+const Component = /*#__PURE__*/_createComponent('button', ['booleanAttribute', 'stringAttribute'], {
   'transitionedProperties': [],
   'keyframes': {},
   'rules': [{
@@ -672,7 +673,7 @@ var _csstaStyle = _StyleSheet.create({
   }
 });
 
-const Component = _createComponent('button', ['stringAttribute'], {
+const Component = /*#__PURE__*/_createComponent('button', ['stringAttribute'], {
   'transitionedProperties': [],
   'keyframes': {},
   'rules': [{
@@ -709,7 +710,7 @@ var _csstaStyle = _StyleSheet.create({
   }
 });
 
-_withEnhancers([_Transition])(Animated.View, ['boolAttr'], {
+/*#__PURE__*/_withEnhancers([_Transition])(Animated.View, ['boolAttr'], {
   'transitionedProperties': ['color'],
   'keyframes': {},
   'rules': [{
@@ -761,7 +762,7 @@ var _csstaStyle = _StyleSheet.create({
   }
 });
 
-_withEnhancers([_Transition])(Animated.View, ['active'], {
+/*#__PURE__*/_withEnhancers([_Transition])(Animated.View, ['active'], {
   'transitionedProperties': ['backgroundColor', 'transform'],
   'keyframes': {},
   'rules': [{
@@ -813,7 +814,7 @@ var _csstaStyle = _StyleSheet.create({
   }
 });
 
-_withEnhancers([_Transition])(Animated.View, ['active'], {
+/*#__PURE__*/_withEnhancers([_Transition])(Animated.View, ['active'], {
   'transitionedProperties': ['border-top-color', 'border-right-color', 'border-bottom-color', 'border-left-color'],
   'keyframes': {},
   'rules': [{
@@ -851,7 +852,7 @@ var _csstaStyle = _StyleSheet.create({
   }
 });
 
-_withEnhancers([_VariablesStyleSheetManager, _Transition])(Animated.View, ['boolAttr'], {
+/*#__PURE__*/_withEnhancers([_VariablesStyleSheetManager, _Transition])(Animated.View, ['boolAttr'], {
   'transitionedProperties': ['color'],
   'styleSheetCache': {},
   'importedVariables': ['primary', 'secondary'],
@@ -884,7 +885,7 @@ import _VariablesStyleSheetManager from 'cssta/lib/native/enhancers/VariablesSty
 
 import { View } from 'react-native';
 
-const Component = _withEnhancers([_VariablesStyleSheetManager])(View, [], {
+const Component = /*#__PURE__*/_withEnhancers([_VariablesStyleSheetManager])(View, [], {
   'transitionedProperties': [],
   'styleSheetCache': {},
   'importedVariables': ['color'],
@@ -909,7 +910,7 @@ import _VariablesStyleSheetManager from 'cssta/lib/native/enhancers/VariablesSty
 
 import { View } from 'react-native';
 
-const Component = _withEnhancers([_VariablesStyleSheetManager])(View, [], {
+const Component = /*#__PURE__*/_withEnhancers([_VariablesStyleSheetManager])(View, [], {
   'transitionedProperties': [],
   'styleSheetCache': {},
   'importedVariables': ['red'],
@@ -932,7 +933,7 @@ import _VariablesStyleSheetManager from 'cssta/lib/native/enhancers/VariablesSty
 
 import { View } from 'react-native';
 
-const Component = _withEnhancers([_VariablesStyleSheetManager])(View, ['blue'], {
+const Component = /*#__PURE__*/_withEnhancers([_VariablesStyleSheetManager])(View, ['blue'], {
   'transitionedProperties': [],
   'styleSheetCache': {},
   'importedVariables': [],
@@ -967,7 +968,7 @@ import _VariablesStyleSheetManager from 'cssta/lib/native/enhancers/VariablesSty
 
 import { View } from 'react-native';
 
-const Component = _withEnhancers([_VariablesStyleSheetManager])(View, [], {
+const Component = /*#__PURE__*/_withEnhancers([_VariablesStyleSheetManager])(View, [], {
   'transitionedProperties': [],
   'styleSheetCache': {},
   'importedVariables': ['color'],
@@ -997,7 +998,7 @@ var _csstaStyle = _StyleSheet.create({
   }
 });
 
-_createComponent(View, [], {
+/*#__PURE__*/_createComponent(View, [], {
   'transitionedProperties': [],
   'keyframes': {},
   'rules': [{

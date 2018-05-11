@@ -1,4 +1,5 @@
 /* eslint-disable no-param-reassign */
+const { default: annotateAsPure } = require("@babel/helper-annotate-as-pure");
 const { varRegExp } = require("../../src/util/cssRegExp");
 const transformWeb = require("../platforms/web");
 const transformNative = require("../platforms/native");
@@ -51,6 +52,8 @@ const transformCsstaCall = (babel, path, state, target, stringArg) => {
   );
   const binding = path.scope.getBinding(callee.name);
   binding.dereference();
+
+  annotateAsPure(path);
 };
 
 module.exports = {

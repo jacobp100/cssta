@@ -14,15 +14,13 @@ const PropTypes = require("prop-types");
 const getOwnPropKeys = propTypes =>
   Array.isArray(propTypes) ? propTypes : Object.keys(propTypes);
 
-const getComponentProps = (ownPropKeys, component, props) =>
+const getComponentProps = (ownPropKeys, component, props, ref) =>
   Object.keys(props).reduce(
     (accum, key) => {
       const prop = props[key];
 
       if (key === "component") {
         accum.Element = prop;
-      } else if (key === "innerRef") {
-        accum.passedProps.ref = prop;
       } else if (ownPropKeys.indexOf(key) !== -1) {
         accum.ownProps[key] = prop;
       } else {
@@ -31,7 +29,7 @@ const getComponentProps = (ownPropKeys, component, props) =>
 
       return accum;
     },
-    { Element: component, ownProps: {}, passedProps: {} }
+    { Element: component, ownProps: {}, passedProps: { ref } }
   );
 
 let getPropTypes;
@@ -64,14 +62,15 @@ module.exports = (
     const render = enhancer ? enhancer(baseRender) : baseRender;
     const ownPropKeys = getOwnPropKeys(propTypes);
 
-    const StaticComponent = (props /*: Object */) => {
+    const StaticComponent = React.forwardRef((props /*: Object */, ref) => {
       const { Element, ownProps, passedProps } = getComponentProps(
         ownPropKeys,
         component,
-        props
+        props,
+        ref
       );
       return render({ Element, ownProps, passedProps, args });
-    };
+    });
 
     if (process.env.NODE_ENV !== "production" && !Array.isArray(propTypes)) {
       StaticComponent.propTypes = getPropTypes(ownPropKeys, propTypes);

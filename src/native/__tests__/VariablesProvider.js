@@ -1,41 +1,19 @@
 const React = require("react");
-const PropTypes = require("prop-types");
 const renderer = require("react-test-renderer"); // eslint-disable-line
 const VariablesProvider = require("../VariablesProvider");
 
-class ReturnsVariables extends React.Component {
-  constructor(props, context) {
-    super();
-    this.state = { variables: context.csstaInitialVariables };
-    this.styleUpdater = variables => {
-      this.setState({ variables });
-    };
-  }
+const ReturnsVariables = () =>
+  React.createElement(VariablesProvider.Consumer, null, variables =>
+    React.createElement("dummy", variables)
+  );
 
-  componentDidMount() {
-    this.context.cssta.on("styles-updated", this.styleUpdater);
-  }
-
-  componentWillUnmount() {
-    this.context.cssta.off("styles-updated", this.styleUpdater);
-  }
-
-  render() {
-    return React.createElement("dummy", this.state.variables);
-  }
-}
-ReturnsVariables.contextTypes = {
-  cssta: PropTypes.object,
-  csstaInitialVariables: PropTypes.object
-};
-
-it("should generate context", () => {
+it("should render children", () => {
   const component = renderer
     .create(
       React.createElement(
         VariablesProvider,
         { exportedVariables: { color: "red" } },
-        React.createElement(ReturnsVariables)
+        ReturnsVariables
       )
     )
     .toJSON();

@@ -4,7 +4,7 @@ exports[`Boolean attributes 1`] = `
 "import _createComponent from 'cssta/lib/web/createComponent';
 
 
-const Component = _createComponent('button', null, {
+const Component = /*#__PURE__*/_createComponent('button', null, {
   'defaultClassName': 'A',
   'classNameMap': {
     'booleanAttribute': {
@@ -30,7 +30,7 @@ exports[`Compose component 1`] = `
 
 import Link from 'react-router';
 
-const Component = _createComponent(Link, null, {
+const Component = /*#__PURE__*/_createComponent(Link, null, {
   'defaultClassName': 'A',
   'classNameMap': {}
 });"
@@ -52,7 +52,7 @@ exports[`Computed component 1`] = `
 
 
 const button = 'button';
-const Component = _createComponent(button, null, {
+const Component = /*#__PURE__*/_createComponent(button, null, {
   'defaultClassName': 'A',
   'classNameMap': {}
 });"
@@ -73,7 +73,7 @@ exports[`Default 1`] = `
 "import _createComponent from 'cssta/lib/web/createComponent';
 
 
-const Component = _createComponent('button', null, {
+const Component = /*#__PURE__*/_createComponent('button', null, {
   'defaultClassName': 'A',
   'classNameMap': {}
 });"
@@ -94,7 +94,7 @@ exports[`Empty rules 1`] = `
 "import _createComponent from 'cssta/lib/web/createComponent';
 
 
-const Component = _createComponent('button', null, {
+const Component = /*#__PURE__*/_createComponent('button', null, {
     'defaultClassName': null,
     'classNameMap': {}
 });"
@@ -113,7 +113,7 @@ exports[`Import under other name 1`] = `
 "import _createComponent from 'cssta/lib/web/createComponent';
 
 
-_createComponent('button', null, {
+/*#__PURE__*/_createComponent('button', null, {
   'defaultClassName': 'A',
   'classNameMap': {}
 });"
@@ -134,7 +134,7 @@ exports[`Multiple attributes 1`] = `
 "import _createComponent from 'cssta/lib/web/createComponent';
 
 
-const Component = _createComponent('button', null, {
+const Component = /*#__PURE__*/_createComponent('button', null, {
   'defaultClassName': 'A',
   'classNameMap': {
     'booleanAttribute': {
@@ -175,17 +175,17 @@ exports[`Multiple calls in file 1`] = `
 "import _createComponent from 'cssta/lib/web/createComponent';
 
 
-const Component1 = _createComponent('button', null, {
+const Component1 = /*#__PURE__*/_createComponent('button', null, {
   'defaultClassName': 'A',
   'classNameMap': {}
 });
 
-const Component2 = _createComponent('span', null, {
+const Component2 = /*#__PURE__*/_createComponent('span', null, {
   'defaultClassName': 'B',
   'classNameMap': {}
 });
 
-const Component3 = _createComponent('div', null, {
+const Component3 = /*#__PURE__*/_createComponent('div', null, {
   'defaultClassName': 'C',
   'classNameMap': {}
 });"
@@ -216,12 +216,12 @@ exports[`Single source of variables 1`] = `
 "import _createComponent from 'cssta/lib/web/createComponent';
 
 
-const Component1 = _createComponent('div', null, {
+const Component1 = /*#__PURE__*/_createComponent('div', null, {
   'defaultClassName': 'A',
   'classNameMap': {}
 });
 
-const Component2 = _createComponent('div', null, {
+const Component2 = /*#__PURE__*/_createComponent('div', null, {
   'defaultClassName': 'B',
   'classNameMap': {}
 });"
@@ -248,7 +248,7 @@ exports[`String attributes 1`] = `
 "import _createComponent from 'cssta/lib/web/createComponent';
 
 
-const Component = _createComponent('button', null, {
+const Component = /*#__PURE__*/_createComponent('button', null, {
   'defaultClassName': 'A',
   'classNameMap': {
     'stringAttribute': {

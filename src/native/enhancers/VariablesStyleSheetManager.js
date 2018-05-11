@@ -16,7 +16,6 @@ const { getAppliedRules } = require("../util");
 const resolveVariableDependencies = require("./resolveVariableDependencies");
 const { transformStyleTuples } = require("../cssUtil");
 const transformVariables = require("../../css-transforms/variables");
-const { mapValues } = require("../../util");
 /*:: import type { DynamicProps } from '../../factories/types' */
 /*::
 import type {
@@ -53,7 +52,10 @@ const transformPart = (appliedVariables, part) =>
 
 const transformParts = (appliedVariables, parts) =>
   parts != null
-    ? mapValues(part => transformPart(appliedVariables, part), parts)
+    ? Object.keys(parts).reduce((accum, key) => {
+        accum[key] = transformPart(appliedVariables, parts[key]);
+        return accum;
+      }, {})
     : null;
 
 const createRule = (

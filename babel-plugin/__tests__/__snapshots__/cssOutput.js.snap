@@ -4,7 +4,7 @@ exports[`Css output 1`] = `
 "import _createComponent from 'cssta/lib/web/createComponent';
 
 
-const Component = _createComponent('button', null, {
+const Component = /*#__PURE__*/_createComponent('button', null, {
   'defaultClassName': 'A',
   'classNameMap': {}
 });"
@@ -25,7 +25,7 @@ exports[`Css output overwriting files 1`] = `
 "import _createComponent from 'cssta/lib/web/createComponent';
 
 
-const Component = _createComponent('button', null, {
+const Component = /*#__PURE__*/_createComponent('button', null, {
   'defaultClassName': 'A',
   'classNameMap': {}
 });"
@@ -35,7 +35,7 @@ exports[`Css output overwriting files 2`] = `
 "import _createComponent from 'cssta/lib/web/createComponent';
 
 
-const Component = _createComponent('button', null, {
+const Component = /*#__PURE__*/_createComponent('button', null, {
   'defaultClassName': 'B',
   'classNameMap': {}
 });"
@@ -55,7 +55,7 @@ exports[`Css output overwriting files 3`] = `
 exports[`Css output overwriting files with multiple files 1`] = `
 "import _createComponent from 'cssta/lib/web/createComponent';
 
-const Component = _createComponent('button', null, {
+const Component = /*#__PURE__*/_createComponent('button', null, {
       'defaultClassName': 'A',
       'classNameMap': {}
 });"
@@ -64,7 +64,7 @@ const Component = _createComponent('button', null, {
 exports[`Css output overwriting files with multiple files 2`] = `
 "import _createComponent from 'cssta/lib/web/createComponent';
 
-const Component = _createComponent('button', null, {
+const Component = /*#__PURE__*/_createComponent('button', null, {
       'defaultClassName': 'D',
       'classNameMap': {}
 });"
@@ -73,7 +73,7 @@ const Component = _createComponent('button', null, {
 exports[`Css output overwriting files with multiple files 3`] = `
 "import _createComponent from 'cssta/lib/web/createComponent';
 
-const Component = _createComponent('button', null, {
+const Component = /*#__PURE__*/_createComponent('button', null, {
       'defaultClassName': 'C',
       'classNameMap': {}
 });"
@@ -106,7 +106,7 @@ exports[`Css output with multiple files 1`] = `
 "import _createComponent from 'cssta/lib/web/createComponent';
 
 
-const Component = _createComponent('button', null, {
+const Component = /*#__PURE__*/_createComponent('button', null, {
   'defaultClassName': 'A',
   'classNameMap': {}
 });"
@@ -116,7 +116,7 @@ exports[`Css output with multiple files 2`] = `
 "import _createComponent from 'cssta/lib/web/createComponent';
 
 
-const Component = _createComponent('button', null, {
+const Component = /*#__PURE__*/_createComponent('button', null, {
   'defaultClassName': 'B',
   'classNameMap': {}
 });"

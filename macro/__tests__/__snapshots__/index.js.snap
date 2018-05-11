@@ -17,12 +17,12 @@ exports[`Production 1`] = `
 "import _createComponent from 'cssta/lib/web/createComponent';
 
 
-_createComponent('div', null, {
+/*#__PURE__*/_createComponent('div', null, {
   'defaultClassName': 'A',
   'classNameMap': {}
 });
 
-_createComponent('div', null, {
+/*#__PURE__*/_createComponent('div', null, {
   'defaultClassName': 'B',
   'classNameMap': {}
 });

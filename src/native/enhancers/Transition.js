@@ -11,7 +11,6 @@ const React = require("react");
 // $FlowFixMe
 const { StyleSheet, Animated, Easing } = require("react-native");
 /* eslint-enable */
-const { shallowEqual } = require("../../util");
 const { getAppliedRules } = require("../util");
 const {
   mergeShorthandProps,
@@ -30,6 +29,25 @@ const { Component } = React;
 
 const getInitialValue = targetValue =>
   typeof targetValue === "number" ? targetValue : 0;
+
+/* eslint-disable no-param-reassign, no-restricted-syntax */
+const shallowEqual = (
+  tom /*: Object */,
+  jerry /*: Object */
+) /*: boolean */ => {
+  if (tom === jerry) return true;
+
+  for (const key in jerry) {
+    if (!(key in tom)) return false;
+  }
+
+  for (const key in tom) {
+    if (!(key in jerry) || tom[key] !== jerry[key]) return false;
+  }
+
+  return true;
+};
+/* eslint-enable */
 
 /* eslint-disable no-bitwise, no-param-reassign */
 const DELAY = 1;
