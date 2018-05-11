@@ -127,13 +127,9 @@ const createMediaFeatureValidator = query => {
 };
 
 const createMediaQueryPartValidator = queryPart =>
-  (queryPart.match(/\([^()]+\)/g) || []).reduce(
-    (accum, query) =>
-      combineLogicalValidators(
-        [accum, createMediaFeatureValidator(query)],
-        "&&"
-      ),
-    null
+  combineLogicalValidators(
+    (queryPart.match(/\([^()]+\)/g) || []).map(createMediaFeatureValidator),
+    "&&"
   );
 
 const createMediaQueryValidator = mediaQuery => {
@@ -155,10 +151,10 @@ const getBaseValidatorSourceForSelector = (selector, mediaQuery) => {
   }).process(selector);
   if (!selectorNode) throw new Error("Expected to parse selector");
 
-  const validatorNode = combineLogicalValidators([
-    createValidator(selectorNode),
-    createMediaQueryValidator(mediaQuery)
-  ]);
+  const validatorNode = combineLogicalValidators(
+    [createValidator(selectorNode), createMediaQueryValidator(mediaQuery)],
+    "&&"
+  );
 
   const returnNode = `return ${validatorNode || "true"};`;
   // console.log(returnNode);

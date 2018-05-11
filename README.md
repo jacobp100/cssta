@@ -90,12 +90,12 @@ In addition, we’ll automatically type check all your prop selectors with React
 It is possible React components only when the component accepts the prop `className` for web, and `style` for React Native.
 
 ```jsx
-import { Link } from "react-router"
+import { Link } from "react-router";
 
 const StyledLink = cssta(Link)`
   color: rebeccapurple;
   text-decoration: none;
-`
+`;
 ```
 
 It is also possible to compose your own components.
@@ -105,15 +105,15 @@ const OutlineButton = cssta.button`
   padding: 0.5rem 1rem;
   border: 2px solid currentColor;
   border-radius: 1000px;
-`
+`;
 
 const RedButton = cssta(OutlineButton)`
   color: red;
-`
+`;
 
 const BlueButton = cssta(OutlineButton)`
   color: blue;
-`
+`;
 ```
 
 **For the moment, this only works when the components get defined in the same file!**
@@ -126,19 +126,19 @@ The best way to do theming in Cssta is by using [CSS custom properties](https://
 const LightBox = cssta.div`
   background-color: black;
   --primary: white;
-`
+`;
 
 const Button = cssta.button`
   color: var(--primary);
   border: 1px solid var(--primary);
   padding: 0.5rem 1rem;
-`
+`;
 
 const Example = (
   <LightBox>
     <Button>I am white on black!</Button>
   </LightBox>
-)
+);
 ```
 
 There’s a few extra examples in [theming](https://jacobp100.github.io/cssta/theming).
@@ -163,18 +163,17 @@ When doing this on the web, watch out for specificity conflicts!
 
 ## ✂️ Other Bits
 
-You can attach a ref to the inner component using the `innerRef` prop.
+When using the `ref` prop, it will refer to the component you are styling rather than the styled component.
 
 ```jsx
 const InnerRef = cssta.div`
   background: red;
 `
 
-<InnerRef
-  ref={outerComponent => ...}
-  innerRef={htmlElement => ...}
-/>
+<InnerRef ref={htmlDivElement => ...} />
 ```
+
+See the documentation for [`React.forwardRef`](https://reactjs.org/docs/forwarding-refs.html) for more information.
 
 You can also add the `component` prop on any Cssta element to override the base component. This can be a string or another component.
 

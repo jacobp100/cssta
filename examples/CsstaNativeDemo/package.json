@@ -4,29 +4,21 @@
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
-    "devtools": "react-devtools",
     "test": "jest",
-    "install-local": "npm pack ../.. && tar xvzf cssta* && mv ./package cssta && yarn add ./cssta && sed -i '' 's%cssta%cssta%g' package.json && rm -rf cssta*"
+    "install-local": "npm pack ../.. && tar xvzf cssta* && mv ./package cssta && cp package.json temp-package.json && cp yarn.lock temp-yarn.lock && yarn add ./cssta && sed -i '' 's%cssta%cssta%g' package.json && rm -rf cssta* && mv temp-package.json package.json && mv temp-yarn.lock yarn.lock"
   },
   "dependencies": {
-    "cssta": "./cssta",
-    "react": "^16.2.0",
-    "react-native": "^0.54.2"
+    "cssta": "0.8.0",
+    "react": "16.3.1",
+    "react-native": "0.55.4"
+  },
+  "devDependencies": {
+    "babel-jest": "22.4.3",
+    "babel-preset-react-native": "4.0.0",
+    "jest": "22.4.3",
+    "react-test-renderer": "16.3.1"
   },
   "jest": {
     "preset": "react-native"
-  },
-  "devDependencies": {
-    "babel-jest": "17.0.2",
-    "babel-plugin-cssta": "^0.4.0",
-    "babel-preset-react-native": "1.9.0",
-    "eslint": "^3.16.1",
-    "eslint-config-airbnb": "^14.1.0",
-    "eslint-plugin-import": "^2.2.0",
-    "eslint-plugin-jsx-a11y": "^4.0.0",
-    "eslint-plugin-react": "^6.10.0",
-    "jest": "17.0.3",
-    "react-devtools": "^2.0.12",
-    "react-test-renderer": "15.4.1"
   }
 }

@@ -95,4 +95,4 @@ export default () => (
   </View>
 );
 
-export const code = "color: color(red tint(50%));";
+export const code = "@media (...) { ... }";

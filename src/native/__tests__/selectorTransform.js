@@ -203,6 +203,14 @@ it("works for comma delimited media queries", () =>
     invalid: [{ $ScreenWidth: 499, $ScreenHeight: 1000 }]
   }));
 
+it("works for selector and media query", () => {
+  const validator = createValidatorForSelector("[*test]", "(min-width: 500px)");
+  expect(validator({ test: true, $ScreenWidth: 500 })).toBeTruthy();
+  expect(validator({ test: false, $ScreenWidth: 500 })).toBeFalsy();
+  expect(validator({ test: true, $ScreenWidth: 499 })).toBeFalsy();
+  expect(validator({ test: false, $ScreenWidth: 499 })).toBeFalsy();
+});
+
 it("does not allow other pseudo selectors", () => {
   expect(() => createValidatorForSelector(":first-child")).toThrow();
 });

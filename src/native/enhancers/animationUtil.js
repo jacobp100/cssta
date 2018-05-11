@@ -87,7 +87,7 @@ module.exports.easingFunctions = {
   "ease-in-out": Easing.inOut
 };
 
-module.exports.durationRegExp = /^\d+(?:m?s)$/;
+module.exports.durationRegExp = /^[\d.]+m?s$/;
 module.exports.easingRegExp = /^(linear|ease(?:-in)?(?:-out)+)$/i;
 module.exports.iterationCountRegExp = /^(\d+|infinite)$/i;
 
