@@ -103,7 +103,7 @@ class VariablesProvider extends Component /*:: <VariablesProviderProps, Variable
 
   componentWillUnmount() {
     if (this.context.cssta) {
-      this.context.cssta.off(STYLES_UPDATED, this.styleUpdateHandler);
+      this.context.cssta.removeListener(STYLES_UPDATED, this.styleUpdateHandler);
     }
   }
 
