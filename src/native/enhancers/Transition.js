@@ -102,7 +102,12 @@ module.exports = class TransitionEnhancer extends Component /*::<
   TransitionState
 >*/ {
   /*:: animationValues: { [key:string]: AnimatedValue } */
-  static getDerivedStateFromProps(nextProps, prevState) {
+
+  // v- We can remove the flow annotations here once React updates...
+  static getDerivedStateFromProps(
+    nextProps /*: DynamicProps<Args> */,
+    prevState /*: TransitionState */
+  ) /*: ?TransitionState */ {
     const previousStyles = prevState.styles;
     const styles = mergeStyles(nextProps);
     return !shallowEqual(previousStyles, styles)

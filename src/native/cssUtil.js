@@ -18,12 +18,13 @@ module.exports.transformRawValue = transformRawValue;
 
 module.exports.transformStyleTuples = (
   styleTuples /*: StyleTuple[] */,
-  appliedVariables /*: VariablesStore */
+  appliedVariables /*: ?VariablesStore */
 ) /*: Object */ => {
   const transformedStyleTuples = styleTuples.map(([property, value]) => {
     let transformedValue = value;
-    if (appliedVariables)
+    if (appliedVariables != null) {
       transformedValue = transformVariables(transformedValue, appliedVariables);
+    }
     transformedValue = transformColors(transformedValue);
     return [property, transformedValue];
   });

@@ -39,36 +39,48 @@ const getExportedVariables = (props, variablesFromScope) => {
   const appliedRuleVariables = getAppliedRules(
     props.args.ruleTuples,
     props.ownProps
-  )
-    // $FlowFixMe
-    .map(rule => rule.exportedVariables);
+  ).map(rule => rule.exportedVariables || null);
   const definedVariables = Object.assign({}, ...appliedRuleVariables);
   return resolveVariableDependencies(definedVariables, variablesFromScope);
 };
 
-const transformPart = (appliedVariables, part) =>
+const transformPart = /*:: <T: (string[] | string)> */ (
+  appliedVariables /*: VariablesStore */,
+  part /*: T */
+) /*: T */ =>
+  // $FlowFixMe
   Array.isArray(part)
     ? part /* Pre-processed */
     : transformVariables(part, appliedVariables);
 
-const transformParts = (appliedVariables, parts) =>
-  parts != null
-    ? Object.keys(parts).reduce((accum, key) => {
-        accum[key] = transformPart(appliedVariables, parts[key]);
-        return accum;
-      }, {})
-    : null;
+const transformParts = /*:: <T: TransitionParts | AnimationParts> */ (
+  appliedVariables /*: VariablesStore */,
+  parts /*: ?T */
+) /*: ?T */ => {
+  if (parts == null) return null;
+
+  // prettier-ignore
+  // $FlowFixMe
+  const newPart = ({} /*: T */);
+  return Object.keys(parts).reduce((accum, key) => {
+    // $FlowFixMe
+    accum[key] = transformPart(appliedVariables, parts[key]);
+    return accum;
+  }, newPart);
+};
 
 const createRule = (
   inputRule /*: VariableRuleTuple */,
   style /*: string */,
-  appliedVariables /*: Object */
+  appliedVariables /*: VariablesStore */
 ) /*: Rule */ => {
   const { validate, transitionParts, animationParts } = inputRule;
+  // $FlowFixMe
   const transitions /*: ?TransitionParts */ = transformParts(
     appliedVariables,
     transitionParts
   );
+  // $FlowFixMe
   const animations /*: ?AnimationParts */ = transformParts(
     appliedVariables,
     animationParts
@@ -95,15 +107,18 @@ const createRuleStylesUsingStylesheet = (
   }, {});
   const stylesheet = StyleSheet.create(styleBody);
 
-  const rules = ruleTuples.map(
+  // $FlowFixMe
+  const rules /*: Rule[] */ = ruleTuples.map(
     (rule, index) =>
       rule.styleTuples != null
-        ? createRule(rule, stylesheet[index], appliedVariables)
+        ? // $FlowFixMe
+          createRule(rule, stylesheet[index], appliedVariables)
         : rule
   );
 
   const keyframes = Object.keys(keyframesStyleTuples).reduce(
     (accum, keyframeName) => {
+      // $FlowFixMe
       const keyframeStyles /*: Keyframe[] */ = keyframesStyleTuples[
         keyframeName
       ].map(
@@ -131,7 +146,7 @@ module.exports = class VariablesStyleSheetManager extends Component /*::<
   DynamicProps<VariableArgs>
 >*/ {
   /*::
-  styleCache: Object
+  styleCache: { [key:string]: Args }
   getExportedVariables: (variables: VariablesStore) => VariablesStore
   renderWithVariables: (variables: VariablesStore) => any
   */

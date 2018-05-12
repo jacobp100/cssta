@@ -3,7 +3,7 @@ const renderer = require("react-test-renderer"); // eslint-disable-line
 const VariablesProvider = require("../VariablesProvider");
 
 const ReturnsVariables = () =>
-  React.createElement(VariablesProvider.Consumer, null, variables =>
+  React.createElement(VariablesProvider, null, variables =>
     React.createElement("dummy", variables)
   );
 

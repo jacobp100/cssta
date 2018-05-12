@@ -25,12 +25,18 @@ type VariablesProviderProps = {
 const VariablesContext = React.createContext(null);
 
 class VariablesProvider extends Component /*:: <VariablesProviderProps> */ {
+  /*::
+  renderChildren: (variables: VariablesStore) => React.ElementType
+  */
+
   constructor() {
     super();
     this.renderChildren = this.renderChildren.bind(this);
   }
 
-  renderChildren(variablesFromScope) {
+  renderChildren(
+    variablesFromScope /*: VariablesStore */
+  ) /* React.ElementType */ {
     const { exportedVariables: inputExportedVariables, children } = this.props;
     const exportedVariables =
       typeof inputExportedVariables === "function"
@@ -54,6 +60,7 @@ class VariablesProvider extends Component /*:: <VariablesProviderProps> */ {
   }
 
   render() {
+    // $FlowFixMe
     return React.createElement(
       VariablesContext.Consumer,
       null,
@@ -61,8 +68,6 @@ class VariablesProvider extends Component /*:: <VariablesProviderProps> */ {
     );
   }
 }
-
-VariablesProvider.Consumer = VariablesContext.Consumer;
 
 VariablesProvider.propTypes = {
   exportedVariables: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),

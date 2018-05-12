@@ -7,11 +7,28 @@ const selectorParser = require("postcss-selector-parser");
 
 const propArg = "p";
 
-const combineLogicalValidators = (validators, operator) => {
+/*::
+type SelectorNode = {
+  type: string,
+  value: any,
+  attribute: string,
+  raws: any,
+  nodes: SelectorNode[],
+  toString: () => string,
+}
+
+type Validator = ?string
+*/
+
+const combineLogicalValidators = (
+  validators /*: Validator[] */,
+  operator /*: string */
+) /*: Validator */ => {
   if (validators.length === 0) {
     throw new Error("Cannot construct logical validaton");
   }
-  const nodeValidators = validators.filter(validator => validator != null);
+  // $FlowFixMe
+  const nodeValidators /*: string[] */ = validators.filter(v => v != null);
   if (nodeValidators.length === 0) return null;
   return nodeValidators
     .slice(1)
@@ -24,9 +41,11 @@ const combineLogicalValidators = (validators, operator) => {
 const createLogicalValidator = (nodes, operator) =>
   combineLogicalValidators(nodes.map(createValidator), operator); // eslint-disable-line
 
-const createNestingValidator = () => null;
+const createAlwaysTrueValidator = () /*: Validator */ => null;
 
-const createAttributeValidator = node => {
+const createAttributeValidator = (
+  node /*: SelectorNode */
+) /*: Validator */ => {
   const { raws, value } = node;
   const attribute = node.attribute.trim();
   if (attribute[0] !== "*") {
@@ -44,7 +63,7 @@ const createAttributeValidator = node => {
   return `(${memberExpression} === ${JSON.stringify(unquoted)})`;
 };
 
-const createPseudoValidator = node => {
+const createPseudoValidator = (node /*: SelectorNode */) /*: Validator */ => {
   const { value, nodes } = node;
 
   if (value === ":matches") {
@@ -53,24 +72,25 @@ const createPseudoValidator = node => {
     const baseValidator = createLogicalValidator(nodes, "||");
     return baseValidator ? `!${baseValidator}` : null;
   }
-  throw new Error(`Invalid selector part: ${node}`);
+  throw new Error(`Invalid selector part: ${node.toString()}`);
 };
 
-const createSelectorValidator = node =>
+const createSelectorValidator = (node /*: SelectorNode */) /* Validator */ =>
   createLogicalValidator(node.nodes, "&&");
 
 const validators = {
-  universal: () => null,
-  nesting: createNestingValidator,
+  universal: createAlwaysTrueValidator,
+  nesting: createAlwaysTrueValidator,
   attribute: createAttributeValidator,
   pseudo: createPseudoValidator,
   selector: createSelectorValidator,
   root: createSelectorValidator
 };
 
-const createValidator = node => {
-  if (!(node.type in validators))
-    throw new Error(`Invalid selector part: ${node}`);
+const createValidator = (node /*: SelectorNode */) /*: Validator */ => {
+  if (!(node.type in validators)) {
+    throw new Error(`Invalid selector part: ${node.toString()}`);
+  }
   return validators[node.type](node);
 };
 

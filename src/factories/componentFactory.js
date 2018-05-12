@@ -62,6 +62,7 @@ module.exports = (
     const render = enhancer ? enhancer(baseRender) : baseRender;
     const ownPropKeys = getOwnPropKeys(propTypes);
 
+    // $FlowFixMe
     const StaticComponent = React.forwardRef((props /*: Object */, ref) => {
       const { Element, ownProps, passedProps } = getComponentProps(
         ownPropKeys,
