@@ -7,7 +7,7 @@ const runTest = csstaFactory => {
 
   const component = renderer.create(React.createElement(Element, {})).toJSON();
 
-  expect(component.props.style).toEqual([{ color: "red" }]);
+  expect(component.props.style).toEqual({ color: "red" });
   expect(component.children).toEqual(null);
 };
 

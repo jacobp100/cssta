@@ -282,7 +282,7 @@ module.exports = class AnimationEnhancer extends Component /*::<
         keyframes,
         rules: rules.concat(newRule)
       };
-      nextProps = Object.assign({}, this.props, { args: nextArgs });
+      nextProps = { ...this.props, args: nextArgs };
     } else {
       nextProps = this.props;
     }

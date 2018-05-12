@@ -39,11 +39,10 @@ class VariablesProvider extends Component /*:: <VariablesProviderProps> */ {
           )
         : inputExportedVariables;
 
-    const appliedVariables = Object.assign(
-      {},
-      variablesFromScope,
-      exportedVariables
-    );
+    const appliedVariables = {
+      ...variablesFromScope,
+      ...exportedVariables
+    };
 
     return React.createElement(
       VariablesContext.Provider,

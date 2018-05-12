@@ -17,6 +17,6 @@ module.exports = componentFactory((ownProps, passedProps, args /*: Args */) => {
   if ("style" in passedProps) style = style.concat(passedProps.style);
 
   return style.length > 0
-    ? Object.assign({}, passedProps, { style })
+    ? { ...passedProps, style: style.length === 1 ? style[0] : style }
     : passedProps;
 });

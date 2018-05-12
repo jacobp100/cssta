@@ -32,7 +32,22 @@ it("validates rules", () =>
         style: 0
       }
     ],
-    expectedProps: { style: [0] }
+    expectedProps: { style: 0 }
+  }));
+
+it("returns an array of styles if multiple match", () =>
+  runTest({
+    rules: [
+      {
+        validate: () => true,
+        style: 0
+      },
+      {
+        validate: () => true,
+        style: 1
+      }
+    ],
+    expectedProps: { style: [0, 1] }
   }));
 
 it("adds a boolean property if it is equal to the expected value", () =>
@@ -45,7 +60,7 @@ it("adds a boolean property if it is equal to the expected value", () =>
       }
     ],
     inputProps: { booleanAttribute: true },
-    expectedProps: { style: [0] }
+    expectedProps: { style: 0 }
   }));
 
 it("does not add a boolean property if it is not equal to the expected value", () =>
@@ -69,7 +84,7 @@ it("adds a string property if it is equal to the expected value", () =>
       }
     ],
     inputProps: { stringAttribute: "test" },
-    expectedProps: { style: [0] }
+    expectedProps: { style: 0 }
   }));
 
 it("does not add a string property if it is not equal to the expected value", () =>
@@ -106,7 +121,7 @@ it("validates rules using own props", () =>
       }
     ],
     inputProps: { style: "fancy" },
-    expectedProps: { style: [0] }
+    expectedProps: { style: 0 }
   }));
 
 it("does not validate invalid rules", () =>
@@ -131,13 +146,13 @@ it("passes down passed props as well as using own props", () =>
       }
     ],
     inputProps: { scrollingEnabled: false },
-    expectedProps: { scrollingEnabled: false, style: [0] }
+    expectedProps: { scrollingEnabled: false, style: 0 }
   }));
 
 it("allows adding a style", () =>
   runTest({
-    inputProps: { style: [0] },
-    expectedProps: { style: [0] }
+    inputProps: { style: 0 },
+    expectedProps: { style: 0 }
   }));
 
 it("allows extending a style with a style array", () =>

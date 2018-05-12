@@ -102,6 +102,13 @@ module.exports = class TransitionEnhancer extends Component /*::<
   TransitionState
 >*/ {
   /*:: animationValues: { [key:string]: AnimatedValue } */
+  static getDerivedStateFromProps(nextProps, prevState) {
+    const previousStyles = prevState.styles;
+    const styles = mergeStyles(nextProps);
+    return !shallowEqual(previousStyles, styles)
+      ? { styles, previousStyles }
+      : null;
+  }
 
   constructor(props /*: DynamicProps<Args> */) {
     super();
@@ -113,21 +120,12 @@ module.exports = class TransitionEnhancer extends Component /*::<
     this.animationValues = props.args.transitionedProperties.reduce(
       (animationValues, transitionName) => {
         /* eslint-disable no-param-reassign */
-        animationValues[transitionName] = new Animated.Value(
-          getInitialValue(styles[transitionName])
-        );
+        const initialValue = getInitialValue(styles[transitionName]);
+        animationValues[transitionName] = new Animated.Value(initialValue);
         return animationValues;
       },
       {}
     );
-  }
-
-  componentWillReceiveProps(nextProps /*: DynamicProps<Args> */) {
-    const previousStyles = this.state.styles;
-    const styles = mergeStyles(nextProps);
-    if (!shallowEqual(previousStyles, styles)) {
-      this.setState({ styles, previousStyles });
-    }
   }
 
   componentDidUpdate(
@@ -205,7 +203,7 @@ module.exports = class TransitionEnhancer extends Component /*::<
         keyframes,
         rules: rules.concat(newRule)
       };
-      nextProps = Object.assign({}, this.props, { args: nextArgs });
+      nextProps = { ...this.props, args: nextArgs };
     } else {
       nextProps = this.props;
     }

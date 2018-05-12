@@ -21,6 +21,7 @@ const transformVariables = require("../../css-transforms/variables");
 import type {
   VariableArgs,
   VariableRuleTuple,
+  VariableKeyframeTuple,
   Args,
   VariablesStore,
   Style,
@@ -83,7 +84,7 @@ const createRuleStylesUsingStylesheet = (
   const { transitionedProperties, keyframesStyleTuples, ruleTuples } = args;
   const styles /*: (Style | null)[] */ = ruleTuples.map(
     rule =>
-      rule.styleTuples
+      rule.styleTuples != null
         ? transformStyleTuples(rule.styleTuples, appliedVariables)
         : null
   );
@@ -96,7 +97,7 @@ const createRuleStylesUsingStylesheet = (
 
   const rules = ruleTuples.map(
     (rule, index) =>
-      rule.styleTuples
+      rule.styleTuples != null
         ? createRule(rule, stylesheet[index], appliedVariables)
         : rule
   );
@@ -107,7 +108,7 @@ const createRuleStylesUsingStylesheet = (
         keyframeName
       ].map(
         keyframe =>
-          keyframe.styleTuples
+          keyframe.styleTuples != null
             ? {
                 time: keyframe.time,
                 style: transformStyleTuples(
@@ -154,13 +155,13 @@ module.exports = class VariablesStyleSheetManager extends Component /*::<
     const styleCacheKey = JSON.stringify(ownAppliedVariables);
     const styleCached = styleCacheKey in styleSheetCache;
 
-    const transformedArgs = styleCached
+    const nextArgs = styleCached
       ? styleSheetCache[styleCacheKey]
       : createRuleStylesUsingStylesheet(ownAppliedVariables, this.props.args);
 
-    if (!styleCached) styleSheetCache[styleCacheKey] = transformedArgs;
+    if (!styleCached) styleSheetCache[styleCacheKey] = nextArgs;
 
-    const nextProps = Object.assign({}, this.props, { args: transformedArgs });
+    const nextProps = { ...this.props, args: nextArgs };
     return this.props.children(nextProps);
   }
 

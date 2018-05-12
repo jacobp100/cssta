@@ -26,7 +26,7 @@ module.exports = (
     const referencedVariableMatches = definedVariables[variableName].match(
       varRegExp
     );
-    if (!referencedVariableMatches) return;
+    if (referencedVariableMatches == null) return;
 
     const referencedVariables = referencedVariableMatches
       .map(match => {

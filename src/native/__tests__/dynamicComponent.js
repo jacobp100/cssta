@@ -58,7 +58,7 @@ it("adds a boolean property if it is equal to the expected value", () =>
       }
     ],
     inputProps: { booleanAttribute: true },
-    expectedProps: { style: [{ color: "red" }] }
+    expectedProps: { style: { color: "red" } }
   }));
 
 it("does not add a boolean property if it is not equal to the expected value", () =>
@@ -84,7 +84,7 @@ it("adds a string property if it is equal to the expected value", () =>
       }
     ],
     inputProps: { stringAttribute: "test" },
-    expectedProps: { style: [{ color: "red" }] }
+    expectedProps: { style: { color: "red" } }
   }));
 
 it("does not add a string property if it is not equal to the expected value", () =>
@@ -109,7 +109,7 @@ it("uses fallback for variable if not defined within scope", () =>
         transitionParts: {}
       }
     ],
-    expectedProps: { style: [{ color: "red" }] }
+    expectedProps: { style: { color: "red" } }
   }));
 
 it("converts color-mod functions", () =>
@@ -121,7 +121,7 @@ it("converts color-mod functions", () =>
         transitionParts: {}
       }
     ],
-    expectedProps: { style: [{ color: "rgb(255, 128, 128)" }] }
+    expectedProps: { style: { color: "rgb(255, 128, 128)" } }
   }));
 
 it("transitions values", () =>
