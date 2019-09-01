@@ -1,2 +1,2 @@
 // @flow
-module.exports.keyBloom = key => 1 << key.charCodeAt(0) % 31;
+module.exports.keyBloom = (key /*: string */) => 1 << key.charCodeAt(0) % 31;

@@ -1,14 +1,22 @@
+// @flow
 const React = require("react");
 const variables = require("./css-transforms/variables");
 
-module.exports = (unresolvedShortHandParts, customProperties) => {
+/*::
+import type { Variables } from "./VariablesContext";
+*/
+
+module.exports = (
+  unresolvedShorthandParts /*: Array<{ [key:string]: string }> */,
+  customProperties /*: Variables */
+) /*: Array<{ [key:string]: string }> */ => {
   return React.useMemo(() => {
-    return unresolvedShortHandParts.map(part => {
+    return unresolvedShorthandParts.map(part => {
       const accum = {};
       Object.keys(part).forEach(key => {
         accum[key] = variables(part[key], customProperties);
       });
       return accum;
     });
-  }, [unresolvedShortHandParts, customProperties]);
+  }, [unresolvedShorthandParts, customProperties]);
 };

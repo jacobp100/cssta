@@ -1,4 +1,12 @@
+// @flow
 const { Easing } = require("react-native");
+
+/*::
+type TransformIterpolation = Array<{ [key:string]: string | number }>;
+export type Interpolation = number | string | TransformIterpolation;
+export type OutputRange = Interpolation[];
+export type InterpolatedValue = Object | Object[];
+*/
 
 module.exports.interpolateValue = (
   inputRange /*: number[] */,
@@ -33,8 +41,8 @@ module.exports.interpolateValue = (
 
   return firstValue.map((transform, index) => {
     const transformProperty = Object.keys(transform)[0];
-    // $FlowFixMe
     const innerOutputRange = outputRange.map(
+      // $FlowFixMe
       range => range[index][transformProperty]
     );
 

@@ -1,6 +1,11 @@
+// @flow
 const React = require("react");
 const { StyleSheet, Animated } = require("react-native");
 const { interpolateValue, easingFunctions } = require("./animationUtil");
+
+/*::
+import type { Transition } from "./flattenTransition";
+*/
 
 const getInitialValue = targetValue =>
   typeof targetValue === "number" ? targetValue : 0;
@@ -80,10 +85,15 @@ const animate = (transition, style, previousStyle, animationValues) => {
   Animated.parallel(animations).start();
 };
 
-module.exports = (transition, inputStyle) => {
-  const { style, previousStyle } = useStyleGroup(transition, inputStyle);
+module.exports = (
+  transition /*: Transition */,
+  inputStyleUnflattened /*: any */
+) => {
+  const { style, previousStyle } = useStyleGroup(
+    transition,
+    inputStyleUnflattened
+  );
   const animationValues = useAnimationValues(transition, style);
-  console.log(style, previousStyle);
 
   React.useLayoutEffect(() => {
     animate(transition, style, previousStyle, animationValues);
@@ -92,7 +102,7 @@ module.exports = (transition, inputStyle) => {
   const nextStyle = React.useMemo(() => {
     const animationNames = Object.keys(animationValues);
 
-    if (animationNames.length === 0) return inputStyle;
+    if (animationNames.length === 0) return inputStyleUnflattened;
 
     const transitionStyle = {};
 

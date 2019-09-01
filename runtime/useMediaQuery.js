@@ -1,7 +1,8 @@
+// @flow
 const React = require("react");
 const { Dimensions } = require("react-native");
 
-module.exports = () => {
+module.exports = () /*: { width: number, height: number } */ => {
   const [dimensions, setDimensions] = React.useState(Dimensions.get("window"));
 
   React.useEffect(() => {

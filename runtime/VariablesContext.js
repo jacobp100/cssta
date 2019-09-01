@@ -1,6 +1,10 @@
 // @flow
 const React = require("react");
 
+/*::
+export type Variables = { [key: string]: string };
+*/
+
 /*
 When react supports this, we can enable it
 const { keyBloom } = require("./bloomFilter");
@@ -21,4 +25,4 @@ const diff = (prev, current) => {
 }
 */
 
-module.exports = React.createContext({});
+module.exports = React.createContext/*:: <Variables> */({});

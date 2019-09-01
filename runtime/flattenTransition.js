@@ -1,9 +1,33 @@
+// @flow
 const { getPropertyName } = require("css-to-react-native");
-const {
-  getDurationInMs,
-  durationRegExp,
-  easingRegExp
-} = require("./animationShorthandUtil");
+const { easingFunctions } = require("./animationUtil");
+const { getDurationInMs, durationRegExp } = require("./animationShorthandUtil");
+
+/*::
+import type { TimingFunction } from "./animationShorthandUtil";
+
+export type TransitionShorthandParts = Array<{
+  _?: string,
+  property?: string,
+  timingFunction?: string,
+  delay?: string,
+  duration?: string
+}>;
+
+type IntermediateTransition = {
+  property: string | null,
+  timingFunction: TimingFunction,
+  delay: number,
+  duration: number
+};
+
+export type Transition = Array<{
+  property: string,
+  timingFunction: TimingFunction,
+  delay: number,
+  duration: number
+}>;
+*/
 
 const DELAY = 1;
 const DURATION = 1 << 1;
@@ -11,7 +35,7 @@ const TIMING_FUNCTION = 1 << 2;
 const PROPERTY = 1 << 3;
 
 const getTransitionShorthand = shorthandParts => {
-  const accum = {
+  const accum /*: IntermediateTransition */ = {
     delay: 0,
     duration: 0,
     timingFunction: "ease",
@@ -20,7 +44,8 @@ const getTransitionShorthand = shorthandParts => {
   let set = 0;
 
   shorthandParts.forEach(part => {
-    if (!(set & TIMING_FUNCTION) && easingRegExp.test(part)) {
+    if (!(set & TIMING_FUNCTION) && easingFunctions[part] != null) {
+      // $FlowFixMe
       accum.timingFunction = part;
       set &= TIMING_FUNCTION;
     } else if (!(set & DURATION) && durationRegExp.test(part)) {
@@ -42,11 +67,11 @@ const getTransitionShorthand = shorthandParts => {
 
 const split = value => value.trim().split(/\s*,\s*/);
 
-module.exports = styles => {
+module.exports = (styles /*: TransitionShorthandParts */) /*: Transition */ => {
   let delays = [];
   let durations = [];
   let timingFunctions = [];
-  let properties = [];
+  let properties /* string[] */ = [];
 
   styles.forEach(style => {
     if (style == null) return;
@@ -59,10 +84,14 @@ module.exports = styles => {
 
       split(style._).forEach(shorthand => {
         const resolved = getTransitionShorthand(shorthand.trim().split(/\s+/));
-        timingFunctions.push(resolved.timingFunction);
-        delays.push(resolved.delay);
-        durations.push(resolved.duration);
-        properties.push(resolved.property);
+        const property = resolved.property;
+
+        if (property != null) {
+          timingFunctions.push(resolved.timingFunction);
+          delays.push(resolved.delay);
+          durations.push(resolved.duration);
+          properties.push(property);
+        }
       });
     }
     if (style.timingFunction != null) {
@@ -82,14 +111,19 @@ module.exports = styles => {
     }
   });
 
-  const transitions = properties.map((property, index) => {
+  const transitions /*: Transition */ = properties.map((
+    property /*: string */,
+    index
+  ) => {
     /*
     Per spec, cycle through multiple values if transition-property length
     exceeds the length of the other property
     */
     const delay = delays[index % delays.length];
     const duration = durations[index % durations.length];
-    const timingFunction = timingFunctions[index % timingFunctions.length];
+    // $FlowFixMe
+    const timingFunction /*: TimingFunction */ =
+      timingFunctions[index % timingFunctions.length];
     return { property, timingFunction, delay, duration };
   });
 

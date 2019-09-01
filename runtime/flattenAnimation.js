@@ -1,15 +1,34 @@
-const {
-  getDurationInMs,
-  durationRegExp,
-  easingRegExp
-} = require("./animationShorthandUtil");
+// @flow
+const { easingFunctions } = require("./animationUtil");
+const { getDurationInMs, durationRegExp } = require("./animationShorthandUtil");
+
+/*::
+import type { TimingFunction } from "./animationShorthandUtil";
+
+export type AnimationShorthandParts = Array<{
+  _?: string,
+  timingFunction?: string,
+  delay?: string,
+  duration?: string,
+  iterations?: string,
+  name?: string
+}>;
+
+export type Animation = {
+  delay: number,
+  duration: number,
+  iterations: number,
+  name: string | null,
+  timingFunction: TimingFunction
+};
+*/
 
 const iterationsRegExp = /^(\d+|infinite)$/i;
 
 const getIterationCount = (iteration /*: string */) /*: number */ =>
   /infinite/i.test(iteration) ? -1 : parseInt(iteration, 10);
 
-const defaultValue = () => ({
+const defaultValue = () /*: Animation */ => ({
   delay: 0,
   duration: 0,
   iterations: 1,
@@ -23,12 +42,13 @@ const DELAY = 1 << 2;
 const ITERATION_COUNT = 1 << 3;
 const NAME = 1 << 4;
 
-const getAnimationShorthand = shorthandParts => {
+const getAnimationShorthand = (shorthandParts /*: string[] */) => {
   const accum = defaultValue();
   let set = 0;
 
   shorthandParts.forEach(part => {
-    if (!(set & TIMING_FUNCTION) && easingRegExp.test(part)) {
+    if (!(set & TIMING_FUNCTION) && easingFunctions[part] != null) {
+      // $FlowFixMe;
       accum.timingFunction = part;
       set &= TIMING_FUNCTION;
     } else if (!(set & DURATION) && durationRegExp.test(part)) {
@@ -51,7 +71,7 @@ const getAnimationShorthand = shorthandParts => {
   return accum;
 };
 
-module.exports = styles => {
+module.exports = (styles /*: AnimationShorthandParts */) /*: Animation */ => {
   let accum = defaultValue();
   styles.forEach(style => {
     if (style == null) return;
@@ -60,6 +80,7 @@ module.exports = styles => {
       accum = getAnimationShorthand(style._.trim().split(/\s+/));
     }
     if (style.timingFunction != null) {
+      // $FlowFixMe
       accum.timingFunction = style.timingFunction;
     }
     if (style.delay != null) {

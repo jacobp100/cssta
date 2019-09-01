@@ -1,11 +1,16 @@
+// @flow
 const { varRegExp } = require("./cssRegExp");
+
+/*::
+import type { Variables } from "./VariablesContext";
+*/
 
 /* eslint-disable no-prototype-builtins */
 
 module.exports = (
-  scope /*: { [string]: string | null } */,
-  next /*: { [string]: string | null } */
-) /*: { [string]: string | null } */ => {
+  scope /*: Variables */,
+  next /*: Variables */
+) /*: Variables */ => {
   const out = {};
 
   /*
@@ -15,7 +20,8 @@ module.exports = (
   const resolveChain = [];
 
   const resolve = key => {
-    if (out.hasOwnProperty(key)) return out[key];
+    const existing = out[key];
+    if (existing != null) return existing;
 
     let unresolvedValue;
     if (next.hasOwnProperty(key)) {
@@ -30,17 +36,10 @@ module.exports = (
     } else if (scope.hasOwnProperty(key)) {
       unresolvedValue = scope[key];
     } else {
-      /*
-      We're trying to resolve a reference that doesn't exist in the scope or parent
-      Return early here to avoid adding this missing reference to `out`
-      */
-      return null;
+      unresolvedValue = null;
     }
 
-    if (unresolvedValue == null) {
-      out[key] = null;
-      return null;
-    }
+    if (unresolvedValue == null) return undefined;
 
     const chainIndex = resolveChain.indexOf(key);
     if (chainIndex !== -1) {
@@ -70,9 +69,10 @@ module.exports = (
         }
       }
     );
-    if (missingValues) resolvedValue = null;
 
-    out[key] = resolvedValue;
+    if (!missingValues) {
+      out[key] = resolvedValue;
+    }
 
     resolveChain.pop();
 

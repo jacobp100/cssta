@@ -1,6 +1,32 @@
+// @flow
 const React = require("react");
 const { StyleSheet, Animated } = require("react-native");
 const { interpolateValue, easingFunctions } = require("./animationUtil");
+
+/*::
+import type { Animation } from "./flattenAnimation";
+import type { OutputRange, InterpolatedValue } from "./animationUtil";
+
+export type Keyframe = {
+  time: number,
+  style: any,
+};
+export type Keyframes = { [key:string]: Keyframe[] };
+
+type AnimatedValue = {
+  setValue: (value: number) => void,
+};
+
+type AnimationState = {
+  animations: ?{ [key:string]: InterpolatedValue },
+  animationValues: ?{ [key:string]: AnimatedValue },
+  delay: number,
+  duration: number,
+  iterations: number,
+  name: ?string,
+  timingFunction: any,
+};
+*/
 
 const noAnimations /*: AnimationState */ = {
   animations: null,
@@ -114,7 +140,11 @@ const animate = ({
   */
 };
 
-module.exports = (keyframes, animation, style) => {
+module.exports = (
+  keyframes /*: Keyframes */,
+  animation /*: Animation */,
+  style /*: any */
+) => {
   const state = getAnimationState(keyframes, animation, style);
 
   const { animations, name } = state;
