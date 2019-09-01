@@ -54,7 +54,7 @@ module.exports = (babel, path, rules, { selectorFunctions }) => {
       constantExportedVariables
     );
 
-    const ruleCondition = selectorFunctions.get(rule.selector);
+    const ruleCondition = selectorFunctions.get(rule);
     exportedVariablesExpression =
       ruleCondition != null
         ? t.conditionalExpression(
@@ -86,7 +86,7 @@ module.exports = (babel, path, rules, { selectorFunctions }) => {
             )
           )
       );
-      const ruleCondition = selectorFunctions.get(rule.selector);
+      const ruleCondition = selectorFunctions.get(rule);
 
       if (ruleCondition == null) {
         path.pushContainer("body", assignments);

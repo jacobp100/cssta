@@ -66,7 +66,7 @@ it("Supports basic multiple implicitly-scoped declarations", () => {
   `);
 });
 
-it("Supports conditional styles", () => {
+it("Supports boolean conditional styles", () => {
   const css = styled.test`
     color: green;
 
@@ -96,7 +96,7 @@ it("Supports conditional styles", () => {
   `);
 });
 
-it("Supports conditional styles", () => {
+it("Supports string conditional styles", () => {
   const css = styled.test`
     width: 100px;
 
@@ -159,7 +159,7 @@ it("Supports media queries", () => {
         width: screenWidth,
         height: screenHeight
       } = useMediaQuery();
-      const style = [screenWidth >= 500 ? styles[0] : null, screenWidth >= 500 ? styles[1] : null, props.style];
+      const style = [styles[0], screenWidth >= 500 ? styles[1] : null, props.style];
       return <Element {...props} ref={ref} style={style} />;
     });"
   `);
@@ -201,7 +201,7 @@ it("Supports media queries with conditions", () => {
         width: screenWidth,
         height: screenHeight
       } = useMediaQuery();
-      const style = [screenWidth >= 500 ? styles[0] : null, screenWidth >= 500 ? styles[1] : null, large === true && screenWidth >= 500 ? styles[2] : null, props.style];
+      const style = [styles[0], screenWidth >= 500 ? styles[1] : null, large === true && screenWidth >= 500 ? styles[2] : null, props.style];
       return <Element {...props} ref={ref} style={style} />;
     });"
   `);
@@ -354,10 +354,7 @@ it("Supports exported variables in media queries", () => {
         height: screenHeight
       } = useMediaQuery();
       const exportedCustomProperties = {};
-
-      if (screenWidth >= 500) {
-        exportedCustomProperties['width'] = '100px';
-      }
+      exportedCustomProperties['width'] = '100px';
 
       if (screenWidth >= 500) {
         exportedCustomProperties['width'] = '200px';
@@ -612,7 +609,7 @@ it("Supports animations", () => {
     const animation = {
       'delay': 0,
       'duration': 1000,
-      'iterationCount': 1,
+      'iterations': 1,
       'name': 'fade-in',
       'timingFunction': 'ease'
     };
@@ -836,7 +833,7 @@ it("Supports transitions with animations", () => {
     const animation = {
       'delay': 0,
       'duration': 1000,
-      'iterationCount': 1,
+      'iterations': 1,
       'name': 'fade-in',
       'timingFunction': 'ease'
     };

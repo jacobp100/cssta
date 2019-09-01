@@ -1,7 +1,7 @@
 ---
 layout: page
-title: Native Animations
-permalink: /native/animations/
+title: Transitions and Animations
+permalink: /transitinos-animations/
 ---
 
 <style>

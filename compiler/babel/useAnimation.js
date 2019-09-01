@@ -44,7 +44,7 @@ module.exports = (
     animationPartsExpression = t.arrayExpression(
       rulesWithAnimationParts.map(rule => {
         const parts = jsonToNode(babel, rule.animationParts);
-        const ruleCondition = selectorFunctions.get(rule.selector);
+        const ruleCondition = selectorFunctions.get(rule);
 
         return ruleCondition == null
           ? parts

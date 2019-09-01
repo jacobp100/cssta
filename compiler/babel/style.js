@@ -36,7 +36,7 @@ const createMultipleStyleExpression = (
         t.numericLiteral(i),
         true
       );
-      const ruleCondition = selectorFunctions.get(rule.selector);
+      const ruleCondition = selectorFunctions.get(rule);
       return ruleCondition == null
         ? styleSheet
         : t.conditionalExpression(ruleCondition, styleSheet, t.nullLiteral());

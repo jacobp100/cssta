@@ -248,7 +248,7 @@ module.exports = (babel, path, { ruleTuples }) => {
 
   const selectorFunctions = ruleTuples.reduce((accum, rule) => {
     const ruleCondition = selectorTransform(babel, rule, { screenVariables });
-    if (ruleCondition != null) accum.set(rule.selector, ruleCondition);
+    if (ruleCondition != null) accum.set(rule, ruleCondition);
     return accum;
   }, new Map());
 

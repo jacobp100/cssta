@@ -37,7 +37,7 @@ module.exports = (
     transitionPartsExpression = t.arrayExpression(
       rulesWithTransitionParts.map(rule => {
         const parts = jsonToNode(babel, rule.transitionParts);
-        const ruleCondition = selectorFunctions.get(rule.selector);
+        const ruleCondition = selectorFunctions.get(rule);
 
         return ruleCondition == null
           ? parts
