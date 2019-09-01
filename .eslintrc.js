@@ -1,30 +1,23 @@
 module.exports = {
-  extends: ["airbnb-base", "prettier"],
-  plugins: ["import", "react", "flowtype"],
+  env: {
+    es6: true,
+    node: true
+  },
+  extends: "eslint:recommended",
+  globals: {
+    Atomics: "readonly",
+    SharedArrayBuffer: "readonly"
+  },
   parserOptions: {
-    ecmaFeatures: {
-      jsx: true
-    }
+    ecmaVersion: 2018,
+    sourceType: "module"
   },
-  rules: {
-    "react/jsx-filename-extension": [0],
-    "react/jsx-uses-react": [2],
-    "react/jsx-uses-vars": [2],
-    "spaced-comment": [0],
-    "arrow-parens": [0]
-  },
+  rules: {},
   overrides: [
     {
-      files: "src/**/*.js",
-      rules: {
-        "flowtype/require-valid-file-annotation": [2, "always"]
-      }
-    },
-    {
-      files: "**/__tests__/*.js",
-      env: { jest: true },
-      rules: {
-        "flowtype/require-valid-file-annotation": [0]
+      files: ["**/__tests__/*.js"],
+      env: {
+        jest: true
       }
     }
   ]
