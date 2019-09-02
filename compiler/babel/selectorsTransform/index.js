@@ -138,7 +138,7 @@ const createMediaFeatureValidator = (babel, path, query, { cache }) => {
       cache.screenVariables = useMediaQuery(babel, path);
     }
 
-    return t.cloneDeep(cache.screenVariables.width);
+    return t.cloneDeep(cache.screenVariables.height);
   };
 
   switch (match[1]) {
