@@ -5,7 +5,7 @@ const styleSheet = require("./styleSheet");
 const style = require("./style");
 const useCustomProperties = require("./useCustomProperties");
 const useTransition = require("./useTransition");
-const keyFrames = require("./keyFrames");
+const keyframes = require("./keyframes");
 const useAnimation = require("./useAnimation");
 const returnElement = require("./returnElement");
 const forwardRefComponent = require("./forwardRefComponent");
@@ -83,7 +83,7 @@ module.exports = (
 
   let keyframesVariable;
   if (Object.keys(keyframesStyleTuples).length !== 0) {
-    keyframesVariable = keyFrames(babel, path, rules);
+    keyframesVariable = keyframes(babel, path, rules);
   }
 
   if (hasAnimation) {
