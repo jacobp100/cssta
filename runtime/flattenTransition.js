@@ -1,7 +1,10 @@
 // @flow
 const { getPropertyName } = require("css-to-react-native");
-const { easingFunctions } = require("./animationUtil");
-const { getDurationInMs, durationRegExp } = require("./animationShorthandUtil");
+const {
+  getDurationInMs,
+  durationRegExp,
+  easingRegExp
+} = require("./animationShorthandUtil");
 
 /*::
 import type { TimingFunction } from "./animationShorthandUtil";
@@ -44,7 +47,7 @@ const getTransitionShorthand = shorthandParts => {
   let set = 0;
 
   shorthandParts.forEach(part => {
-    if (!(set & TIMING_FUNCTION) && easingFunctions[part] != null) {
+    if (!(set & TIMING_FUNCTION) && easingRegExp.test(part)) {
       // $FlowFixMe
       accum.timingFunction = part;
       set &= TIMING_FUNCTION;

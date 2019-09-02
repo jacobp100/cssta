@@ -1,4 +1,4 @@
-const { generateNiceId, getOrCreateImport } = require("./util");
+const { generateNiceId, getOrCreateImport } = require("../util");
 
 module.exports = (babel, path) => {
   const { types: t } = babel;

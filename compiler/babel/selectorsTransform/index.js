@@ -1,5 +1,6 @@
 // @flow
 const selectorParser = require("postcss-selector-parser");
+const usePlatform = require("./usePlatform");
 const useMediaQuery = require("./useMediaQuery");
 
 /*::
@@ -110,95 +111,114 @@ const aspectRatioWH = ({ types: t }, str) => {
   return t.binaryExpression("/", t.numericLiteral(w), t.numericLiteral(h));
 };
 
-const createMediaFeatureValidator = (babel, query, screenVariables) => {
+const createMediaFeatureValidator = (babel, path, query, { cache }) => {
   const { types: t } = babel;
   const match = query.match(/^\s*\(\s*([\w-]+)\s*:\s*(\S+(?:\s\S)*)\s*\)\s*$/);
 
   if (match == null) throw new Error(`Could not parse media query: ${query}`);
 
+  const getPlatform = () => {
+    if (cache.platform == null) {
+      cache.platform = usePlatform(babel, path);
+    }
+
+    return t.cloneDeep(cache.platform);
+  };
+
+  const getScreenWidth = () => {
+    if (cache.screenVariables == null) {
+      cache.screenVariables = useMediaQuery(babel, path);
+    }
+
+    return t.cloneDeep(cache.screenVariables.width);
+  };
+
+  const getScreenHeight = () => {
+    if (cache.screenVariables == null) {
+      cache.screenVariables = useMediaQuery(babel, path);
+    }
+
+    return t.cloneDeep(cache.screenVariables.width);
+  };
+
   switch (match[1]) {
-    // case "platform":
-    //   return `(${JSON.stringify(
-    //     match[2].toLowerCase()
-    //   )} === ${propArg}.$Platform)`;
+    case "platform":
+      return t.binaryExpression(
+        "===",
+        getPlatform(),
+        t.stringLiteral(match[2])
+      );
     case "width":
       return t.binaryExpression(
         "===",
-        screenVariables.width,
+        getScreenWidth(),
         t.numericLiteral(parseInt(match[2], 10))
       );
     case "min-width":
       return t.binaryExpression(
         ">=",
-        screenVariables.width,
+        getScreenWidth(),
         t.numericLiteral(parseInt(match[2], 10))
       );
     case "max-width":
       return t.binaryExpression(
         "<=",
-        screenVariables.width,
+        getScreenWidth(),
         t.numericLiteral(parseInt(match[2], 10))
       );
     case "height":
       return t.binaryExpression(
         "===",
-        screenVariables.height,
+        getScreenHeight(),
         t.numericLiteral(parseInt(match[2], 10))
       );
     case "min-height":
       return t.binaryExpression(
         ">=",
-        screenVariables.height,
+        getScreenHeight(),
         t.numericLiteral(parseInt(match[2], 10))
       );
     case "max-height":
       return t.binaryExpression(
         "<=",
-        screenVariables.height,
+        getScreenHeight(),
         t.numericLiteral(parseInt(match[2], 10))
       );
     case "aspect-ratio": {
       return t.binaryExpression(
         "===",
         aspectRatioWH(babel, match[2]),
-        t.binaryExpression("/", screenVariables.width, screenVariables.height)
+        t.binaryExpression("/", getScreenWidth(), getScreenHeight())
       );
     }
     case "min-aspect-ratio": {
       return t.binaryExpression(
         "<=",
         aspectRatioWH(babel, match[2]),
-        t.binaryExpression("/", screenVariables.width, screenVariables.height)
+        t.binaryExpression("/", getScreenWidth(), getScreenHeight())
       );
     }
     case "max-aspect-ratio": {
       return t.binaryExpression(
         ">=",
         aspectRatioWH(babel, match[2]),
-        t.binaryExpression("/", screenVariables.width, screenVariables.height)
+        t.binaryExpression("/", getScreenWidth(), getScreenHeight())
       );
     }
-    case "orientation":
+    case "orientation": {
       if (/landscape/i.test(match[2])) {
-        return t.binaryExpression(
-          ">",
-          screenVariables.width,
-          screenVariables.height
-        );
+        return t.binaryExpression(">", getScreenWidth(), getScreenHeight());
       } else if (/portrait/i.test(match[2])) {
-        return t.binaryExpression(
-          "<",
-          screenVariables.width,
-          screenVariables.height
-        );
+        return t.binaryExpression("<", getScreenWidth(), getScreenHeight());
       }
+    }
     // fallthrough
     default:
       throw new Error(`Could not parse media query: ${query}`);
   }
 };
 
-const createMediaQueryValidator = (babel, mediaQuery, screenVariables) => {
+const createMediaQueryValidator = (babel, path, mediaQuery, { cache }) => {
   if (mediaQuery == null) return null;
 
   const createMediaQueryPartValidator = queryPart =>
@@ -206,7 +226,7 @@ const createMediaQueryValidator = (babel, mediaQuery, screenVariables) => {
       babel,
       "&&",
       (queryPart.match(/\([^()]+\)/g) || []).map(query =>
-        createMediaFeatureValidator(babel, query, screenVariables)
+        createMediaFeatureValidator(babel, path, query, { cache })
       )
     );
 
@@ -223,8 +243,9 @@ const createMediaQueryValidator = (babel, mediaQuery, screenVariables) => {
 
 const selectorTransform = (
   babel,
+  path,
   { selector, mediaQuery },
-  { screenVariables }
+  { cache }
 ) => {
   let selectorNode;
   selectorParser(node => {
@@ -234,20 +255,17 @@ const selectorTransform = (
 
   const validatorNode = combineLogicalValidators(babel, "&&", [
     createValidator(babel, selectorNode),
-    createMediaQueryValidator(babel, mediaQuery, screenVariables)
+    createMediaQueryValidator(babel, path, mediaQuery, { cache })
   ]);
 
   return validatorNode;
 };
 
 module.exports = (babel, path, { ruleTuples }) => {
-  let screenVariables;
-  if (ruleTuples.some(rule => rule.mediaQuery != null)) {
-    screenVariables = useMediaQuery(babel, path);
-  }
+  const cache = {};
 
   const selectorFunctions = ruleTuples.reduce((accum, rule) => {
-    const ruleCondition = selectorTransform(babel, rule, { screenVariables });
+    const ruleCondition = selectorTransform(babel, path, rule, { cache });
     if (ruleCondition != null) accum.set(rule, ruleCondition);
     return accum;
   }, new Map());

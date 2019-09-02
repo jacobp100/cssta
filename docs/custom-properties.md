@@ -20,7 +20,7 @@ We have some examples over on our [theming section]({{ site.baseurl }}/theming),
 const Component = cssta(View)`
   color: var(--color);
   --color: red;
-`;
+`
 ```
 
 The only difference from native CSS is that you cannot pass in custom properties through the `style` prop. We have a `<VariablesContext>` component for that. Just pass in your custom properties (without the first double dash: `--`).
@@ -28,21 +28,23 @@ The only difference from native CSS is that you cannot pass in custom properties
 ```jsx
 import VariablesContext from "cssta/runtime/VariablesContext"
 
-<VariablesContext.Provider value={% raw %}{{ color: "red" }}{% endraw %}>
-  <ComponentsThatUseColorVariable />
-</VariablesContext.Provider>
+const Example = (
+  <VariablesContext.Provider value={% raw %}{{ color: "red" }}{% endraw %}>
+    <ComponentsThatUseColorVariable />
+  </VariablesContext.Provider>
+)
 ```
 
 You can also use this as a hook,
 
 ```jsx
 const MyComponent = () => {
-  let variables = React.useContext(VariablesContext);
-  variables = { ...variables, color: "red" };
+  let variables = React.useContext(VariablesContext)
+  variables = { ...variables, color: "red" }
   return (
     <VariablesContext.Provider value={variables}>
       <ComponentsThatUseColorVariable />
     </VariablesContext.Provider>
-  );
-};
+  )
+}
 ```

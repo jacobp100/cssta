@@ -1,6 +1,9 @@
 // @flow
-const { easingFunctions } = require("./animationUtil");
-const { getDurationInMs, durationRegExp } = require("./animationShorthandUtil");
+const {
+  getDurationInMs,
+  durationRegExp,
+  easingRegExp
+} = require("./animationShorthandUtil");
 
 /*::
 import type { TimingFunction } from "./animationShorthandUtil";
@@ -47,7 +50,7 @@ const getAnimationShorthand = (shorthandParts /*: string[] */) => {
   let set = 0;
 
   shorthandParts.forEach(part => {
-    if (!(set & TIMING_FUNCTION) && easingFunctions[part] != null) {
+    if (!(set & TIMING_FUNCTION) && easingRegExp.test(part)) {
       // $FlowFixMe;
       accum.timingFunction = part;
       set &= TIMING_FUNCTION;

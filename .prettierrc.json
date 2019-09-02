@@ -1,0 +1,10 @@
+{
+  "overrides": [
+    {
+      "files": "docs/*.md",
+      "options": {
+        "semi": false
+      }
+    }
+  ]
+}

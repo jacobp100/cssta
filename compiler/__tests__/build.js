@@ -207,6 +207,67 @@ it("Supports media queries with conditions", () => {
   `);
 });
 
+it("Supports platform media queries", () => {
+  const css = styled.test`
+    color: green;
+
+    @media (platform: ios) {
+      color: red;
+    }
+  `;
+
+  const code = build(css);
+  expect(code).toMatchInlineSnapshot(`
+    "import React from 'react';
+    import { Platform } from 'react-native';
+    const styles = {
+      0: {
+        color: 'green'
+      },
+      1: {
+        color: 'red'
+      }
+    };
+    const Example = React.forwardRef((props, ref) => {
+      const style = [styles[0], Platform.OS === 'ios' ? styles[1] : null, props.style];
+      return <Element {...props} ref={ref} style={style} />;
+    });"
+  `);
+});
+
+it("Supports combined media queries", () => {
+  const css = styled.test`
+    color: green;
+
+    @media (platform: ios) and (min-width: 500) {
+      color: red;
+    }
+  `;
+
+  const code = build(css);
+  expect(code).toMatchInlineSnapshot(`
+    "import React from 'react';
+    import { Platform } from 'react-native';
+    import useMediaQuery from 'cssta/runtime/useMediaQuery';
+    const styles = {
+      0: {
+        color: 'green'
+      },
+      1: {
+        color: 'red'
+      }
+    };
+    const Example = React.forwardRef((props, ref) => {
+      const {
+        width: screenWidth,
+        height: screenHeight
+      } = useMediaQuery();
+      const style = [styles[0], Platform.OS === 'ios' && screenWidth >= 500 ? styles[1] : null, props.style];
+      return <Element {...props} ref={ref} style={style} />;
+    });"
+  `);
+});
+
 it("Supports imported variables", () => {
   const css = styled.test`
     width: var(--width);

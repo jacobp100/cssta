@@ -1,7 +1,7 @@
 ---
 layout: page
 title: Transitions and Animations
-permalink: /transitinos-animations/
+permalink: /transitions-animations/
 ---
 
 <style>
@@ -80,7 +80,7 @@ const ButtonWithTransition = cssta(Animated.View)`
     background-color: gray;
     color: light-gray;
   }
-`;
+`
 ```
 
 {:.split-view\_\_code}
@@ -123,7 +123,7 @@ const ButtonWithKeyframes = cssta(Animated.View)`
       opacity: 1;
     }
   }
-`;
+`
 ```
 
 {:.split-view\_\_code}
@@ -156,26 +156,16 @@ const BaseStyles = cssta(View)`
   background-color: red;
 `
 
-class AnimateOpacity extends Component {
-  constructor() {
-    super()
+const AnimateOpacity = () => {
+  const [opacity] = React.useState(() => new Animated.Value(0))
 
-    this.state = {
-      opacity: new Animated.Value(0)
-    }
-  }
-
-  componentWillMount() {
-    Animated.timing(this.state.opacity, {
+  React.useLayoutEffect(() => {
+    Animated.timing(opacity, {
       toValue: 1,
-      duration: 1000,
+      duration: 1000
     }).start()
-  }
+  }, [])
 
-  render() {
-    const { opacity } = this.state
-    // Pass in your animated values here!
-    return <BaseStyles style={% raw %}{{ opacity }}{% endraw %} />
-  }
+  return <BaseStyles style={% raw %}{{ opacity }}{% endraw %} />
 }
 ```

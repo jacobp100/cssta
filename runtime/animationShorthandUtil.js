@@ -13,3 +13,5 @@ module.exports.getDurationInMs = (duration /*: string */) /*: number */ => {
 };
 
 module.exports.durationRegExp = /^[\d.]+m?s$/;
+
+module.exports.easingRegExp = /^(linear|ease(?:-in)?(?:-out)+)$/i;
