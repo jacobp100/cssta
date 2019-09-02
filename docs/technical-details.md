@@ -24,24 +24,24 @@ Cssta takes a lot of inspiration from macros in Rust and ppx transforms in OCaml
 ```jsx
 const Example = cssta(View)`
   color: green;
-`
+`;
 ```
 
 ##### OUTPUT
 
 ```jsx
-import React from "react"
+import React from "react";
 
 const styles = {
   0: {
     color: "green"
   }
-}
+};
 
 const Example = React.forwardRef((props, ref) => {
-  const style = props.style != null ? [styles[0], props.style] : styles[0]
-  return <View {...props} ref={ref} style={style} />
-})
+  const style = props.style != null ? [styles[0], props.style] : styles[0];
+  return <View {...props} ref={ref} style={style} />;
+});
 ```
 
 </div>
@@ -61,13 +61,13 @@ const Example = cssta(View)`
   &[@test] {
     color: blue;
   }
-`
+`;
 ```
 
 ##### OUTPUT
 
 ```jsx
-import React from "react"
+import React from "react";
 
 const styles = {
   0: {
@@ -76,12 +76,12 @@ const styles = {
   1: {
     color: "blue"
   }
-}
+};
 
 const Example = React.forwardRef(({ test, ...props }, ref) => {
-  const style = [styles[0], test === true ? styles[1] : null, props.style]
-  return <Element {...props} ref={ref} style={style} />
-})
+  const style = [styles[0], test === true ? styles[1] : null, props.style];
+  return <Element {...props} ref={ref} style={style} />;
+});
 ```
 
 </div>
@@ -103,14 +103,14 @@ const Example = cssta(View)`
   @media (min-width: 500px) {
     color: red;
   }
-`
+`;
 ```
 
 ##### OUTPUT
 
 ```jsx
-import React from "react"
-import useMediaQuery from "cssta/runtime/useMediaQuery"
+import React from "react";
+import useMediaQuery from "cssta/runtime/useMediaQuery";
 const styles = {
   0: {
     color: "green"
@@ -118,12 +118,12 @@ const styles = {
   1: {
     color: "red"
   }
-}
+};
 const Example = React.forwardRef((props, ref) => {
-  const { width: screenWidth, height: screenHeight } = useMediaQuery()
-  const style = [styles[0], screenWidth >= 500 ? styles[1] : null, props.style]
-  return <Element {...props} ref={ref} style={style} />
-})
+  const { width: screenWidth, height: screenHeight } = useMediaQuery();
+  const style = [styles[0], screenWidth >= 500 ? styles[1] : null, props.style];
+  return <Element {...props} ref={ref} style={style} />;
+});
 ```
 
 </div>
@@ -141,27 +141,27 @@ The stylesheet also gets reformatted from an object of styles to an array of sty
 ```jsx
 const Example = cssta(View)`
   color: var(--width);
-`
+`;
 ```
 
 ##### OUTPUT
 
 ```jsx
-import React from "react"
-import useCustomProperties from "cssta/runtime/useCustomProperties"
-import useCustomPropertyStyleSheet from "cssta/runtime/useCustomPropertyStyleSheet"
+import React from "react";
+import useCustomProperties from "cssta/runtime/useCustomProperties";
+import useCustomPropertyStyleSheet from "cssta/runtime/useCustomPropertyStyleSheet";
 
-const unresolvedStyleTuples = [[["width", "var(--width)"]]]
+const unresolvedStyleTuples = [[["width", "var(--width)"]]];
 
 const Example = React.forwardRef((props, ref) => {
-  const customProperties = useCustomProperties(null)
+  const customProperties = useCustomProperties(null);
   const styles = useCustomPropertyStyleSheet(
     unresolvedStyleTuples,
     customProperties
-  )
-  const style = props.style != null ? [styles[0], props.style] : styles[0]
-  return <Element {...props} ref={ref} style={style} />
-})
+  );
+  const style = props.style != null ? [styles[0], props.style] : styles[0];
+  return <Element {...props} ref={ref} style={style} />;
+});
 ```
 
 </div>
@@ -175,28 +175,28 @@ The `null` in `useCustomProperties(null)` is because here, we don’t export any
 ```jsx
 const Example = cssta(View)`
   --width: 100px;
-`
+`;
 ```
 
 ##### OUTPUT
 
 ```jsx
-import React from "react"
-import useCustomProperties from "cssta/runtime/useCustomProperties"
-import VariablesContext from "cssta/runtime/VariablesContext"
+import React from "react";
+import useCustomProperties from "cssta/runtime/useCustomProperties";
+import VariablesContext from "cssta/runtime/VariablesContext";
 
 const exportedCustomProperties = {
   width: "100px"
-}
+};
 
 const Example = React.forwardRef((props, ref) => {
-  const customProperties = useCustomProperties(exportedCustomProperties)
+  const customProperties = useCustomProperties(exportedCustomProperties);
   return (
     <VariablesContext.Provider value={customProperties}>
       <Element {...props} ref={ref} />
     </VariablesContext.Provider>
-  )
-})
+  );
+});
 ```
 
 </div>
@@ -217,14 +217,14 @@ const Example = cssta(View)`
   &[@active] {
     color: green;
   }
-`
+`;
 ```
 
 ##### OUTPUT
 
 ```jsx
-import React from "react"
-import useTransition from "cssta/runtime/useTransition"
+import React from "react";
+import useTransition from "cssta/runtime/useTransition";
 const styles = {
   0: {
     color: "red"
@@ -232,7 +232,7 @@ const styles = {
   1: {
     color: "green"
   }
-}
+};
 const transition = [
   {
     property: "color",
@@ -240,12 +240,12 @@ const transition = [
     delay: 0,
     duration: 5000
   }
-]
+];
 const Example = React.forwardRef(({ active, ...props }, ref) => {
-  let style = [styles[0], active === true ? styles[1] : null, props.style]
-  style = useTransition(transition, style)
-  return <Element {...props} ref={ref} style={style} />
-})
+  let style = [styles[0], active === true ? styles[1] : null, props.style];
+  style = useTransition(transition, style);
+  return <Element {...props} ref={ref} style={style} />;
+});
 ```
 
 </div>
@@ -270,14 +270,14 @@ const Example = cssta(View)`
       opacity: 1;
     }
   }
-`
+`;
 ```
 
 ##### OUTPUT
 
 ```jsx
-import React from "react"
-import useAnimation from "cssta/runtime/useAnimation"
+import React from "react";
+import useAnimation from "cssta/runtime/useAnimation";
 
 const keyframes = {
   "fade-in": [
@@ -294,7 +294,7 @@ const keyframes = {
       }
     }
   ]
-}
+};
 
 const animation = {
   delay: 0,
@@ -302,13 +302,13 @@ const animation = {
   iterations: 1,
   name: "fade-in",
   timingFunction: "ease"
-}
+};
 
 const Example = React.forwardRef((props, ref) => {
-  let style = props.style
-  style = useAnimation(keyframes, animation, style)
-  return <Element {...props} ref={ref} style={style} />
-})
+  let style = props.style;
+  style = useAnimation(keyframes, animation, style);
+  return <Element {...props} ref={ref} style={style} />;
+});
 ```
 
 </div>

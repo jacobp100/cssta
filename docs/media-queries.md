@@ -46,7 +46,7 @@ const Title = cssta(Text)`
       font-size: 48px;
     }
   }
-`
+`;
 ```
 
 You can also combine queries the same way as regular CSS.

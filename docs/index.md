@@ -14,13 +14,13 @@ Most notably, Cssta supports media queries, CSS animations and transitions, and 
 Performance-wise, Cssta compiles your CSS at compile time via a babel-plugin. Cssta is also able to perform [Svelte](https://svelte.dev)-like stripping of its framework, and is able to build many components with no Cssta runtime.
 
 ```jsx
-import cssta from "cssta/native"
+import cssta from "cssta/native";
 
 const BlueView = cssta(View)`
   background: blue;
-`
+`;
 
-const Example = <BlueView>I am a View with a blue background</BlueView>
+<BlueView>I am a View with a blue background</BlueView>;
 ```
 
 This returns a regular React component, which when used, will have the styling applied.
@@ -105,18 +105,16 @@ const Message = cssta(Text)`
   &[@priority="important"] {
     background-color: orange;
   }
-`
+`;
 
-const Ex = <Message large>Large Button with an Outline</Message>
-const Ex = <Message noOutline>Button with no Outline</Message>
-const Ex = <Message priority="critical">Red Button with an Outline</Message>
-const Ex = <Message priority="important">Orange Button with an Outline</Message>
+<Message large>Large Button with an Outline</Message>;
+<Message noOutline>Button with no Outline</Message>;
+<Message priority="critical">Red Button with an Outline</Message>;
+<Message priority="important">Orange Button with an Outline</Message>;
 
-const Ex = (
-  <Message large noOutline priority="critical">
-    Large, Red Button with no Outline
-  </Message>
-)
+<Message large noOutline priority="critical">
+  Large, Red Button with no Outline
+</Message>;
 ```
 
 All properties defined in prop selectors are not passed down to the component—they’re really only for styling. All other props get passed down.
@@ -126,13 +124,11 @@ const Button = cssta(View)`
   &[@large] {
     padding: 12px;
   }
-`
+`;
 
-const Example = (
-  <Button large onClick={() => alert("clicked")}>
-    onClick Prop Passed Down
-  </Button>
-)
+<Button large onClick={() => alert("clicked")}>
+  onClick Prop Passed Down
+</Button>;
 ```
 
 ## 💗 Composition
@@ -140,12 +136,12 @@ const Example = (
 It is possible React components only when the component accepts the prop `className` for web, and `style` for React Native.
 
 ```jsx
-import { Link } from "react-router"
+import { Link } from "react-router";
 
 const StyledLink = cssta(Link)`
   color: rebeccapurple;
   text-decoration: none;
-`
+`;
 ```
 
 It is also possible to compose your own components.
@@ -155,15 +151,15 @@ const OutlineView = cssta(View)`
   padding: 6px 12px;
   border: 2px solid grey;
   border-radius: 1000px;
-`
+`;
 
 const RedOutlineView = cssta(OutlineView)`
   background-color: red;
-`
+`;
 
 const BlueOutlineView = cssta(OutlineView)`
   background-color: blue;
-`
+`;
 ```
 
 ## 🖌 Overriding Styles
@@ -187,7 +183,7 @@ const Title = cssta(Text)`
   @media (min-width: 600px) {
     font-size: 24px;
   }
-`
+`;
 ```
 
 You can see more under [media queries]({{ site.baseurl }}/media-queries).
@@ -200,20 +196,18 @@ The best way to do theming in Cssta is by using [CSS custom properties](https://
 const Inverted = cssta(View)`
   background-color: black;
   --primary: white;
-`
+`;
 
 const ThemedText = cssta(Text)`
   color: var(--primary, black);
   border: 1px solid var(--primary, black);
   padding: 6px 12px;
-`
+`;
 
-const Example = <ThemedText>I black text</ThemedText>
-const Example = (
-  <Inverted>
-    <ThemedText>I am white text on a black background!</ThemedText>
-  </Inverted>
-)
+<ThemedText>I black text</ThemedText>;
+<Inverted>
+  <ThemedText>I am white text on a black background!</ThemedText>
+</Inverted>;
 ```
 
 There’s a few extra examples in [theming]({{ site.baseurl }}/theming).
@@ -225,7 +219,7 @@ In addition to CSS custom properties, you can use JavaScript’s `${value}` synt
 ```jsx
 const Component = cssta(View)`
   border-bottom: ${StyleSheet.hairlineWidth}px solid grey;
-`
+`;
 ```
 
 See the [interpolation]({{ site.baseurl }}/interpolation) section.
@@ -242,7 +236,7 @@ const Action = cssta(View)`
   [@disabled] {
     opacity: 0.5;
   }
-`
+`;
 ```
 
 Animations work too—you’ll need to put the keyframes in the component though.
@@ -260,7 +254,7 @@ const ButtonWithKeyframes = cssta(Animated.View)`
       opacity: 1;
     }
   }
-`
+`;
 ```
 
 You’ll find more information in the [transitions & animations]({{ site.baseurl }}/transitions-animations) section.
@@ -272,15 +266,13 @@ When using the `ref` prop, it will refer to the component you are styling rather
 ```jsx
 const InnerRef = cssta(View)`
   background: red;
-`
+`;
 
-const Example = (
-  <InnerRef
-    ref={reactNativeViewElement => {
-      /* Code here */
-    }}
-  />
-)
+<InnerRef
+  ref={reactNativeViewElement => {
+    /* Code here */
+  }}
+/>;
 ```
 
 See the documentation for [`React.forwardRef`](https://reactjs.org/docs/forwarding-refs.html) for more information.

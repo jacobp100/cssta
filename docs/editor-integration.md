@@ -9,11 +9,11 @@ permalink: /editor-integration/
 Loads of great work has been done for styled-components integration into text editors, including syntax highlighting and linting. Luckily, all styled-components tooling should work with Cssta: you just have call your Cssta import `styled`.
 
 ```jsx
-import styled from "cssta"
+import styled from "cssta";
 
 styled(View)`
   color: red;
-`
+`;
 ```
 
 ## 🖍 Syntax Highlighting

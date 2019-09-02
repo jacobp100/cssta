@@ -80,7 +80,7 @@ const ButtonWithTransition = cssta(Animated.View)`
     background-color: gray;
     color: light-gray;
   }
-`
+`;
 ```
 
 {:.split-view\_\_code}
@@ -123,7 +123,7 @@ const ButtonWithKeyframes = cssta(Animated.View)`
       opacity: 1;
     }
   }
-`
+`;
 ```
 
 {:.split-view\_\_code}

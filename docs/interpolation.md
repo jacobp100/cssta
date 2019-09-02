@@ -13,7 +13,7 @@ Interpolation in Cssta is really a work in progress. It will never support inter
 ```jsx
 const Component = cssta(View)`
   border-bottom: ${StyleSheet.hairlineWidth}px solid grey;
-`
+`;
 ```
 
 ##### Invalid
@@ -23,5 +23,5 @@ const Component = cssta(View)`
   ${rules};
 
   border: ${props => props.color};
-`
+`;
 ```
