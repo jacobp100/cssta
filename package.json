@@ -1,6 +1,6 @@
 {
   "name": "cssta",
-  "version": "0.9.0",
+  "version": "0.9.0-alpha.0",
   "main": "index.js",
   "license": "MIT",
   "scripts": {

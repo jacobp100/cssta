@@ -1,6 +1,6 @@
 # [🌞 Cssta](https://jacobp100.github.io/cssta)
 
-Cssta is a styling system for [React Native 📱](https://jacobp100.github.io/cssta/native) that lets you define components using CSS.
+Cssta is a styling system for [React Native 📱](https://facebook.github.io/react-native/) that lets you define components using CSS.
 
 It takes heavy inspiration from [styled-components](https://github.com/styled-components/styled-components), but makes changes for readability 👀, to enable more features 🤙, and performance ⚡️.
 
@@ -9,13 +9,13 @@ Most notably, Cssta supports media queries, CSS animations and transitions, and 
 Performance-wise, Cssta compiles your CSS at compile time via a babel-plugin. Cssta is also able to perform [Svelte](https://svelte.dev)-like stripping of its framework, and is able to build many components with no Cssta runtime.
 
 ```jsx
-import cssta from "cssta/native"
+import cssta from "cssta/native";
 
 const BlueView = cssta(View)`
   background: blue;
-`
+`;
 
-<BlueView>I am a View with a blue background</BlueView>
+<BlueView>I am a View with a blue background</BlueView>;
 ```
 
 This returns a regular React component, which when used, will have the styling applied.
@@ -40,7 +40,7 @@ In your React Native project, you’ll find a `babel.config.js` file. Edit this 
 
 ### 🎣 Babel Plugin Macros
 
-If you want to use babel-plugin-macros, change `babel-plugin-cssta` to `babel-plugin-macros`. You’ll then need to import the macro version of Cssta whenever you need to use it
+If you want to use babel-plugin-macros, change `babel-plugin-cssta` to `babel-plugin-macros`. You’ll then need to import the macro version of Cssta whenever you need to use it.
 
 ```diff
 -import cssta from "cssta/native"
@@ -100,31 +100,31 @@ const Message = cssta(Text)`
   &[@priority="important"] {
     background-color: orange;
   }
-`
+`;
 
-<Message large>Large Button with an Outline</Message>
-<Message noOutline>Button with no Outline</Message>
-<Message priority="critical">Red Button with an Outline</Message>
-<Message priority="important">Orange Button with an Outline</Message>
+<Message large>Large Button with an Outline</Message>;
+<Message noOutline>Button with no Outline</Message>;
+<Message priority="critical">Red Button with an Outline</Message>;
+<Message priority="important">Orange Button with an Outline</Message>;
 
 <Message large noOutline priority="critical">
   Large, Red Button with no Outline
-</Message>
+</Message>;
 ```
 
 All properties defined in prop selectors are not passed down to the component—they’re really only for styling. All other props get passed down.
 
 ```jsx
-const button = cssta(View)`
-  &[@large] { padding: 12px; }
-`
+const Button = cssta(View)`
+  &[@large] {
+    padding: 12px;
+  }
+`;
 
 <Button large onClick={() => alert("clicked")}>
   onClick Prop Passed Down
-</Button>
+</Button>;
 ```
-
-In addition, we’ll automatically type check all your prop selectors with React’s `propTypes` to check for typos.
 
 ## 💗 Composition
 
@@ -169,25 +169,19 @@ The properties `className` on web, and `style` on React Native have special beha
 
 ## 🖥 Media Queries
 
-These work just as they do in CSS. We support `min-` and `max-` `width` and `height`, as well as `orientation: portrait` and `orientation: landscape`.
+These work just as they do in CSS. We support `min-` and `max-` `width` and `height`, as well as `orientation: portrait` and `orientation: landscape`. We also support a non-standard `platform`, which queries whatever `Platform.OS` returns.
 
 ```jsx
 const Title = cssta(Text)`
   font-size: 12px;
 
-  [@large] {
-    font-size: 18px;
-  }
-
   @media (min-width: 600px) {
     font-size: 24px;
-
-    [@large] {
-      font-size: 48px;
-    }
   }
 `;
 ```
+
+You can see more under [media queries](https://jacobp100.github.io/cssta/media-queries).
 
 ## 🏳️‍🌈 Theming
 
@@ -206,7 +200,6 @@ const ThemedText = cssta(Text)`
 `;
 
 <ThemedText>I black text</ThemedText>;
-
 <Inverted>
   <ThemedText>I am white text on a black background!</ThemedText>
 </Inverted>;
@@ -223,6 +216,8 @@ const Component = cssta(View)`
   border-bottom: ${StyleSheet.hairlineWidth}px solid grey;
 `;
 ```
+
+See the [interpolation](https://jacobp100.github.io/cssta/interpolation) section.
 
 ## 🍿 Transitions and Animations
 
@@ -266,9 +261,13 @@ When using the `ref` prop, it will refer to the component you are styling rather
 ```jsx
 const InnerRef = cssta(View)`
   background: red;
-`
+`;
 
-<InnerRef ref={reactNativeViewElement => ...} />
+<InnerRef
+  ref={reactNativeViewElement => {
+    /* Code here */
+  }}
+/>;
 ```
 
 See the documentation for [`React.forwardRef`](https://reactjs.org/docs/forwarding-refs.html) for more information.
