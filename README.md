@@ -20,6 +20,10 @@ const BlueView = cssta(View)`
 
 This returns a regular React component, which when used, will have the styling applied.
 
+We have a repo with a whole bunch of examples if you want to see how it’s setup and examples of usage. It’s over on [CsstaExample](https://github.com/jacobp100/CsstaExample).
+
+## 🔧 Setup
+
 Cssta can be used with its own babel plugin, or can use [babel-plugin-macros](https://www.github.com/kentcdodds/babel-plugin-macros).
 
 You can install Cssta with,
@@ -128,14 +132,13 @@ const Button = cssta(View)`
 
 ## 💗 Composition
 
-It is possible React components only when the component accepts the prop `className` for web, and `style` for React Native.
+You can style any React Native component that takes `style` as a prop—that’s most of them!
 
 ```jsx
-import { Link } from "react-router";
+import { Link } from "react-router-native";
 
 const StyledLink = cssta(Link)`
   color: rebeccapurple;
-  text-decoration: none;
 `;
 ```
 
@@ -159,7 +162,9 @@ const BlueOutlineView = cssta(OutlineView)`
 
 ## 🖌 Overriding Styles
 
-The properties `className` on web, and `style` on React Native have special behavior. They append styles to those already defined by the component.
+Setting `style` on Cssta components will override those already defined by the component.
+
+Be careful setting styles `margin`, as Cssta always sets the most specific styles possible (i.e. `marginTop` etc.)
 
 ```jsx
 <Button style={{ marginRight: 0 }}>
