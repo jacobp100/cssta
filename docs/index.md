@@ -5,26 +5,31 @@ layout: page
 
 # [🌞 Cssta]({{ site.baseurl }})
 
-Cssta is a way to co-locate your CSS with your React components, and lets you define components using isolated units of style.
+Cssta is a styling system for [React Native 📱](https://facebook.github.io/react-native/) that lets you define components using CSS.
 
-It is available both for [React for web 🌍]({{ site.baseurl }}/web) and [React Native 📱]({{ site.baseurl }}/native). For web, it generates **real CSS files** with **<1kb JS overhead**.
+It takes heavy inspiration from [styled-components](https://github.com/styled-components/styled-components), but makes changes for readability 👀, to enable more features 🤙, and performance ⚡️.
 
-There’s also a tonne of stuff for React Native, including CSS transitions and CSS custom properties.
+Most notably, Cssta supports media queries, CSS animations and transitions, and CSS custom properties.
 
-It is almost identical in concept to [styled-components](https://github.com/styled-components/styled-components), but makes different trade-offs.
+Performance-wise, Cssta compiles your CSS at compile time via a babel-plugin. Cssta is also able to perform [Svelte](https://svelte.dev)-like stripping of its framework, and is able to build many components with no Cssta runtime.
 
 ```jsx
-import cssta from "cssta"
+import cssta from "cssta/native";
 
-const Button = cssta.button`
+const BlueView = cssta(View)`
   background: blue;
-  color: white;
-`
+`;
 
-<Button>I am a blue button with white text</Button>
+<BlueView>I am a View with a blue background</BlueView>;
 ```
 
 This returns a regular React component, which when used, will have the styling applied.
+
+We have a repo with a whole bunch of examples if you want to see how it’s setup and examples of usage. It’s over on [CsstaExample](https://github.com/jacobp100/CsstaExample).
+
+## 🔧 Setup
+
+Cssta can be used with its own babel plugin, or can use [babel-plugin-macros](https://www.github.com/kentcdodds/babel-plugin-macros).
 
 You can install Cssta with,
 
@@ -33,165 +38,246 @@ npm install --save cssta
 npm install --save-dev babel-plugin-cssta
 ```
 
-Note that while we are using template strings, interpolation (`${value}`) is not supported on web, but is supported for React Native. There are also other platform differences documented in the individual guides.
+In your React Native project, you’ll find a `babel.config.js` file. Edit this to read,
+
+```diff
+ module.exports = {
++  plugins: ['babel-plugin-cssta'],
+   presets: ['module:metro-react-native-babel-preset'],
+ };
+```
+
+### 🎣 Babel Plugin Macros
+
+If you want to use babel-plugin-macros, change `babel-plugin-cssta` to `babel-plugin-macros`. You’ll then need to import the macro version of Cssta whenever you need to use it.
+
+```diff
+-import cssta from "cssta/native"
++import cssta from "cssta/native.macro"
+```
 
 ## 📝 CSS
 
-The CSS input is regular CSS—but you should look at the platform guides for more information. You’ve also got the following,
+Cssta supports all the CSS React Native supports, and has the same syntax as your browser.
 
-* `&` to refer to the current component (you’ll need this in every selector)
-* `[@attribute]` and `[@attribute="value"]` to query React props (see below)
+```css
+font-size: 12px;
+color: red;
+```
+
+There’s also support for short-hands.
+
+```css
+margin: 0px 5px; /* { marginTop: 0, marginRight: 5, ... } */
+font: bold italic 12px/18px "Helvetica";
+```
+
+And support for more complicated attributes.
+
+```css
+shadow-offset: 10px 5px; /* { width: 10, height: 5 } */
+font-variant: small-caps; /* ["small-caps"] */
+transform: scale(3) rotate(30deg); /* [{ scale: 3 }, { rotate: "30deg" }] */
+```
+
+For more information, see [css-to-react-native](https://www.npmjs.com/package/css-to-react-native).
 
 ## 🎛 Props
 
-We extend the attribute selector syntax in CSS. Now when your attribute name starts with an at symbol, we’ll query the React props instead of the DOM element’s. You can use `[@stringAttribute="stringValue"]` for string props, and `[@booleanAttribute]` for boolean props. We call this a prop selector.
+We extend the attribute selector syntax in CSS. Now when your attribute name starts with an at symbol, we’ll query the React props. We call these _prop selectors_. You can use,
+
+- `[@stringAttribute="stringValue"]` for string props
+- `[@booleanAttribute]` for boolean props
+
+You’ll always need the `&` selector when using prop selectors.
 
 ```jsx
-const Button = cssta.button`
-  padding: 0.5em 1em;
+const Message = cssta(Text)`
+  padding: 6px 12px;
 
   &[@large] {
-    font-size: 2em;
+    padding: 12px 18px;
   }
 
   &:not([@noOutline]) {
-    border: 1px solid currentColor;
+    border: 1px solid grey;
   }
 
   &[@priority="critical"] {
-    color: red;
+    background-color: red;
   }
   &[@priority="important"] {
-    color: orange;
+    background-color: orange;
   }
-`
+`;
 
-<Button large>Large Button with an Outline</Button>
-<Button noOutline>Button with no Outline</Button>
-<Button priority="critical">Red Button with an Outline</Button>
-<Button priority="important">Orange Button with an Outline</Button>
+<Message large>Large Button with an Outline</Message>;
+<Message noOutline>Button with no Outline</Message>;
+<Message priority="critical">Red Button with an Outline</Message>;
+<Message priority="important">Orange Button with an Outline</Message>;
 
-<Button large noOutline priority="critical">
+<Message large noOutline priority="critical">
   Large, Red Button with no Outline
-</Button>
+</Message>;
 ```
 
 All properties defined in prop selectors are not passed down to the component—they’re really only for styling. All other props get passed down.
 
 ```jsx
-const button = `
-  &[@large] { font-size: 12pt; }
-`
+const Button = cssta(View)`
+  &[@large] {
+    padding: 12px;
+  }
+`;
 
 <Button large onClick={() => alert("clicked")}>
   onClick Prop Passed Down
-</Button>
+</Button>;
 ```
-
-In addition, we’ll automatically type check all your prop selectors with React’s `propTypes` to check for typos.
 
 ## 💗 Composition
 
-It is possible React components only when the component accepts the prop `className` for web, and `style` for React Native.
+You can style any React Native component that takes `style` as a prop—that’s most of them!
 
 ```jsx
-import { Link } from "react-router";
+import { Link } from "react-router-native";
 
 const StyledLink = cssta(Link)`
   color: rebeccapurple;
-  text-decoration: none;
 `;
 ```
 
 It is also possible to compose your own components.
 
 ```jsx
-const OutlineButton = cssta.button`
-  padding: 0.5rem 1rem;
-  border: 2px solid currentColor;
+const OutlineView = cssta(View)`
+  padding: 6px 12px;
+  border: 2px solid grey;
   border-radius: 1000px;
 `;
 
-const RedButton = cssta(OutlineButton)`
-  color: red;
+const RedOutlineView = cssta(OutlineView)`
+  background-color: red;
 `;
 
-const BlueButton = cssta(OutlineButton)`
-  color: blue;
+const BlueOutlineView = cssta(OutlineView)`
+  background-color: blue;
 `;
 ```
-
-**For the moment, this only works when the components get defined in the same file!**
-
-## 🏳️‍🌈 Theming
-
-The best way to do theming in Cssta is by using [CSS custom properties](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_variables). **We provide polyfills for React Native**, so these will just work. On the web, you can either rely on native browser support, or [a postCSS plugin](https://github.com/MadLittleMods/postcss-css-variables).
-
-```jsx
-const LightBox = cssta.div`
-  background-color: black;
-  --primary: white;
-`;
-
-const Button = cssta.button`
-  color: var(--primary);
-  border: 1px solid var(--primary);
-  padding: 0.5rem 1rem;
-`;
-
-const Example = (
-  <LightBox>
-    <Button>I am white on black!</Button>
-  </LightBox>
-);
-```
-
-There’s a few extra examples in [theming]({{ site.baseurl }}/theming).
 
 ## 🖌 Overriding Styles
 
-The properties `className` on web, and `style` on React Native have special behavior. They append styles to those already defined by the component.
+Setting `style` on Cssta components will override those already defined by the component.
+
+Be careful setting styles `margin`, as Cssta always sets the most specific styles possible (i.e. `marginTop` etc.)
 
 ```jsx
-// Web only
-<Button className="margin-right-1">
-  Composing Classes
-</Button>
-
-// Web and React Native
 <Button style={% raw %}{{ marginRight: 0 }}{% endraw %}>
   Composing Styles
 </Button>
 ```
 
-When doing this on the web, watch out for specificity conflicts!
+## 🖥 Media Queries
 
-## ✂️ Other Bits
+These work just as they do in CSS. We support `min-` and `max-` `width` and `height`, as well as `orientation: portrait` and `orientation: landscape`. We also support a non-standard `platform`, which queries whatever `Platform.OS` returns.
+
+```jsx
+const Title = cssta(Text)`
+  font-size: 12px;
+
+  @media (min-width: 600px) {
+    font-size: 24px;
+  }
+`;
+```
+
+You can see more under [media queries]({{ site.baseurl }}/media-queries).
+
+## 🏳️‍🌈 Theming
+
+The best way to do theming in Cssta is by using [CSS custom properties](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_variables). Use them as in Cssta as you’d use them on the web, and they’ll just work
+
+```jsx
+const Inverted = cssta(View)`
+  background-color: black;
+  --primary: white;
+`;
+
+const ThemedText = cssta(Text)`
+  color: var(--primary, black);
+  border: 1px solid var(--primary, black);
+  padding: 6px 12px;
+`;
+
+<ThemedText>I black text</ThemedText>;
+<Inverted>
+  <ThemedText>I am white text on a black background!</ThemedText>
+</Inverted>;
+```
+
+There’s a few extra examples in [theming]({{ site.baseurl }}/theming).
+
+## ✂️ Interpolation
+
+In addition to CSS custom properties, you can use JavaScript’s `${value}` syntax to interpolate values. Note that you can only interpolate values or parts of values, and not entire rules or mixins. This is mostly useful for using platform constants.
+
+```jsx
+const Component = cssta(View)`
+  border-bottom: ${StyleSheet.hairlineWidth}px solid grey;
+`;
+```
+
+See the [interpolation]({{ site.baseurl }}/interpolation) section.
+
+## 🍿 Transitions and Animations
+
+These also work just like CSS. For transitions, it’s as simple as,
+
+```jsx
+const Action = cssta(View)`
+  opacity: 1;
+  transition: opacity 300ms;
+
+  [@disabled] {
+    opacity: 0.5;
+  }
+`;
+```
+
+Animations work too—you’ll need to put the keyframes in the component though.
+
+```jsx
+const ButtonWithKeyframes = cssta(Animated.View)`
+  animation: fade-in 1s ease-in;
+
+  @keyframes fade-in {
+    0% {
+      opacity: 0;
+    }
+
+    100% {
+      opacity: 1;
+    }
+  }
+`;
+```
+
+You’ll find more information in the [transitions & animations]({{ site.baseurl }}/transitions-animations) section.
+
+## 🤓 Refs
 
 When using the `ref` prop, it will refer to the component you are styling rather than the styled component.
 
 ```jsx
-const InnerRef = cssta.div`
+const InnerRef = cssta(View)`
   background: red;
-`
+`;
 
-<InnerRef ref={htmlDivElement => ...} />
+<InnerRef
+  ref={reactNativeViewElement => {
+    /* Code here */
+  }}
+/>;
 ```
 
 See the documentation for [`React.forwardRef`](https://reactjs.org/docs/forwarding-refs.html) for more information.
-
-You can also add the `component` prop on any Cssta element to override the base component. This can be a string or another component.
-
-```jsx
-const Div = cssta.div`
-  background: red;
-`
-
-<Div component="span">I am a span now</Div>
-```
-
-```jsx
-import Link from "react-router"
-
-<Div component={Link}>I am a Link now</Div>
-```

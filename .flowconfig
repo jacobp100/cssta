@@ -1,11 +1,12 @@
 [include]
-.*/src/.*
+.*/runtime/.*
 
 [ignore]
-.*/lib/.*
-.*/babel-plugin/.*
-.*/macro/.*
+.*/compiler/.*
 .*/benchmark/.*
 
 [libs]
 flow-typed
+
+[options]
+suppress_comment= \\(.\\|\n\\)*\\$FlowFixMe
