@@ -7,6 +7,28 @@
     "test": "jest",
     "readme": "cp ./docs/index.md ./README.md; sed -i -e 's%{{ site.baseurl }}%https://jacobp100.github.io/cssta%g' ./README.md; sed -i -e 's/{% raw %}//g' ./README.md; sed -i -e 's/{% endraw %}//g' ./README.md; sed -i -e '1,5d' ./README.md; rm ./README.md-e"
   },
+  "keywords": [
+    "postcss",
+    "modules",
+    "css-modules",
+    "css",
+    "minify",
+    "min",
+    "class",
+    "className",
+    "react",
+    "css-in-js"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jacobp100/cssta"
+  },
+  "files": [
+    "compiler",
+    "runtime",
+    "native.macro.js",
+    "babel-plugin.js"
+  ],
   "devDependencies": {
     "@babel/core": "^7.5.5",
     "@babel/generator": "^7.5.5",

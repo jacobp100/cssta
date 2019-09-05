@@ -154,18 +154,18 @@ const BaseStyles = cssta(View)`
   height: 100px;
   width: 100px;
   background-color: red;
-`
+`;
 
 const AnimateOpacity = () => {
-  const [opacity] = React.useState(() => new Animated.Value(0))
+  const [opacity] = React.useState(() => new Animated.Value(0));
 
   React.useLayoutEffect(() => {
     Animated.timing(opacity, {
       toValue: 1,
       duration: 1000
-    }).start()
-  }, [])
+    }).start();
+  }, []);
 
-  return <BaseStyles style={% raw %}{{ opacity }}{% endraw %} />
-}
+  return <BaseStyles style={% raw %}{{ opacity }}{% endraw %} />;
+};
 ```
