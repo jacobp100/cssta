@@ -15,9 +15,8 @@ These work as they do in CSS. We support the following:
 - `min-height`
 - `max-height`
 - `orientation`
-- `platform` (non-standard)
-
-When React Native lands support for dark mode, we will support this too.
+- `prefers-color-scheme` (See [MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-color-scheme), RN 0.60+)
+- `platform`
 
 The `platform` parameter queries whatever `Platform.OS` returns—in regular React Native, this’ll be `ios` or `android` (both lowercase).
 

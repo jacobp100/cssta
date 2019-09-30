@@ -53,10 +53,12 @@ module.exports = (
     });
   }
 
-  const styleSheetVariable = styleSheet(babel, path, rules, {
-    substitutionMap,
-    customPropertiesVariable
-  });
+  const { styleSheetVariable, stylesheetOptimizationFlags } = styleSheet(
+    babel,
+    path,
+    rules,
+    { substitutionMap, selectorFunctions, customPropertiesVariable }
+  );
 
   const hasTransition = ruleTuples.some(
     ruleTuple => ruleTuple.transitionParts != null
@@ -70,6 +72,7 @@ module.exports = (
     propsVariable,
     selectorFunctions,
     styleSheetVariable,
+    stylesheetOptimizationFlags,
     willModifyStyle
   });
 

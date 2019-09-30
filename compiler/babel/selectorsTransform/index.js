@@ -1,6 +1,7 @@
 // @flow
 const selectorParser = require("postcss-selector-parser");
 const usePlatform = require("./usePlatform");
+const useColorScheme = require("./useColorScheme");
 const useMediaQuery = require("./useMediaQuery");
 
 /*::
@@ -125,6 +126,14 @@ const createMediaFeatureValidator = (babel, path, query, { cache }) => {
     return t.cloneDeep(cache.platform);
   };
 
+  const getColorScheme = () => {
+    if (cache.colorScheme == null) {
+      cache.colorScheme = useColorScheme(babel, path);
+    }
+
+    return t.cloneDeep(cache.colorScheme);
+  };
+
   const getScreenWidth = () => {
     if (cache.screenVariables == null) {
       cache.screenVariables = useMediaQuery(babel, path);
@@ -146,6 +155,12 @@ const createMediaFeatureValidator = (babel, path, query, { cache }) => {
       return t.binaryExpression(
         "===",
         getPlatform(),
+        t.stringLiteral(match[2])
+      );
+    case "prefers-color-scheme":
+      return t.binaryExpression(
+        "===",
+        getColorScheme(),
         t.stringLiteral(match[2])
       );
     case "width":

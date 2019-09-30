@@ -90,7 +90,8 @@ it("Supports boolean conditional styles", () => {
       test,
       ...props
     }, ref) => {
-      const style = [styles[0], test === true ? styles[1] : null, props.style];
+      const baseStyle = test === true ? styles[1] : styles[0];
+      const style = props.style != null ? [baseStyle, props.style] : baseStyle;
       return <Element {...props} ref={ref} style={style} />;
     });"
   `);
@@ -127,7 +128,45 @@ it("Supports string conditional styles", () => {
       size,
       ...props
     }, ref) => {
-      const style = [styles[0], size === 'small' ? styles[1] : null, size === 'large' ? styles[2] : null, props.style];
+      const baseStyle = size === 'large' ? styles[2] : size === 'small' ? styles[1] : styles[0];
+      const style = props.style != null ? [baseStyle, props.style] : baseStyle;
+      return <Element {...props} ref={ref} style={style} />;
+    });"
+  `);
+});
+
+it("Optimizes a single conditional style", () => {
+  const css = styled.test`
+    color: green;
+
+    &[@test] {
+      margin: 10px;
+    }
+  `;
+
+  const code = build(css);
+  expect(code).toMatchInlineSnapshot(`
+    "import React from 'react';
+    const styles =
+    /* Some styles have been duplicated to improve performance */
+    {
+      0: {
+        color: 'green'
+      },
+      1: {
+        color: 'green',
+        marginTop: 10,
+        marginRight: 10,
+        marginBottom: 10,
+        marginLeft: 10
+      }
+    };
+    const Example = React.forwardRef(({
+      test,
+      ...props
+    }, ref) => {
+      const baseStyle = test === true ? styles[1] : styles[0];
+      const style = props.style != null ? [baseStyle, props.style] : baseStyle;
       return <Element {...props} ref={ref} style={style} />;
     });"
   `);
@@ -159,7 +198,8 @@ it("Supports media queries", () => {
         width: screenWidth,
         height: screenHeight
       } = useMediaQuery();
-      const style = [styles[0], screenWidth >= 500 ? styles[1] : null, props.style];
+      const baseStyle = screenWidth >= 500 ? styles[1] : styles[0];
+      const style = props.style != null ? [baseStyle, props.style] : baseStyle;
       return <Element {...props} ref={ref} style={style} />;
     });"
   `);
@@ -201,7 +241,7 @@ it("Supports media queries with conditions", () => {
         width: screenWidth,
         height: screenHeight
       } = useMediaQuery();
-      const style = [styles[0], screenWidth >= 500 ? styles[1] : null, large === true && screenWidth >= 500 ? styles[2] : null, props.style];
+      const style = [screenWidth >= 500 ? styles[1] : styles[0], large === true && screenWidth >= 500 ? styles[2] : null, props.style];
       return <Element {...props} ref={ref} style={style} />;
     });"
   `);
@@ -229,7 +269,38 @@ it("Supports platform media queries", () => {
       }
     };
     const Example = React.forwardRef((props, ref) => {
-      const style = [styles[0], Platform.OS === 'ios' ? styles[1] : null, props.style];
+      const baseStyle = Platform.OS === 'ios' ? styles[1] : styles[0];
+      const style = props.style != null ? [baseStyle, props.style] : baseStyle;
+      return <Element {...props} ref={ref} style={style} />;
+    });"
+  `);
+});
+
+it("Supports color scheme media queries", () => {
+  const css = styled.test`
+    color: green;
+
+    @media (prefers-color-scheme: dark) {
+      color: red;
+    }
+  `;
+
+  const code = build(css);
+  expect(code).toMatchInlineSnapshot(`
+    "import React from 'react';
+    import { useColorScheme } from 'react-native';
+    const styles = {
+      0: {
+        color: 'green'
+      },
+      1: {
+        color: 'red'
+      }
+    };
+    const Example = React.forwardRef((props, ref) => {
+      const colorScheme = useColorScheme();
+      const baseStyle = colorScheme === 'dark' ? styles[1] : styles[0];
+      const style = props.style != null ? [baseStyle, props.style] : baseStyle;
       return <Element {...props} ref={ref} style={style} />;
     });"
   `);
@@ -262,7 +333,8 @@ it("Supports combined media queries", () => {
         width: screenWidth,
         height: screenHeight
       } = useMediaQuery();
-      const style = [styles[0], Platform.OS === 'ios' && screenWidth >= 500 ? styles[1] : null, props.style];
+      const baseStyle = Platform.OS === 'ios' && screenWidth >= 500 ? styles[1] : styles[0];
+      const style = props.style != null ? [baseStyle, props.style] : baseStyle;
       return <Element {...props} ref={ref} style={style} />;
     });"
   `);
@@ -459,7 +531,8 @@ it("Supports transitions", () => {
       active,
       ...props
     }, ref) => {
-      let style = [styles[0], active === true ? styles[1] : null, props.style];
+      const baseStyle = active === true ? styles[1] : styles[0];
+      let style = props.style != null ? [baseStyle, props.style] : baseStyle;
       style = useTransition(transition, style);
       return <Element {...props} ref={ref} style={style} />;
     });"
@@ -539,7 +612,8 @@ it("Supports transitions vith custom properties", () => {
       ...props
     }, ref) => {
       const customProperties = useCustomProperties(null);
-      let style = [styles[0], active === true ? styles[1] : null, props.style];
+      const baseStyle = active === true ? styles[1] : styles[0];
+      let style = props.style != null ? [baseStyle, props.style] : baseStyle;
       const unresolvedTransitionParts = [{
         '_': 'color var(--time)'
       }];
@@ -902,7 +976,8 @@ it("Supports transitions with animations", () => {
       inverted,
       ...props
     }, ref) => {
-      let style = [styles[0], inverted === true ? styles[1] : null, props.style];
+      const baseStyle = inverted === true ? styles[1] : styles[0];
+      let style = props.style != null ? [baseStyle, props.style] : baseStyle;
       style = useTransition(transition, style);
       style = useAnimation(keyframes, animation, style);
       return <Element {...props} ref={ref} style={style} />;

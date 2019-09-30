@@ -1,55 +1,19 @@
+const {
+  FLAG_SUPERSETS_PREVIOUS_STYLE
+} = require("./styleSheet/optimizationFlags");
 const { createVariable } = require("./util");
-
-const createSimpleStyleExpression = (
-  babel,
-  { propsVariable, styleSheetVariable }
-) => {
-  const { types: t } = babel;
-  const propsStyle = t.memberExpression(propsVariable, t.identifier("style"));
-  const csstaStyle = t.memberExpression(
-    styleSheetVariable,
-    t.numericLiteral(0),
-    true
-  );
-  return t.conditionalExpression(
-    t.binaryExpression("!=", propsStyle, t.nullLiteral()),
-    t.arrayExpression([csstaStyle, propsStyle]),
-    csstaStyle
-  );
-};
-
-const createMultipleStyleExpression = (
-  babel,
-  {
-    ruleTuplesWithStyleTuples,
-    propsVariable,
-    selectorFunctions,
-    styleSheetVariable
-  }
-) => {
-  const { types: t } = babel;
-
-  return t.arrayExpression([
-    ...ruleTuplesWithStyleTuples.map((rule, i) => {
-      const styleSheet = t.memberExpression(
-        styleSheetVariable,
-        t.numericLiteral(i),
-        true
-      );
-      const ruleCondition = selectorFunctions.get(rule);
-      return ruleCondition == null
-        ? styleSheet
-        : t.conditionalExpression(ruleCondition, styleSheet, t.nullLiteral());
-    }),
-    t.memberExpression(propsVariable, t.identifier("style"))
-  ]);
-};
 
 module.exports = (
   babel,
   path,
   rules,
-  { propsVariable, selectorFunctions, styleSheetVariable, willModifyStyle }
+  {
+    propsVariable,
+    selectorFunctions,
+    styleSheetVariable,
+    stylesheetOptimizationFlags,
+    willModifyStyle
+  }
 ) => {
   const { types: t } = babel;
   const { ruleTuples } = rules;
@@ -59,26 +23,63 @@ module.exports = (
   );
 
   let styleExpression;
-  if (ruleTuplesWithStyleTuples.length === 0) {
-    styleExpression = willModifyStyle
-      ? t.memberExpression(propsVariable, t.identifier("style"))
-      : null;
-  } else if (
-    ruleTuplesWithStyleTuples.length === 1 &&
-    ruleTuplesWithStyleTuples[0].selector == "&" &&
-    ruleTuplesWithStyleTuples[0].mediaQuery == null
-  ) {
-    styleExpression = createSimpleStyleExpression(babel, {
-      propsVariable,
-      styleSheetVariable
+  const propsStyle = t.memberExpression(propsVariable, t.identifier("style"));
+  const styleExpressions = ruleTuplesWithStyleTuples
+    .reduce((accum, rule, i) => {
+      const optimizationFlags = stylesheetOptimizationFlags[i];
+      let styleGroup;
+      if (optimizationFlags == FLAG_SUPERSETS_PREVIOUS_STYLE) {
+        styleGroup = accum[accum.length - 1];
+      } else {
+        styleGroup = [];
+        accum.push(styleGroup);
+      }
+      styleGroup.push({ rule, i });
+      return accum;
+    }, [])
+    .map(rules => {
+      const ruleExpression = rules.reduce((accum, { rule, i }) => {
+        const csstaStyle = t.memberExpression(
+          styleSheetVariable,
+          t.numericLiteral(i),
+          true
+        );
+        const ruleCondition = selectorFunctions.get(rule);
+
+        if (ruleCondition == null) return csstaStyle;
+
+        const previousStyle = accum == null ? t.nullLiteral() : accum;
+        return t.conditionalExpression(
+          ruleCondition,
+          csstaStyle,
+          previousStyle
+        );
+      }, null);
+
+      return ruleExpression;
     });
+
+  if (styleExpressions.length === 0) {
+    styleExpression = willModifyStyle ? propsStyle : null;
+  } else if (styleExpressions.length === 1) {
+    let baseStyleExpression;
+    if (!t.isConditionalExpression(styleExpressions[0])) {
+      baseStyleExpression = styleExpressions[0];
+    } else {
+      baseStyleExpression = createVariable(
+        babel,
+        path,
+        "baseStyle",
+        styleExpressions[0]
+      );
+    }
+    styleExpression = t.conditionalExpression(
+      t.binaryExpression("!=", propsStyle, t.nullLiteral()),
+      t.arrayExpression([baseStyleExpression, propsStyle]),
+      baseStyleExpression
+    );
   } else {
-    styleExpression = createMultipleStyleExpression(babel, {
-      propsVariable,
-      selectorFunctions,
-      styleSheetVariable,
-      ruleTuplesWithStyleTuples
-    });
+    styleExpression = t.arrayExpression([...styleExpressions, propsStyle]);
   }
 
   let styleVariable;
