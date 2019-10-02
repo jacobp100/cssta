@@ -44,12 +44,12 @@ module.exports = babel => ({
         programPath.traverse(removeCsstaImports);
       }
     },
-    TaggedTemplateExpression(path) {
+    TaggedTemplateExpression(path, state) {
       switch (getCsstaTypeForCallee(babel, path.get("tag.callee"))) {
         case "native": {
           const element = path.get("tag.arguments.0").node;
           const css = path.get("quasi").node;
-          processNative(babel, path, element, css);
+          processNative(babel, path, state.opts, element, css);
           break;
         }
         default:

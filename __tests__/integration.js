@@ -11,7 +11,7 @@ it("Works with babel-plugin-cssta", () => {
       "`;",
     {
       filename: __filename,
-      plugins: [require.resolve("../../babel-plugin")]
+      plugins: [require.resolve("../babel-plugin")]
     }
   );
   expect(code).toMatchInlineSnapshot(`
@@ -45,7 +45,7 @@ it("Works with babel-plugin-cssta", () => {
 
 it("Works with babel-plugin-macros", () => {
   const { code } = babel.transform(
-    "import styled from '../../native.macro';" +
+    "import styled from '../native.macro';" +
       "const Test1 = styled(Button)`" +
       "  color: red;" +
       "`;" +
@@ -99,7 +99,7 @@ it("Works with plugin-transform-modules-commonjs", () => {
     {
       filename: __filename,
       plugins: [
-        require.resolve("../../babel-plugin"),
+        require.resolve("../babel-plugin"),
         "@babel/plugin-transform-modules-commonjs"
       ]
     }
@@ -148,6 +148,36 @@ it("Works with plugin-transform-modules-commonjs", () => {
     const Test2 = _react.default.forwardRef((props, ref) => {
       const style = props.style != null ? [styles[0], props.style] : styles[0];
       return _react.default.createElement(Button, { ...props,
+        ref: ref,
+        style: style
+      });
+    });"
+  `);
+});
+
+it("Works with options", () => {
+  const { code } = babel.transform(
+    "import styled from 'cssta/native';" +
+      "const Test1 = styled(Button)`" +
+      "  color: var(--color);" +
+      "`;",
+    {
+      filename: __filename,
+      plugins: [
+        [require.resolve("../babel-plugin"), { globals: { color: "red" } }]
+      ]
+    }
+  );
+  expect(code).toMatchInlineSnapshot(`
+    "import React from \\"react\\";
+    const styles = {
+      0: {
+        color: \\"red\\"
+      }
+    };
+    const Test1 = React.forwardRef((props, ref) => {
+      const style = props.style != null ? [styles[0], props.style] : styles[0];
+      return React.createElement(Button, { ...props,
         ref: ref,
         style: style
       });

@@ -56,7 +56,7 @@ const LightBox = cssta(View)`
 
 ## 💉 Using JavaScript Variables
 
-If you need more control over variables, there’s `VariablesProvider` component. Just pass in an object of your variables omitting the double dash. You can see more information over in [custom properties]({{ site.baseurl }}/custom-properties).
+If you need more control over variables, there’s `VariablesProvider` component. Just pass in an object of your variables omitting the double dash. You can see more information over in [custom properties]({{ site.baseurl }}/custom-properties)
 
 ```jsx
 import VariablesContext from "cssta/runtime/VariablesContext";
@@ -65,3 +65,7 @@ import VariablesContext from "cssta/runtime/VariablesContext";
   <ComponentsThatUseColorVariable />
 </VariablesContext.Provider>;
 ```
+
+## 🌍 Global Variables
+
+If all your custom properties are global, you can configure them in the Cssta build configuration. There’s more information on this over in the [configuration]({{ site.baseurl }}/configuration) section

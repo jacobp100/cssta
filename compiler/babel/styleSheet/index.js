@@ -108,9 +108,9 @@ const getOptimizationFlags = ruleTuplesWithStyleTuples => {
 
     const supersets =
       lastStyleKeys != null &&
-      ownStyleKeys.every(key => lastStyleKeys.has(key));
+      lastStyleKeys.every(key => ownStyleKeys.includes(key));
 
-    lastStyleKeys = new Set(ownStyleKeys);
+    lastStyleKeys = ownStyleKeys;
 
     return supersets ? FLAG_SUPERSETS_PREVIOUS_STYLE : NO_FLAGS;
   });

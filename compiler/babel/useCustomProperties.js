@@ -35,7 +35,8 @@ module.exports = (babel, path, rules, { selectorFunctions }) => {
       ...importedKeyframeVariables
     ]);
     const bloomFilter = Array.from(allImports, keyBloom).reduce(
-      (a, b) => a | b
+      (a, b) => a | b,
+      0
     );
     exportedVariablesExpression = t.nullLiteral();
     bloomFilterExpression = t.numericLiteral(bloomFilter);

@@ -46,3 +46,7 @@ const MyComponent = () => {
   );
 };
 ```
+
+## 🌍 Global Variables
+
+If all your custom properties are global, you can configure them in the Cssta build configuration. There’s more information on this over in the [configuration]({{ site.baseurl }}/configuration) section

@@ -13,11 +13,12 @@ const forwardRefComponent = require("./forwardRefComponent");
 module.exports = (
   babel,
   nodePath,
+  options,
   elementNode,
   cssNode,
   { jsx = false } = {}
 ) => {
-  const { cssText, substitutionMap } = extractCss(babel, cssNode);
+  const { cssText, substitutionMap } = extractCss(babel, cssNode, options);
   const rules = extractRules(cssText);
   const {
     propTypes,
@@ -42,9 +43,20 @@ module.exports = (
     importedTransitionVariables.length !== 0 ||
     importedAnimationVariables.length !== 0 ||
     importedKeyframeVariables.length !== 0;
-  const hasExportedVariables = ruleTuples.some(
-    rule => Object.keys(rule.exportedVariables).length !== 0
-  );
+  const exportedVariables = ruleTuples
+    .map(rule => Object.entries(rule.exportedVariables))
+    .reduce((a, b) => a.concat(b), []);
+  const hasExportedVariables = exportedVariables.length !== 0;
+
+  if (hasExportedVariables && options != null && options.globals != null) {
+    exportedVariables.forEach(([variable, value]) => {
+      if (options.globals[variable] != null) {
+        throw new Error(
+          `Attempted to overwrite global variable "${variable}". Either change this variable, or remove it from the globals. See line \`--${variable}: ${value}\``
+        );
+      }
+    });
+  }
 
   let customPropertiesVariable;
   if (hasImportedVariables || hasExportedVariables) {
