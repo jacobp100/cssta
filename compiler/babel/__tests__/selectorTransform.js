@@ -1,6 +1,7 @@
 const babel = require("@babel/core");
 const { default: generate } = require("@babel/generator");
-const selectorTransform = require("../selectorTransform");
+const createEnvironment = require("../environment/createEnvironment");
+const { selectorTransform } = require("../selectorsTransform");
 
 const { types: t } = babel;
 
@@ -9,13 +10,15 @@ const run = (inputSelector, mediaQuery) => {
   const ast = babel.parse("const selector = () => {}");
   babel.traverse(ast, {
     ArrowFunctionExpression(path) {
+      const body = path.get("body");
+      const environment = createEnvironment(babel, body);
       const node = selectorTransform(
         babel,
-        path.get("body"),
+        body,
         { selector, mediaQuery },
-        { cache: {} }
+        { environment }
       );
-      path.get("body").pushContainer("body", t.returnStatement(node));
+      body.pushContainer("body", t.returnStatement(node));
     }
   });
   const { code } = generate(ast);
@@ -147,124 +150,124 @@ it("Handles multiple selectors", () => {
 
 it("Handles sceen media queries", () => {
   expect(run("&", "(min-width: 500px)")).toMatchInlineSnapshot(`
-    "import useMediaQuery from 'cssta/runtime/useMediaQuery';
+    "import useWindowDimensions from 'cssta/runtime/useWindowDimensions';
 
     const selector = () => {
       const {
-        width: screenWidth,
-        height: screenHeight
-      } = useMediaQuery();
-      return screenWidth >= 500;
+        width: windowWidth,
+        height: windowHeight
+      } = useWindowDimensions();
+      return windowWidth >= 500;
     };"
   `);
   expect(run("&", "(max-width: 500px)")).toMatchInlineSnapshot(`
-    "import useMediaQuery from 'cssta/runtime/useMediaQuery';
+    "import useWindowDimensions from 'cssta/runtime/useWindowDimensions';
 
     const selector = () => {
       const {
-        width: screenWidth,
-        height: screenHeight
-      } = useMediaQuery();
-      return screenWidth <= 500;
+        width: windowWidth,
+        height: windowHeight
+      } = useWindowDimensions();
+      return windowWidth <= 500;
     };"
   `);
   expect(run("&", "(width: 500px)")).toMatchInlineSnapshot(`
-    "import useMediaQuery from 'cssta/runtime/useMediaQuery';
+    "import useWindowDimensions from 'cssta/runtime/useWindowDimensions';
 
     const selector = () => {
       const {
-        width: screenWidth,
-        height: screenHeight
-      } = useMediaQuery();
-      return screenWidth === 500;
+        width: windowWidth,
+        height: windowHeight
+      } = useWindowDimensions();
+      return windowWidth === 500;
     };"
   `);
   expect(run("&", "(min-height: 500px)")).toMatchInlineSnapshot(`
-    "import useMediaQuery from 'cssta/runtime/useMediaQuery';
+    "import useWindowDimensions from 'cssta/runtime/useWindowDimensions';
 
     const selector = () => {
       const {
-        width: screenWidth,
-        height: screenHeight
-      } = useMediaQuery();
-      return screenHeight >= 500;
+        width: windowWidth,
+        height: windowHeight
+      } = useWindowDimensions();
+      return windowHeight >= 500;
     };"
   `);
   expect(run("&", "(max-height: 500px)")).toMatchInlineSnapshot(`
-    "import useMediaQuery from 'cssta/runtime/useMediaQuery';
+    "import useWindowDimensions from 'cssta/runtime/useWindowDimensions';
 
     const selector = () => {
       const {
-        width: screenWidth,
-        height: screenHeight
-      } = useMediaQuery();
-      return screenHeight <= 500;
+        width: windowWidth,
+        height: windowHeight
+      } = useWindowDimensions();
+      return windowHeight <= 500;
     };"
   `);
   expect(run("&", "(height: 500px)")).toMatchInlineSnapshot(`
-    "import useMediaQuery from 'cssta/runtime/useMediaQuery';
+    "import useWindowDimensions from 'cssta/runtime/useWindowDimensions';
 
     const selector = () => {
       const {
-        width: screenWidth,
-        height: screenHeight
-      } = useMediaQuery();
-      return screenHeight === 500;
+        width: windowWidth,
+        height: windowHeight
+      } = useWindowDimensions();
+      return windowHeight === 500;
     };"
   `);
   expect(run("&", "(min-aspect-ratio: 16/9)")).toMatchInlineSnapshot(`
-    "import useMediaQuery from 'cssta/runtime/useMediaQuery';
+    "import useWindowDimensions from 'cssta/runtime/useWindowDimensions';
 
     const selector = () => {
       const {
-        width: screenWidth,
-        height: screenHeight
-      } = useMediaQuery();
-      return 16 / 9 <= screenWidth / screenHeight;
+        width: windowWidth,
+        height: windowHeight
+      } = useWindowDimensions();
+      return 16 / 9 <= windowWidth / windowHeight;
     };"
   `);
   expect(run("&", "(max-aspect-ratio: 16/9)")).toMatchInlineSnapshot(`
-    "import useMediaQuery from 'cssta/runtime/useMediaQuery';
+    "import useWindowDimensions from 'cssta/runtime/useWindowDimensions';
 
     const selector = () => {
       const {
-        width: screenWidth,
-        height: screenHeight
-      } = useMediaQuery();
-      return 16 / 9 >= screenWidth / screenHeight;
+        width: windowWidth,
+        height: windowHeight
+      } = useWindowDimensions();
+      return 16 / 9 >= windowWidth / windowHeight;
     };"
   `);
   expect(run("&", "(aspect-ratio: 16/9)")).toMatchInlineSnapshot(`
-    "import useMediaQuery from 'cssta/runtime/useMediaQuery';
+    "import useWindowDimensions from 'cssta/runtime/useWindowDimensions';
 
     const selector = () => {
       const {
-        width: screenWidth,
-        height: screenHeight
-      } = useMediaQuery();
-      return 16 / 9 === screenWidth / screenHeight;
+        width: windowWidth,
+        height: windowHeight
+      } = useWindowDimensions();
+      return 16 / 9 === windowWidth / windowHeight;
     };"
   `);
   expect(run("&", "(orientation: landscape)")).toMatchInlineSnapshot(`
-    "import useMediaQuery from 'cssta/runtime/useMediaQuery';
+    "import useWindowDimensions from 'cssta/runtime/useWindowDimensions';
 
     const selector = () => {
       const {
-        width: screenWidth,
-        height: screenHeight
-      } = useMediaQuery();
-      return screenWidth > screenHeight;
+        width: windowWidth,
+        height: windowHeight
+      } = useWindowDimensions();
+      return windowWidth > windowHeight;
     };"
   `);
   expect(run("&", "(orientation: portrait)")).toMatchInlineSnapshot(`
-    "import useMediaQuery from 'cssta/runtime/useMediaQuery';
+    "import useWindowDimensions from 'cssta/runtime/useWindowDimensions';
 
     const selector = () => {
       const {
-        width: screenWidth,
-        height: screenHeight
-      } = useMediaQuery();
-      return screenWidth < screenHeight;
+        width: windowWidth,
+        height: windowHeight
+      } = useWindowDimensions();
+      return windowWidth < windowHeight;
     };"
   `);
 });
@@ -314,16 +317,16 @@ it("Throws when cannot parse media query", () => {
 it("Handles intersection media queries", () => {
   const code = run("&", "(min-width: 500px) and (prefers-color-scheme: dark)");
   expect(code).toMatchInlineSnapshot(`
-    "import useMediaQuery from 'cssta/runtime/useMediaQuery';
+    "import useWindowDimensions from 'cssta/runtime/useWindowDimensions';
     import { useColorScheme } from 'react-native';
 
     const selector = () => {
       const {
-        width: screenWidth,
-        height: screenHeight
-      } = useMediaQuery();
+        width: windowWidth,
+        height: windowHeight
+      } = useWindowDimensions();
       const colorScheme = useColorScheme();
-      return screenWidth >= 500 && colorScheme === 'dark';
+      return windowWidth >= 500 && colorScheme === 'dark';
     };"
   `);
 });
@@ -331,16 +334,16 @@ it("Handles intersection media queries", () => {
 it("Handles union media queries", () => {
   const code = run("&", "(min-width: 500px), (prefers-color-scheme: dark)");
   expect(code).toMatchInlineSnapshot(`
-    "import useMediaQuery from 'cssta/runtime/useMediaQuery';
+    "import useWindowDimensions from 'cssta/runtime/useWindowDimensions';
     import { useColorScheme } from 'react-native';
 
     const selector = () => {
       const {
-        width: screenWidth,
-        height: screenHeight
-      } = useMediaQuery();
+        width: windowWidth,
+        height: windowHeight
+      } = useWindowDimensions();
       const colorScheme = useColorScheme();
-      return screenWidth >= 500 || colorScheme === 'dark';
+      return windowWidth >= 500 || colorScheme === 'dark';
     };"
   `);
 });
@@ -348,14 +351,14 @@ it("Handles union media queries", () => {
 it("Handles selectors with media queries", () => {
   const code = run("&[@test]", "(min-width: 500px)");
   expect(code).toMatchInlineSnapshot(`
-    "import useMediaQuery from 'cssta/runtime/useMediaQuery';
+    "import useWindowDimensions from 'cssta/runtime/useWindowDimensions';
 
     const selector = () => {
       const {
-        width: screenWidth,
-        height: screenHeight
-      } = useMediaQuery();
-      return test === true && screenWidth >= 500;
+        width: windowWidth,
+        height: windowHeight
+      } = useWindowDimensions();
+      return test === true && windowWidth >= 500;
     };"
   `);
 });

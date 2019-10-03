@@ -12,18 +12,18 @@ it("Supports exported variables in media queries", () => {
   const code = build(css);
   expect(code).toMatchInlineSnapshot(`
     "import React from 'react';
-    import useMediaQuery from 'cssta/runtime/useMediaQuery';
+    import useWindowDimensions from 'cssta/runtime/useWindowDimensions';
     import useCustomProperties from 'cssta/runtime/useCustomProperties';
     import VariablesContext from 'cssta/runtime/VariablesContext';
     const Example = React.forwardRef((props, ref) => {
       const {
-        width: screenWidth,
-        height: screenHeight
-      } = useMediaQuery();
+        width: windowWidth,
+        height: windowHeight
+      } = useWindowDimensions();
       const exportedCustomProperties = {};
       exportedCustomProperties['width'] = '100px';
 
-      if (screenWidth >= 500) {
+      if (windowWidth >= 500) {
         exportedCustomProperties['width'] = '200px';
       }
 
@@ -50,20 +50,18 @@ it("Supports transitions vith custom properties", () => {
     import useCustomPropertyShorthandParts from 'cssta/runtime/useCustomPropertyShorthandParts';
     import flattenTransition from 'cssta/runtime/flattenTransition';
     import useTransition from 'cssta/runtime/useTransition';
-    const styles = {
-      0: {
-        color: 'red'
-      },
-      1: {
-        color: 'green'
-      }
+    const styles0 = {
+      color: 'red'
+    };
+    const styles1 = {
+      color: 'green'
     };
     const Example = React.forwardRef(({
       active,
       ...props
     }, ref) => {
       const customProperties = useCustomProperties(null);
-      const baseStyle = active === true ? styles[1] : styles[0];
+      const baseStyle = active === true ? styles1 : styles0;
       let style = props.style != null ? [baseStyle, props.style] : baseStyle;
       const unresolvedTransitionParts = [{
         '_': 'color var(--time)'
@@ -97,10 +95,8 @@ it("Supports conditional transitions with custom properties", () => {
     import useCustomPropertyShorthandParts from 'cssta/runtime/useCustomPropertyShorthandParts';
     import flattenTransition from 'cssta/runtime/flattenTransition';
     import useTransition from 'cssta/runtime/useTransition';
-    const styles = {
-      0: {
-        color: 'red'
-      }
+    const styles0 = {
+      color: 'red'
     };
     const Example = React.forwardRef(({
       fast,
@@ -108,7 +104,7 @@ it("Supports conditional transitions with custom properties", () => {
       ...props
     }, ref) => {
       const customProperties = useCustomProperties(null);
-      let style = props.style != null ? [styles[0], props.style] : styles[0];
+      let style = props.style != null ? [styles0, props.style] : styles0;
       const unresolvedTransitionParts = [{
         '_': 'color var(--time)'
       }, fast === true ? {
@@ -253,13 +249,11 @@ it("Supports transitions with animations", () => {
     "import React from 'react';
     import useTransition from 'cssta/runtime/useTransition';
     import useAnimation from 'cssta/runtime/useAnimation';
-    const styles = {
-      0: {
-        color: 'black'
-      },
-      1: {
-        color: 'white'
-      }
+    const styles0 = {
+      color: 'black'
+    };
+    const styles1 = {
+      color: 'white'
     };
     const transition = [{
       'property': 'color',
@@ -291,10 +285,32 @@ it("Supports transitions with animations", () => {
       inverted,
       ...props
     }, ref) => {
-      const baseStyle = inverted === true ? styles[1] : styles[0];
+      const baseStyle = inverted === true ? styles1 : styles0;
       let style = props.style != null ? [baseStyle, props.style] : baseStyle;
       style = useTransition(transition, style);
       style = useAnimation(keyframes, animation, style);
+      return <Element {...props} ref={ref} style={style} />;
+    });"
+  `);
+});
+
+it("Supports viewport units in shorthands with custom properties", () => {
+  const css = styled.test`
+    margin: 10vw var(--whyDoIDoThisToMyself);
+  `;
+
+  const code = build(css);
+  expect(code).toMatchInlineSnapshot(`
+    "import React from 'react';
+    import useCustomProperties from 'cssta/runtime/useCustomProperties';
+    import useViewportStyleTuples from 'cssta/runtime/useViewportStyleTuples';
+    import useCustomPropertyStyles from 'cssta/runtime/useCustomPropertyStyles';
+    const unresolvedStyleTuples0 = [['margin', '10vw var(--whyDoIDoThisToMyself)']];
+    const Example = React.forwardRef((props, ref) => {
+      const customProperties = useCustomProperties(null);
+      const unresolvedStyleTuples1 = useViewportStyleTuples(unresolvedStyleTuples0);
+      const styles = useCustomPropertyStyles(unresolvedStyleTuples1, customProperties);
+      const style = props.style != null ? [styles, props.style] : styles;
       return <Element {...props} ref={ref} style={style} />;
     });"
   `);

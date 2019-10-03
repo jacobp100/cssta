@@ -21,9 +21,9 @@ const createKeyframesStatic = (babel, path, substitutionMap, keyframes) => {
   );
 };
 
-module.exports = (babel, path, rules) => {
+module.exports = (babel, path, cssOutput) => {
   const { types: t } = babel;
-  const { importedKeyframeVariables, keyframesStyleTuples } = rules;
+  const { importedKeyframeVariables, keyframesStyleTuples } = cssOutput;
 
   let keyframesVariable;
 

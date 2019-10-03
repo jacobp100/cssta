@@ -5,6 +5,7 @@ const {
 } = require("css-to-react-native");
 const transformVariables = require("./css-transforms/variables");
 const transformColors = require("./css-transforms/colors");
+// Viewport (hopefully) already transformed
 
 /*::
 import type { Variables } from "./VariablesContext";

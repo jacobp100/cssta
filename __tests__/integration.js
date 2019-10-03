@@ -8,7 +8,10 @@ it("Works with babel-plugin-cssta", () => {
       "`;" +
       "const Test2 = styled(Button)`" +
       "  color: red;" +
-      "`;",
+      "`;" +
+      "const testMixin = styled.mixin`" +
+      "  color: red;" +
+      "`",
     {
       filename: __filename,
       plugins: [require.resolve("../babel-plugin")]
@@ -16,30 +19,34 @@ it("Works with babel-plugin-cssta", () => {
   );
   expect(code).toMatchInlineSnapshot(`
     "import React from \\"react\\";
-    const styles = {
-      0: {
-        color: \\"red\\"
-      }
+    const styles0 = {
+      color: \\"red\\"
     };
     const Test1 = React.forwardRef((props, ref) => {
-      const style = props.style != null ? [styles[0], props.style] : styles[0];
+      const style = props.style != null ? [styles0, props.style] : styles0;
       return React.createElement(Button, { ...props,
         ref: ref,
         style: style
       });
     });
     const styles1 = {
-      0: {
-        color: \\"red\\"
-      }
+      color: \\"red\\"
     };
     const Test2 = React.forwardRef((props, ref) => {
-      const style = props.style != null ? [styles1[0], props.style] : styles1[0];
+      const style = props.style != null ? [styles1, props.style] : styles1;
       return React.createElement(Button, { ...props,
         ref: ref,
         style: style
       });
-    });"
+    });
+    const styles2 = {
+      color: \\"red\\"
+    };
+
+    const testMixin = () => {
+      const style = styles2;
+      return style;
+    };"
   `);
 });
 
@@ -51,7 +58,10 @@ it("Works with babel-plugin-macros", () => {
       "`;" +
       "const Test2 = styled(Button)`" +
       "  color: red;" +
-      "`;",
+      "`;" +
+      "const testMixin = styled.mixin`" +
+      "  color: red;" +
+      "`",
     {
       filename: __filename,
       plugins: ["babel-plugin-macros"]
@@ -59,30 +69,34 @@ it("Works with babel-plugin-macros", () => {
   );
   expect(code).toMatchInlineSnapshot(`
     "import React from \\"react\\";
-    const styles = {
-      0: {
-        color: \\"red\\"
-      }
+    const styles0 = {
+      color: \\"red\\"
     };
     const Test1 = React.forwardRef((props, ref) => {
-      const style = props.style != null ? [styles[0], props.style] : styles[0];
+      const style = props.style != null ? [styles0, props.style] : styles0;
       return React.createElement(Button, { ...props,
         ref: ref,
         style: style
       });
     });
     const styles1 = {
-      0: {
-        color: \\"red\\"
-      }
+      color: \\"red\\"
     };
     const Test2 = React.forwardRef((props, ref) => {
-      const style = props.style != null ? [styles1[0], props.style] : styles1[0];
+      const style = props.style != null ? [styles1, props.style] : styles1;
       return React.createElement(Button, { ...props,
         ref: ref,
         style: style
       });
-    });"
+    });
+    const styles2 = {
+      color: \\"red\\"
+    };
+
+    const testMixin = () => {
+      const style = styles2;
+      return style;
+    };"
   `);
 });
 
@@ -112,7 +126,7 @@ it("Works with plugin-transform-modules-commonjs", () => {
 
     var _useCustomProperties = _interopRequireDefault(require(\\"cssta/runtime/useCustomProperties\\"));
 
-    var _useCustomPropertyStyleSheet = _interopRequireDefault(require(\\"cssta/runtime/useCustomPropertyStyleSheet\\"));
+    var _useCustomPropertyStyles = _interopRequireDefault(require(\\"cssta/runtime/useCustomPropertyStyles\\"));
 
     var _VariablesContext = _interopRequireDefault(require(\\"cssta/runtime/VariablesContext\\"));
 
@@ -125,12 +139,12 @@ it("Works with plugin-transform-modules-commonjs", () => {
     const exportedCustomProperties = {
       \\"color\\": \\"red\\"
     };
-    const unresolvedStyleTuples = [[[\\"color\\", \\"var(--color)\\"]]];
+    const unresolvedStyleTuples0 = [[\\"color\\", \\"var(--color)\\"]];
 
     const Test1 = _react.default.forwardRef((props, ref) => {
       const customProperties = (0, _useCustomProperties.default)(exportedCustomProperties);
-      const styles = (0, _useCustomPropertyStyleSheet.default)(unresolvedStyleTuples, customProperties);
-      const style = props.style != null ? [styles[0], props.style] : styles[0];
+      const styles = (0, _useCustomPropertyStyles.default)(unresolvedStyleTuples0, customProperties);
+      const style = props.style != null ? [styles, props.style] : styles;
       return _react.default.createElement(_VariablesContext.default.Provider, {
         value: customProperties
       }, _react.default.createElement(Button, { ...props,
@@ -139,14 +153,12 @@ it("Works with plugin-transform-modules-commonjs", () => {
       }));
     });
 
-    const styles = {
-      0: {
-        color: \\"red\\"
-      }
+    const styles0 = {
+      color: \\"red\\"
     };
 
     const Test2 = _react.default.forwardRef((props, ref) => {
-      const style = props.style != null ? [styles[0], props.style] : styles[0];
+      const style = props.style != null ? [styles0, props.style] : styles0;
       return _react.default.createElement(Button, { ...props,
         ref: ref,
         style: style
@@ -170,13 +182,11 @@ it("Works with options", () => {
   );
   expect(code).toMatchInlineSnapshot(`
     "import React from \\"react\\";
-    const styles = {
-      0: {
-        color: \\"red\\"
-      }
+    const styles0 = {
+      color: \\"red\\"
     };
     const Test1 = React.forwardRef((props, ref) => {
-      const style = props.style != null ? [styles[0], props.style] : styles[0];
+      const style = props.style != null ? [styles0, props.style] : styles0;
       return React.createElement(Button, { ...props,
         ref: ref,
         style: style

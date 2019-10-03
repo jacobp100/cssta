@@ -9,12 +9,12 @@ it("Supports imported variables", () => {
   expect(code).toMatchInlineSnapshot(`
     "import React from 'react';
     import useCustomProperties from 'cssta/runtime/useCustomProperties';
-    import useCustomPropertyStyleSheet from 'cssta/runtime/useCustomPropertyStyleSheet';
-    const unresolvedStyleTuples = [[['width', 'var(--width)']]];
+    import useCustomPropertyStyles from 'cssta/runtime/useCustomPropertyStyles';
+    const unresolvedStyleTuples0 = [['width', 'var(--width)']];
     const Example = React.forwardRef((props, ref) => {
       const customProperties = useCustomProperties(null);
-      const styles = useCustomPropertyStyleSheet(unresolvedStyleTuples, customProperties);
-      const style = props.style != null ? [styles[0], props.style] : styles[0];
+      const styles = useCustomPropertyStyles(unresolvedStyleTuples0, customProperties);
+      const style = props.style != null ? [styles, props.style] : styles;
       return <Element {...props} ref={ref} style={style} />;
     });"
   `);
@@ -126,6 +126,51 @@ it("Supports multiple conditional exported variables", () => {
   `);
 });
 
+it("Supports rules where only some import variables", () => {
+  const css = styled.test`
+    width: 100px;
+
+    &[@cond1] {
+      width: var(--something);
+    }
+
+    &[@cond2] {
+      width: 200px;
+    }
+
+    &[@cond1] {
+      width: var(--somethingElse);
+    }
+  `;
+
+  const code = build(css);
+  expect(code).toMatchInlineSnapshot(`
+    "import React from 'react';
+    import useCustomProperties from 'cssta/runtime/useCustomProperties';
+    import useCustomPropertyStyles from 'cssta/runtime/useCustomPropertyStyles';
+    const styles0 = {
+      width: 100
+    };
+    const unresolvedStyleTuples0 = [['width', 'var(--something)']];
+    const styles1 = {
+      width: 200
+    };
+    const unresolvedStyleTuples1 = [['width', 'var(--somethingElse)']];
+    const Example = React.forwardRef(({
+      cond1,
+      cond2,
+      ...props
+    }, ref) => {
+      const customProperties = useCustomProperties(null);
+      const styles = useCustomPropertyStyles(unresolvedStyleTuples0, customProperties);
+      const styles2 = useCustomPropertyStyles(unresolvedStyleTuples1, customProperties);
+      const baseStyle = cond1 === true ? styles2 : cond2 === true ? styles1 : cond1 === true ? styles : styles0;
+      const style = props.style != null ? [baseStyle, props.style] : baseStyle;
+      return <Element {...props} ref={ref} style={style} />;
+    });"
+  `);
+});
+
 it("Supports global variables in config", () => {
   const css = styled.test`
     color: var(--primary);
@@ -138,13 +183,11 @@ it("Supports global variables in config", () => {
   });
   expect(code).toMatchInlineSnapshot(`
     "import React from 'react';
-    const styles = {
-      0: {
-        color: 'red'
-      }
+    const styles0 = {
+      color: 'red'
     };
     const Example = React.forwardRef((props, ref) => {
-      const style = props.style != null ? [styles[0], props.style] : styles[0];
+      const style = props.style != null ? [styles0, props.style] : styles0;
       return <Element {...props} ref={ref} style={style} />;
     });"
   `);
@@ -164,12 +207,12 @@ it("Omits missing globals", () => {
   expect(code).toMatchInlineSnapshot(`
     "import React from 'react';
     import useCustomProperties from 'cssta/runtime/useCustomProperties';
-    import useCustomPropertyStyleSheet from 'cssta/runtime/useCustomPropertyStyleSheet';
-    const unresolvedStyleTuples = [[['color', 'red'], ['background', 'var(--secondary)']]];
+    import useCustomPropertyStyles from 'cssta/runtime/useCustomPropertyStyles';
+    const unresolvedStyleTuples0 = [['color', 'red'], ['background', 'var(--secondary)']];
     const Example = React.forwardRef((props, ref) => {
       const customProperties = useCustomProperties(null);
-      const styles = useCustomPropertyStyleSheet(unresolvedStyleTuples, customProperties);
-      const style = props.style != null ? [styles[0], props.style] : styles[0];
+      const styles = useCustomPropertyStyles(unresolvedStyleTuples0, customProperties);
+      const style = props.style != null ? [styles, props.style] : styles;
       return <Element {...props} ref={ref} style={style} />;
     });"
   `);
@@ -223,14 +266,12 @@ it("Does not fail failing build on missing global with globalVarsOnly if there i
   });
   expect(code).toMatchInlineSnapshot(`
     "import React from 'react';
-    const styles = {
-      0: {
-        color: 'red',
-        backgroundColor: 'orange'
-      }
+    const styles0 = {
+      color: 'red',
+      backgroundColor: 'orange'
     };
     const Example = React.forwardRef((props, ref) => {
-      const style = props.style != null ? [styles[0], props.style] : styles[0];
+      const style = props.style != null ? [styles0, props.style] : styles0;
       return <Element {...props} ref={ref} style={style} />;
     });"
   `);

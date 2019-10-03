@@ -1,4 +1,5 @@
-const processNative = require("./compiler/babel/build");
+const buildElement = require("./compiler/babel/buildElement");
+const buildMixin = require("./compiler/babel/buildMixin");
 
 const csstaModules = {
   "cssta/native": "native"
@@ -7,11 +8,16 @@ const csstaModules = {
 const getCsstaTypeForCallee = ({ types: t }, path) => {
   if (path == null) return null;
 
-  const callee = path.node;
+  const { node } = path;
+  const csstaIdentifier = t.isCallExpression(node)
+    ? node.callee
+    : t.isMemberExpression(node)
+    ? node.object
+    : null;
 
-  if (!t.isIdentifier(callee)) return null;
+  if (!t.isIdentifier(csstaIdentifier)) return null;
 
-  const importSpecifierHub = path.scope.getBinding(callee.name);
+  const importSpecifierHub = path.scope.getBinding(csstaIdentifier.name);
   const importSpecifier =
     importSpecifierHub != null ? importSpecifierHub.path : null;
   if (importSpecifier == null || !t.isImportDefaultSpecifier(importSpecifier)) {
@@ -45,11 +51,21 @@ module.exports = babel => ({
       }
     },
     TaggedTemplateExpression(path, state) {
-      switch (getCsstaTypeForCallee(babel, path.get("tag.callee"))) {
+      switch (getCsstaTypeForCallee(babel, path.get("tag"))) {
         case "native": {
-          const element = path.get("tag.arguments.0").node;
+          const { types: t } = babel;
+          const tag = path.node.tag;
           const css = path.get("quasi").node;
-          processNative(babel, path, state.opts, element, css);
+
+          if (
+            t.isMemberExpression(tag) &&
+            t.isIdentifier(tag.property, { name: "mixin" })
+          ) {
+            buildMixin(babel, path, state.opts, css);
+          } else if (t.isCallExpression(tag)) {
+            const element = path.get("tag.arguments.0").node;
+            buildElement(babel, path, state.opts, element, css);
+          }
           break;
         }
         default:

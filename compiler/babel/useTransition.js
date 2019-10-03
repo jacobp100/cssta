@@ -9,13 +9,18 @@ const {
 module.exports = (
   babel,
   path,
-  rules,
+  cssOutput,
   { selectorFunctions, styleVariable, customPropertiesVariable }
 ) => {
   const { types: t } = babel;
-  const { ruleTuples, importedTransitionVariables } = rules;
+  const { rules } = cssOutput;
 
-  const rulesWithTransitionParts = ruleTuples.filter(
+  // FIXME: We could be more granular than useCustomPropertyShorthandParts whenever one part has a variable in
+  const importedTransitionVariables = rules
+    .map(rule => rule.importedTransitionVariables)
+    .reduce((a, b) => a.concat(b), []);
+
+  const rulesWithTransitionParts = rules.filter(
     rule => rule.transitionParts != null
   );
 

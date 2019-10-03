@@ -1,8 +1,5 @@
 // @flow
 const selectorParser = require("postcss-selector-parser");
-const usePlatform = require("./usePlatform");
-const useColorScheme = require("./useColorScheme");
-const useMediaQuery = require("./useMediaQuery");
 
 /*::
 type SelectorNode = {
@@ -109,119 +106,95 @@ const aspectRatioWH = ({ types: t }, str) => {
   return t.binaryExpression("/", t.numericLiteral(w), t.numericLiteral(h));
 };
 
-const createMediaFeatureValidator = (babel, path, query, { cache }) => {
+const createMediaFeatureValidator = (babel, path, query, env) => {
   const { types: t } = babel;
   const match = query.match(/^\s*\(\s*([\w-]+)\s*:\s*(\S+(?:\s\S)*)\s*\)\s*$/);
 
   if (match == null) throw new Error(`Could not parse media query: ${query}`);
 
-  const getPlatform = () => {
-    if (cache.platform == null) {
-      cache.platform = usePlatform(babel, path);
-    }
-
-    return t.cloneDeep(cache.platform);
-  };
-
-  const getColorScheme = () => {
-    if (cache.colorScheme == null) {
-      cache.colorScheme = useColorScheme(babel, path);
-    }
-
-    return t.cloneDeep(cache.colorScheme);
-  };
-
-  const getScreenWidth = () => {
-    if (cache.screenVariables == null) {
-      cache.screenVariables = useMediaQuery(babel, path);
-    }
-
-    return t.cloneDeep(cache.screenVariables.width);
-  };
-
-  const getScreenHeight = () => {
-    if (cache.screenVariables == null) {
-      cache.screenVariables = useMediaQuery(babel, path);
-    }
-
-    return t.cloneDeep(cache.screenVariables.height);
-  };
-
   switch (match[1]) {
     case "platform":
       return t.binaryExpression(
         "===",
-        getPlatform(),
+        env.getPlatform(),
         t.stringLiteral(match[2])
       );
     case "prefers-color-scheme":
       return t.binaryExpression(
         "===",
-        getColorScheme(),
+        env.getColorScheme(),
         t.stringLiteral(match[2])
       );
     case "width":
       return t.binaryExpression(
         "===",
-        getScreenWidth(),
+        env.getWindowWidth(),
         t.numericLiteral(parseInt(match[2], 10))
       );
     case "min-width":
       return t.binaryExpression(
         ">=",
-        getScreenWidth(),
+        env.getWindowWidth(),
         t.numericLiteral(parseInt(match[2], 10))
       );
     case "max-width":
       return t.binaryExpression(
         "<=",
-        getScreenWidth(),
+        env.getWindowWidth(),
         t.numericLiteral(parseInt(match[2], 10))
       );
     case "height":
       return t.binaryExpression(
         "===",
-        getScreenHeight(),
+        env.getWindowHeight(),
         t.numericLiteral(parseInt(match[2], 10))
       );
     case "min-height":
       return t.binaryExpression(
         ">=",
-        getScreenHeight(),
+        env.getWindowHeight(),
         t.numericLiteral(parseInt(match[2], 10))
       );
     case "max-height":
       return t.binaryExpression(
         "<=",
-        getScreenHeight(),
+        env.getWindowHeight(),
         t.numericLiteral(parseInt(match[2], 10))
       );
     case "aspect-ratio": {
       return t.binaryExpression(
         "===",
         aspectRatioWH(babel, match[2]),
-        t.binaryExpression("/", getScreenWidth(), getScreenHeight())
+        t.binaryExpression("/", env.getWindowWidth(), env.getWindowHeight())
       );
     }
     case "min-aspect-ratio": {
       return t.binaryExpression(
         "<=",
         aspectRatioWH(babel, match[2]),
-        t.binaryExpression("/", getScreenWidth(), getScreenHeight())
+        t.binaryExpression("/", env.getWindowWidth(), env.getWindowHeight())
       );
     }
     case "max-aspect-ratio": {
       return t.binaryExpression(
         ">=",
         aspectRatioWH(babel, match[2]),
-        t.binaryExpression("/", getScreenWidth(), getScreenHeight())
+        t.binaryExpression("/", env.getWindowWidth(), env.getWindowHeight())
       );
     }
     case "orientation": {
       if (/landscape/i.test(match[2])) {
-        return t.binaryExpression(">", getScreenWidth(), getScreenHeight());
+        return t.binaryExpression(
+          ">",
+          env.getWindowWidth(),
+          env.getWindowHeight()
+        );
       } else if (/portrait/i.test(match[2])) {
-        return t.binaryExpression("<", getScreenWidth(), getScreenHeight());
+        return t.binaryExpression(
+          "<",
+          env.getWindowWidth(),
+          env.getWindowHeight()
+        );
       }
     }
     // fallthrough
@@ -230,7 +203,7 @@ const createMediaFeatureValidator = (babel, path, query, { cache }) => {
   }
 };
 
-const createMediaQueryValidator = (babel, path, mediaQuery, { cache }) => {
+const createMediaQueryValidator = (babel, path, mediaQuery, environment) => {
   if (mediaQuery == null) return null;
 
   const createMediaQueryPartValidator = queryPart =>
@@ -238,7 +211,7 @@ const createMediaQueryValidator = (babel, path, mediaQuery, { cache }) => {
       babel,
       "&&",
       (queryPart.match(/\([^()]+\)/g) || []).map(query =>
-        createMediaFeatureValidator(babel, path, query, { cache })
+        createMediaFeatureValidator(babel, path, query, environment)
       )
     );
 
@@ -253,7 +226,12 @@ const createMediaQueryValidator = (babel, path, mediaQuery, { cache }) => {
   return mediaQueryValidator;
 };
 
-module.exports = (babel, path, { selector, mediaQuery }, { cache }) => {
+const selectorTransform = (
+  babel,
+  path,
+  { selector, mediaQuery },
+  { environment }
+) => {
   let selectorNode;
   selectorParser(node => {
     selectorNode = node;
@@ -262,8 +240,20 @@ module.exports = (babel, path, { selector, mediaQuery }, { cache }) => {
 
   const validatorNode = combineLogicalValidators(babel, "&&", [
     createValidator(babel, selectorNode),
-    createMediaQueryValidator(babel, path, mediaQuery, { cache })
+    createMediaQueryValidator(babel, path, mediaQuery, environment)
   ]);
 
   return validatorNode;
 };
+
+module.exports = (babel, path, { rules }, params) => {
+  const selectorFunctions = rules.reduce((accum, rule) => {
+    const ruleCondition = selectorTransform(babel, path, rule, params);
+    if (ruleCondition != null) accum.set(rule, ruleCondition);
+    return accum;
+  }, new Map());
+
+  return selectorFunctions;
+};
+
+module.exports.selectorTransform = selectorTransform;

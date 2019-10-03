@@ -24,14 +24,6 @@ const getStyleDeclarations = nodes =>
 const getStyleTuples = nodes =>
   getStyleDeclarations(nodes).map(node => [node.prop, node.value]);
 
-const getExportedVariables = nodes =>
-  nodes
-    .filter(node => node.type === "decl" && varNameRegExp.test(node.prop))
-    .reduce((accum, node) => {
-      accum[node.prop.substring(2)] = node.value;
-      return accum;
-    }, {});
-
 const transitionAttributes = {
   transition: "_",
   "transition-delay": "delay",
@@ -100,7 +92,43 @@ const getRuleBody = (rule) /*: RawVariableRuleTuple */ => {
     styleTuple => !specialTupleNames.includes(styleTuple[0])
   );
 
-  const exportedVariables = getExportedVariables(rule.nodes);
+  const exportedVariables = {};
+  const importedStyleTupleVariablesSet = new Set();
+  const importedTransitionVariablesSet = new Set();
+  const importedAnimationVariablesSet = new Set();
+  rule.nodes.forEach(decl => {
+    if (decl.type !== "decl") return;
+
+    if (varNameRegExp.test(decl.prop)) {
+      exportedVariables[decl.prop.substring(2)] = decl.value;
+      return;
+    }
+
+    const referencedVariableMatches = decl.value.match(varRegExp);
+    if (referencedVariableMatches == null) return;
+
+    const referencedVariables = referencedVariableMatches.map(
+      match => match.match(varRegExpNonGlobal)[1]
+    );
+
+    let type;
+    if (/^transition(?:-|$)/i.test(decl.prop)) {
+      type = importedTransitionVariablesSet;
+    } else if (/^animation(?:-|$)/i.test(decl.prop)) {
+      type = importedAnimationVariablesSet;
+    } else {
+      type = importedStyleTupleVariablesSet;
+    }
+    referencedVariables.forEach(v => type.add(v));
+  });
+
+  const importedStyleTupleVariables = Array.from(
+    importedStyleTupleVariablesSet
+  );
+  const importedTransitionVariables = Array.from(
+    importedTransitionVariablesSet
+  );
+  const importedAnimationVariables = Array.from(importedAnimationVariablesSet);
 
   return {
     selector,
@@ -108,7 +136,10 @@ const getRuleBody = (rule) /*: RawVariableRuleTuple */ => {
     exportedVariables,
     transitionParts,
     animationParts,
-    styleTuples
+    styleTuples,
+    importedStyleTupleVariables,
+    importedTransitionVariables,
+    importedAnimationVariables
   };
 };
 
@@ -120,8 +151,8 @@ const getKeyframes = atRule =>
         .map(selector => selector.trim())
         .map(selector => {
           if (/[\d.]%/.test(selector)) return parseFloat(selector) / 100;
-          if (/start/i.test(selector)) return 0;
-          if (/end/i.test(selector)) return 1;
+          if (/from/i.test(selector)) return 0;
+          if (/to/i.test(selector)) return 1;
           throw new Error(`Cannot parse keyframe time: ${selector}`);
         });
 
@@ -135,14 +166,12 @@ const getKeyframes = atRule =>
     }, [])
     .sort((a, b) => a.time - b.time);
 
-const getImportedVariables = root => {
-  const rule = new Set();
-  const transition = new Set();
-  const animation = new Set();
-  const keyframe = new Set();
+const getImportedKeyframeVariables = root => {
+  const importedKeyframeVariables = new Set();
 
   root.walkDecls(decl => {
     if (varNameRegExp.test(decl.prop)) return;
+    if (!isDirectChildOfKeyframes(decl.parent)) return;
 
     const referencedVariableMatches = decl.value.match(varRegExp);
     if (!referencedVariableMatches) return;
@@ -151,26 +180,10 @@ const getImportedVariables = root => {
       match => match.match(varRegExpNonGlobal)[1]
     );
 
-    let type;
-    if (/^transition(?:-|$)/i.test(decl.prop)) {
-      type = transition;
-    } else if (/^animation(?:-|$)/i.test(decl.prop)) {
-      type = animation;
-    } else if (isDirectChildOfKeyframes(decl.parent)) {
-      type = keyframe;
-    } else {
-      type = rule;
-    }
-
-    referencedVariables.forEach(v => type.add(v));
+    referencedVariables.forEach(v => importedKeyframeVariables.add(v));
   });
 
-  return {
-    rule: Array.from(rule),
-    transition: Array.from(transition),
-    animation: Array.from(animation),
-    keyframe: Array.from(keyframe)
-  };
+  return Array.from(importedKeyframeVariables);
 };
 
 module.exports = (
@@ -178,7 +191,7 @@ module.exports = (
 ) /*: ({ propTypes: Object, args: RawVariableArgs }) */ => {
   const { root, propTypes } = getRoot(inputCss);
 
-  const ruleTuples = walkToArray(cb => root.walkRules(cb))
+  const rules = walkToArray(cb => root.walkRules(cb))
     .filter(rule => !isDirectChildOfKeyframes(rule))
     .map(getRuleBody);
 
@@ -189,20 +202,12 @@ module.exports = (
       return accum;
     }, {});
 
-  const {
-    rule: importedRuleVariables,
-    transition: importedTransitionVariables,
-    animation: importedAnimationVariables,
-    keyframe: importedKeyframeVariables
-  } = getImportedVariables(root);
+  const importedKeyframeVariables = getImportedKeyframeVariables(root);
 
   return {
     propTypes,
-    ruleTuples,
-    importedRuleVariables,
-    importedTransitionVariables,
-    importedAnimationVariables,
-    importedKeyframeVariables,
-    keyframesStyleTuples
+    rules,
+    keyframesStyleTuples,
+    importedKeyframeVariables
   };
 };

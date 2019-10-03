@@ -14,13 +14,11 @@ it("Supports transitions", () => {
   expect(code).toMatchInlineSnapshot(`
     "import React from 'react';
     import useTransition from 'cssta/runtime/useTransition';
-    const styles = {
-      0: {
-        color: 'red'
-      },
-      1: {
-        color: 'green'
-      }
+    const styles0 = {
+      color: 'red'
+    };
+    const styles1 = {
+      color: 'green'
     };
     const transition = [{
       'property': 'color',
@@ -32,7 +30,7 @@ it("Supports transitions", () => {
       active,
       ...props
     }, ref) => {
-      const baseStyle = active === true ? styles[1] : styles[0];
+      const baseStyle = active === true ? styles1 : styles0;
       let style = props.style != null ? [baseStyle, props.style] : baseStyle;
       style = useTransition(transition, style);
       return <Element {...props} ref={ref} style={style} />;
@@ -59,17 +57,15 @@ it("Supports conditional transitions", () => {
     "import React from 'react';
     import flattenTransition from 'cssta/runtime/flattenTransition';
     import useTransition from 'cssta/runtime/useTransition';
-    const styles = {
-      0: {
-        color: 'red'
-      }
+    const styles0 = {
+      color: 'red'
     };
     const Example = React.forwardRef(({
       fast,
       slow,
       ...props
     }, ref) => {
-      let style = props.style != null ? [styles[0], props.style] : styles[0];
+      let style = props.style != null ? [styles0, props.style] : styles0;
       const transition = flattenTransition([{
         '_': 'color 5s'
       }, fast === true ? {

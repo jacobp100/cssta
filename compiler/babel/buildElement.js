@@ -1,5 +1,6 @@
 const extractRules = require("../css/extractRules");
 const extractCss = require("./extractCss");
+const createEnvironment = require("./environment/createEnvironment");
 const selectorsTransform = require("./selectorsTransform");
 const styleSheet = require("./styleSheet");
 const style = require("./style");
@@ -19,16 +20,13 @@ module.exports = (
   { jsx = false } = {}
 ) => {
   const { cssText, substitutionMap } = extractCss(babel, cssNode, options);
-  const rules = extractRules(cssText);
+  const cssOutput = extractRules(cssText);
   const {
     propTypes,
-    ruleTuples,
-    importedRuleVariables,
-    importedTransitionVariables,
-    importedAnimationVariables,
-    importedKeyframeVariables,
-    keyframesStyleTuples
-  } = rules;
+    rules,
+    keyframesStyleTuples,
+    importedKeyframeVariables
+  } = cssOutput;
 
   const { path, propsVariable, refVariable } = forwardRefComponent(
     babel,
@@ -36,14 +34,22 @@ module.exports = (
     { propTypes }
   );
 
-  const selectorFunctions = selectorsTransform(babel, path, rules);
+  const environment = createEnvironment(babel, path);
+
+  const selectorFunctions = selectorsTransform(babel, path, cssOutput, {
+    environment
+  });
 
   const hasImportedVariables =
-    importedRuleVariables.length !== 0 ||
-    importedTransitionVariables.length !== 0 ||
-    importedAnimationVariables.length !== 0 ||
-    importedKeyframeVariables.length !== 0;
-  const exportedVariables = ruleTuples
+    importedKeyframeVariables.length !== 0 ||
+    rules.some(rule => {
+      return (
+        rule.importedStyleTupleVariables.length !== 0 ||
+        rule.importedTransitionVariables.length !== 0 ||
+        rule.importedAnimationVariables.length !== 0
+      );
+    });
+  const exportedVariables = rules
     .map(rule => Object.entries(rule.exportedVariables))
     .reduce((a, b) => a.concat(b), []);
   const hasExportedVariables = exportedVariables.length !== 0;
@@ -60,36 +66,39 @@ module.exports = (
 
   let customPropertiesVariable;
   if (hasImportedVariables || hasExportedVariables) {
-    customPropertiesVariable = useCustomProperties(babel, path, rules, {
+    customPropertiesVariable = useCustomProperties(babel, path, cssOutput, {
       selectorFunctions
     });
   }
 
-  const { styleSheetVariable, stylesheetOptimizationFlags } = styleSheet(
+  const { styleSheetRuleExpressions, stylesheetOptimizationFlags } = styleSheet(
     babel,
     path,
-    rules,
-    { substitutionMap, selectorFunctions, customPropertiesVariable }
+    cssOutput,
+    {
+      substitutionMap,
+      environment,
+      selectorFunctions,
+      customPropertiesVariable
+    }
   );
 
-  const hasTransition = ruleTuples.some(
-    ruleTuple => ruleTuple.transitionParts != null
-  );
+  const hasTransition = rules.some(rule => rule.transitionParts != null);
   const hasAnimation =
     Object.keys(keyframesStyleTuples).length !== 0 ||
-    ruleTuples.some(ruleTuple => ruleTuple.animationParts != null);
+    rules.some(rule => rule.animationParts != null);
 
   const willModifyStyle = hasTransition || hasAnimation;
-  const styleVariable = style(babel, path, rules, {
+  const styleVariable = style(babel, path, {
     propsVariable,
     selectorFunctions,
-    styleSheetVariable,
+    styleSheetRuleExpressions,
     stylesheetOptimizationFlags,
     willModifyStyle
   });
 
   if (hasTransition) {
-    useTransition(babel, path, rules, {
+    useTransition(babel, path, cssOutput, {
       selectorFunctions,
       styleVariable,
       customPropertiesVariable
@@ -98,11 +107,11 @@ module.exports = (
 
   let keyframesVariable;
   if (Object.keys(keyframesStyleTuples).length !== 0) {
-    keyframesVariable = keyframes(babel, path, rules);
+    keyframesVariable = keyframes(babel, path, cssOutput);
   }
 
   if (hasAnimation) {
-    useAnimation(babel, path, rules, {
+    useAnimation(babel, path, cssOutput, {
       selectorFunctions,
       styleVariable,
       keyframesVariable,

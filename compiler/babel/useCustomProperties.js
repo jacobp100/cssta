@@ -5,17 +5,11 @@ const {
   getOrCreateImport
 } = require("./util");
 
-module.exports = (babel, path, rules, { selectorFunctions }) => {
+module.exports = (babel, path, cssOutput, { selectorFunctions }) => {
   const { types: t } = babel;
-  const {
-    ruleTuples,
-    importedRuleVariables,
-    importedTransitionVariables,
-    importedAnimationVariables,
-    importedKeyframeVariables
-  } = rules;
+  const { rules } = cssOutput;
 
-  const rulesWithExportedVariables = ruleTuples.filter(
+  const rulesWithExportedVariables = rules.filter(
     rule => Object.keys(rule.exportedVariables).length !== 0
   );
 
@@ -28,18 +22,18 @@ module.exports = (babel, path, rules, { selectorFunctions }) => {
     we can only do this if we do not export variables. Otherwise we will skip
     updates from variables from child components
     */
-    const allImports = new Set([
-      ...importedRuleVariables,
-      ...importedTransitionVariables,
-      ...importedAnimationVariables,
-      ...importedKeyframeVariables
-    ]);
-    const bloomFilter = Array.from(allImports, keyBloom).reduce(
-      (a, b) => a | b,
-      0
-    );
+    // const allImports = new Set([
+    //   ...importedRuleVariables,
+    //   ...importedTransitionVariables,
+    //   ...importedAnimationVariables,
+    //   ...importedKeyframeVariables
+    // ]);
+    // const bloomFilter = Array.from(allImports, keyBloom).reduce(
+    //   (a, b) => a | b,
+    //   0
+    // );
     exportedVariablesExpression = t.nullLiteral();
-    bloomFilterExpression = t.numericLiteral(bloomFilter);
+    // bloomFilterExpression = t.numericLiteral(bloomFilter);
     bloomFilterExpression = null; // Not supported by React yet :(
   } else if (rulesWithExportedVariables.length === 1) {
     const rule = rulesWithExportedVariables[0];

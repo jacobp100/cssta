@@ -6,26 +6,24 @@ const { createVariable } = require("./util");
 module.exports = (
   babel,
   path,
-  rules,
   {
     propsVariable,
     selectorFunctions,
-    styleSheetVariable,
+    styleSheetRuleExpressions,
     stylesheetOptimizationFlags,
-    willModifyStyle
+    willModifyStyle = false
   }
 ) => {
   const { types: t } = babel;
-  const { ruleTuples } = rules;
-
-  const ruleTuplesWithStyleTuples = ruleTuples.filter(
-    ruleTuple => ruleTuple.styleTuples.length > 0
-  );
 
   let styleExpression;
-  const propsStyle = t.memberExpression(propsVariable, t.identifier("style"));
-  const styleExpressions = ruleTuplesWithStyleTuples
-    .reduce((accum, rule, i) => {
+  const propsStyle =
+    propsVariable != null
+      ? t.memberExpression(propsVariable, t.identifier("style"))
+      : null;
+
+  const styleExpressions = styleSheetRuleExpressions
+    .reduce((accum, expression, i) => {
       const optimizationFlags = stylesheetOptimizationFlags[i];
       let styleGroup;
       if (optimizationFlags == FLAG_SUPERSETS_PREVIOUS_STYLE) {
@@ -34,27 +32,25 @@ module.exports = (
         styleGroup = [];
         accum.push(styleGroup);
       }
-      styleGroup.push({ rule, i });
+      styleGroup.push(expression);
       return accum;
     }, [])
-    .map(rules => {
-      const ruleExpression = rules.reduce((accum, { rule, i }) => {
-        const csstaStyle = t.memberExpression(
-          styleSheetVariable,
-          t.numericLiteral(i),
-          true
-        );
-        const ruleCondition = selectorFunctions.get(rule);
+    .map(expressionGroup => {
+      const ruleExpression = expressionGroup.reduce(
+        (accum, { rule, expression }) => {
+          const ruleCondition = selectorFunctions.get(rule);
 
-        if (ruleCondition == null) return csstaStyle;
+          if (ruleCondition == null) return expression;
 
-        const previousStyle = accum == null ? t.nullLiteral() : accum;
-        return t.conditionalExpression(
-          ruleCondition,
-          csstaStyle,
-          previousStyle
-        );
-      }, null);
+          const previousStyle = accum == null ? t.nullLiteral() : accum;
+          return t.conditionalExpression(
+            ruleCondition,
+            expression,
+            previousStyle
+          );
+        },
+        null
+      );
 
       return ruleExpression;
     });
@@ -63,7 +59,7 @@ module.exports = (
     styleExpression = willModifyStyle ? propsStyle : null;
   } else if (styleExpressions.length === 1) {
     let baseStyleExpression;
-    if (!t.isConditionalExpression(styleExpressions[0])) {
+    if (t.isIdentifier(styleExpressions[0])) {
       baseStyleExpression = styleExpressions[0];
     } else {
       baseStyleExpression = createVariable(
@@ -73,11 +69,14 @@ module.exports = (
         styleExpressions[0]
       );
     }
-    styleExpression = t.conditionalExpression(
-      t.binaryExpression("!=", propsStyle, t.nullLiteral()),
-      t.arrayExpression([baseStyleExpression, propsStyle]),
-      baseStyleExpression
-    );
+    styleExpression =
+      propsStyle != null
+        ? t.conditionalExpression(
+            t.binaryExpression("!=", propsStyle, t.nullLiteral()),
+            t.arrayExpression([baseStyleExpression, propsStyle]),
+            baseStyleExpression
+          )
+        : baseStyleExpression;
   } else {
     styleExpression = t.arrayExpression([...styleExpressions, propsStyle]);
   }

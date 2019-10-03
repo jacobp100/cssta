@@ -15,7 +15,7 @@ These work as they do in CSS. We support the following:
 - `min-height`
 - `max-height`
 - `orientation`
-- `prefers-color-scheme` (See [MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-color-scheme), RN 0.60+)
+- `prefers-color-scheme` (See [MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-color-scheme), awaiting React Native support)
 - `platform`
 
 The `platform` parameter queries whatever `Platform.OS` returns—in regular React Native, this’ll be `ios` or `android` (both lowercase).
@@ -56,4 +56,12 @@ const Title = cssta(Text)`
     font-family: "San Francisco Display";
   }
 };
+```
+
+We also support viewport units.
+
+```jsx
+const Title = cssta(View)`
+  width: 20vw;
+`;
 ```

@@ -3,11 +3,11 @@ const extractRules = require("../extractRules");
 const styled = { test: String.raw };
 
 const runTestFor = (inputCss, rules = []) => {
-  const { ruleTuples: actualRules } = extractRules(inputCss);
+  const { rules: actualRules } = extractRules(inputCss);
   expect(actualRules).toEqual(rules);
 };
 
-it("scopes top-level declarations", () =>
+it("scopes top-level declarations", () => {
   runTestFor(
     styled.test`
       color: red;
@@ -18,13 +18,17 @@ it("scopes top-level declarations", () =>
         mediaQuery: null,
         styleTuples: [["color", "red"]],
         exportedVariables: {},
+        importedStyleTupleVariables: [],
+        importedAnimationVariables: [],
+        importedTransitionVariables: [],
         transitionParts: null,
         animationParts: null
       }
     ]
-  ));
+  );
+});
 
-it("scopes multiple top-level declarations into one class", () =>
+it("scopes multiple top-level declarations into one class", () => {
   runTestFor(
     styled.test`
       color: red;
@@ -36,13 +40,17 @@ it("scopes multiple top-level declarations into one class", () =>
         mediaQuery: null,
         styleTuples: [["color", "red"], ["border-left-color", "green"]],
         exportedVariables: {},
+        importedStyleTupleVariables: [],
+        importedAnimationVariables: [],
+        importedTransitionVariables: [],
         transitionParts: null,
         animationParts: null
       }
     ]
-  ));
+  );
+});
 
-it("scopes boolean attribute selectors", () =>
+it("scopes boolean attribute selectors", () => {
   runTestFor(
     styled.test`
       &[@attribute] {
@@ -55,13 +63,17 @@ it("scopes boolean attribute selectors", () =>
         mediaQuery: null,
         styleTuples: [["color", "red"]],
         exportedVariables: {},
+        importedStyleTupleVariables: [],
+        importedAnimationVariables: [],
+        importedTransitionVariables: [],
         transitionParts: null,
         animationParts: null
       }
     ]
-  ));
+  );
+});
 
-it("scopes string attribute selectors", () =>
+it("scopes string attribute selectors", () => {
   runTestFor(
     styled.test`
       &[@stringAttribute="red"] {
@@ -74,13 +86,17 @@ it("scopes string attribute selectors", () =>
         mediaQuery: null,
         styleTuples: [["color", "red"]],
         exportedVariables: {},
+        importedStyleTupleVariables: [],
+        importedAnimationVariables: [],
+        importedTransitionVariables: [],
         transitionParts: null,
         animationParts: null
       }
     ]
-  ));
+  );
+});
 
-it("scopes attribute selectors", () =>
+it("scopes attribute selectors", () => {
   runTestFor(
     styled.test`
       &[@booleanValue1] {
@@ -109,6 +125,9 @@ it("scopes attribute selectors", () =>
         mediaQuery: null,
         styleTuples: [["color", "red"]],
         exportedVariables: {},
+        importedStyleTupleVariables: [],
+        importedAnimationVariables: [],
+        importedTransitionVariables: [],
         transitionParts: null,
         animationParts: null
       },
@@ -117,6 +136,9 @@ it("scopes attribute selectors", () =>
         mediaQuery: null,
         styleTuples: [["color", "green"]],
         exportedVariables: {},
+        importedStyleTupleVariables: [],
+        importedAnimationVariables: [],
+        importedTransitionVariables: [],
         transitionParts: null,
         animationParts: null
       },
@@ -125,6 +147,9 @@ it("scopes attribute selectors", () =>
         mediaQuery: null,
         styleTuples: [["color", "red"]],
         exportedVariables: {},
+        importedStyleTupleVariables: [],
+        importedAnimationVariables: [],
+        importedTransitionVariables: [],
         transitionParts: null,
         animationParts: null
       },
@@ -133,6 +158,9 @@ it("scopes attribute selectors", () =>
         mediaQuery: null,
         styleTuples: [["color", "green"]],
         exportedVariables: {},
+        importedStyleTupleVariables: [],
+        importedAnimationVariables: [],
+        importedTransitionVariables: [],
         transitionParts: null,
         animationParts: null
       },
@@ -141,13 +169,17 @@ it("scopes attribute selectors", () =>
         mediaQuery: null,
         styleTuples: [["color", "blue"]],
         exportedVariables: {},
+        importedStyleTupleVariables: [],
+        importedAnimationVariables: [],
+        importedTransitionVariables: [],
         transitionParts: null,
         animationParts: null
       }
     ]
-  ));
+  );
+});
 
-it("recognises variable declarations", () =>
+it("recognises variable declarations", () => {
   runTestFor(
     styled.test`
       --color: red;
@@ -160,13 +192,17 @@ it("recognises variable declarations", () =>
         exportedVariables: {
           color: "red"
         },
+        importedStyleTupleVariables: [],
+        importedAnimationVariables: [],
+        importedTransitionVariables: [],
         transitionParts: null,
         animationParts: null
       }
     ]
-  ));
+  );
+});
 
-it("recognises variable imports", () =>
+it("recognises variable imports", () => {
   runTestFor(
     styled.test`
       color: var(--color);
@@ -177,13 +213,17 @@ it("recognises variable imports", () =>
         mediaQuery: null,
         styleTuples: [["color", "var(--color)"]],
         exportedVariables: {},
+        importedStyleTupleVariables: ["color"],
+        importedAnimationVariables: [],
+        importedTransitionVariables: [],
         transitionParts: null,
         animationParts: null
       }
     ]
-  ));
+  );
+});
 
-it("recognises multiple variable declarations", () =>
+it("recognises multiple variable declarations", () => {
   runTestFor(
     styled.test`
       --color: red;
@@ -199,13 +239,17 @@ it("recognises multiple variable declarations", () =>
           color: "blue",
           other: "green"
         },
+        importedStyleTupleVariables: [],
+        importedAnimationVariables: [],
+        importedTransitionVariables: [],
         transitionParts: null,
         animationParts: null
       }
     ]
-  ));
+  );
+});
 
-it("recognises multiple variable imports", () =>
+it("recognises multiple variable imports", () => {
   runTestFor(
     styled.test`
       margin: var(--large) var(--small);
@@ -216,13 +260,17 @@ it("recognises multiple variable imports", () =>
         mediaQuery: null,
         styleTuples: [["margin", "var(--large) var(--small)"]],
         exportedVariables: {},
+        importedStyleTupleVariables: ["large", "small"],
+        importedAnimationVariables: [],
+        importedTransitionVariables: [],
         transitionParts: null,
         animationParts: null
       }
     ]
-  ));
+  );
+});
 
-it("mixes variable and style declarations", () =>
+it("mixes variable and style declarations", () => {
   runTestFor(
     styled.test`
       --color: red;
@@ -236,26 +284,17 @@ it("mixes variable and style declarations", () =>
         exportedVariables: {
           color: "red"
         },
+        importedStyleTupleVariables: ["color"],
+        importedAnimationVariables: [],
+        importedTransitionVariables: [],
         transitionParts: null,
         animationParts: null
       }
     ]
-  ));
-
-it("returns all imported variables without duplicates", () => {
-  const { importedRuleVariables } = extractRules(`
-    color: var(--color);
-
-    &[@inverted] {
-      backgroundColor: var(--color);
-      color: var(--background);
-    }
-  `);
-
-  expect(importedRuleVariables).toEqual(["color", "background"]);
+  );
 });
 
-it("recognises transitions", () =>
+it("recognises transitions", () => {
   runTestFor(
     styled.test`
       color: red;
@@ -267,15 +306,19 @@ it("recognises transitions", () =>
         mediaQuery: null,
         styleTuples: [["color", "red"]],
         exportedVariables: {},
+        importedStyleTupleVariables: [],
+        importedAnimationVariables: [],
+        importedTransitionVariables: [],
         transitionParts: {
           _: "color 1s linear"
         },
         animationParts: null
       }
     ]
-  ));
+  );
+});
 
-it("recognises transitions using long hand", () =>
+it("recognises transitions using long hand", () => {
   runTestFor(
     styled.test`
       color: red;
@@ -290,6 +333,9 @@ it("recognises transitions using long hand", () =>
         mediaQuery: null,
         styleTuples: [["color", "red"]],
         exportedVariables: {},
+        importedStyleTupleVariables: [],
+        importedAnimationVariables: [],
+        importedTransitionVariables: [],
         transitionParts: {
           property: "color",
           delay: "1s",
@@ -299,9 +345,10 @@ it("recognises transitions using long hand", () =>
         animationParts: null
       }
     ]
-  ));
+  );
+});
 
-it("recognises multiple separate transitions", () =>
+it("recognises multiple separate transitions", () => {
   runTestFor(
     styled.test`
       color: red;
@@ -314,15 +361,19 @@ it("recognises multiple separate transitions", () =>
         mediaQuery: null,
         styleTuples: [["color", "red"], ["transform", "scaleX(30deg)"]],
         exportedVariables: {},
+        importedStyleTupleVariables: [],
+        importedAnimationVariables: [],
+        importedTransitionVariables: [],
         transitionParts: {
           _: "color 1s linear, transform 2s ease-in-out"
         },
         animationParts: null
       }
     ]
-  ));
+  );
+});
 
-it("recognises multiple property transitions", () =>
+it("recognises multiple property transitions", () => {
   runTestFor(
     styled.test`
       color: red;
@@ -336,6 +387,9 @@ it("recognises multiple property transitions", () =>
         mediaQuery: null,
         styleTuples: [["color", "red"], ["transform", "scaleX(30deg)"]],
         exportedVariables: {},
+        importedStyleTupleVariables: [],
+        importedAnimationVariables: [],
+        importedTransitionVariables: [],
         transitionParts: {
           _: "1s linear",
           property: "color, transform"
@@ -343,9 +397,10 @@ it("recognises multiple property transitions", () =>
         animationParts: null
       }
     ]
-  ));
+  );
+});
 
-it("overrides previous transition declarations when using shorthand", () =>
+it("overrides previous transition declarations when using shorthand", () => {
   runTestFor(
     styled.test`
       color: red;
@@ -360,15 +415,19 @@ it("overrides previous transition declarations when using shorthand", () =>
         mediaQuery: null,
         styleTuples: [["color", "red"], ["transform", "scaleX(30deg)"]],
         exportedVariables: {},
+        importedStyleTupleVariables: [],
+        importedAnimationVariables: [],
+        importedTransitionVariables: [],
         transitionParts: {
           _: "1s linear"
         },
         animationParts: null
       }
     ]
-  ));
+  );
+});
 
-it("recognises multiple allows variables in transitions", () =>
+it("recognises multiple allows variables in transitions", () => {
   runTestFor(
     styled.test`
       color: red;
@@ -380,15 +439,19 @@ it("recognises multiple allows variables in transitions", () =>
         mediaQuery: null,
         styleTuples: [["color", "red"]],
         exportedVariables: {},
+        importedStyleTupleVariables: [],
+        importedAnimationVariables: [],
+        importedTransitionVariables: ["time", "easing"],
         transitionParts: {
           _: "color var(--time) var(--easing)"
         },
         animationParts: null
       }
     ]
-  ));
+  );
+});
 
-it("recognises animations", () =>
+it("recognises animations", () => {
   runTestFor(
     styled.test`
       animation: test 1s linear;
@@ -399,13 +462,17 @@ it("recognises animations", () =>
         mediaQuery: null,
         styleTuples: [],
         exportedVariables: {},
+        importedStyleTupleVariables: [],
+        importedAnimationVariables: [],
+        importedTransitionVariables: [],
         transitionParts: null,
         animationParts: { _: "test 1s linear" }
       }
     ]
-  ));
+  );
+});
 
-it("recognises animation long hands", () =>
+it("recognises animation long hands", () => {
   runTestFor(
     styled.test`
       animation-name: test;
@@ -420,6 +487,9 @@ it("recognises animation long hands", () =>
         mediaQuery: null,
         styleTuples: [],
         exportedVariables: {},
+        importedStyleTupleVariables: [],
+        importedAnimationVariables: [],
+        importedTransitionVariables: [],
         transitionParts: null,
         animationParts: {
           name: "test",
@@ -430,9 +500,10 @@ it("recognises animation long hands", () =>
         }
       }
     ]
-  ));
+  );
+});
 
-it("overrides previous animation declarations when using shorthand", () =>
+it("overrides previous animation declarations when using shorthand", () => {
   runTestFor(
     styled.test`
       color: red;
@@ -447,19 +518,23 @@ it("overrides previous animation declarations when using shorthand", () =>
         mediaQuery: null,
         styleTuples: [["color", "red"]],
         exportedVariables: {},
+        importedStyleTupleVariables: [],
+        importedAnimationVariables: [],
+        importedTransitionVariables: [],
         transitionParts: null,
         animationParts: {
           _: "test 1s"
         }
       }
     ]
-  ));
+  );
+});
 
 it("recognises keyframes", () => {
   const { keyframesStyleTuples } = extractRules(`
     @keyframes test {
-      start { opacity: 0 }
-      end { opacity: 1 }
+      from { opacity: 0 }
+      to { opacity: 1 }
     }
   `);
 
@@ -474,14 +549,14 @@ it("recognises keyframes", () => {
 it("recognises multiple keyframes", () => {
   const { keyframesStyleTuples } = extractRules(`
     @keyframes test1 {
-      start { opacity: 0 }
-      end { opacity: 1 }
+      from { opacity: 0 }
+      to { opacity: 1 }
     }
 
     @keyframes test2 {
-      start { opacity: 0 }
+      from { opacity: 0 }
       50% { opacity: 0.5 }
-      end { opacity: 1 }
+      to { opacity: 1 }
     }
   `);
 
@@ -501,7 +576,7 @@ it("recognises multiple keyframes", () => {
 it("imports variables from keyframes", () => {
   const { importedKeyframeVariables, keyframesStyleTuples } = extractRules(`
     @keyframes test {
-      start { color: var(--primary) }
+      from { color: var(--primary) }
     }
   `);
 
@@ -511,7 +586,7 @@ it("imports variables from keyframes", () => {
   });
 });
 
-it("recognises media queries for top-level declarations", () =>
+it("recognises media queries for top-level declarations", () => {
   runTestFor(
     styled.test`
       @media (min-width: 500px) {
@@ -524,13 +599,17 @@ it("recognises media queries for top-level declarations", () =>
         mediaQuery: "(min-width: 500px)",
         styleTuples: [["color", "red"]],
         exportedVariables: {},
+        importedStyleTupleVariables: [],
+        importedAnimationVariables: [],
+        importedTransitionVariables: [],
         transitionParts: null,
         animationParts: null
       }
     ]
-  ));
+  );
+});
 
-it("recognises media queries for nested rules", () =>
+it("recognises media queries for nested rules", () => {
   runTestFor(
     styled.test`
       @media (min-width: 500px) {
@@ -545,8 +624,12 @@ it("recognises media queries for nested rules", () =>
         mediaQuery: "(min-width: 500px)",
         styleTuples: [["color", "red"]],
         exportedVariables: {},
+        importedStyleTupleVariables: [],
+        importedAnimationVariables: [],
+        importedTransitionVariables: [],
         transitionParts: null,
         animationParts: null
       }
     ]
-  ));
+  );
+});

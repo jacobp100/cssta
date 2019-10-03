@@ -6,7 +6,8 @@ const {
   containsSubstitution,
   getStringWithSubstitutedValues
 } = require("./substitutionUtil");
-const simpleInterpolationMap = require("./simpleInterpolationMap");
+const { unitTypes } = require("./simpleUnitTypes");
+const substituteSimpleUnit = require("./substituteSimpleUnit");
 
 const SIMPLE_OR_NO_INTERPOLATION = 0;
 const TEMPLATE_INTERPOLATION = 1;
@@ -14,7 +15,7 @@ const TEMPLATE_INTERPOLATION = 1;
 const getInterpolationType = (substitutionMap, [prop, value]) => {
   if (!containsSubstitution(substitutionMap, value)) {
     return SIMPLE_OR_NO_INTERPOLATION;
-  } else if (getPropertyName(prop) in simpleInterpolationMap) {
+  } else if (getPropertyName(prop) in unitTypes) {
     return SIMPLE_OR_NO_INTERPOLATION;
   }
   return TEMPLATE_INTERPOLATION;
@@ -69,8 +70,12 @@ const createSimpleNoInterpolationStyleMap = (
           ? substitutionMap[value]
           : getStringWithSubstitutedValues(babel, substitutionMap, value);
 
-      const simpleInterpolationFn = simpleInterpolationMap[propertyName];
-      styleMap[propertyName] = simpleInterpolationFn(babel, path, substitution);
+      styleMap[propertyName] = substituteSimpleUnit(
+        babel,
+        path,
+        propertyName,
+        substitution
+      );
     } else {
       throw new Error(
         `Used multiple values ${propertyName}, which accepts one value`

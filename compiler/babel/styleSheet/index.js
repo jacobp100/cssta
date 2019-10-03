@@ -1,110 +1,171 @@
 const {
   createTopLevelVariable,
   createVariable,
-  jsonToNode,
   getOrCreateImport
 } = require("../util");
 const styleBody = require("./styleBody");
+const { createTopLevelStyleTuplesVariable } = require("./styleTuples");
+const {
+  VIEW_PORT_UNITS_NONE,
+  VIEWPORT_UNITS_SIMPLE_LENGTH_ONLY,
+  VIEWPORT_UNITS_COMPLEX,
+  getViewportMode,
+  interpolateViewportUnits
+} = require("./viewport");
 const {
   NO_FLAGS,
   FLAG_SUPERSETS_PREVIOUS_STYLE
 } = require("./optimizationFlags");
 
-const createStaticStyleSheet = (
+const createVariablesStyleExpression = (
   babel,
   path,
-  { substitutionMap, ruleTuplesWithStyleTuples, comment }
+  { substitutionMap, customPropertiesVariable, viewportMode },
+  styleTuples
 ) => {
   const { types: t } = babel;
 
-  const styleSheet = t.objectExpression(
-    ruleTuplesWithStyleTuples.map(({ styleTuples }, i) =>
-      t.objectProperty(
-        t.numericLiteral(i),
-        styleBody(babel, path, substitutionMap, styleTuples)
-      )
-    )
+  const baseUnresolvedStyleTuplesVariable = createTopLevelStyleTuplesVariable(
+    babel,
+    path,
+    styleTuples
   );
 
-  if (comment != null) {
-    styleSheet.leadingComments = [
-      { type: "CommentBlock", value: ` ${comment} ` }
-    ];
+  let unresolvedStyleTuplesVariable;
+  if (viewportMode === VIEW_PORT_UNITS_NONE) {
+    unresolvedStyleTuplesVariable = baseUnresolvedStyleTuplesVariable;
+  } else {
+    if (Object.keys(substitutionMap).length !== 0) {
+      throw new Error(
+        "String interpolation (${value}) is not yet supported when in combination with viewport units or CSS custom properties"
+      );
+    }
+
+    const useViewportStyleTuplesImport = getOrCreateImport(
+      babel,
+      path,
+      "cssta/runtime/useViewportStyleTuples"
+    );
+    unresolvedStyleTuplesVariable = createVariable(
+      babel,
+      path,
+      "unresolvedStyleTuples",
+      t.callExpression(useViewportStyleTuplesImport, [
+        baseUnresolvedStyleTuplesVariable
+      ]),
+      { prefix0: true }
+    );
   }
 
-  const styleSheetVariable = createTopLevelVariable(
+  const useCustomPropertyStylesImport = getOrCreateImport(
+    babel,
+    path,
+    "cssta/runtime/useCustomPropertyStyles"
+  );
+  const styleExpression = createVariable(
     babel,
     path,
     "styles",
-    styleSheet
-  );
-
-  return styleSheetVariable;
-};
-
-const createUseCustomPropertyStyles = (
-  babel,
-  path,
-  { customPropertiesVariable, ruleTuplesWithStyleTuples }
-) => {
-  const { types: t } = babel;
-
-  const ruleTuples = jsonToNode(
-    babel,
-    ruleTuplesWithStyleTuples.map(rule => rule.styleTuples)
-  );
-
-  const unresolvedStyleTuplesVariable = createTopLevelVariable(
-    babel,
-    path,
-    "unresolvedStyleTuples",
-    ruleTuples
-  );
-
-  const useCustomPropertyStyleSheetImport = getOrCreateImport(
-    babel,
-    path,
-    "cssta/runtime/useCustomPropertyStyleSheet"
-  );
-  const styleSheetVariable = createVariable(
-    babel,
-    path,
-    "styles",
-    t.callExpression(useCustomPropertyStyleSheetImport, [
+    t.callExpression(useCustomPropertyStylesImport, [
       unresolvedStyleTuplesVariable,
       customPropertiesVariable
     ])
   );
-
-  return styleSheetVariable;
+  return styleExpression;
 };
 
-const mergeFirstStyleIntoAllRuleTuples = ruleTuplesWithStyleTuples => {
-  const mergeeRuleTuple = ruleTuplesWithStyleTuples[0];
-  const ruleTuplesWithStyleTuplesMerged = ruleTuplesWithStyleTuples.map(
-    ruleTuple => {
-      if (ruleTuple === mergeeRuleTuple) return ruleTuple;
+const createStyle = (
+  babel,
+  path,
+  { substitutionMap, environment, customPropertiesVariable, comment },
+  rule
+) => {
+  const { types: t } = babel;
+  const { styleTuples, importedStyleTupleVariables } = rule;
 
-      const ownStyleKeys = new Set(
-        ruleTuple.styleTuples.map(styleTuple => styleTuple[0])
-      );
-      const stylesToMerge = mergeeRuleTuple.styleTuples.filter(
-        styleTuple => !ownStyleKeys.has(styleTuple[0])
-      );
+  const viewportMode = getViewportMode(rule);
+  const importsVariables = importedStyleTupleVariables.length !== 0;
 
-      if (stylesToMerge.length === 0) return ruleTuple;
+  let styleExpression;
+  if (importsVariables) {
+    styleExpression = createVariablesStyleExpression(
+      babel,
+      path,
+      { substitutionMap, customPropertiesVariable, viewportMode },
+      styleTuples
+    );
+  } else if (viewportMode === VIEWPORT_UNITS_COMPLEX) {
+    const unresolvedStyleTuplesVariable = createTopLevelStyleTuplesVariable(
+      babel,
+      path,
+      styleTuples
+    );
+    const cssToReactNativeImport = getOrCreateImport(
+      babel,
+      path,
+      "cssta/runtime/useViewportStyle"
+    );
+    styleExpression = createVariable(
+      babel,
+      path,
+      "styles",
+      t.callExpression(cssToReactNativeImport, [unresolvedStyleTuplesVariable]),
+      { prefix0: true }
+    );
+  } else if (viewportMode === VIEWPORT_UNITS_SIMPLE_LENGTH_ONLY) {
+    const [
+      nextSubstitutionMap,
+      styleTuplesWithViewportSubstitutions
+    ] = interpolateViewportUnits(
+      babel,
+      { substitutionMap, environment },
+      styleTuples
+    );
+    styleExpression = styleBody(
+      babel,
+      path,
+      nextSubstitutionMap,
+      styleTuplesWithViewportSubstitutions
+    );
+  } else {
+    const style = styleBody(babel, path, substitutionMap, styleTuples);
 
-      const mergedStyleTuples = [...stylesToMerge, ...ruleTuple.styleTuples];
-      return { ...ruleTuple, styleTuples: mergedStyleTuples };
+    if (comment != null) {
+      style.leadingComments = [{ type: "CommentBlock", value: ` ${comment} ` }];
     }
-  );
-  return ruleTuplesWithStyleTuplesMerged;
+
+    styleExpression = createTopLevelVariable(babel, path, "styles", style, {
+      prefix0: true
+    });
+  }
+
+  return styleExpression;
 };
 
-const getOptimizationFlags = ruleTuplesWithStyleTuples => {
+const mergeFirstStyleIntoAllRules = rulesWithStyleTuples => {
+  const mergeeRule = rulesWithStyleTuples[0];
+  const rulesWithStyleTuplesMerged = rulesWithStyleTuples.map(rule => {
+    if (rule === mergeeRule) return rule;
+
+    const ownStyleKeys = new Set(
+      rule.styleTuples.map(styleTuple => styleTuple[0])
+    );
+    const stylesToMerge = mergeeRule.styleTuples.filter(
+      styleTuple => !ownStyleKeys.has(styleTuple[0])
+    );
+
+    if (stylesToMerge.length === 0) return rule;
+
+    const mergedStyleTuples = [...stylesToMerge, ...rule.styleTuples];
+    return { ...rule, styleTuples: mergedStyleTuples };
+  });
+  return rulesWithStyleTuplesMerged;
+};
+
+const getOptimizationFlags = rulesWithStyleTuples => {
   let lastStyleKeys = null;
-  return ruleTuplesWithStyleTuples.map(ruleTuple => {
-    const ownStyleKeys = ruleTuple.styleTuples.map(styleTuple => styleTuple[0]);
+  return rulesWithStyleTuples.map(rule => {
+    const ownStyleKeys = rule.styleTuples.map(styleTuple => styleTuple[0]);
 
     const supersets =
       lastStyleKeys != null &&
@@ -119,51 +180,52 @@ const getOptimizationFlags = ruleTuplesWithStyleTuples => {
 module.exports = (
   babel,
   path,
-  rules,
-  { substitutionMap, selectorFunctions, customPropertiesVariable }
+  { rules },
+  { substitutionMap, environment, selectorFunctions, customPropertiesVariable }
 ) => {
-  const { ruleTuples, importedRuleVariables } = rules;
-
-  const ruleTuplesWithStyleTuples = ruleTuples.filter(
-    ruleTuple => ruleTuple.styleTuples.length > 0
+  const rulesWithStyleTuples = rules.filter(
+    rule => rule.styleTuples.length > 0
   );
 
-  let styleSheetVariable;
+  let styleSheetExpressions;
   let stylesheetOptimizationFlags;
-  if (importedRuleVariables.length > 0) {
-    stylesheetOptimizationFlags = ruleTuplesWithStyleTuples.map(() => NO_FLAGS);
-    styleSheetVariable = createUseCustomPropertyStyles(babel, path, {
-      // FIXME: substitutionMap
-      ruleTuplesWithStyleTuples,
-      customPropertiesVariable
-    });
-  } else if (
-    ruleTuplesWithStyleTuples.length === 2 &&
-    !selectorFunctions.has(ruleTuplesWithStyleTuples[0])
+  if (
+    rulesWithStyleTuples.length === 2 &&
+    !selectorFunctions.has(rulesWithStyleTuples[0])
   ) {
     stylesheetOptimizationFlags = [NO_FLAGS, FLAG_SUPERSETS_PREVIOUS_STYLE];
-    const mergedStyleTuples = mergeFirstStyleIntoAllRuleTuples(
-      ruleTuplesWithStyleTuples
-    );
-    const didMergeStyleTuples = ruleTuplesWithStyleTuples.some(
-      (ruleTuple, i) => ruleTuple !== mergedStyleTuples[i]
-    );
-    styleSheetVariable = createStaticStyleSheet(babel, path, {
-      substitutionMap,
-      ruleTuplesWithStyleTuples: mergedStyleTuples,
-      comment: didMergeStyleTuples
+    const mergedStyleTuples = mergeFirstStyleIntoAllRules(rulesWithStyleTuples);
+    styleSheetExpressions = mergedStyleTuples.map((rule, i) => {
+      const didMergeStyleTuples = rule !== mergedStyleTuples[i];
+      const comment = didMergeStyleTuples
         ? "Some styles have been duplicated to improve performance"
-        : null
+        : null;
+      return createStyle(
+        babel,
+        path,
+        { substitutionMap, environment, customPropertiesVariable, comment },
+        rule
+      );
     });
-  } else if (ruleTuplesWithStyleTuples.length > 0) {
-    stylesheetOptimizationFlags = getOptimizationFlags(
-      ruleTuplesWithStyleTuples
+  } else if (rulesWithStyleTuples.length > 0) {
+    stylesheetOptimizationFlags = getOptimizationFlags(rulesWithStyleTuples);
+    styleSheetExpressions = rulesWithStyleTuples.map(rule =>
+      createStyle(
+        babel,
+        path,
+        { substitutionMap, environment, customPropertiesVariable },
+        rule
+      )
     );
-    styleSheetVariable = createStaticStyleSheet(babel, path, {
-      substitutionMap,
-      ruleTuplesWithStyleTuples
-    });
+  } else {
+    styleSheetExpressions = [];
+    stylesheetOptimizationFlags = [];
   }
 
-  return { styleSheetVariable, stylesheetOptimizationFlags };
+  const styleSheetRuleExpressions = rulesWithStyleTuples.map((rule, i) => ({
+    rule,
+    expression: styleSheetExpressions[i]
+  }));
+
+  return { styleSheetRuleExpressions, stylesheetOptimizationFlags };
 };

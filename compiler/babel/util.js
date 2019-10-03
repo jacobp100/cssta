@@ -1,14 +1,12 @@
-const generateNiceId = (babel, path, name) => {
+const generateNiceId = (babel, path, name, { prefix0 = false } = {}) => {
   const { types: t } = babel;
-  if (!path.scope.hasBinding(name)) {
-    return t.identifier(name);
-  }
+
+  let testId = prefix0 ? `${name}0` : name;
 
   let i = 1;
-  let testId = `${name}${i}`;
   while (path.scope.hasBinding(testId) && i < 20) {
-    i += 1;
     testId = `${name}${i}`;
+    i += 1;
   }
 
   return t.identifier(testId);
@@ -20,10 +18,10 @@ module.exports.createVariable = (
   path,
   name,
   init,
-  { kind = "const" } = {}
+  { kind = "const", prefix0 } = {}
 ) => {
   const { types: t } = babel;
-  const id = generateNiceId(babel, path, name);
+  const id = generateNiceId(babel, path, name, { prefix0 });
   const declaration = t.variableDeclaration(kind, [
     t.variableDeclarator(id, init)
   ]);
@@ -32,9 +30,9 @@ module.exports.createVariable = (
   return id;
 };
 
-module.exports.createTopLevelVariable = (babel, path, name, init) => {
+module.exports.createTopLevelVariable = (babel, path, name, init, idOpts) => {
   const { types: t } = babel;
-  const id = generateNiceId(babel, path, name);
+  const id = generateNiceId(babel, path, name, idOpts);
   const declaration = t.variableDeclaration("const", [
     t.variableDeclarator(id, init)
   ]);

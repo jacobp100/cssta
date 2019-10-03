@@ -39,7 +39,9 @@ module.exports.getStringWithSubstitutedValues = (
       ? t.templateElement(templateValue)
       : t.templateElement(templateValue, true);
   });
-  const expressions = expressionValues.map(value => substitutionMap[value]);
+  const expressions = expressionValues.map(value =>
+    t.cloneDeep(substitutionMap[value])
+  );
 
   return t.templateLiteral(quasis, expressions);
 };

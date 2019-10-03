@@ -1,6 +1,6 @@
 const babel = require("@babel/core");
 const { default: generate } = require("@babel/generator");
-const processNative = require("../build");
+const buildElement = require("../buildElement");
 
 const { types: t } = babel;
 module.exports.styled = { test: String.raw };
@@ -10,7 +10,7 @@ module.exports.build = (css, options = {}) => {
   babel.traverse(ast, {
     StringLiteral(path) {
       if (path.node.value === "replaceMe") {
-        processNative(
+        buildElement(
           babel,
           path,
           options,

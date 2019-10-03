@@ -9,7 +9,7 @@ const {
 module.exports = (
   babel,
   path,
-  rules,
+  cssOutput,
   {
     selectorFunctions,
     styleVariable,
@@ -18,9 +18,14 @@ module.exports = (
   }
 ) => {
   const { types: t } = babel;
-  const { ruleTuples, importedAnimationVariables } = rules;
+  const { rules } = cssOutput;
 
-  const rulesWithAnimationParts = ruleTuples.filter(
+  // FIXME: We could be more granular than useCustomPropertyShorthandParts whenever one part has a variable in
+  const importedAnimationVariables = rules
+    .map(rule => rule.importedAnimationVariables)
+    .reduce((a, b) => a.concat(b), []);
+
+  const rulesWithAnimationParts = rules.filter(
     rule => rule.animationParts != null
   );
 

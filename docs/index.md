@@ -179,7 +179,7 @@ Be careful setting styles `margin`, as Cssta always sets the most specific style
 
 ## 🖥 Media Queries
 
-These work just as they do in CSS. We support `min-` and `max-` `width` and `height`, as well as `orientation: portrait` and `orientation: landscape`. We also support a non-standard `platform`, which queries whatever `Platform.OS` returns.
+These work just as they do in CSS. We support `min-` and `max-` `width` and `height`, as well as `orientation: portrait` and `orientation: landscape`. We also support a non-standard `platform`, which queries whatever `Platform.OS` returns,
 
 ```jsx
 const Title = cssta(Text)`
@@ -191,11 +191,19 @@ const Title = cssta(Text)`
 `;
 ```
 
+We also support viewport units.
+
+```jsx
+const Title = cssta(View)`
+  width: 20vw;
+`;
+```
+
 You can see more under [media queries]({{ site.baseurl }}/media-queries).
 
 ## 🏳️‍🌈 Theming
 
-The best way to do theming in Cssta is by using [CSS custom properties](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_variables). Use them as in Cssta as you’d use them on the web, and they’ll just work
+The best way to do theming in Cssta is by using [CSS custom properties](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_variables). Use them as in Cssta as you’d use them on the web, and they’ll just work.
 
 ```jsx
 const Inverted = cssta(View)`
