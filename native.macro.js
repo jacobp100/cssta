@@ -1,6 +1,6 @@
 const { createMacro } = require("babel-plugin-macros");
-const buildElement = require("./compiler/babel/buildElement");
-const buildMixin = require("./compiler/babel/buildMixin");
+const { default: buildElement } = require("./compiler/babel/buildElement");
+const { default: buildMixin } = require("./compiler/babel/buildMixin");
 
 module.exports = createMacro(({ babel, references, config }) => {
   const { types: t } = babel;
@@ -15,10 +15,10 @@ module.exports = createMacro(({ babel, references, config }) => {
         t.isMemberExpression(tag) &&
         t.isIdentifier(tag.property, { name: "mixin" })
       ) {
-        buildMixin(babel, path, config, css);
+        buildMixin(babel, path, css, config);
       } else if (t.isCallExpression(tag)) {
         const element = path.get("tag.arguments.0").node;
-        buildElement(babel, path, config, element, css);
+        buildElement(babel, path, element, css, config);
       }
     });
 });

@@ -1,5 +1,5 @@
-const buildElement = require("./compiler/babel/buildElement");
-const buildMixin = require("./compiler/babel/buildMixin");
+const { default: buildElement } = require("./compiler/babel/buildElement");
+const { default: buildMixin } = require("./compiler/babel/buildMixin");
 
 const csstaModules = {
   "cssta/native": "native"
@@ -61,10 +61,10 @@ module.exports = babel => ({
             t.isMemberExpression(tag) &&
             t.isIdentifier(tag.property, { name: "mixin" })
           ) {
-            buildMixin(babel, path, state.opts, css);
+            buildMixin(babel, path, css, state.opts);
           } else if (t.isCallExpression(tag)) {
             const element = path.get("tag.arguments.0").node;
-            buildElement(babel, path, state.opts, element, css);
+            buildElement(babel, path, element, css, state.opts);
           }
           break;
         }

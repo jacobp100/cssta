@@ -67,8 +67,9 @@ android/app/libs
 # CUSTOM #
 ##########
 
-lib
-vendor
-examples/cssta-demo/dist
-
-package-lock.json
+*.js
+!benchmark/**/*.js
+!babel-plugin.js
+!native.macro.js
+*.d.ts
+!types/**/*.d.ts

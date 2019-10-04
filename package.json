@@ -5,6 +5,7 @@
   "license": "MIT",
   "scripts": {
     "test": "jest",
+    "prepack": "tsc",
     "readme": "cp ./docs/index.md ./README.md; sed -i -e 's%{{ site.baseurl }}%https://jacobp100.github.io/cssta%g' ./README.md; sed -i -e 's/{% raw %}//g' ./README.md; sed -i -e 's/{% endraw %}//g' ./README.md; sed -i -e '1,5d' ./README.md; rm ./README.md-e"
   },
   "keywords": [
@@ -30,14 +31,20 @@
     "babel-plugin.js"
   ],
   "devDependencies": {
-    "@babel/core": "^7.5.5",
+    "@babel/core": "^7.6.2",
     "@babel/generator": "^7.5.5",
     "@babel/plugin-transform-modules-commonjs": "^7.5.0",
+    "@babel/preset-env": "^7.6.2",
+    "@babel/preset-typescript": "^7.6.0",
+    "@types/jest": "^24.0.18",
+    "@types/node": "^12.7.11",
+    "@types/react": "^16.9.5",
+    "@types/react-native": "^0.60.18",
     "babel-plugin-macros": "^2.6.1",
     "eslint": "^6.3.0",
-    "flow-bin": "^0.106.3",
     "jest": "^24.9.0",
-    "prettier": "^1.18.2"
+    "prettier": "^1.18.2",
+    "typescript": "^3.6.3"
   },
   "dependencies": {
     "css-color-function": "^1.3.3",

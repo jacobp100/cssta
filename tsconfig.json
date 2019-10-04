@@ -1,0 +1,6 @@
+{
+  "compilerOptions": {
+    "lib": ["es2018"],
+    "esModuleInterop": true
+  }
+}
