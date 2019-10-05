@@ -160,6 +160,28 @@ const BlueOutlineView = cssta(OutlineView)`
 `;
 ```
 
+You can also define mixins—these can be used in Cssta components or as a hook in regular React components.
+
+```jsx
+const useStyles = cssta.mixin`
+  padding: 6px 12px;
+  border: 2px solid grey;
+  border-radius: 1000px;
+`;
+
+const RedOutlineView = cssta(View)`
+  @include ${useStyles};
+  background-color: red;
+`;
+
+const BlueOutlineView = () => {
+  const styles = useStyles();
+  return <View style={[styles, { backgroundColor: "blue" }]} />;
+};
+```
+
+See in the [mixins](https://jacobp100.github.io/cssta/mixins) section.
+
 ## 🖌 Overriding Styles
 
 Setting `style` on Cssta components will override those already defined by the component.
@@ -174,7 +196,7 @@ Be careful setting styles `margin`, as Cssta always sets the most specific style
 
 ## 🖥 Media Queries
 
-These work just as they do in CSS. We support `min-` and `max-` `width` and `height`, as well as `orientation: portrait` and `orientation: landscape`. We also support a non-standard `platform`, which queries whatever `Platform.OS` returns.
+These work just as they do in CSS. We support `min-` and `max-` `width` and `height`, as well as `orientation: portrait` and `orientation: landscape`. We also support a non-standard `platform`, which queries whatever `Platform.OS` returns,
 
 ```jsx
 const Title = cssta(Text)`
@@ -186,11 +208,19 @@ const Title = cssta(Text)`
 `;
 ```
 
+We also support viewport units.
+
+```jsx
+const Title = cssta(View)`
+  width: 20vw;
+`;
+```
+
 You can see more under [media queries](https://jacobp100.github.io/cssta/media-queries).
 
 ## 🏳️‍🌈 Theming
 
-The best way to do theming in Cssta is by using [CSS custom properties](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_variables). Use them as in Cssta as you’d use them on the web, and they’ll just work
+The best way to do theming in Cssta is by using [CSS custom properties](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_variables). Use them as in Cssta as you’d use them on the web, and they’ll just work.
 
 ```jsx
 const Inverted = cssta(View)`

@@ -67,9 +67,7 @@ android/app/libs
 # CUSTOM #
 ##########
 
-*.js
-!benchmark/**/*.js
-!babel-plugin.js
-!native.macro.js
-*.d.ts
-!types/**/*.d.ts
+compiler/**/*.js
+compiler/**/*.d.ts
+runtime/**/*.js
+runtime/**/*.d.ts

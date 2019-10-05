@@ -13,7 +13,8 @@ import {
   VariableExportDeclaration,
   KeyframeOfStyleTuples,
   KeyframesDeclaration,
-  ComponentDefinition
+  ComponentDefinition,
+  StyleType
 } from "./types";
 
 const walkToArray = <T>(
@@ -117,6 +118,62 @@ const filteredStyleTuples = (
     .filter(style => style.styleTuples.length > 0);
 };
 
+const getStyleTuplesMixinsForRule = (rule: Rule): StyleDeclaration[] => {
+  const condition = getCondition(rule);
+  const groups: StyleDeclaration[] = [];
+  let currentStyleTuples = null;
+
+  rule.nodes.forEach(node => {
+    switch (node.type) {
+      case "decl": {
+        const { prop, value } = node;
+
+        if (
+          prop in animationAttributes ||
+          prop in transitionAttributes ||
+          prop.startsWith("--")
+        ) {
+          return;
+        }
+
+        if (currentStyleTuples == null) {
+          currentStyleTuples = {
+            type: StyleType.Tuples,
+            condition,
+            styleTuples: [],
+            // Set imported variables after
+            importedVariables: null as any
+          };
+          groups.push(currentStyleTuples);
+        }
+        currentStyleTuples.styleTuples.push([prop, value]);
+      }
+      case "atrule": {
+        if ((node as AtRule).name !== "include") {
+          return;
+        }
+
+        currentStyleTuples = null;
+        groups.push({
+          type: StyleType.Mixin,
+          condition,
+          substitution: (node as AtRule).params
+        });
+      }
+    }
+  });
+
+  groups.forEach(group => {
+    if (group.type === StyleType.Tuples) {
+      group.importedVariables = getStyleTuplesImportedVariables(
+        group.styleTuples
+      );
+    }
+  });
+
+  return groups;
+};
+
 const getKeyframes = (atRule: AtRule): KeyframesDeclaration => {
   const sequence = walkToArray<Rule>(cb => atRule.walkRules(cb))
     .reduce((accum: KeyframeOfStyleTuples[], rule) => {
@@ -161,17 +218,14 @@ export default (inputCss: string): ComponentDefinition => {
     rule => !isDirectChildOfKeyframes(rule)
   );
 
-  const styles: StyleDeclaration[] = filteredStyleTuples(
-    declarationRules,
-    property =>
-      !(property in animationAttributes) &&
-      !(property in transitionAttributes) &&
-      !property.startsWith("--")
-  ).map(({ condition, styleTuples }) => ({
-    condition,
-    styleTuples,
-    importedVariables: getStyleTuplesImportedVariables(styleTuples)
-  }));
+  const styles: StyleDeclaration[] = declarationRules
+    .reduce(
+      (accum, rule) => accum.concat(getStyleTuplesMixinsForRule(rule)),
+      []
+    )
+    .filter(
+      style => style.type === StyleType.Mixin || style.styleTuples.length !== 0
+    );
 
   const transitions: TransitionDeclaration[] = filteredStyleTuples(
     declarationRules,

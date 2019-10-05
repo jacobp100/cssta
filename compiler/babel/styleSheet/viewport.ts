@@ -1,7 +1,9 @@
 import { getPropertyName } from "css-to-react-native";
 import { viewportUnitRegExp } from "../../../runtime/cssRegExp";
 import { StyleTuple } from "../../../runtime/cssUtil";
-import { StyleDeclaration } from "../../css/types";
+import { StyleTuplesDeclaration } from "../../css/types";
+import { SubstitutionMap } from "../extractCss";
+import { Environment } from "../environment";
 import unitTypes, { UnitType } from "./simpleUnitTypes";
 
 export enum ViewportMode {
@@ -10,7 +12,7 @@ export enum ViewportMode {
   ComplexUnits = 2
 }
 
-export const getViewportMode = (rule: StyleDeclaration): ViewportMode =>
+export const getViewportMode = (rule: StyleTuplesDeclaration): ViewportMode =>
   rule.styleTuples
     .map(
       ([prop, value]): ViewportMode => {
@@ -27,9 +29,10 @@ export const getViewportMode = (rule: StyleDeclaration): ViewportMode =>
 
 export const interpolateViewportUnits = (
   babel: any,
-  { substitutionMap, environment },
+  substitutionMap: SubstitutionMap,
+  environment: Environment,
   styleTuples: StyleTuple[]
-) => {
+): [SubstitutionMap, StyleTuple[]] => {
   const { types: t } = babel;
 
   const nextSubstitutionMap = { ...substitutionMap };
@@ -73,7 +76,7 @@ export const interpolateViewportUnits = (
         return substitution + "px";
       });
 
-      return [prop, nextValue];
+      return [prop, nextValue] as StyleTuple;
     }
   );
 

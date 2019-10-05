@@ -1,4 +1,5 @@
 import extractRules from "../css/extractRules";
+import { StyleType } from "../css/types";
 import extractCss from "./extractCss";
 import createEnvironment from "./environment";
 import styleSheet from "./styleSheet";
@@ -34,7 +35,8 @@ export default (babel: any, nodePath: any, cssNode: any, options?: Options) => {
   const environment = createEnvironment(babel, path);
 
   const hasImportedVariables = styles.some(
-    rule => rule.importedVariables.length !== 0
+    rule =>
+      rule.type === StyleType.Tuples && rule.importedVariables.length !== 0
   );
 
   let customPropertiesVariable: any;

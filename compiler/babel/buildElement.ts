@@ -1,4 +1,5 @@
 import extractRules from "../css/extractRules";
+import { StyleType } from "../css/types";
 import extractCss from "./extractCss";
 import createEnvironment from "./environment";
 import styleSheet from "./styleSheet";
@@ -38,7 +39,9 @@ export default (
   const environment = createEnvironment(babel, path);
 
   const hasImportedVariables =
-    styles.some(x => x.importedVariables.length !== 0) ||
+    styles.some(
+      x => x.type === StyleType.Tuples && x.importedVariables.length !== 0
+    ) ||
     transitions.some(x => x.importedVariables.length !== 0) ||
     animations.some(x => x.importedVariables.length !== 0) ||
     keyframes.some(x => x.importedVariables.length !== 0) ||

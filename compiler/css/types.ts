@@ -37,16 +37,25 @@ export type VariableExportDeclaration = {
   importedVariables: string[];
 };
 
-export type StyleDeclaration = {
+export enum StyleType {
+  Tuples,
+  Mixin
+}
+
+export type StyleTuplesDeclaration = {
+  type: StyleType.Tuples;
   condition: Condition | null;
   styleTuples: StyleTuple[];
   importedVariables: string[];
 };
 
 export type StyleMixinDeclaration = {
+  type: StyleType.Mixin;
   condition: Condition | null;
   substitution: string;
 };
+
+export type StyleDeclaration = StyleTuplesDeclaration | StyleMixinDeclaration;
 
 export type ComponentDefinition = {
   propTypes: PropTypes;

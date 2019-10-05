@@ -6,6 +6,7 @@
   "scripts": {
     "test": "jest",
     "prepack": "tsc",
+    "clean": "git clean -xf compiler runtime",
     "readme": "cp ./docs/index.md ./README.md; sed -i -e 's%{{ site.baseurl }}%https://jacobp100.github.io/cssta%g' ./README.md; sed -i -e 's/{% raw %}//g' ./README.md; sed -i -e 's/{% endraw %}//g' ./README.md; sed -i -e '1,5d' ./README.md; rm ./README.md-e"
   },
   "keywords": [
@@ -51,5 +52,8 @@
     "css-to-react-native": "^2.3.2",
     "postcss": "^7.0.17",
     "postcss-selector-parser": "^6.0.2"
+  },
+  "jest": {
+    "testRegex": "/__tests__/.*\\.ts$"
   }
 }

@@ -20,21 +20,27 @@ const iterateChildren = (
   iterate(root.first);
 };
 
+const nestInAmpersandSelector = (node: Node) => {
+  const prevNode = node.prev();
+  if (prevNode && prevNode.type === "rule" && prevNode.selector === "&") {
+    prevNode.append(node);
+  } else {
+    const ruleNode = postcss.rule({ selector: "&" });
+    node.before(ruleNode);
+    ruleNode.append(node);
+  }
+};
+
 const nestNode = (node: Node) => {
   switch (node.type) {
     case "decl": {
-      const prevNode = node.prev();
-      if (prevNode && prevNode.type === "rule" && prevNode.selector === "&") {
-        prevNode.append(node);
-      } else {
-        const ruleNode = postcss.rule({ selector: "&" });
-        node.before(ruleNode);
-        ruleNode.append(node);
-      }
+      nestInAmpersandSelector(node);
       break;
     }
     case "atrule": {
-      if (!keyframesRegExp.test(node.name)) {
+      if (node.name === "include") {
+        nestInAmpersandSelector(node);
+      } else if (!keyframesRegExp.test(node.name)) {
         iterateChildren(node, nestNode);
       }
       break;

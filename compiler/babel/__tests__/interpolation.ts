@@ -3,14 +3,14 @@ import generate from "@babel/generator";
 import buildElement from "../buildElement";
 
 it("Works with substititions", () => {
-  const ast = babel.parse(
-    "const Test = styled(Button)`" +
-      "  color: ${red};" +
-      "  margin: ${small};" +
-      "  top: ${small};" +
-      "  opacity: ${half};" +
-      "`;"
-  );
+  const ast = babel.parse(`
+    const Test = styled(Button)\`
+      color: \${red};
+      margin: \${small};
+      top: \${small};
+      opacity: \${half};
+    \`;
+  `);
   babel.traverse(ast, {
     TaggedTemplateExpression(path: any) {
       const { tag, quasi: body } = path.node;
@@ -37,13 +37,13 @@ it("Works with substititions", () => {
 });
 
 it("Works with substititions and simple viewport units", () => {
-  const ast = babel.parse(
-    "const Test = styled(Button)`" +
-      "  color: ${red};" +
-      "  top: 10vw;" +
-      "  opacity: ${something}" +
-      "`;"
-  );
+  const ast = babel.parse(`
+    const Test = styled(Button)\`
+      color: \${red};
+      top: 10vw;
+      opacity: \${something};
+    \`;
+  `);
   babel.traverse(ast, {
     TaggedTemplateExpression(path: any) {
       const { tag, quasi: body } = path.node;

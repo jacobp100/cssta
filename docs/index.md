@@ -165,6 +165,28 @@ const BlueOutlineView = cssta(OutlineView)`
 `;
 ```
 
+You can also define mixins—these can be used in Cssta components or as a hook in regular React components.
+
+```jsx
+const useStyles = cssta.mixin`
+  padding: 6px 12px;
+  border: 2px solid grey;
+  border-radius: 1000px;
+`;
+
+const RedOutlineView = cssta(View)`
+  @include ${useStyles};
+  background-color: red;
+`;
+
+const BlueOutlineView = () => {
+  const styles = useStyles();
+  return <View style={[styles, { backgroundColor: "blue" }]} />;
+};
+```
+
+See in the [mixins]({{ site.baseurl }}/mixins) section.
+
 ## 🖌 Overriding Styles
 
 Setting `style` on Cssta components will override those already defined by the component.

@@ -1,4 +1,5 @@
 import extractRules from "../extractRules";
+import { StyleType } from "../types";
 
 const styled = { test: String.raw };
 
@@ -10,6 +11,7 @@ it("scopes top-level declarations", () => {
   expect(rules.propTypes).toEqual({});
   expect(rules.styles).toEqual([
     {
+      type: StyleType.Tuples,
       condition: null,
       styleTuples: [["color", "red"]],
       importedVariables: []
@@ -30,6 +32,7 @@ it("scopes multiple top-level declarations into one class", () => {
   expect(rules.propTypes).toEqual({});
   expect(rules.styles).toEqual([
     {
+      type: StyleType.Tuples,
       condition: null,
       styleTuples: [["color", "red"], ["border-left-color", "green"]],
       importedVariables: []
@@ -51,6 +54,7 @@ it("scopes boolean attribute selectors", () => {
   expect(rules.propTypes).toEqual({ attribute: { type: "bool" } });
   expect(rules.styles).toEqual([
     {
+      type: StyleType.Tuples,
       condition: { selector: "&[cssta|attribute]", mediaQuery: null },
       styleTuples: [["color", "red"]],
       importedVariables: []
@@ -74,6 +78,7 @@ it("scopes string attribute selectors", () => {
   });
   expect(rules.styles).toEqual([
     {
+      type: StyleType.Tuples,
       condition: {
         selector: '&[cssta|stringAttribute="red"]',
         mediaQuery: null
@@ -131,6 +136,7 @@ it("scopes attribute selectors", () => {
             "red",
           ],
         ],
+        "type": 0,
       },
       Object {
         "condition": Object {
@@ -144,6 +150,7 @@ it("scopes attribute selectors", () => {
             "green",
           ],
         ],
+        "type": 0,
       },
       Object {
         "condition": Object {
@@ -157,6 +164,7 @@ it("scopes attribute selectors", () => {
             "red",
           ],
         ],
+        "type": 0,
       },
       Object {
         "condition": Object {
@@ -170,6 +178,7 @@ it("scopes attribute selectors", () => {
             "green",
           ],
         ],
+        "type": 0,
       },
       Object {
         "condition": Object {
@@ -183,6 +192,7 @@ it("scopes attribute selectors", () => {
             "blue",
           ],
         ],
+        "type": 0,
       },
     ]
   `);
@@ -215,6 +225,7 @@ it("recognises variable imports", () => {
   expect(rules.propTypes).toEqual({});
   expect(rules.styles).toEqual([
     {
+      type: StyleType.Tuples,
       condition: null,
       styleTuples: [["color", "var(--color)"]],
       importedVariables: ["color"]
@@ -253,6 +264,7 @@ it("recognises multiple variable imports", () => {
   expect(rules.propTypes).toEqual({});
   expect(rules.styles).toEqual([
     {
+      type: StyleType.Tuples,
       condition: null,
       styleTuples: [["margin", "var(--large) var(--small)"]],
       importedVariables: ["large", "small"]
@@ -273,6 +285,7 @@ it("mixes variable and style declarations", () => {
   expect(rules.propTypes).toEqual({});
   expect(rules.styles).toEqual([
     {
+      type: StyleType.Tuples,
       condition: null,
       styleTuples: [["color", "var(--color)"]],
       importedVariables: ["color"]
@@ -558,6 +571,7 @@ it("recognises media queries for top-level declarations", () => {
   expect(rules.propTypes).toEqual({});
   expect(rules.styles).toEqual([
     {
+      type: StyleType.Tuples,
       condition: { selector: "&", mediaQuery: "(min-width: 500px)" },
       styleTuples: [["color", "red"]],
       importedVariables: []
@@ -581,6 +595,7 @@ it("recognises media queries for nested rules", () => {
   expect(rules.propTypes).toEqual({ prop: { type: "bool" } });
   expect(rules.styles).toEqual([
     {
+      type: StyleType.Tuples,
       condition: {
         selector: "&[cssta|prop]",
         mediaQuery: "(min-width: 500px)"
@@ -692,6 +707,7 @@ it("combines all options together", () => {
               "red",
             ],
           ],
+          "type": 0,
         },
         Object {
           "condition": Object {
@@ -705,6 +721,7 @@ it("combines all options together", () => {
               "green",
             ],
           ],
+          "type": 0,
         },
       ],
       "transitions": Array [
@@ -721,4 +738,126 @@ it("combines all options together", () => {
       ],
     }
   `);
+});
+
+it("handles mixins", () => {
+  const css = styled.test`
+    @include someMixin;
+  `;
+  const rules = extractRules(css);
+  expect(rules.propTypes).toEqual({});
+  expect(rules.styles).toEqual([
+    {
+      type: StyleType.Mixin,
+      condition: null,
+      substitution: "someMixin"
+    }
+  ]);
+  expect(rules.transitions).toEqual([]);
+  expect(rules.animations).toEqual([]);
+  expect(rules.keyframes).toEqual([]);
+  expect(rules.exportedVariables).toEqual([]);
+});
+
+it("handles conditional mixins", () => {
+  const css = styled.test`
+    &[@cond] {
+      @include someMixin;
+    }
+  `;
+  const rules = extractRules(css);
+  expect(rules.propTypes).toEqual({ cond: { type: "bool" } });
+  expect(rules.styles).toEqual([
+    {
+      type: StyleType.Mixin,
+      condition: { selector: "&[cssta|cond]", mediaQuery: null },
+      substitution: "someMixin"
+    }
+  ]);
+  expect(rules.transitions).toEqual([]);
+  expect(rules.animations).toEqual([]);
+  expect(rules.keyframes).toEqual([]);
+  expect(rules.exportedVariables).toEqual([]);
+});
+
+it("handles mixins in media queries", () => {
+  const css = styled.test`
+    @media (min-width: 500px) {
+      @include someMixin;
+    }
+  `;
+  const rules = extractRules(css);
+  expect(rules.propTypes).toEqual({});
+  expect(rules.styles).toEqual([
+    {
+      type: StyleType.Mixin,
+      condition: { selector: "&", mediaQuery: "(min-width: 500px)" },
+      substitution: "someMixin"
+    }
+  ]);
+  expect(rules.transitions).toEqual([]);
+  expect(rules.animations).toEqual([]);
+  expect(rules.keyframes).toEqual([]);
+  expect(rules.exportedVariables).toEqual([]);
+});
+
+it("handles conditional mixins in media queries", () => {
+  const css = styled.test`
+    @media (min-width: 500px) {
+      &[@cond] {
+        @include someMixin;
+      }
+    }
+  `;
+  const rules = extractRules(css);
+  expect(rules.propTypes).toEqual({ cond: { type: "bool" } });
+  expect(rules.styles).toEqual([
+    {
+      type: StyleType.Mixin,
+      condition: {
+        selector: "&[cssta|cond]",
+        mediaQuery: "(min-width: 500px)"
+      },
+      substitution: "someMixin"
+    }
+  ]);
+  expect(rules.transitions).toEqual([]);
+  expect(rules.animations).toEqual([]);
+  expect(rules.keyframes).toEqual([]);
+  expect(rules.exportedVariables).toEqual([]);
+});
+
+it("handles mixins within style tuples", () => {
+  const css = styled.test`
+    top: 10px;
+    right: 10px;
+    @include someMixin;
+    bottom: 10px;
+    left: var(--left);
+  `;
+  const rules = extractRules(css);
+  expect(rules.propTypes).toEqual({});
+  expect(rules.styles).toEqual([
+    {
+      type: StyleType.Tuples,
+      condition: null,
+      styleTuples: [["top", "10px"], ["right", "10px"]],
+      importedVariables: []
+    },
+    {
+      type: StyleType.Mixin,
+      condition: null,
+      substitution: "someMixin"
+    },
+    {
+      type: StyleType.Tuples,
+      condition: null,
+      styleTuples: [["bottom", "10px"], ["left", "var(--left)"]],
+      importedVariables: ["left"]
+    }
+  ]);
+  expect(rules.transitions).toEqual([]);
+  expect(rules.animations).toEqual([]);
+  expect(rules.keyframes).toEqual([]);
+  expect(rules.exportedVariables).toEqual([]);
 });

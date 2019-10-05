@@ -45,6 +45,19 @@ it("nests top-level declarations", () => {
   );
 });
 
+it("nests top-level mixins", () => {
+  runTestFor(
+    styled.test`
+      @include someMixin;
+    `,
+    styled.test`
+      & {
+        @include someMixin;
+      }
+    `
+  );
+});
+
 it("nests within @-rules", () => {
   runTestFor(
     styled.test`

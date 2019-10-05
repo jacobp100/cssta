@@ -2,7 +2,10 @@ import { StyleTuple } from "../../../runtime/cssUtil";
 import {
   StyleDeclaration,
   ComponentDefinition,
-  Condition
+  Condition,
+  StyleType,
+  StyleTuplesDeclaration,
+  StyleMixinDeclaration
 } from "../../css/types";
 import { Environment } from "../environment";
 import { SubstitutionMap } from "../extractCss";
@@ -81,13 +84,13 @@ const createVariablesStyleExpression = (
   return styleExpression;
 };
 
-const createStyle = (
+const createStyleExpression = (
   babel: any,
   path: any,
   substitutionMap: SubstitutionMap,
   environment: Environment,
   customPropertiesVariable: any,
-  rule: StyleDeclaration,
+  rule: StyleTuplesDeclaration,
   comment?: string
 ) => {
   const { types: t } = babel;
@@ -128,7 +131,8 @@ const createStyle = (
       styleTuplesWithViewportSubstitutions
     ] = interpolateViewportUnits(
       babel,
-      { substitutionMap, environment },
+      substitutionMap,
+      environment,
       styleTuples
     );
     styleExpression = styleBody(
@@ -152,7 +156,31 @@ const createStyle = (
   return styleExpression;
 };
 
-const mergeFirstStyleIntoAllRules = (styles: StyleDeclaration[]) => {
+const createMixinExpression = (
+  babel: any,
+  path: any,
+  substitutionMap: SubstitutionMap,
+  rule: StyleMixinDeclaration
+): any => {
+  const { types: t } = babel;
+  const substitution = substitutionMap[rule.substitution];
+
+  if (substitution == null) {
+    throw new Error(
+      "Mixins should use interpolation (e.g. @include ${useStyles})"
+    );
+  }
+
+  return createVariable(
+    babel,
+    path,
+    "mixinInclude",
+    t.callExpression(substitution, []),
+    { prefix0: true }
+  );
+};
+
+const mergeFirstStyleIntoAllRules = (styles: StyleTuplesDeclaration[]) => {
   const mergeeRule = styles[0];
   const stylesMerged = styles.map(rule => {
     if (rule === mergeeRule) return rule;
@@ -175,6 +203,11 @@ const mergeFirstStyleIntoAllRules = (styles: StyleDeclaration[]) => {
 const getOptimizationFlag = (styles: StyleDeclaration[]) => {
   let lastStyleKeys: string[] | null = null;
   return styles.map(rule => {
+    if (rule.type === StyleType.Mixin) {
+      lastStyleKeys = null;
+      return OptimizationFlag.None;
+    }
+
     const ownStyleKeys = rule.styleTuples.map(styleTuple => styleTuple[0]);
 
     const supersets =
@@ -203,20 +236,22 @@ export default (
   environment: Environment,
   { customPropertiesVariable }
 ): StyleSheetExpression[] => {
-  let styleSheetExpressions: any[];
-  let stylesheetOptimizationFlags: OptimizationFlag[];
-  if (styles.length === 2 && styles[0].condition == null) {
-    stylesheetOptimizationFlags = [
-      OptimizationFlag.None,
-      OptimizationFlag.SupersetsPrevious
-    ];
-    const mergedStyleTuples = mergeFirstStyleIntoAllRules(styles);
-    styleSheetExpressions = mergedStyleTuples.map((rule, i) => {
+  let styleSheetRuleExpressions: StyleSheetExpression[];
+  if (
+    styles.length === 2 &&
+    styles[0].condition == null &&
+    styles.every(style => style.type === StyleType.Tuples)
+  ) {
+    const mergedStyleTuples = mergeFirstStyleIntoAllRules(
+      styles as StyleTuplesDeclaration[]
+    );
+    styleSheetRuleExpressions = mergedStyleTuples.map((rule, i) => {
       const didMergeStyleTuples = rule !== mergedStyleTuples[i];
       const comment = didMergeStyleTuples
         ? "Some styles have been duplicated to improve performance"
         : null;
-      return createStyle(
+      const { condition } = rule;
+      const expression = createStyleExpression(
         babel,
         path,
         substitutionMap,
@@ -225,29 +260,30 @@ export default (
         rule,
         comment
       );
+      const optimizationFlag =
+        i !== 0 ? OptimizationFlag.SupersetsPrevious : OptimizationFlag.None;
+      return { condition, expression, optimizationFlag };
     });
-  } else if (styles.length > 0) {
-    stylesheetOptimizationFlags = getOptimizationFlag(styles);
-    styleSheetExpressions = styles.map(rule =>
-      createStyle(
-        babel,
-        path,
-        substitutionMap,
-        environment,
-        customPropertiesVariable,
-        rule
-      )
-    );
   } else {
-    styleSheetExpressions = [];
-    stylesheetOptimizationFlags = [];
+    const stylesheetOptimizationFlags = getOptimizationFlag(styles);
+    const styleSheetExpressions = styles.map(rule =>
+      rule.type === StyleType.Tuples
+        ? createStyleExpression(
+            babel,
+            path,
+            substitutionMap,
+            environment,
+            customPropertiesVariable,
+            rule
+          )
+        : createMixinExpression(babel, path, substitutionMap, rule)
+    );
+    styleSheetRuleExpressions = styles.map((style, i) => ({
+      condition: style.condition,
+      expression: styleSheetExpressions[i],
+      optimizationFlag: stylesheetOptimizationFlags[i]
+    }));
   }
-
-  const styleSheetRuleExpressions = styles.map((style, i) => ({
-    condition: style.condition,
-    expression: styleSheetExpressions[i],
-    optimizationFlag: stylesheetOptimizationFlags[i]
-  }));
 
   return styleSheetRuleExpressions;
 };
