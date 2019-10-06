@@ -1,12 +1,12 @@
 import resolveVariableDependencies from "../resolveVariableDependencies";
 
-it("should resolve a single variable", () => {
+it("Resolves a single variable", () => {
   const actualVariables = resolveVariableDependencies({ color: "red" }, {});
 
   expect(actualVariables).toEqual({ color: "red" });
 });
 
-it("should resolve a variable refercing a higher scope", () => {
+it("Resolves a variable refercing a higher scope", () => {
   const actualVariables = resolveVariableDependencies(
     { primary: "red" },
     { color: "var(--primary)" }
@@ -15,7 +15,7 @@ it("should resolve a variable refercing a higher scope", () => {
   expect(actualVariables).toEqual({ primary: "red", color: "red" });
 });
 
-it("should resolve a variable refercing the current scope", () => {
+it("Resolves a variable refercing the current scope", () => {
   const actualVariables = resolveVariableDependencies(
     {},
     { color: "var(--primary)", primary: "red" }
@@ -24,7 +24,7 @@ it("should resolve a variable refercing the current scope", () => {
   expect(actualVariables).toEqual({ color: "red", primary: "red" });
 });
 
-it("have the current scope override higher scopes", () => {
+it("Has the current scope override higher scopes", () => {
   const actualVariables = resolveVariableDependencies(
     { primary: "blue" },
     { color: "var(--primary)", primary: "red" }
@@ -33,7 +33,7 @@ it("have the current scope override higher scopes", () => {
   expect(actualVariables).toEqual({ color: "red", primary: "red" });
 });
 
-it("should allow defaults", () => {
+it("Allows defaults", () => {
   const actualVariables = resolveVariableDependencies(
     { color: "var(--primary, blue)" },
     {}
@@ -42,7 +42,7 @@ it("should allow defaults", () => {
   expect(actualVariables).toEqual({ color: "blue" });
 });
 
-it("should not allow circular dependencies", () => {
+it("Throws on allow circular dependencies", () => {
   expect(() => {
     resolveVariableDependencies(
       { color: "var(--primary)", primary: "var(--color)" },

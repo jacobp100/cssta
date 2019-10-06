@@ -22,7 +22,7 @@ export type Transition = Array<{
 
 export type Keyframe = {
   time: number;
-  style: any;
+  style: Record<string, any>;
 };
 
 export type Keyframes = Record<string, Keyframe[]>;

@@ -3,7 +3,7 @@ import { StyleType } from "../types";
 
 const styled = { test: String.raw };
 
-it("scopes top-level declarations", () => {
+it("Scopes top-level declarations", () => {
   const css = styled.test`
     color: red;
   `;
@@ -23,7 +23,7 @@ it("scopes top-level declarations", () => {
   expect(rules.exportedVariables).toEqual([]);
 });
 
-it("scopes multiple top-level declarations into one class", () => {
+it("Scopes multiple top-level declarations into one class", () => {
   const css = styled.test`
     color: red;
     border-left-color: green;
@@ -44,7 +44,7 @@ it("scopes multiple top-level declarations into one class", () => {
   expect(rules.exportedVariables).toEqual([]);
 });
 
-it("scopes boolean attribute selectors", () => {
+it("Scopes boolean attribute selectors", () => {
   const css = styled.test`
     &[@attribute] {
       color: red;
@@ -66,7 +66,7 @@ it("scopes boolean attribute selectors", () => {
   expect(rules.exportedVariables).toEqual([]);
 });
 
-it("scopes string attribute selectors", () => {
+it("Scopes string attribute selectors", () => {
   const css = styled.test`
     &[@stringAttribute="red"] {
       color: red;
@@ -93,7 +93,7 @@ it("scopes string attribute selectors", () => {
   expect(rules.exportedVariables).toEqual([]);
 });
 
-it("scopes attribute selectors", () => {
+it("Scopes attribute selectors", () => {
   const css = styled.test`
     &[@booleanValue1] {
       color: red;
@@ -202,7 +202,7 @@ it("scopes attribute selectors", () => {
   expect(rules.exportedVariables).toEqual([]);
 });
 
-it("recognises variable declarations", () => {
+it("Recognises variable declarations", () => {
   const css = styled.test`
     --color: red;
   `;
@@ -217,7 +217,7 @@ it("recognises variable declarations", () => {
   ]);
 });
 
-it("recognises variable imports", () => {
+it("Recognises variable imports", () => {
   const css = styled.test`
     color: var(--color);
   `;
@@ -237,7 +237,7 @@ it("recognises variable imports", () => {
   expect(rules.exportedVariables).toEqual([]);
 });
 
-it("recognises multiple variable declarations", () => {
+it("Recognises multiple variable declarations", () => {
   const css = styled.test`
     --color: red;
     --color: blue;
@@ -256,7 +256,7 @@ it("recognises multiple variable declarations", () => {
   ]);
 });
 
-it("recognises multiple variable imports", () => {
+it("Recognises multiple variable imports", () => {
   const css = styled.test`
     margin: var(--large) var(--small);
   `;
@@ -276,7 +276,7 @@ it("recognises multiple variable imports", () => {
   expect(rules.exportedVariables).toEqual([]);
 });
 
-it("mixes variable and style declarations", () => {
+it("Mixes variable and style declarations", () => {
   const css = styled.test`
     --color: red;
     color: var(--color);
@@ -299,7 +299,7 @@ it("mixes variable and style declarations", () => {
   ]);
 });
 
-it("recognises transitions", () => {
+it("Recognises transitions", () => {
   const css = styled.test`
     transition: color 1s linear;
   `;
@@ -314,7 +314,7 @@ it("recognises transitions", () => {
   expect(rules.exportedVariables).toEqual([]);
 });
 
-it("recognises transitions using long hand", () => {
+it("Recognises transitions using long hand", () => {
   const css = styled.test`
     transition-property: color;
     transition-delay: 1s;
@@ -341,7 +341,7 @@ it("recognises transitions using long hand", () => {
   expect(rules.exportedVariables).toEqual([]);
 });
 
-it("recognises multiple separate transitions", () => {
+it("Recognises multiple separate transitions", () => {
   const css = styled.test`
     transition: color 1s linear, transform 2s ease-in-out;
   `;
@@ -360,7 +360,7 @@ it("recognises multiple separate transitions", () => {
   expect(rules.exportedVariables).toEqual([]);
 });
 
-it("recognises multiple property transitions", () => {
+it("Recognises multiple property transitions", () => {
   const css = styled.test`
     transition: 1s linear;
     transition-property: color, transform;
@@ -380,7 +380,7 @@ it("recognises multiple property transitions", () => {
   expect(rules.exportedVariables).toEqual([]);
 });
 
-it("overrides previous transition declarations when using shorthand", () => {
+it("Overrides previous transition declarations when using shorthand", () => {
   const css = styled.test`
     transition-property: color, transform;
     transition-duration: 2s;
@@ -401,7 +401,7 @@ it("overrides previous transition declarations when using shorthand", () => {
   expect(rules.exportedVariables).toEqual([]);
 });
 
-it("recognises multiple allows variables in transitions", () => {
+it("Recognises multiple allows variables in transitions", () => {
   const css = styled.test`
     transition: color var(--time) var(--easing);
   `;
@@ -420,7 +420,7 @@ it("recognises multiple allows variables in transitions", () => {
   expect(rules.exportedVariables).toEqual([]);
 });
 
-it("recognises animations", () => {
+it("Recognises animations", () => {
   const css = styled.test`
     animation: test 1s linear;
   `;
@@ -439,7 +439,7 @@ it("recognises animations", () => {
   expect(rules.exportedVariables).toEqual([]);
 });
 
-it("recognises animation long hands", () => {
+it("Recognises animation long hands", () => {
   const css = styled.test`
     animation-name: test;
     animation-duration: 1s;
@@ -468,7 +468,7 @@ it("recognises animation long hands", () => {
   expect(rules.exportedVariables).toEqual([]);
 });
 
-it("overrides previous animation declarations when using shorthand", () => {
+it("Overrides previous animation declarations when using shorthand", () => {
   const css = styled.test`
     animation-delay: 2s;
     animation-iteration-count: 3;
@@ -490,7 +490,7 @@ it("overrides previous animation declarations when using shorthand", () => {
   expect(rules.exportedVariables).toEqual([]);
 });
 
-it("recognises keyframes", () => {
+it("Recognises keyframes", () => {
   const { keyframes } = extractRules(`
     @keyframes test {
       from { opacity: 0 }
@@ -510,7 +510,7 @@ it("recognises keyframes", () => {
   ]);
 });
 
-it("recognises multiple keyframes", () => {
+it("Recognises multiple keyframes", () => {
   const { keyframes } = extractRules(`
     @keyframes test1 {
       from { opacity: 0 }
@@ -545,7 +545,7 @@ it("recognises multiple keyframes", () => {
   ]);
 });
 
-it("imports variables from keyframes", () => {
+it("Imports variables from keyframes", () => {
   const { keyframes } = extractRules(`
     @keyframes test {
       from { color: var(--primary) }
@@ -561,7 +561,7 @@ it("imports variables from keyframes", () => {
   expect(keyframes[0].importedVariables).toEqual(["primary"]);
 });
 
-it("recognises media queries for top-level declarations", () => {
+it("Recognises media queries for top-level declarations", () => {
   const css = styled.test`
     @media (min-width: 500px) {
       color: red;
@@ -583,7 +583,7 @@ it("recognises media queries for top-level declarations", () => {
   expect(rules.exportedVariables).toEqual([]);
 });
 
-it("recognises media queries for nested rules", () => {
+it("Recognises media queries for nested rules", () => {
   const css = styled.test`
     @media (min-width: 500px) {
       &[@prop] {
@@ -610,7 +610,7 @@ it("recognises media queries for nested rules", () => {
   expect(rules.exportedVariables).toEqual([]);
 });
 
-it("combines all options together", () => {
+it("Combines all options together", () => {
   const css = styled.test`
     color: red;
 
@@ -740,7 +740,7 @@ it("combines all options together", () => {
   `);
 });
 
-it("handles mixins", () => {
+it("Handles mixins", () => {
   const css = styled.test`
     @include someMixin;
   `;
@@ -759,7 +759,7 @@ it("handles mixins", () => {
   expect(rules.exportedVariables).toEqual([]);
 });
 
-it("handles conditional mixins", () => {
+it("Handles conditional mixins", () => {
   const css = styled.test`
     &[@cond] {
       @include someMixin;
@@ -780,7 +780,7 @@ it("handles conditional mixins", () => {
   expect(rules.exportedVariables).toEqual([]);
 });
 
-it("handles mixins in media queries", () => {
+it("Handles mixins in media queries", () => {
   const css = styled.test`
     @media (min-width: 500px) {
       @include someMixin;
@@ -801,7 +801,7 @@ it("handles mixins in media queries", () => {
   expect(rules.exportedVariables).toEqual([]);
 });
 
-it("handles conditional mixins in media queries", () => {
+it("Handles conditional mixins in media queries", () => {
   const css = styled.test`
     @media (min-width: 500px) {
       &[@cond] {
@@ -827,7 +827,7 @@ it("handles conditional mixins in media queries", () => {
   expect(rules.exportedVariables).toEqual([]);
 });
 
-it("handles mixins within style tuples", () => {
+it("Handles mixins within style tuples", () => {
   const css = styled.test`
     top: 10px;
     right: 10px;

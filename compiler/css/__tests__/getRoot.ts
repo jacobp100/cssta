@@ -32,7 +32,7 @@ const shouldThrow = (inputCss: string) => {
   expect(() => getRoot(inputCss)).toThrow();
 };
 
-it("nests top-level declarations", () => {
+it("Nests top-level declarations", () => {
   runTestFor(
     styled.test`
       color: red;
@@ -45,7 +45,7 @@ it("nests top-level declarations", () => {
   );
 });
 
-it("nests top-level mixins", () => {
+it("Nests top-level mixins", () => {
   runTestFor(
     styled.test`
       @include someMixin;
@@ -58,7 +58,7 @@ it("nests top-level mixins", () => {
   );
 });
 
-it("nests within @-rules", () => {
+it("Nests within @-rules", () => {
   runTestFor(
     styled.test`
       @supports (color: red) {
@@ -85,7 +85,7 @@ it("nests within @-rules", () => {
   );
 });
 
-it("does not re-nest nested rules", () => {
+it("Does not re-nest nested rules", () => {
   runTestFor(styled.test`
     & {
       color: red;
@@ -93,7 +93,7 @@ it("does not re-nest nested rules", () => {
   `);
 });
 
-it("requires nesting", () => {
+it("Requires nesting", () => {
   expect(() => {
     getRoot(":hover {}");
   }).toThrow();
@@ -102,7 +102,7 @@ it("requires nesting", () => {
   }).toThrow();
 });
 
-it("generates prop type for bool attributes", () => {
+it("Generates prop type for bool attributes", () => {
   runTestFor(
     styled.test`
       &[@attribute] {
@@ -114,7 +114,7 @@ it("generates prop type for bool attributes", () => {
   );
 });
 
-it("generates prop type for string attributes", () => {
+it("Generates prop type for string attributes", () => {
   runTestFor(
     styled.test`
       &[@attribute="1"] {
@@ -130,7 +130,7 @@ it("generates prop type for string attributes", () => {
   );
 });
 
-it("generates multile prop types for multiple attributes", () => {
+it("Generates multile prop types for multiple attributes", () => {
   runTestFor(
     styled.test`
       &[@boolAttribute] {
@@ -153,7 +153,7 @@ it("generates multile prop types for multiple attributes", () => {
   );
 });
 
-it("only defines values for string attribute once", () => {
+it("Only defines values for string attribute once", () => {
   runTestFor(
     styled.test`
       &[@attribute="1"] {
@@ -169,7 +169,7 @@ it("only defines values for string attribute once", () => {
   );
 });
 
-it("does not nest declarations within keyframes", () => {
+it("Does not nest declarations within keyframes", () => {
   runTestFor(styled.test`
     @keyframes test {
       color: red;
@@ -177,7 +177,7 @@ it("does not nest declarations within keyframes", () => {
   `);
 });
 
-it("does not nest nested rules", () => {
+it("Does not nest nested rules", () => {
   runTestFor(styled.test`
     & {
       color: red;
@@ -185,7 +185,7 @@ it("does not nest nested rules", () => {
   `);
 });
 
-it("optionally allows combinators scoping with &", () => {
+it("Optionally allows combinators scoping with &", () => {
   runTestFor(
     styled.test`
       :fullscreen & {
@@ -198,7 +198,7 @@ it("optionally allows combinators scoping with &", () => {
   );
 });
 
-it("optionally allows combinators scoping with prop selectors", () => {
+it("Optionally allows combinators scoping with prop selectors", () => {
   runTestFor(
     styled.test`
       :fullscreen &[@attribute] {
@@ -211,7 +211,7 @@ it("optionally allows combinators scoping with prop selectors", () => {
   );
 });
 
-it("when allowing combinators, prop selectors must be tied to an &", () => {
+it("When allowing combinators, prop selectors must be tied to an &", () => {
   expect(() => {
     getRoot(
       styled.test`
@@ -230,7 +230,7 @@ it("when allowing combinators, prop selectors must be tied to an &", () => {
   }).toThrow();
 });
 
-it("does not allow combinators by default", () => {
+it("Does not allow combinators by default", () => {
   shouldThrow(styled.test`
     & & {
       color: red;
@@ -238,7 +238,7 @@ it("does not allow combinators by default", () => {
   `);
 });
 
-it("does not allow combinators after scoping with &", () => {
+it("Does not allow combinators after scoping with &", () => {
   shouldThrow(styled.test`
     & :fullscreen {
       color: red;
@@ -246,7 +246,7 @@ it("does not allow combinators after scoping with &", () => {
   `);
 });
 
-it("does not allow combinators after scoping with prop selectors", () => {
+it("Does not allow combinators after scoping with prop selectors", () => {
   shouldThrow(styled.test`
     &[@attribute] :fullscreen {
       color: red;
@@ -254,7 +254,7 @@ it("does not allow combinators after scoping with prop selectors", () => {
   `);
 });
 
-it("does not allow case-insensitive attributes", () => {
+it("Does not allow case-insensitive attributes", () => {
   shouldThrow(styled.test`
     &[@attribute="value" i] {
       color: red;
@@ -262,7 +262,7 @@ it("does not allow case-insensitive attributes", () => {
   `);
 });
 
-it("only allows = as operator in attribute", () => {
+it("Only allows = as operator in attribute", () => {
   shouldThrow(styled.test`
     &[@attribute~="value"] {
       color: red;
@@ -278,7 +278,7 @@ it('does not allow attributes to be called "component"', () => {
   `);
 });
 
-it("enforces consistent prop types", () => {
+it("Enforces consistent prop types", () => {
   shouldThrow(styled.test`
     &[@mixedAttribute] {
       color: red;

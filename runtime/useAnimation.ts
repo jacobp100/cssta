@@ -31,9 +31,11 @@ const noAnimations: AnimationState = {
 
 const getAnimationState = (
   keyframes: Keyframes,
-  animation: Animation,
+  animation: Animation | null | undefined,
   style: Style
 ): AnimationState => {
+  if (animation == null) return noAnimations;
+
   const { delay, duration, iterations, name, timingFunction } = animation;
   const currentStyles = StyleSheet.flatten(style);
 
@@ -134,7 +136,11 @@ const animate = ({
   */
 };
 
-export default (keyframes: Keyframes, animation: Animation, style: any) => {
+export default (
+  keyframes: Keyframes,
+  animation: Animation | null | undefined,
+  style: any
+) => {
   const state = getAnimationState(keyframes, animation, style);
 
   const { animations, name } = state;
