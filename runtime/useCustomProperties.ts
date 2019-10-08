@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useMemo } from "react";
 import VariablesContext from "./VariablesContext";
 import resolveVariableDependencies from "./resolveVariableDependencies";
 import { Variables } from "./VariablesContext";
@@ -8,11 +8,13 @@ export default (
   // bloom?: number
 ): Variables => {
   // let scope = React.useContext(VariablesContext, bloom);
-  let scope = useContext(VariablesContext);
+  const inputScope = useContext(VariablesContext);
 
-  if (exportedCustomProperties != null) {
-    scope = resolveVariableDependencies(scope, exportedCustomProperties);
-  }
+  const outputScope = useMemo(() => {
+    return exportedCustomProperties != null
+      ? resolveVariableDependencies(inputScope, exportedCustomProperties)
+      : inputScope;
+  }, [inputScope, exportedCustomProperties]);
 
-  return scope;
+  return outputScope;
 };

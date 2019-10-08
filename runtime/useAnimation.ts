@@ -66,7 +66,7 @@ const getAnimationState = (
     );
 
     const inputRange = keyframes.map(frame => frame.time);
-    const outputRange: OutputRange[] = keyframes.map(frame => frame.value);
+    const outputRange: OutputRange = keyframes.map(frame => frame.value);
     const animation = animationValues[animationProperty];
     animations[animationProperty] = interpolateValue(
       inputRange,

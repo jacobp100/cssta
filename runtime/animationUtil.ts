@@ -1,14 +1,14 @@
 import { Easing, EasingFunction } from "react-native";
 import { TimingFunction } from "./AnimationTypes";
 
-type TransformIterpolation = Array<{ [key: string]: string | number }>;
-export type Interpolation = number | string | TransformIterpolation;
+type TransformInterpolation = Array<{ [key: string]: string | number }>;
+export type Interpolation = number | string | TransformInterpolation;
 export type OutputRange = Interpolation[];
 export type InterpolatedValue = Object | Object[];
 
 export const interpolateValue = (
   inputRange: number[],
-  outputRange: OutputRange[],
+  outputRange: OutputRange,
   animation: any,
   interpolateNumbers: boolean = false
 ): InterpolatedValue => {
@@ -24,7 +24,9 @@ export const interpolateValue = (
     const currentProperties = String(firstValue.map(Object.keys));
     // Not the *best* practise here...
     const transformsAreConsistent = outputRange.every(range => {
-      const rangeProperties = String(range.map(Object.keys));
+      const rangeProperties = String(
+        (range as TransformInterpolation).map(Object.keys)
+      );
       return currentProperties === rangeProperties;
     });
 
@@ -38,9 +40,10 @@ export const interpolateValue = (
 
   return firstValue.map((transform, index) => {
     const transformProperty = Object.keys(transform)[0];
-    const innerOutputRange = outputRange.map(
-      range => range[index][transformProperty]
-    );
+    const innerOutputRange = outputRange.map(range => {
+      const rangeValue = range[index];
+      return rangeValue != null ? rangeValue[transformProperty] : null;
+    });
 
     // We *have* to interpolate even numeric values, as we will always animate between 0--1
     const interpolation = animation.interpolate({
