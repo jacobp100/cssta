@@ -4,6 +4,8 @@ module.exports = {
     node: true
   },
   extends: "eslint:recommended",
+  parser: "@typescript-eslint/parser",
+  plugins: ["@typescript-eslint"],
   globals: {
     Atomics: "readonly",
     SharedArrayBuffer: "readonly"

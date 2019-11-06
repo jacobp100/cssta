@@ -1,5 +1,6 @@
 import { getPropertyName } from "css-to-react-native";
 import { transformStyleTuples, StyleTuple } from "../../../runtime/cssUtil";
+import { SubstitutionMap } from "../extractCss";
 import { jsonToNode, getOrCreateImport } from "../util";
 import {
   getSubstitutionRegExp,
@@ -8,7 +9,7 @@ import {
 } from "./substitutionUtil";
 import unitTypes from "./simpleUnitTypes";
 import substituteSimpleUnit from "./substituteSimpleUnit";
-import { SubstitutionMap } from "../extractCss";
+import { calcRe } from "./util";
 
 enum InterpolationType {
   NoOrSimple,
@@ -26,7 +27,7 @@ const getInterpolationType = (
 ) => {
   if (!containsSubstitution(substitutionMap, value)) {
     return InterpolationType.NoOrSimple;
-  } else if (getPropertyName(prop) in unitTypes) {
+  } else if (getPropertyName(prop) in unitTypes && !calcRe.test(value)) {
     return InterpolationType.NoOrSimple;
   }
   return InterpolationType.Template;

@@ -38,6 +38,7 @@ const createVariablesStyleExpression = (
   const baseUnresolvedStyleTuplesVariable = createTopLevelStyleTuplesVariable(
     babel,
     path,
+    substitutionMap,
     styleTuples
   );
 
@@ -111,6 +112,7 @@ const createStyleExpression = (
     const unresolvedStyleTuplesVariable = createTopLevelStyleTuplesVariable(
       babel,
       path,
+      substitutionMap,
       styleTuples
     );
     const cssToReactNativeImport = getOrCreateImport(

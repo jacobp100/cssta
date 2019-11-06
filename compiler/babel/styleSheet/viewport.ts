@@ -5,6 +5,7 @@ import { StyleTuplesDeclaration } from "../../css/types";
 import { SubstitutionMap } from "../extractCss";
 import { Environment } from "../environment";
 import unitTypes, { UnitType } from "./simpleUnitTypes";
+import { calcRe } from "./util";
 
 export enum ViewportMode {
   None = 0,
@@ -18,7 +19,10 @@ export const getViewportMode = (rule: StyleTuplesDeclaration): ViewportMode =>
       ([prop, value]): ViewportMode => {
         if (!viewportUnitRegExp.test(value)) {
           return ViewportMode.None;
-        } else if (unitTypes[getPropertyName(prop)] === UnitType.Length) {
+        } else if (
+          unitTypes[getPropertyName(prop)] === UnitType.Length &&
+          !calcRe.test(value)
+        ) {
           return ViewportMode.SimpleLengthUnits;
         } else {
           return ViewportMode.ComplexUnits;

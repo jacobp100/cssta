@@ -1,6 +1,7 @@
 import cssToReactNative, { transformRawValue } from "css-to-react-native";
 import transformVariables from "./css-transforms/variables";
 import transformColors from "./css-transforms/colors";
+import transformCalc from "./css-transforms/calc";
 import { Variables } from "./VariablesContext";
 // Viewport (hopefully) already transformed
 
@@ -19,6 +20,7 @@ export const transformStyleTuples = (
       transformedValue = transformVariables(transformedValue, appliedVariables);
     }
     transformedValue = transformColors(transformedValue);
+    transformedValue = transformCalc(transformedValue);
     return [property, transformedValue];
   });
   return cssToReactNative(transformedStyleTuples);

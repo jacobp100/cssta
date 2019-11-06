@@ -144,3 +144,21 @@ it("Supports viewport units in shorthands", () => {
     });"
   `);
 });
+
+it("Supports simple viewport units with calc", () => {
+  const css = styled.test`
+    width: calc(10vw - 100px);
+  `;
+
+  const code = build(css);
+  expect(code).toMatchInlineSnapshot(`
+    "import React from 'react';
+    import useViewportStyle from 'cssta/runtime/useViewportStyle';
+    const unresolvedStyleTuples0 = [['width', 'calc(10vw - 100px)']];
+    const Example = React.forwardRef((props, ref) => {
+      const styles0 = useViewportStyle(unresolvedStyleTuples0);
+      const style = props.style != null ? [styles0, props.style] : styles0;
+      return <Element {...props} ref={ref} style={style} />;
+    });"
+  `);
+});
