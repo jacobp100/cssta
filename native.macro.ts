@@ -1,6 +1,6 @@
-const { createMacro } = require("babel-plugin-macros");
-const { default: buildElement } = require("./compiler/babel/buildElement");
-const { default: buildMixin } = require("./compiler/babel/buildMixin");
+import { createMacro } from "babel-plugin-macros";
+import buildElement from "./compiler/babel/buildElement";
+import buildMixin from "./compiler/babel/buildMixin";
 
 module.exports = createMacro(({ babel, references, config }) => {
   const { types: t } = babel;

@@ -2,6 +2,12 @@
   "compilerOptions": {
     "lib": ["es2018"],
     "esModuleInterop": true,
-    "jsx": "react-native"
-  }
+    "jsx": "react-native",
+    "declaration": true,
+    "sourceMap": true
+  },
+  "exclude": [
+    "**/__tests__",
+    "**/__mocks__"
+  ]
 }

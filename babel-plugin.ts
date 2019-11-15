@@ -1,5 +1,5 @@
-const { default: buildElement } = require("./compiler/babel/buildElement");
-const { default: buildMixin } = require("./compiler/babel/buildMixin");
+import buildElement from "./compiler/babel/buildElement";
+import buildMixin from "./compiler/babel/buildMixin";
 
 const csstaModules = {
   "cssta/native": "native"

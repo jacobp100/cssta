@@ -12,6 +12,7 @@ coverage
 
 # production
 build
+*.map
 
 # misc
 .DS_Store
@@ -71,3 +72,6 @@ compiler/**/*.js
 compiler/**/*.d.ts
 runtime/**/*.js
 runtime/**/*.d.ts
+/*.d.ts
+/babel-plugin.js
+/native.macro.js
