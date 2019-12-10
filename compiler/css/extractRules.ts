@@ -4,6 +4,7 @@ import { TransitionPart, AnimationPart } from "../../runtime/animationTypes";
 import { StyleTuple } from "../../runtime/cssUtil";
 import { varRegExp, varRegExpNonGlobal } from "../../runtime/cssRegExp";
 import getRoot from "./getRoot";
+import applyGlobals from "./applyGlobals";
 import { isDirectChildOfKeyframes } from "./util";
 import {
   Condition,
@@ -147,6 +148,7 @@ const getStyleTuplesMixinsForRule = (rule: Rule): StyleDeclaration[] => {
           groups.push(currentStyleTuples);
         }
         currentStyleTuples.styleTuples.push([prop, value]);
+        break;
       }
       case "atrule": {
         if ((node as AtRule).name !== "include") {
@@ -211,8 +213,9 @@ const getKeyframes = (atRule: AtRule): KeyframesDeclaration => {
   return { name, sequence, importedVariables };
 };
 
-export default (inputCss: string): ComponentDefinition => {
+export default (inputCss: string, globals?: any): ComponentDefinition => {
   const { root, propTypes } = getRoot(inputCss);
+  if (globals != null) applyGlobals(root, globals);
 
   const declarationRules = walkToArray<Rule>(cb => root.walkRules(cb)).filter(
     rule => !isDirectChildOfKeyframes(rule)

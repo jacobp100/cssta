@@ -1,7 +1,7 @@
 import * as babel from "@babel/core";
 import generate from "@babel/generator";
 import buildElement from "../buildElement";
-import { Options } from "../options";
+import { Options } from "../../options";
 
 const { types: t } = babel;
 

@@ -1,5 +1,5 @@
 import { StyleTuple } from "../../../runtime/cssUtil";
-import { SubstitutionMap } from "../extractCss";
+import { SubstitutionMap } from "../extractSubstitutionMap";
 import { createTopLevelVariable } from "../util";
 import { getStringWithSubstitutedValues } from "./substitutionUtil";
 

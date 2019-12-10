@@ -276,3 +276,35 @@ it("Does not fail failing build on missing global with globalVarsOnly if there i
     });"
   `);
 });
+
+it("Supports global variables with media queries", () => {
+  const css = styled.test`
+    color: var(--primary);
+  `;
+
+  const code = build(css, {
+    globals: `
+      --primary: red;
+
+      @media (prefers-color-scheme: dark) {
+        --primary: pink;
+      }
+    `
+  });
+  expect(code).toMatchInlineSnapshot(`
+    "import React from 'react';
+    import { useColorScheme } from 'react-native';
+    const styles0 = {
+      color: 'red'
+    };
+    const styles1 = {
+      color: 'pink'
+    };
+    const Example = React.forwardRef((props, ref) => {
+      const colorScheme = useColorScheme();
+      const baseStyle = colorScheme === 'dark' ? styles1 : styles0;
+      const style = props.style != null ? [baseStyle, props.style] : baseStyle;
+      return <Element {...props} ref={ref} style={style} />;
+    });"
+  `);
+});

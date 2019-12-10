@@ -1,6 +1,6 @@
 import { getPropertyName } from "css-to-react-native";
 import { transformStyleTuples, StyleTuple } from "../../../runtime/cssUtil";
-import { SubstitutionMap } from "../extractCss";
+import { SubstitutionMap } from "../extractSubstitutionMap";
 import { jsonToNode, getOrCreateImport } from "../util";
 import {
   getSubstitutionRegExp,

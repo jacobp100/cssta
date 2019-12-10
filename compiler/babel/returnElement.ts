@@ -1,5 +1,5 @@
 import { getOrCreateImport } from "./util";
-import { Options } from "./options";
+import { Options } from "../options";
 
 const createBaseElement = (
   babel: any,

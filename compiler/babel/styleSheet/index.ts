@@ -8,7 +8,7 @@ import {
   StyleMixinDeclaration
 } from "../../css/types";
 import { Environment } from "../environment";
-import { SubstitutionMap } from "../extractCss";
+import { SubstitutionMap } from "../extractSubstitutionMap";
 import {
   createTopLevelVariable,
   createVariable,

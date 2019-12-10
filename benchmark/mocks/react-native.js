@@ -1,8 +1,7 @@
-// @flow
-import { createElement } from 'react';
+import { createElement } from "react";
 
 export const StyleSheet = {
-  create: () => ({}),
+  create: () => ({})
 };
 
-export const View = props => createElement('view', props);
+export const View = props => createElement("view", props);

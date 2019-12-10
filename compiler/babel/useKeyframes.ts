@@ -1,6 +1,6 @@
 import { ComponentDefinition, KeyframeOfStyleTuples } from "../css/types";
 import styleBody from "./styleSheet/styleBody";
-import { SubstitutionMap } from "./extractCss";
+import { SubstitutionMap } from "./extractSubstitutionMap";
 import { createTopLevelVariable } from "./util";
 
 const createKeyframeStatic = (

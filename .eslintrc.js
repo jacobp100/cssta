@@ -1,9 +1,14 @@
 module.exports = {
+  root: true,
   env: {
     es6: true,
     node: true
   },
-  extends: "eslint:recommended",
+  extends: [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
   parser: "@typescript-eslint/parser",
   plugins: ["@typescript-eslint"],
   globals: {
@@ -14,7 +19,10 @@ module.exports = {
     ecmaVersion: 2018,
     sourceType: "module"
   },
-  rules: {},
+  rules: {
+    "@typescript-eslint/explicit-function-return-type": [0],
+    "@typescript-eslint/no-explicit-any": [0]
+  },
   overrides: [
     {
       files: ["**/__tests__/*.js"],

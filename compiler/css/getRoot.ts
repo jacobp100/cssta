@@ -1,4 +1,3 @@
-// @flow
 /* eslint-disable no-param-reassign */
 import postcss, { Root, AtRule, Node } from "postcss";
 import selectorParser from "postcss-selector-parser";
@@ -52,7 +51,7 @@ const nestNode = (node: Node) => {
 
 export default (
   inputCss: string,
-  allowCombinators: boolean = false
+  allowCombinators = false
 ): { root: Root; propTypes: PropTypes } => {
   const transformedInput = inputCss.replace(/(\[\s*)@(\w)/g, `$1cssta|$2`);
   const root = postcss.parse(transformedInput);

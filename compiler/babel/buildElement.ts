@@ -1,6 +1,6 @@
 import extractRules from "../css/extractRules";
 import { StyleType } from "../css/types";
-import extractCss from "./extractCss";
+import extractSubstitutionMap from "./extractSubstitutionMap";
 import createEnvironment from "./environment";
 import styleSheet from "./styleSheet";
 import style from "./style";
@@ -10,7 +10,7 @@ import useKeyframes from "./useKeyframes";
 import useAnimation from "./useAnimation";
 import returnElement from "./returnElement";
 import forwardRefComponent from "./forwardRefComponent";
-import { Options } from "./options";
+import { Options } from "../options";
 
 export default (
   babel: any,
@@ -19,8 +19,8 @@ export default (
   cssNode: any,
   options?: Options
 ) => {
-  const { cssText, substitutionMap } = extractCss(cssNode, options);
-  const cssOutput = extractRules(cssText);
+  const { cssText, substitutionMap } = extractSubstitutionMap(cssNode);
+  const cssOutput = extractRules(cssText, options);
   const {
     propTypes,
     styles,

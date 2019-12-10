@@ -1,4 +1,4 @@
-import { SubstitutionMap } from "../extractCss";
+import { SubstitutionMap } from "../extractSubstitutionMap";
 
 export const getSubstitutionRegExp = (substitutionMap: SubstitutionMap) => {
   const substititionNames = Object.keys(substitutionMap);

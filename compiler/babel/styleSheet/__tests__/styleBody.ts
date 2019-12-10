@@ -2,7 +2,7 @@ import * as babel from "@babel/core";
 import generate from "@babel/generator";
 import styleBody from "../styleBody";
 import { StyleTuple } from "../../../../runtime/cssUtil";
-import { SubstitutionMap } from "../../extractCss";
+import { SubstitutionMap } from "../../extractSubstitutionMap";
 
 const { types: t } = babel;
 
@@ -83,7 +83,10 @@ it("Transforms shorthand values", () => {
 it("Combines a simple value before a shorthand value", () => {
   const code = run(
     { int1: t.identifier("opacity"), int2: t.identifier("margin") },
-    [["opacity", "int1"], ["margin", "int2"]]
+    [
+      ["opacity", "int1"],
+      ["margin", "int2"]
+    ]
   );
   expect(code).toMatchInlineSnapshot(`
     "import { transformStyleTuples } from 'cssta/runtime/cssUtil';
@@ -99,7 +102,10 @@ it("Combines a simple value before a shorthand value", () => {
 it("Combines a simple value after a shorthand value", () => {
   const code = run(
     { int1: t.identifier("margin"), int2: t.identifier("opacity") },
-    [["margin", "int2"], ["opacity", "int1"]]
+    [
+      ["margin", "int2"],
+      ["opacity", "int1"]
+    ]
   );
   expect(code).toMatchInlineSnapshot(`
     "import { transformStyleTuples } from 'cssta/runtime/cssUtil';

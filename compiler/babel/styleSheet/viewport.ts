@@ -2,7 +2,7 @@ import { getPropertyName } from "css-to-react-native";
 import { viewportUnitRegExp } from "../../../runtime/cssRegExp";
 import { StyleTuple } from "../../../runtime/cssUtil";
 import { StyleTuplesDeclaration } from "../../css/types";
-import { SubstitutionMap } from "../extractCss";
+import { SubstitutionMap } from "../extractSubstitutionMap";
 import { Environment } from "../environment";
 import unitTypes, { UnitType } from "./simpleUnitTypes";
 import { calcRe } from "./util";

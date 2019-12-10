@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
 import selectorParser, { Node } from "postcss-selector-parser";
 import { Condition } from "../css/types";
 import { Environment } from "./environment";
