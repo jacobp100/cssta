@@ -76,8 +76,6 @@ export const applyGlobals = (root: Root, globals: Globals) => {
 
     // Sorted backwards
     // We add the at rules directly after the rule, so the last needs to be added first
-    // And we also mutate the rule in place when query === undefined (i.e. index 0),
-    // so that has to happen last
     const conditionIndicies = Array.from(conditionProps.keys()).sort(
       (a, b) => b - a
     );
@@ -85,8 +83,12 @@ export const applyGlobals = (root: Root, globals: Globals) => {
     conditionIndicies.forEach(index => {
       const { query, values } = globals.conditions[index];
 
+      const ruleCopy = rule.clone();
+      let didEdit = false;
+
       const replaceVars = (value: string) =>
         value.replace(varRegExp, (fullMatch, variable, fallback) => {
+          didEdit = true;
           if (values.has(variable)) {
             return values.get(variable);
           } else if (fallback) {
@@ -100,28 +102,38 @@ export const applyGlobals = (root: Root, globals: Globals) => {
           }
         });
 
+      ruleCopy.walkDecls(decl => {
+        decl.value = replaceVars(decl.value);
+      });
+
+      if (!didEdit) return;
+
       if (query === undefined) {
-        rule.walkDecls(decl => {
-          decl.value = replaceVars(decl.value);
-        });
+        rule.replaceWith(ruleCopy);
+      } else if (rule.parent.type === "atrule") {
+        const params = rule.parent.params
+          .split(",")
+          .map(rule => `${rule} and ${query}`)
+          .join(",");
+        const atRule = postcss.atRule({ name: "media", params });
+        atRule.append(ruleCopy);
+        rule.parent.parent.insertAfter(rule.parent, atRule);
       } else {
-        const ruleCopy = postcss.rule({ selector: rule.selector });
+        /*
+        We do actually have to clone the whole rule for cases like
 
-        rule.walkDecls(decl => {
-          const value = replaceVars(decl.value);
-          if (value !== decl.value) {
-            ruleCopy.append(postcss.decl({ prop: decl.prop, value }));
-          }
-        });
+        border: 0px solid var(--color);
+        border-top: 1px;
+        border-bottom: 1px;
 
-        if (ruleCopy.nodes != null) {
-          const atRule = postcss.atRule({
-            name: "media",
-            params: query
-          });
-          atRule.append(ruleCopy);
-          rule.parent.insertAfter(rule, atRule);
-        }
+        Otherwise we'd reset the top and bottom width
+
+        It's also more performant to copy the whole style, as a later stage
+        optimises for this exact case
+        */
+        const atRule = postcss.atRule({ name: "media", params: query });
+        atRule.append(ruleCopy);
+        rule.parent.insertAfter(rule, atRule);
       }
     });
   });

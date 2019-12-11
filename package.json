@@ -5,6 +5,7 @@
   "license": "MIT",
   "scripts": {
     "test": "jest",
+    "build": "tsc",
     "prepack": "tsc",
     "clean": "git clean -xf compiler runtime",
     "readme": "cp ./docs/index.md ./README.md; sed -i -e 's%{{ site.baseurl }}%https://jacobp100.github.io/cssta%g' ./README.md; sed -i -e 's/{% raw %}//g' ./README.md; sed -i -e 's/{% endraw %}//g' ./README.md; sed -i -e '1,5d' ./README.md; rm ./README.md-e"
@@ -26,8 +27,8 @@
     "url": "https://github.com/jacobp100/cssta"
   },
   "files": [
-    "compiler",
-    "runtime",
+    "compiler/**/*.js",
+    "runtime/**/*.js",
     "native.macro.js",
     "babel-plugin.js"
   ],

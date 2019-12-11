@@ -255,9 +255,10 @@ test("Applying conditional globals", () => {
         .someRule {
           color: red;
         }
-    @media (prefers-color-scheme: dark) {.someRule {
-        color: green
-    }
+    @media (prefers-color-scheme: dark) {
+        .someRule {
+          color: green;
+        }
     }
       "
   `);
@@ -291,9 +292,84 @@ test("Applying conditional globals with other non-var decls", () => {
           color: red;
           alsoNotVar: something else;
         }
-    @media (prefers-color-scheme: dark) {.someRule {
-        color: green
+    @media (prefers-color-scheme: dark) {
+        .someRule {
+          notVar: something;
+          color: green;
+          alsoNotVar: something else;
+        }
     }
+      "
+  `);
+});
+
+test("Applying conditional globals inside media queries", () => {
+  const globals = {
+    vars: new Map([["color", new Set([0, 1])]]),
+    conditions: [
+      { query: undefined, values: new Map([["color", "red"]]) },
+      {
+        query: "(prefers-color-scheme: dark)",
+        values: new Map([["color", "green"]])
+      }
+    ],
+    globalVarsOnly: false
+  };
+
+  const root = postcss.parse(`
+    .someRule {
+      color: var(--color);
+    }
+
+    @media (platform: ios) {
+      .someRule {
+        background: var(--color);
+        color: orange;
+      }
+    }
+
+    @media (platform: ios), (platform: android) {
+      .someRule {
+        border-color: var(--color);
+      }
+    }
+  `);
+  applyGlobals(root, globals);
+  expect(root.toString()).toMatchInlineSnapshot(`
+    "
+        .someRule {
+          color: red;
+        }
+    @media (prefers-color-scheme: dark) {
+        .someRule {
+          color: green;
+        }
+    }
+
+        @media (platform: ios) {
+          .someRule {
+            background: red;
+            color: orange;
+          }
+        }
+
+        @media (platform: ios) and (prefers-color-scheme: dark) {
+          .someRule {
+            background: green;
+            color: orange;
+          }
+    }
+
+        @media (platform: ios), (platform: android) {
+          .someRule {
+            border-color: red;
+          }
+        }
+
+        @media (platform: ios) and (prefers-color-scheme: dark), (platform: android) and (prefers-color-scheme: dark) {
+          .someRule {
+            border-color: green;
+          }
     }
       "
   `);

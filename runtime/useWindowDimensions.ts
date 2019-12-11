@@ -13,7 +13,7 @@ export default (): { width: number; height: number } => {
     Dimensions.addEventListener("change", listener);
 
     return () => Dimensions.removeEventListener("change", listener);
-  }, [setDimensions]);
+  }, []);
 
   return dimensions;
 };
