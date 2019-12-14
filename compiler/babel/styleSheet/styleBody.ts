@@ -60,6 +60,8 @@ const createSimpleNoInterpolationStyleMap = (
   substitutionMap: SubstitutionMap,
   styleTuplesGroup: StyleTuple[]
 ) => {
+  const { types: t } = babel;
+
   const substitutionRegExp =
     Object.keys(substitutionMap).length !== 0
       ? getSubstitutionRegExp(substitutionMap)
@@ -82,7 +84,7 @@ const createSimpleNoInterpolationStyleMap = (
     } else if (substitutionMatches.length === 1) {
       const substitution =
         substitutionMatches[0] === value.trim()
-          ? substitutionMap[value]
+          ? t.cloneDeep(substitutionMap[value])
           : getStringWithSubstitutedValues(babel, substitutionMap, value);
 
       styleMap[propertyName] = substituteSimpleUnit(

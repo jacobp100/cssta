@@ -177,7 +177,7 @@ const createMixinExpression = (
     babel,
     path,
     "mixinInclude",
-    t.callExpression(substitution, []),
+    t.callExpression(t.cloneDeep(substitution), []),
     { prefix0: true }
   );
 };
