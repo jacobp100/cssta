@@ -25,7 +25,7 @@ const Title = cssta(Text)`
   @media (platform: ios) {
     font-family: "San Francisco";
   }
-};
+`;
 ```
 
 Just like in CSS, rules can be nested in media queries.
@@ -55,7 +55,7 @@ const Title = cssta(Text)`
   @media (platform: ios) and (min-width: 600px) {
     font-family: "San Francisco Display";
   }
-};
+`;
 ```
 
 We also support viewport units.
