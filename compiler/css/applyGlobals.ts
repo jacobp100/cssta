@@ -19,29 +19,29 @@ export const parseGlobals = (
     return { vars: new Map(), conditions: [], globalVarsOnly };
   } else if (typeof input === "object") {
     return {
-      vars: new Map(Object.keys(input).map(v => [v, new Set([0])])),
+      vars: new Map(Object.keys(input).map((v) => [v, new Set([0])])),
       conditions: [
-        { query: undefined, values: new Map(Object.entries(input)) }
+        { query: undefined, values: new Map(Object.entries(input)) },
       ],
-      globalVarsOnly
+      globalVarsOnly,
     };
   }
 
   const root = postcss.parse(input);
 
   const atRules: AtRule[] = [];
-  root.walkAtRules("media", atRule => atRules.push(atRule));
+  root.walkAtRules("media", (atRule) => atRules.push(atRule));
 
   const vars = new Map<string, Set<number>>();
   const conditions = [
     { query: undefined, values: new Map() },
-    ...atRules.map(atRule => ({
+    ...atRules.map((atRule) => ({
       query: atRule.params,
-      values: new Map()
-    }))
+      values: new Map(),
+    })),
   ];
 
-  root.walkDecls(decl => {
+  root.walkDecls((decl) => {
     const prop = decl.prop.slice("--".length);
 
     let conditionIndex = 0;
@@ -59,15 +59,15 @@ export const parseGlobals = (
 };
 
 export const applyGlobals = (root: Root, globals: Globals) => {
-  root.walkRules(rule => {
+  root.walkRules((rule) => {
     const conditionProps = new Map<number, string>();
 
-    rule.walkDecls(decl => {
+    rule.walkDecls((decl) => {
       Array.from((decl.value as any).matchAll(varRegExp)).forEach(
         (match: string[]) => {
           const conditions = globals.vars.get(match[1]);
           if (conditions == null) return;
-          conditions.forEach(cond => {
+          conditions.forEach((cond) => {
             conditionProps.set(cond, decl.prop);
           });
         }
@@ -80,7 +80,7 @@ export const applyGlobals = (root: Root, globals: Globals) => {
       (a, b) => b - a
     );
 
-    conditionIndicies.forEach(index => {
+    conditionIndicies.forEach((index) => {
       const { query, values } = globals.conditions[index];
 
       const ruleCopy = rule.clone();
@@ -102,7 +102,7 @@ export const applyGlobals = (root: Root, globals: Globals) => {
           }
         });
 
-      ruleCopy.walkDecls(decl => {
+      ruleCopy.walkDecls((decl) => {
         decl.value = replaceVars(decl.value);
       });
 
@@ -113,7 +113,7 @@ export const applyGlobals = (root: Root, globals: Globals) => {
       } else if (rule.parent.type === "atrule") {
         const params = rule.parent.params
           .split(",")
-          .map(rule => `${rule} and ${query}`)
+          .map((rule) => `${rule} and ${query}`)
           .join(",");
         const atRule = postcss.atRule({ name: "media", params });
         atRule.append(ruleCopy);

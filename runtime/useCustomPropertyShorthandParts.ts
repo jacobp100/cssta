@@ -7,9 +7,9 @@ export default (
   customProperties: Variables
 ): Record<string, string>[] => {
   return useMemo(() => {
-    return unresolvedShorthandParts.map(part => {
+    return unresolvedShorthandParts.map((part) => {
       const accum = {};
-      Object.keys(part).forEach(key => {
+      Object.keys(part).forEach((key) => {
         accum[key] = variables(part[key], customProperties);
       });
       return accum;

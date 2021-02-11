@@ -18,7 +18,7 @@ export const containsSubstitution = (
 
 const getTemplateValues = (cooked: string) => ({
   cooked,
-  raw: JSON.stringify(cooked).slice(1, -1)
+  raw: JSON.stringify(cooked).slice(1, -1),
 });
 
 export const getStringWithSubstitutedValues = (
@@ -43,7 +43,7 @@ export const getStringWithSubstitutedValues = (
       ? t.templateElement(templateValue)
       : t.templateElement(templateValue, true);
   });
-  const expressions = expressionValues.map(value =>
+  const expressions = expressionValues.map((value) =>
     t.cloneDeep(substitutionMap[value])
   );
 

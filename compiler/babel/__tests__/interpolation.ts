@@ -16,7 +16,7 @@ it("Works with substititions", () => {
       const { tag, quasi: body } = path.node;
       const element = tag.arguments[0];
       buildElement(babel, path, element, body, { jsx: true });
-    }
+    },
   });
   const { code } = generate(ast);
   expect(code).toMatchInlineSnapshot(`
@@ -49,7 +49,7 @@ it("Works with substititions and simple viewport units", () => {
       const { tag, quasi: body } = path.node;
       const element = tag.arguments[0];
       buildElement(babel, path, element, body, { jsx: true });
-    }
+    },
   });
   const { code } = generate(ast);
   expect(code).toMatchInlineSnapshot(`

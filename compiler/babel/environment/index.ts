@@ -46,6 +46,6 @@ export default (babel: any, path: any) => {
       }
 
       return t.cloneDeep(windowVariables.height);
-    }
+    },
   };
 };

@@ -27,7 +27,7 @@ export default (
     transitions,
     animations,
     keyframes,
-    exportedVariables
+    exportedVariables,
   } = cssOutput;
 
   const { path, propsVariable, refVariable } = forwardRefComponent(
@@ -40,12 +40,12 @@ export default (
 
   const hasImportedVariables =
     styles.some(
-      x => x.type === StyleType.Tuples && x.importedVariables.length !== 0
+      (x) => x.type === StyleType.Tuples && x.importedVariables.length !== 0
     ) ||
-    transitions.some(x => x.importedVariables.length !== 0) ||
-    animations.some(x => x.importedVariables.length !== 0) ||
-    keyframes.some(x => x.importedVariables.length !== 0) ||
-    exportedVariables.some(x => x.importedVariables.length !== 0);
+    transitions.some((x) => x.importedVariables.length !== 0) ||
+    animations.some((x) => x.importedVariables.length !== 0) ||
+    keyframes.some((x) => x.importedVariables.length !== 0) ||
+    exportedVariables.some((x) => x.importedVariables.length !== 0);
   const hasExportedVariables = exportedVariables.length !== 0;
 
   if (hasExportedVariables && options != null && options.globals != null) {
@@ -81,13 +81,13 @@ export default (
   const styleVariable = style(babel, path, environment, {
     propsVariable,
     styleSheetRuleExpressions,
-    willModifyStyle
+    willModifyStyle,
   });
 
   if (transitions.length !== 0) {
     useTransition(babel, path, cssOutput, environment, {
       styleVariable,
-      customPropertiesVariable
+      customPropertiesVariable,
     });
   }
 
@@ -100,7 +100,7 @@ export default (
     useAnimation(babel, path, cssOutput, environment, {
       styleVariable,
       keyframesVariable,
-      customPropertiesVariable
+      customPropertiesVariable,
     });
   }
 
@@ -109,7 +109,7 @@ export default (
     refVariable,
     styleVariable,
     hasExportedVariables,
-    customPropertiesVariable
+    customPropertiesVariable,
   });
 
   path.scope.crawl();

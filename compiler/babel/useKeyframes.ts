@@ -15,7 +15,7 @@ const createKeyframeStatic = (
     t.objectProperty(
       t.stringLiteral("style"),
       styleBody(babel, path, substitutionMap, keyframe.styleTuples)
-    )
+    ),
   ]);
 };
 
@@ -27,7 +27,7 @@ const createKeyframesStatic = (
 ) => {
   const { types: t } = babel;
   return t.arrayExpression(
-    sequence.map(keyframe =>
+    sequence.map((keyframe) =>
       createKeyframeStatic(babel, path, substitutionMap, keyframe)
     )
   );
@@ -38,7 +38,7 @@ export default (babel: any, path: any, cssOutput: ComponentDefinition) => {
   const { keyframes } = cssOutput;
 
   const keyframesImportVariables = keyframes.some(
-    keyframe => keyframe.importedVariables.length !== 0
+    (keyframe) => keyframe.importedVariables.length !== 0
   );
 
   let keyframesVariable: any;

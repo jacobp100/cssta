@@ -39,7 +39,7 @@ export type VariableExportDeclaration = {
 
 export enum StyleType {
   Tuples,
-  Mixin
+  Mixin,
 }
 
 export type StyleTuplesDeclaration = {

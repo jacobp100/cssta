@@ -20,9 +20,9 @@ const createBaseElement = (
             t.objectProperty(t.identifier("ref"), refVariable),
             styleVariable != null
               ? t.objectProperty(t.identifier("style"), styleVariable)
-              : null
+              : null,
           ].filter(Boolean)
-        )
+        ),
       ]
     );
   } else {
@@ -40,7 +40,7 @@ const createBaseElement = (
                 t.jsxIdentifier("style"),
                 t.jsxExpressionContainer(styleVariable)
               )
-            : null
+            : null,
         ].filter(Boolean),
         true
       ),
@@ -70,9 +70,9 @@ const createVariablesExporter = (
       [
         t.memberExpression(variablesContextImport, t.identifier("Provider")),
         t.objectExpression([
-          t.objectProperty(t.identifier("value"), customPropertiesVariable)
+          t.objectProperty(t.identifier("value"), customPropertiesVariable),
         ]),
-        baseElement
+        baseElement,
       ]
     );
   } else {
@@ -86,7 +86,7 @@ const createVariablesExporter = (
           t.jsxAttribute(
             t.jsxIdentifier("value"),
             t.jsxExpressionContainer(customPropertiesVariable)
-          )
+          ),
         ],
         false
       ),
@@ -106,7 +106,7 @@ export default (
     refVariable,
     styleVariable,
     hasExportedVariables,
-    customPropertiesVariable
+    customPropertiesVariable,
   }
 ) => {
   const { types: t } = babel;
@@ -115,12 +115,12 @@ export default (
     jsx,
     propsVariable,
     refVariable,
-    styleVariable
+    styleVariable,
   });
   const returned = hasExportedVariables
     ? createVariablesExporter(babel, path, baseElement, {
         jsx,
-        customPropertiesVariable
+        customPropertiesVariable,
       })
     : baseElement;
 

@@ -2,14 +2,14 @@
 import {
   ComponentDefinition,
   Condition,
-  VariableExportDeclaration
+  VariableExportDeclaration,
 } from "../css/types";
 import { Environment } from "./environment";
 import buildCondition from "./buildCondition";
 import {
   createTopLevelVariable,
   createVariable,
-  getOrCreateImport
+  getOrCreateImport,
 } from "./util";
 
 const conditionsEqual = (a: Condition | null, b: Condition | null) => {
@@ -37,7 +37,7 @@ export default (
   const { exportedVariables } = cssOutput;
 
   const groups: ExportedVariablesGroup[] = [];
-  exportedVariables.forEach(exportedVariables => {
+  exportedVariables.forEach((exportedVariables) => {
     const { condition } = exportedVariables;
 
     const lastGroup = groups[groups.length - 1];

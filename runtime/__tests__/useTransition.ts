@@ -9,8 +9,8 @@ it("Transitions when changing styles", () => {
       property: "color",
       delay: 0,
       duration: 1000,
-      timingFunction: "linear"
-    }
+      timingFunction: "linear",
+    },
   ];
 
   let transitionStyle: any;
@@ -27,8 +27,8 @@ it("Transitions when changing styles", () => {
     color: {
       options: { inputRange: [0, 1], outputRange: ["red", "red"] },
       type: "interpolate",
-      value: 0
-    }
+      value: 0,
+    },
   });
 
   instance.update(React.createElement(Test, { styles: { color: "blue" } }));
@@ -37,8 +37,8 @@ it("Transitions when changing styles", () => {
     color: {
       options: { inputRange: [0, 1], outputRange: ["red", "blue"] },
       type: "interpolate",
-      value: 0
-    }
+      value: 0,
+    },
   });
 
   instance.unmount();
@@ -50,8 +50,8 @@ it("Does not transition when style has no value", () => {
       property: "color",
       delay: 0,
       duration: 1000,
-      timingFunction: "linear"
-    }
+      timingFunction: "linear",
+    },
   ];
 
   let transitionStyle: any;
@@ -73,8 +73,8 @@ it("Handles going from no value to a new value", () => {
       property: "color",
       delay: 0,
       duration: 1000,
-      timingFunction: "linear"
-    }
+      timingFunction: "linear",
+    },
   ];
 
   let transitionStyle: any;
@@ -97,8 +97,8 @@ it("Handles going from no value to a new value", () => {
     color: {
       options: { inputRange: [0, 1], outputRange: ["red", "blue"] },
       type: "interpolate",
-      value: 0
-    }
+      value: 0,
+    },
   });
 
   instance.unmount();
@@ -110,8 +110,8 @@ it("Handles adding more transitioned values", () => {
       property: "color",
       delay: 0,
       duration: 1000,
-      timingFunction: "linear"
-    }
+      timingFunction: "linear",
+    },
   ];
   const transition2: Transition = [
     ...transition1,
@@ -119,8 +119,8 @@ it("Handles adding more transitioned values", () => {
       property: "opacity",
       delay: 0,
       duration: 1000,
-      timingFunction: "linear"
-    }
+      timingFunction: "linear",
+    },
   ];
 
   let transitionStyle: any;
@@ -132,7 +132,7 @@ it("Handles adding more transitioned values", () => {
   const instance = create(
     React.createElement(Test, {
       styles: { color: "red", opacity: 0 },
-      transition: transition1
+      transition: transition1,
     })
   );
 
@@ -140,14 +140,14 @@ it("Handles adding more transitioned values", () => {
     color: {
       options: { inputRange: [0, 1], outputRange: ["red", "red"] },
       type: "interpolate",
-      value: 0
-    }
+      value: 0,
+    },
   });
 
   instance.update(
     React.createElement(Test, {
       styles: { color: "blue", opacity: 0.5 },
-      transition: transition1
+      transition: transition1,
     })
   );
 
@@ -155,14 +155,14 @@ it("Handles adding more transitioned values", () => {
     color: {
       options: { inputRange: [0, 1], outputRange: ["red", "blue"] },
       type: "interpolate",
-      value: 0
-    }
+      value: 0,
+    },
   });
 
   instance.update(
     React.createElement(Test, {
       styles: { color: "green", opacity: 1 },
-      transition: transition2
+      transition: transition2,
     })
   );
 
@@ -170,9 +170,9 @@ it("Handles adding more transitioned values", () => {
     color: {
       options: { inputRange: [0, 1], outputRange: ["blue", "green"] },
       type: "interpolate",
-      value: 0
+      value: 0,
     },
-    opacity: { type: "value", value: 0.5 }
+    opacity: { type: "value", value: 0.5 },
   });
 
   instance.unmount();

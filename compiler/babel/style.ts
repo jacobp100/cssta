@@ -10,7 +10,7 @@ export default (
   {
     propsVariable,
     styleSheetRuleExpressions,
-    willModifyStyle = false
+    willModifyStyle = false,
   }: {
     propsVariable?: any;
     styleSheetRuleExpressions: StyleSheetExpression[];
@@ -37,7 +37,7 @@ export default (
       styleGroup.push(expression);
       return accum;
     }, [])
-    .map(expressionGroup => {
+    .map((expressionGroup) => {
       const ruleExpression = expressionGroup.reduce(
         (accum, { condition, expression }) => {
           if (condition == null) return expression;
@@ -84,7 +84,7 @@ export default (
   let styleVariable: any;
   if (styleExpression != null) {
     styleVariable = createVariable(babel, path, "style", styleExpression, {
-      kind: willModifyStyle ? "let" : "const"
+      kind: willModifyStyle ? "let" : "const",
     });
   }
 

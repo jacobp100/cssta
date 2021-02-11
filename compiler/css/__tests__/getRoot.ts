@@ -148,7 +148,7 @@ it("Generates multile prop types for multiple attributes", () => {
     undefined,
     {
       boolAttribute: { type: "bool" },
-      stringAttribute: { type: "oneOf", values: ["1", "2"] }
+      stringAttribute: { type: "oneOf", values: ["1", "2"] },
     }
   );
 });

@@ -14,7 +14,7 @@ export const createTopLevelStyleTuplesVariable = (
     styleTuples.map(([key, value]) =>
       t.arrayExpression([
         t.stringLiteral(key),
-        getStringWithSubstitutedValues(babel, substitutionMap, value)
+        getStringWithSubstitutedValues(babel, substitutionMap, value),
       ])
     )
   );

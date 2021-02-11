@@ -4,7 +4,7 @@ const quasiValue = (quasi: any) => quasi.value.cooked as string;
 
 export default ({
   quasis,
-  expressions
+  expressions,
 }: {
   quasis: any[];
   expressions: any[];

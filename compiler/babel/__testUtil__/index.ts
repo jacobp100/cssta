@@ -6,7 +6,7 @@ import { Options } from "../../options";
 const { types: t } = babel;
 
 export const styled: { test: (x: TemplateStringsArray) => string } = {
-  test: String.raw
+  test: String.raw,
 } as any;
 
 export const build = (css: string, options: Options = {}) => {
@@ -22,7 +22,7 @@ export const build = (css: string, options: Options = {}) => {
           { jsx: true, ...options }
         );
       }
-    }
+    },
   });
   const { code } = generate(ast);
   return code.replace(/"/g, "'");

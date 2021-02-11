@@ -17,7 +17,7 @@ export default (babel: any, nodePath: any, { propTypes }) => {
   const { types: t } = babel;
 
   const propKeys = Object.keys(propTypes);
-  const propsSpread = propKeys.map(key =>
+  const propsSpread = propKeys.map((key) =>
     t.objectProperty(
       t.identifier(key),
       t.identifier(key),
@@ -35,7 +35,7 @@ export default (babel: any, nodePath: any, { propTypes }) => {
       : t.objectPattern([...propsSpread, t.restElement(propsVariable)]);
 
   const reactImport = getOrCreateImport(babel, nodePath, "react", undefined, {
-    preferredName: "React"
+    preferredName: "React",
   });
   const componentDefinition = t.callExpression(
     t.memberExpression(reactImport, t.identifier("forwardRef")),
@@ -43,7 +43,7 @@ export default (babel: any, nodePath: any, { propTypes }) => {
       t.arrowFunctionExpression(
         [propsObject, refVariable],
         t.blockStatement([])
-      )
+      ),
     ]
   );
 

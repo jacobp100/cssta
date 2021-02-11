@@ -9,7 +9,7 @@ export default (unresolvedStyleTuples: StyleTuple[]): StyleTuple[] => {
   return useMemo(() => {
     return unresolvedStyleTuples.map(([prop, value]) => [
       prop,
-      transformViewport(value, windowDimensions)
+      transformViewport(value, windowDimensions),
     ]);
   }, [unresolvedStyleTuples, windowDimensions]);
 };

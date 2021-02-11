@@ -14,7 +14,7 @@ it("Works with existing React", () => {
       const { tag, quasi: body } = path.node;
       const element = tag.arguments[0];
       buildElement(babel, path, element, body, { jsx: true });
-    }
+    },
   });
   const { code } = generate(ast);
   expect(code).toMatchInlineSnapshot(`
@@ -52,7 +52,7 @@ it("Works with multiple component definitions", () => {
       const { tag, quasi: body } = path.node;
       const element = tag.arguments[0];
       buildElement(babel, path, element, body, { jsx: true });
-    }
+    },
   });
   const { code } = generate(ast);
   expect(code).toMatchInlineSnapshot(`

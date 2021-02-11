@@ -1,7 +1,7 @@
 export enum UnitType {
   Length,
   Number,
-  String
+  String,
 }
 
 /*
@@ -76,5 +76,5 @@ export default {
   letterSpacing: UnitType.Length,
   textDecorationColor: UnitType.String,
   textDecorationStyle: UnitType.String,
-  writingDirection: UnitType.String
+  writingDirection: UnitType.String,
 };

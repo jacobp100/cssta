@@ -5,26 +5,26 @@ import {
   Condition,
   StyleType,
   StyleTuplesDeclaration,
-  StyleMixinDeclaration
+  StyleMixinDeclaration,
 } from "../../css/types";
 import { Environment } from "../environment";
 import { SubstitutionMap } from "../extractSubstitutionMap";
 import {
   createTopLevelVariable,
   createVariable,
-  getOrCreateImport
+  getOrCreateImport,
 } from "../util";
 import styleBody from "./styleBody";
 import { createTopLevelStyleTuplesVariable } from "./styleTuples";
 import {
   ViewportMode,
   getViewportMode,
-  interpolateViewportUnits
+  interpolateViewportUnits,
 } from "./viewport";
 
 export enum OptimizationFlag {
   None,
-  SupersetsPrevious
+  SupersetsPrevious,
 }
 
 const createVariablesStyleExpression = (
@@ -62,7 +62,7 @@ const createVariablesStyleExpression = (
       path,
       "unresolvedStyleTuples",
       t.callExpression(useViewportStyleTuplesImport, [
-        baseUnresolvedStyleTuplesVariable
+        baseUnresolvedStyleTuplesVariable,
       ]),
       { prefix0: true }
     );
@@ -71,7 +71,7 @@ const createVariablesStyleExpression = (
   const useCustomPropertyStylesImport = getOrCreateImport(
     babel,
     path,
-    "cssta/runtime/useCustomPropertyStyles"
+    "cssta/runtime/useCustomPropertyStyle"
   );
   const styleExpression = createVariable(
     babel,
@@ -79,7 +79,7 @@ const createVariablesStyleExpression = (
     "styles",
     t.callExpression(useCustomPropertyStylesImport, [
       unresolvedStyleTuplesVariable,
-      customPropertiesVariable
+      customPropertiesVariable,
     ])
   );
   return styleExpression;
@@ -130,7 +130,7 @@ const createStyleExpression = (
   } else if (viewportMode === ViewportMode.SimpleLengthUnits) {
     const [
       nextSubstitutionMap,
-      styleTuplesWithViewportSubstitutions
+      styleTuplesWithViewportSubstitutions,
     ] = interpolateViewportUnits(
       babel,
       substitutionMap,
@@ -151,7 +151,7 @@ const createStyleExpression = (
     }
 
     styleExpression = createTopLevelVariable(babel, path, "styles", style, {
-      prefix0: true
+      prefix0: true,
     });
   }
 
@@ -184,14 +184,14 @@ const createMixinExpression = (
 
 const mergeFirstStyleIntoAllRules = (styles: StyleTuplesDeclaration[]) => {
   const mergeeRule = styles[0];
-  const stylesMerged = styles.map(rule => {
+  const stylesMerged = styles.map((rule) => {
     if (rule === mergeeRule) return rule;
 
     const ownStyleKeys = new Set(
-      rule.styleTuples.map(styleTuple => styleTuple[0])
+      rule.styleTuples.map((styleTuple) => styleTuple[0])
     );
     const stylesToMerge = mergeeRule.styleTuples.filter(
-      styleTuple => !ownStyleKeys.has(styleTuple[0])
+      (styleTuple) => !ownStyleKeys.has(styleTuple[0])
     );
 
     if (stylesToMerge.length === 0) return rule;
@@ -204,17 +204,17 @@ const mergeFirstStyleIntoAllRules = (styles: StyleTuplesDeclaration[]) => {
 
 const getOptimizationFlag = (styles: StyleDeclaration[]) => {
   let lastStyleKeys: string[] | null = null;
-  return styles.map(rule => {
+  return styles.map((rule) => {
     if (rule.type === StyleType.Mixin) {
       lastStyleKeys = null;
       return OptimizationFlag.None;
     }
 
-    const ownStyleKeys = rule.styleTuples.map(styleTuple => styleTuple[0]);
+    const ownStyleKeys = rule.styleTuples.map((styleTuple) => styleTuple[0]);
 
     const supersets =
       lastStyleKeys != null &&
-      lastStyleKeys.every(key => ownStyleKeys.includes(key));
+      lastStyleKeys.every((key) => ownStyleKeys.includes(key));
 
     lastStyleKeys = ownStyleKeys;
 
@@ -242,7 +242,7 @@ export default (
   if (
     styles.length === 2 &&
     styles[0].condition == null &&
-    styles.every(style => style.type === StyleType.Tuples)
+    styles.every((style) => style.type === StyleType.Tuples)
   ) {
     const mergedStyleTuples = mergeFirstStyleIntoAllRules(
       styles as StyleTuplesDeclaration[]
@@ -268,7 +268,7 @@ export default (
     });
   } else {
     const stylesheetOptimizationFlags = getOptimizationFlag(styles);
-    const styleSheetExpressions = styles.map(rule =>
+    const styleSheetExpressions = styles.map((rule) =>
       rule.type === StyleType.Tuples
         ? createStyleExpression(
             babel,
@@ -283,7 +283,7 @@ export default (
     styleSheetRuleExpressions = styles.map((style, i) => ({
       condition: style.condition,
       expression: styleSheetExpressions[i],
-      optimizationFlag: stylesheetOptimizationFlags[i]
+      optimizationFlag: stylesheetOptimizationFlags[i],
     }));
   }
 

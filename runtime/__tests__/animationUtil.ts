@@ -12,7 +12,7 @@ it("Inteprolates string values", () => {
   expect(interpolated).toEqual({
     type: "interpolate",
     value: 0,
-    options: { inputRange: [0, 1], outputRange: ["red", "green"] }
+    options: { inputRange: [0, 1], outputRange: ["red", "green"] },
   });
 });
 
@@ -22,7 +22,7 @@ it("Inteprolates number values with interpolate numbers = false", () => {
   expect(interpolated).toEqual({
     type: "interpolate",
     value: 0,
-    options: { inputRange: [0, 1], outputRange: [5, 10] }
+    options: { inputRange: [0, 1], outputRange: [5, 10] },
   });
 });
 
@@ -38,7 +38,7 @@ it("Inteprolates transforms", () => {
     [0, 1],
     [
       [{ translateY: 5 }, { rotate: "30deg" }],
-      [{ translateY: 10 }, { rotate: "45deg" }]
+      [{ translateY: 10 }, { rotate: "45deg" }],
     ],
     animation,
     false
@@ -48,16 +48,16 @@ it("Inteprolates transforms", () => {
       translateY: {
         type: "interpolate",
         value: 0,
-        options: { inputRange: [0, 1], outputRange: [5, 10] }
-      }
+        options: { inputRange: [0, 1], outputRange: [5, 10] },
+      },
     },
     {
       rotate: {
         type: "interpolate",
         value: 0,
-        options: { inputRange: [0, 1], outputRange: ["30deg", "45deg"] }
-      }
-    }
+        options: { inputRange: [0, 1], outputRange: ["30deg", "45deg"] },
+      },
+    },
   ]);
 });
 
@@ -68,7 +68,7 @@ it("Logs console error when animated transform nodes don't match", () => {
     [0, 1],
     [
       [{ translateY: 5 }, { rotate: "30deg" }],
-      [{ translateY: 10 }, { rotate: "45deg" }, { scale: 3 }]
+      [{ translateY: 10 }, { rotate: "45deg" }, { scale: 3 }],
     ],
     animation,
     false
@@ -87,7 +87,7 @@ it("Doesn't crash when transform nodes don't match", () => {
       [0, 1],
       [
         [{ translateY: 10 }, { rotate: "45deg" }, { scale: 3 }],
-        [{ translateY: 5 }, { rotate: "30deg" }]
+        [{ translateY: 5 }, { rotate: "30deg" }],
       ],
       animation,
       false

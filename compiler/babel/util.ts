@@ -29,7 +29,7 @@ export const createVariable = (
   const { types: t } = babel;
   const id = generateNiceId(babel, path, name, { prefix0 });
   const declaration = t.variableDeclaration(kind, [
-    t.variableDeclarator(id, init)
+    t.variableDeclarator(id, init),
   ]);
   const [declarationPath] = path.pushContainer("body", declaration);
   path.scope.registerDeclaration(declarationPath);
@@ -46,7 +46,7 @@ export const createTopLevelVariable = (
   const { types: t } = babel;
   const id = generateNiceId(babel, path, name, idOpts);
   const declaration = t.variableDeclaration("const", [
-    t.variableDeclarator(id, init)
+    t.variableDeclarator(id, init),
   ]);
   const statementPath = path.getStatementParent();
   const [declarationPath] = statementPath.insertBefore(declaration);
@@ -61,12 +61,14 @@ export const jsonToNode = (babel: any, object: any) => {
   } else if (typeof object === "number") {
     return t.numericLiteral(object);
   } else if (Array.isArray(object)) {
-    return t.arrayExpression(object.map(element => jsonToNode(babel, element)));
+    return t.arrayExpression(
+      object.map((element) => jsonToNode(babel, element))
+    );
   } else if (object === null) {
     return t.nullLiteral();
   }
   return t.objectExpression(
-    Object.keys(object).map(key =>
+    Object.keys(object).map((key) =>
       t.objectProperty(t.stringLiteral(key), jsonToNode(babel, object[key]))
     )
   );
@@ -83,15 +85,15 @@ export const getImportBindings = (
   );
   const allImportBindings =
     importedName === "default"
-      ? allBindings.filter(reference =>
+      ? allBindings.filter((reference) =>
           t.isImportDefaultSpecifier(reference.path.node)
         )
       : allBindings.filter(
-          reference =>
+          (reference) =>
             t.isImportSpecifier(reference.path.node) &&
             reference.path.node.imported.name === importedName
         );
-  const importBindingsForModule = allImportBindings.filter(reference => {
+  const importBindingsForModule = allImportBindings.filter((reference) => {
     const importDeclaration = reference.path.findParent(t.isImportDeclaration);
     const importModuleName = importDeclaration.node.source.value;
     return importModuleName === moduleName;

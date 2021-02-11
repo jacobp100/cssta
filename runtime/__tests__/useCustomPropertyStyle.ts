@@ -7,7 +7,7 @@ import VariablesContext from "../VariablesContext";
 it("Converts style tuples and variables into a style object", () => {
   const styleTuples: [string, string][] = [
     ["color", "red"],
-    ["margin", "var(--small)"]
+    ["margin", "var(--small)"],
   ];
 
   let style: any;
@@ -30,7 +30,7 @@ it("Converts style tuples and variables into a style object", () => {
     marginTop: 10,
     marginRight: 10,
     marginBottom: 10,
-    marginLeft: 10
+    marginLeft: 10,
   });
 
   instance.unmount();

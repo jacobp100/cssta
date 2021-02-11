@@ -14,8 +14,8 @@ it("Scopes top-level declarations", () => {
       type: StyleType.Tuples,
       condition: null,
       styleTuples: [["color", "red"]],
-      importedVariables: []
-    }
+      importedVariables: [],
+    },
   ]);
   expect(rules.transitions).toEqual([]);
   expect(rules.animations).toEqual([]);
@@ -34,9 +34,12 @@ it("Scopes multiple top-level declarations into one class", () => {
     {
       type: StyleType.Tuples,
       condition: null,
-      styleTuples: [["color", "red"], ["border-left-color", "green"]],
-      importedVariables: []
-    }
+      styleTuples: [
+        ["color", "red"],
+        ["border-left-color", "green"],
+      ],
+      importedVariables: [],
+    },
   ]);
   expect(rules.transitions).toEqual([]);
   expect(rules.animations).toEqual([]);
@@ -57,8 +60,8 @@ it("Scopes boolean attribute selectors", () => {
       type: StyleType.Tuples,
       condition: { selector: "&[cssta|attribute]", mediaQuery: null },
       styleTuples: [["color", "red"]],
-      importedVariables: []
-    }
+      importedVariables: [],
+    },
   ]);
   expect(rules.transitions).toEqual([]);
   expect(rules.animations).toEqual([]);
@@ -74,18 +77,18 @@ it("Scopes string attribute selectors", () => {
   `;
   const rules = extractRules(css);
   expect(rules.propTypes).toEqual({
-    stringAttribute: { type: "oneOf", values: ["red"] }
+    stringAttribute: { type: "oneOf", values: ["red"] },
   });
   expect(rules.styles).toEqual([
     {
       type: StyleType.Tuples,
       condition: {
         selector: '&[cssta|stringAttribute="red"]',
-        mediaQuery: null
+        mediaQuery: null,
       },
       styleTuples: [["color", "red"]],
-      importedVariables: []
-    }
+      importedVariables: [],
+    },
   ]);
   expect(rules.transitions).toEqual([]);
   expect(rules.animations).toEqual([]);
@@ -120,7 +123,7 @@ it("Scopes attribute selectors", () => {
     booleanValue1: { type: "bool" },
     booleanValue2: { type: "bool" },
     stringValue1: { type: "oneOf", values: ["a", "b"] },
-    stringValue2: { type: "oneOf", values: ["c"] }
+    stringValue2: { type: "oneOf", values: ["c"] },
   });
   expect(rules.styles).toMatchInlineSnapshot(`
     Array [
@@ -213,7 +216,7 @@ it("Recognises variable declarations", () => {
   expect(rules.animations).toEqual([]);
   expect(rules.keyframes).toEqual([]);
   expect(rules.exportedVariables).toEqual([
-    { condition: null, name: "color", value: "red", importedVariables: [] }
+    { condition: null, name: "color", value: "red", importedVariables: [] },
   ]);
 });
 
@@ -228,8 +231,8 @@ it("Recognises variable imports", () => {
       type: StyleType.Tuples,
       condition: null,
       styleTuples: [["color", "var(--color)"]],
-      importedVariables: ["color"]
-    }
+      importedVariables: ["color"],
+    },
   ]);
   expect(rules.transitions).toEqual([]);
   expect(rules.animations).toEqual([]);
@@ -252,7 +255,7 @@ it("Recognises multiple variable declarations", () => {
   expect(rules.exportedVariables).toEqual([
     { condition: null, name: "color", value: "red", importedVariables: [] },
     { condition: null, name: "color", value: "blue", importedVariables: [] },
-    { condition: null, name: "other", value: "green", importedVariables: [] }
+    { condition: null, name: "other", value: "green", importedVariables: [] },
   ]);
 });
 
@@ -267,8 +270,8 @@ it("Recognises multiple variable imports", () => {
       type: StyleType.Tuples,
       condition: null,
       styleTuples: [["margin", "var(--large) var(--small)"]],
-      importedVariables: ["large", "small"]
-    }
+      importedVariables: ["large", "small"],
+    },
   ]);
   expect(rules.transitions).toEqual([]);
   expect(rules.animations).toEqual([]);
@@ -288,14 +291,14 @@ it("Mixes variable and style declarations", () => {
       type: StyleType.Tuples,
       condition: null,
       styleTuples: [["color", "var(--color)"]],
-      importedVariables: ["color"]
-    }
+      importedVariables: ["color"],
+    },
   ]);
   expect(rules.transitions).toEqual([]);
   expect(rules.animations).toEqual([]);
   expect(rules.keyframes).toEqual([]);
   expect(rules.exportedVariables).toEqual([
-    { condition: null, name: "color", value: "red", importedVariables: [] }
+    { condition: null, name: "color", value: "red", importedVariables: [] },
   ]);
 });
 
@@ -307,7 +310,7 @@ it("Recognises transitions", () => {
   expect(rules.propTypes).toEqual({});
   expect(rules.styles).toEqual([]);
   expect(rules.transitions).toEqual([
-    { condition: null, part: { _: "color 1s linear" }, importedVariables: [] }
+    { condition: null, part: { _: "color 1s linear" }, importedVariables: [] },
   ]);
   expect(rules.animations).toEqual([]);
   expect(rules.keyframes).toEqual([]);
@@ -331,10 +334,10 @@ it("Recognises transitions using long hand", () => {
         property: "color",
         delay: "1s",
         duration: "2s",
-        timingFunction: "linear"
+        timingFunction: "linear",
       },
-      importedVariables: []
-    }
+      importedVariables: [],
+    },
   ]);
   expect(rules.animations).toEqual([]);
   expect(rules.keyframes).toEqual([]);
@@ -352,8 +355,8 @@ it("Recognises multiple separate transitions", () => {
     {
       condition: null,
       part: { _: "color 1s linear, transform 2s ease-in-out" },
-      importedVariables: []
-    }
+      importedVariables: [],
+    },
   ]);
   expect(rules.animations).toEqual([]);
   expect(rules.keyframes).toEqual([]);
@@ -372,8 +375,8 @@ it("Recognises multiple property transitions", () => {
     {
       condition: null,
       part: { _: "1s linear", property: "color, transform" },
-      importedVariables: []
-    }
+      importedVariables: [],
+    },
   ]);
   expect(rules.animations).toEqual([]);
   expect(rules.keyframes).toEqual([]);
@@ -393,8 +396,8 @@ it("Overrides previous transition declarations when using shorthand", () => {
     {
       condition: null,
       part: { _: "1s linear" },
-      importedVariables: []
-    }
+      importedVariables: [],
+    },
   ]);
   expect(rules.animations).toEqual([]);
   expect(rules.keyframes).toEqual([]);
@@ -412,8 +415,8 @@ it("Recognises multiple allows variables in transitions", () => {
     {
       condition: null,
       part: { _: "color var(--time) var(--easing)" },
-      importedVariables: ["time", "easing"]
-    }
+      importedVariables: ["time", "easing"],
+    },
   ]);
   expect(rules.animations).toEqual([]);
   expect(rules.keyframes).toEqual([]);
@@ -432,8 +435,8 @@ it("Recognises animations", () => {
     {
       condition: null,
       part: { _: "test 1s linear" },
-      importedVariables: []
-    }
+      importedVariables: [],
+    },
   ]);
   expect(rules.keyframes).toEqual([]);
   expect(rules.exportedVariables).toEqual([]);
@@ -459,10 +462,10 @@ it("Recognises animation long hands", () => {
         duration: "1s",
         delay: "2s",
         iterations: "3",
-        timingFunction: "linear"
+        timingFunction: "linear",
       },
-      importedVariables: []
-    }
+      importedVariables: [],
+    },
   ]);
   expect(rules.keyframes).toEqual([]);
   expect(rules.exportedVariables).toEqual([]);
@@ -483,8 +486,8 @@ it("Overrides previous animation declarations when using shorthand", () => {
     {
       condition: null,
       part: { _: "test 1s" },
-      importedVariables: []
-    }
+      importedVariables: [],
+    },
   ]);
   expect(rules.keyframes).toEqual([]);
   expect(rules.exportedVariables).toEqual([]);
@@ -503,10 +506,10 @@ it("Recognises keyframes", () => {
       name: "test",
       sequence: [
         { time: 0, styleTuples: [["opacity", "0"]] },
-        { time: 1, styleTuples: [["opacity", "1"]] }
+        { time: 1, styleTuples: [["opacity", "1"]] },
       ],
-      importedVariables: []
-    }
+      importedVariables: [],
+    },
   ]);
 });
 
@@ -529,19 +532,19 @@ it("Recognises multiple keyframes", () => {
       name: "test1",
       sequence: [
         { time: 0, styleTuples: [["opacity", "0"]] },
-        { time: 1, styleTuples: [["opacity", "1"]] }
+        { time: 1, styleTuples: [["opacity", "1"]] },
       ],
-      importedVariables: []
+      importedVariables: [],
     },
     {
       name: "test2",
       sequence: [
         { time: 0, styleTuples: [["opacity", "0"]] },
         { time: 0.5, styleTuples: [["opacity", "0.5"]] },
-        { time: 1, styleTuples: [["opacity", "1"]] }
+        { time: 1, styleTuples: [["opacity", "1"]] },
       ],
-      importedVariables: []
-    }
+      importedVariables: [],
+    },
   ]);
 });
 
@@ -555,8 +558,8 @@ it("Imports variables from keyframes", () => {
   expect(keyframes[0].sequence).toEqual([
     {
       time: 0,
-      styleTuples: [["color", "var(--primary)"]]
-    }
+      styleTuples: [["color", "var(--primary)"]],
+    },
   ]);
   expect(keyframes[0].importedVariables).toEqual(["primary"]);
 });
@@ -574,8 +577,8 @@ it("Recognises media queries for top-level declarations", () => {
       type: StyleType.Tuples,
       condition: { selector: "&", mediaQuery: "(min-width: 500px)" },
       styleTuples: [["color", "red"]],
-      importedVariables: []
-    }
+      importedVariables: [],
+    },
   ]);
   expect(rules.transitions).toEqual([]);
   expect(rules.animations).toEqual([]);
@@ -598,11 +601,11 @@ it("Recognises media queries for nested rules", () => {
       type: StyleType.Tuples,
       condition: {
         selector: "&[cssta|prop]",
-        mediaQuery: "(min-width: 500px)"
+        mediaQuery: "(min-width: 500px)",
       },
       styleTuples: [["color", "red"]],
-      importedVariables: []
-    }
+      importedVariables: [],
+    },
   ]);
   expect(rules.transitions).toEqual([]);
   expect(rules.animations).toEqual([]);
@@ -750,8 +753,8 @@ it("Handles mixins", () => {
     {
       type: StyleType.Mixin,
       condition: null,
-      substitution: "someMixin"
-    }
+      substitution: "someMixin",
+    },
   ]);
   expect(rules.transitions).toEqual([]);
   expect(rules.animations).toEqual([]);
@@ -771,8 +774,8 @@ it("Handles conditional mixins", () => {
     {
       type: StyleType.Mixin,
       condition: { selector: "&[cssta|cond]", mediaQuery: null },
-      substitution: "someMixin"
-    }
+      substitution: "someMixin",
+    },
   ]);
   expect(rules.transitions).toEqual([]);
   expect(rules.animations).toEqual([]);
@@ -792,8 +795,8 @@ it("Handles mixins in media queries", () => {
     {
       type: StyleType.Mixin,
       condition: { selector: "&", mediaQuery: "(min-width: 500px)" },
-      substitution: "someMixin"
-    }
+      substitution: "someMixin",
+    },
   ]);
   expect(rules.transitions).toEqual([]);
   expect(rules.animations).toEqual([]);
@@ -816,10 +819,10 @@ it("Handles conditional mixins in media queries", () => {
       type: StyleType.Mixin,
       condition: {
         selector: "&[cssta|cond]",
-        mediaQuery: "(min-width: 500px)"
+        mediaQuery: "(min-width: 500px)",
       },
-      substitution: "someMixin"
-    }
+      substitution: "someMixin",
+    },
   ]);
   expect(rules.transitions).toEqual([]);
   expect(rules.animations).toEqual([]);
@@ -841,20 +844,26 @@ it("Handles mixins within style tuples", () => {
     {
       type: StyleType.Tuples,
       condition: null,
-      styleTuples: [["top", "10px"], ["right", "10px"]],
-      importedVariables: []
+      styleTuples: [
+        ["top", "10px"],
+        ["right", "10px"],
+      ],
+      importedVariables: [],
     },
     {
       type: StyleType.Mixin,
       condition: null,
-      substitution: "someMixin"
+      substitution: "someMixin",
     },
     {
       type: StyleType.Tuples,
       condition: null,
-      styleTuples: [["bottom", "10px"], ["left", "var(--left)"]],
-      importedVariables: ["left"]
-    }
+      styleTuples: [
+        ["bottom", "10px"],
+        ["left", "var(--left)"],
+      ],
+      importedVariables: ["left"],
+    },
   ]);
   expect(rules.transitions).toEqual([]);
   expect(rules.animations).toEqual([]);

@@ -5,7 +5,7 @@ import {
   interpolateValue,
   easingFunctions,
   OutputRange,
-  InterpolatedValue
+  InterpolatedValue,
 } from "./animationUtil";
 import { Style } from "./cssUtil";
 
@@ -26,7 +26,7 @@ const noAnimations: AnimationState = {
   duration: 0,
   iterations: 1,
   name: null,
-  timingFunction: "ease"
+  timingFunction: "ease",
 };
 
 const getAnimationState = (
@@ -43,18 +43,18 @@ const getAnimationState = (
   if (animationSequence == null) return noAnimations;
 
   const animatedProperties = Object.keys(
-    Object.assign({}, ...animationSequence.map(frame => frame.style))
+    Object.assign({}, ...animationSequence.map((frame) => frame.style))
   );
 
   const animationValues = {};
   const animations = {};
-  animatedProperties.forEach(animationProperty => {
+  animatedProperties.forEach((animationProperty) => {
     animationValues[animationProperty] = new Animated.Value(0);
 
     const currentValue = currentStyles[animationProperty];
 
     let keyframes = animationSequence
-      .filter(frame => animationProperty in frame.style)
+      .filter((frame) => animationProperty in frame.style)
       .map(({ time, style }) => ({ time, value: style[animationProperty] }));
     // Fixes missing start/end values
     keyframes = [].concat(
@@ -65,8 +65,8 @@ const getAnimationState = (
         : []
     );
 
-    const inputRange = keyframes.map(frame => frame.time);
-    const outputRange: OutputRange = keyframes.map(frame => frame.value);
+    const inputRange = keyframes.map((frame) => frame.time);
+    const outputRange: OutputRange = keyframes.map((frame) => frame.value);
     const animation = animationValues[animationProperty];
     animations[animationProperty] = interpolateValue(
       inputRange,
@@ -82,7 +82,7 @@ const getAnimationState = (
     duration,
     iterations,
     name,
-    timingFunction
+    timingFunction,
   };
 };
 
@@ -91,7 +91,7 @@ const animate = ({
   duration,
   iterations,
   timingFunction,
-  animationValues: animationValuesObject
+  animationValues: animationValuesObject,
 }) => {
   if (animationValuesObject == null) return;
 
@@ -99,9 +99,9 @@ const animate = ({
     animationValuesObject
   );
 
-  animationValues.forEach(animation => animation.setValue(0));
+  animationValues.forEach((animation) => animation.setValue(0));
 
-  const timings = animationValues.map(animation => {
+  const timings = animationValues.map((animation) => {
     const config = {
       toValue: 1,
       duration,
@@ -109,7 +109,7 @@ const animate = ({
       easing:
         typeof timingFunction === "string"
           ? easingFunctions[timingFunction]
-          : timingFunction
+          : timingFunction,
     };
     let res = Animated.timing(animation, config);
 
@@ -117,7 +117,7 @@ const animate = ({
       res = Animated.sequence([
         res,
         // Reset animation
-        Animated.timing(animation, { toValue: 0, duration: 0 })
+        Animated.timing(animation, { toValue: 0, duration: 0 }),
       ]);
       res = Animated.loop(res, { iterations });
     }

@@ -11,7 +11,7 @@ const useStyleGroup = (transition: Style, inputStyleUnflattened: any) => {
   const inputStyle = StyleSheet.flatten(inputStyleUnflattened);
   const [{ style, previousStyle }, setStyleGroup] = useState(() => ({
     style: inputStyle,
-    previousStyle: inputStyle
+    previousStyle: inputStyle,
   }));
 
   const styleChanged = transition.some(
@@ -84,7 +84,7 @@ const animate = (
         toValue,
         duration,
         delay,
-        easing: easingFunctions[timingFunction]
+        easing: easingFunctions[timingFunction],
       });
     }
   );
@@ -110,7 +110,7 @@ export default (transition: Transition, inputStyleUnflattened: any) => {
 
     const transitionStyle = {};
 
-    animationNames.forEach(animationName => {
+    animationNames.forEach((animationName) => {
       const previousValue = previousStyle[animationName];
       const nextValue = style[animationName];
 

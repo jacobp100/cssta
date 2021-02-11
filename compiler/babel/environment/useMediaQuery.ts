@@ -5,7 +5,7 @@ export default (babel: any, path: any) => {
 
   const windowVariables = {
     width: generateNiceId(babel, path, "windowWidth"),
-    height: generateNiceId(babel, path, "windowHeight")
+    height: generateNiceId(babel, path, "windowHeight"),
   };
 
   const useWindowDimensionsImport = getOrCreateImport(
@@ -17,10 +17,10 @@ export default (babel: any, path: any) => {
     t.variableDeclarator(
       t.objectPattern([
         t.objectProperty(t.identifier("width"), windowVariables.width),
-        t.objectProperty(t.identifier("height"), windowVariables.height)
+        t.objectProperty(t.identifier("height"), windowVariables.height),
       ]),
       t.callExpression(useWindowDimensionsImport, [])
-    )
+    ),
   ]);
 
   path.pushContainer("body", windowDeclarator);

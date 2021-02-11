@@ -14,7 +14,7 @@ const run = (inputSelector: string, mediaQuery?: string | undefined) => {
       const environment = createEnvironment(babel, body);
       const node = buildCondition(babel, { selector, mediaQuery }, environment);
       body.pushContainer("body", t.returnStatement(node));
-    }
+    },
   });
   const { code } = generate(ast);
   return code.replace(/"/g, "'");

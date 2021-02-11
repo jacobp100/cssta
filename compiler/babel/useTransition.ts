@@ -6,7 +6,7 @@ import {
   createTopLevelVariable,
   createVariable,
   jsonToNode,
-  getOrCreateImport
+  getOrCreateImport,
 } from "./util";
 
 export default (
@@ -21,7 +21,7 @@ export default (
 
   // FIXME: We could be more granular than useCustomPropertyShorthandParts whenever one part has a variable in
   const transitionImportsVariables = transitions.some(
-    transition => transition.importedVariables.length > 0
+    (transition) => transition.importedVariables.length > 0
   );
 
   let transitionVariable: any;
@@ -105,7 +105,7 @@ export default (
         styleVariable,
         t.callExpression(useTransitionImport, [
           transitionVariable,
-          styleVariable
+          styleVariable,
         ])
       )
     )

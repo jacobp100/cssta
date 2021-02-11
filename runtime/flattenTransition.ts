@@ -2,7 +2,7 @@ import { getPropertyName } from "css-to-react-native";
 import {
   getDurationInMs,
   durationRegExp,
-  easingRegExp
+  easingRegExp,
 } from "./animationShorthandUtil";
 import { Transition, TimingFunction, TransitionPart } from "./animationTypes";
 
@@ -25,11 +25,11 @@ const getTransitionShorthand = (
     delay: 0,
     duration: 0,
     timingFunction: "ease",
-    property: null
+    property: null,
   };
   let set = 0;
 
-  shorthandParts.forEach(part => {
+  shorthandParts.forEach((part) => {
     if (!(set & TIMING_FUNCTION) && easingRegExp.test(part)) {
       accum.timingFunction = part as any;
       set &= TIMING_FUNCTION;
@@ -58,7 +58,7 @@ export default (styles: TransitionPart[]): Transition => {
   let timingFunctions = [];
   let properties: string[] = [];
 
-  styles.forEach(style => {
+  styles.forEach((style) => {
     if (style == null) return;
 
     if (style._ != null) {
@@ -67,7 +67,7 @@ export default (styles: TransitionPart[]): Transition => {
       timingFunctions = [];
       properties = [];
 
-      split(style._).forEach(shorthand => {
+      split(style._).forEach((shorthand) => {
         const resolved = getTransitionShorthand(shorthand.trim().split(/\s+/));
         const property = resolved.property;
 

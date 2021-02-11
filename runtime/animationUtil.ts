@@ -23,7 +23,7 @@ export const interpolateValue = (
   if (process.env.NODE_ENV !== "production") {
     const currentProperties = String(firstValue.map(Object.keys));
     // Not the *best* practise here...
-    const transformsAreConsistent = outputRange.every(range => {
+    const transformsAreConsistent = outputRange.every((range) => {
       const rangeProperties = String(
         (range as TransformInterpolation).map(Object.keys)
       );
@@ -40,7 +40,7 @@ export const interpolateValue = (
 
   return firstValue.map((transform, index) => {
     const transformProperty = Object.keys(transform)[0];
-    const innerOutputRange = outputRange.map(range => {
+    const innerOutputRange = outputRange.map((range) => {
       const rangeValue = range[index];
       return rangeValue != null ? rangeValue[transformProperty] : null;
     });
@@ -48,7 +48,7 @@ export const interpolateValue = (
     // We *have* to interpolate even numeric values, as we will always animate between 0--1
     const interpolation = animation.interpolate({
       inputRange,
-      outputRange: innerOutputRange
+      outputRange: innerOutputRange,
     });
 
     return { [transformProperty]: interpolation };
@@ -60,5 +60,5 @@ export const easingFunctions: Record<TimingFunction, EasingFunction> = {
   ease: Easing.ease,
   "ease-in": Easing.bezier(0.42, 0, 1.0, 1.0),
   "ease-out": Easing.bezier(0, 0, 0.58, 1.0),
-  "ease-in-out": Easing.bezier(0.42, 0, 0.58, 1.0)
+  "ease-in-out": Easing.bezier(0.42, 0, 0.58, 1.0),
 };

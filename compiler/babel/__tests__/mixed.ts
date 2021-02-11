@@ -304,12 +304,12 @@ it("Supports viewport units in shorthands with custom properties", () => {
     "import React from 'react';
     import useCustomProperties from 'cssta/runtime/useCustomProperties';
     import useViewportStyleTuples from 'cssta/runtime/useViewportStyleTuples';
-    import useCustomPropertyStyles from 'cssta/runtime/useCustomPropertyStyles';
+    import useCustomPropertyStyle from 'cssta/runtime/useCustomPropertyStyle';
     const unresolvedStyleTuples0 = [['margin', '10vw var(--whyDoIDoThisToMyself)']];
     const Example = React.forwardRef((props, ref) => {
       const customProperties = useCustomProperties(null);
       const unresolvedStyleTuples1 = useViewportStyleTuples(unresolvedStyleTuples0);
-      const styles = useCustomPropertyStyles(unresolvedStyleTuples1, customProperties);
+      const styles = useCustomPropertyStyle(unresolvedStyleTuples1, customProperties);
       const style = props.style != null ? [styles, props.style] : styles;
       return <Element {...props} ref={ref} style={style} />;
     });"

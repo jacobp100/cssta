@@ -5,12 +5,12 @@ test("Handles null/undefined", () => {
   expect(parseGlobals(null)).toEqual({
     vars: new Map(),
     conditions: [],
-    globalVarsOnly: false
+    globalVarsOnly: false,
   });
   expect(parseGlobals(undefined)).toEqual({
     vars: new Map(),
     conditions: [],
-    globalVarsOnly: false
+    globalVarsOnly: false,
   });
 });
 
@@ -18,23 +18,23 @@ test("Handles objects", () => {
   expect(parseGlobals({ color: "red" })).toEqual({
     vars: new Map([["color", new Set([0])]]),
     conditions: [{ query: undefined, values: new Map([["color", "red"]]) }],
-    globalVarsOnly: false
+    globalVarsOnly: false,
   });
   expect(parseGlobals({ color: "red", other: "green" })).toEqual({
     vars: new Map([
       ["color", new Set([0])],
-      ["other", new Set([0])]
+      ["other", new Set([0])],
     ]),
     conditions: [
       {
         query: undefined,
         values: new Map([
           ["color", "red"],
-          ["other", "green"]
-        ])
-      }
+          ["other", "green"],
+        ]),
+      },
     ],
-    globalVarsOnly: false
+    globalVarsOnly: false,
   });
 });
 
@@ -46,7 +46,7 @@ test("Handles basic strings", () => {
   ).toEqual({
     vars: new Map([["color", new Set([0])]]),
     conditions: [{ query: undefined, values: new Map([["color", "red"]]) }],
-    globalVarsOnly: false
+    globalVarsOnly: false,
   });
   expect(
     parseGlobals(`
@@ -56,18 +56,18 @@ test("Handles basic strings", () => {
   ).toEqual({
     vars: new Map([
       ["color", new Set([0])],
-      ["other", new Set([0])]
+      ["other", new Set([0])],
     ]),
     conditions: [
       {
         query: undefined,
         values: new Map([
           ["color", "red"],
-          ["other", "green"]
-        ])
-      }
+          ["other", "green"],
+        ]),
+      },
     ],
-    globalVarsOnly: false
+    globalVarsOnly: false,
   });
 });
 
@@ -86,10 +86,10 @@ test("Handles strings with media queries", () => {
       { query: undefined, values: new Map([["color", "red"]]) },
       {
         query: "(prefers-color-scheme: dark)",
-        values: new Map([["color", "green"]])
-      }
+        values: new Map([["color", "green"]]),
+      },
     ],
-    globalVarsOnly: false
+    globalVarsOnly: false,
   });
 
   expect(
@@ -105,25 +105,25 @@ test("Handles strings with media queries", () => {
   ).toEqual({
     vars: new Map([
       ["color", new Set([0, 1])],
-      ["other", new Set([0, 1])]
+      ["other", new Set([0, 1])],
     ]),
     conditions: [
       {
         query: undefined,
         values: new Map([
           ["color", "red"],
-          ["other", "green"]
-        ])
+          ["other", "green"],
+        ]),
       },
       {
         query: "(prefers-color-scheme: dark)",
         values: new Map([
           ["color", "green"],
-          ["other", "red"]
-        ])
-      }
+          ["other", "red"],
+        ]),
+      },
     ],
-    globalVarsOnly: false
+    globalVarsOnly: false,
   });
 
   expect(
@@ -138,22 +138,22 @@ test("Handles strings with media queries", () => {
   ).toEqual({
     vars: new Map([
       ["color", new Set([0, 1])],
-      ["other", new Set([0])]
+      ["other", new Set([0])],
     ]),
     conditions: [
       {
         query: undefined,
         values: new Map([
           ["color", "red"],
-          ["other", "green"]
-        ])
+          ["other", "green"],
+        ]),
       },
       {
         query: "(prefers-color-scheme: dark)",
-        values: new Map([["color", "green"]])
-      }
+        values: new Map([["color", "green"]]),
+      },
     ],
-    globalVarsOnly: false
+    globalVarsOnly: false,
   });
 });
 
@@ -161,7 +161,7 @@ test("Applying non-conditional globals", () => {
   const globals = {
     vars: new Map([["color", new Set([0])]]),
     conditions: [{ query: undefined, values: new Map([["color", "red"]]) }],
-    globalVarsOnly: false
+    globalVarsOnly: false,
   };
 
   const root = postcss.parse(`
@@ -183,7 +183,7 @@ test("Applying non-conditional globals with other values", () => {
   const globals = {
     vars: new Map([["color", new Set([0])]]),
     conditions: [{ query: undefined, values: new Map([["color", "red"]]) }],
-    globalVarsOnly: false
+    globalVarsOnly: false,
   };
 
   const root = postcss.parse(`
@@ -205,7 +205,7 @@ test("Applying non-conditional globals with multiple rules", () => {
   const globals = {
     vars: new Map([["color", new Set([0])]]),
     conditions: [{ query: undefined, values: new Map([["color", "red"]]) }],
-    globalVarsOnly: false
+    globalVarsOnly: false,
   };
 
   const root = postcss.parse(`
@@ -238,10 +238,10 @@ test("Applying conditional globals", () => {
       { query: undefined, values: new Map([["color", "red"]]) },
       {
         query: "(prefers-color-scheme: dark)",
-        values: new Map([["color", "green"]])
-      }
+        values: new Map([["color", "green"]]),
+      },
     ],
-    globalVarsOnly: false
+    globalVarsOnly: false,
   };
 
   const root = postcss.parse(`
@@ -271,10 +271,10 @@ test("Applying conditional globals with other non-var decls", () => {
       { query: undefined, values: new Map([["color", "red"]]) },
       {
         query: "(prefers-color-scheme: dark)",
-        values: new Map([["color", "green"]])
-      }
+        values: new Map([["color", "green"]]),
+      },
     ],
-    globalVarsOnly: false
+    globalVarsOnly: false,
   };
 
   const root = postcss.parse(`
@@ -310,10 +310,10 @@ test("Applying conditional globals inside media queries", () => {
       { query: undefined, values: new Map([["color", "red"]]) },
       {
         query: "(prefers-color-scheme: dark)",
-        values: new Map([["color", "green"]])
-      }
+        values: new Map([["color", "green"]]),
+      },
     ],
-    globalVarsOnly: false
+    globalVarsOnly: false,
   };
 
   const root = postcss.parse(`

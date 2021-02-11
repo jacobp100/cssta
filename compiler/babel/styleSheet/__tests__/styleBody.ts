@@ -17,7 +17,7 @@ const run = (substitutionMap: SubstitutionMap, styleTuples: StyleTuple[]) => {
         styleTuples
       );
       path.get("body").pushContainer("body", t.returnStatement(node));
-    }
+    },
   });
   const { code } = generate(ast);
   return code.replace(/"/g, "'");
@@ -85,7 +85,7 @@ it("Combines a simple value before a shorthand value", () => {
     { int1: t.identifier("opacity"), int2: t.identifier("margin") },
     [
       ["opacity", "int1"],
-      ["margin", "int2"]
+      ["margin", "int2"],
     ]
   );
   expect(code).toMatchInlineSnapshot(`
@@ -104,7 +104,7 @@ it("Combines a simple value after a shorthand value", () => {
     { int1: t.identifier("margin"), int2: t.identifier("opacity") },
     [
       ["margin", "int2"],
-      ["opacity", "int1"]
+      ["opacity", "int1"],
     ]
   );
   expect(code).toMatchInlineSnapshot(`
@@ -127,7 +127,7 @@ it("Combines multiple simple values with a shorthand value", () => {
       int4: t.identifier("color"),
       int5: t.identifier("left"),
       int6: t.identifier("border"),
-      int7: t.identifier("opacity")
+      int7: t.identifier("opacity"),
     },
     [
       ["top", "int1"],
@@ -136,7 +136,7 @@ it("Combines multiple simple values with a shorthand value", () => {
       ["color", "int4"],
       ["left", "int5"],
       ["border", "int6"],
-      ["opacity", "int7"]
+      ["opacity", "int7"],
     ]
   );
   expect(code).toMatchInlineSnapshot(`
@@ -162,7 +162,7 @@ it("Does not allow multiple values for simple properties", () => {
     run(
       {
         int1: t.identifier("color1"),
-        int2: t.identifier("color2")
+        int2: t.identifier("color2"),
       },
       [["color", "int1 int2"]]
     );
@@ -173,7 +173,7 @@ it("Allows multiple values for shorthand properties", () => {
   const code = run(
     {
       int1: t.identifier("margin1"),
-      int2: t.identifier("margin2")
+      int2: t.identifier("margin2"),
     },
     [["margin", "int1 int2"]]
   );

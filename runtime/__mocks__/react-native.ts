@@ -2,7 +2,7 @@ export const Easing = {
   linear: "linear",
   ease: "ease",
   bezier: (a: number, b: number, c: number, d: number) =>
-    `bezier(${a}, ${b}, ${c}, ${d})`
+    `bezier(${a}, ${b}, ${c}, ${d})`,
 };
 
 export class AnimatedNode {
@@ -33,7 +33,7 @@ export class AnimatedNode {
 }
 
 export const Animated = {
-  Value: function(value: number) {
+  Value: function (value: number) {
     return new AnimatedNode("value", value);
   },
   timing: (value: AnimatedNode, options: any) =>
@@ -43,7 +43,7 @@ export const Animated = {
   parallel: (value: AnimatedNode, options: any) =>
     new AnimatedNode("parallel", value, options),
   sequence: (value: AnimatedNode, options: any) =>
-    new AnimatedNode("sequence", value, options)
+    new AnimatedNode("sequence", value, options),
 };
 
 export const StyleSheet = {
@@ -52,5 +52,5 @@ export const StyleSheet = {
       ? Object.assign({}, ...values.map(StyleSheet.flatten))
       : values != null
       ? values
-      : {}
+      : {},
 };

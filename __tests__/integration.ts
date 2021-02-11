@@ -15,7 +15,7 @@ it("Works with babel-plugin-cssta", () => {
     {
       filename: __filename,
       plugins: [require.resolve("../babel-plugin")],
-      babelrc: false
+      babelrc: false,
     }
   );
   expect(code).toMatchInlineSnapshot(`
@@ -66,7 +66,7 @@ it("Works with babel-plugin-macros", () => {
     {
       filename: __filename,
       plugins: ["babel-plugin-macros"],
-      babelrc: false
+      babelrc: false,
     }
   );
   expect(code).toMatchInlineSnapshot(`
@@ -116,9 +116,9 @@ it("Works with plugin-transform-modules-commonjs", () => {
       filename: __filename,
       plugins: [
         require.resolve("../babel-plugin"),
-        "@babel/plugin-transform-modules-commonjs"
+        "@babel/plugin-transform-modules-commonjs",
       ],
-      babelrc: false
+      babelrc: false,
     }
   );
   code = babel.transform(code).code; // Reformat
@@ -129,7 +129,7 @@ it("Works with plugin-transform-modules-commonjs", () => {
 
     var _useCustomProperties = _interopRequireDefault(require(\\"cssta/runtime/useCustomProperties\\"));
 
-    var _useCustomPropertyStyles = _interopRequireDefault(require(\\"cssta/runtime/useCustomPropertyStyles\\"));
+    var _useCustomPropertyStyle = _interopRequireDefault(require(\\"cssta/runtime/useCustomPropertyStyle\\"));
 
     var _VariablesContext = _interopRequireDefault(require(\\"cssta/runtime/VariablesContext\\"));
 
@@ -146,7 +146,7 @@ it("Works with plugin-transform-modules-commonjs", () => {
 
     const Test1 = _react.default.forwardRef((props, ref) => {
       const customProperties = (0, _useCustomProperties.default)(exportedCustomProperties);
-      const styles = (0, _useCustomPropertyStyles.default)(unresolvedStyleTuples0, customProperties);
+      const styles = (0, _useCustomPropertyStyle.default)(unresolvedStyleTuples0, customProperties);
       const style = props.style != null ? [styles, props.style] : styles;
       return _react.default.createElement(_VariablesContext.default.Provider, {
         value: customProperties
@@ -179,9 +179,9 @@ it("Works with options", () => {
     {
       filename: __filename,
       plugins: [
-        [require.resolve("../babel-plugin"), { globals: { color: "red" } }]
+        [require.resolve("../babel-plugin"), { globals: { color: "red" } }],
       ],
-      babelrc: false
+      babelrc: false,
     }
   );
   expect(code).toMatchInlineSnapshot(`

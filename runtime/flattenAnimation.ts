@@ -1,7 +1,7 @@
 import {
   getDurationInMs,
   durationRegExp,
-  easingRegExp
+  easingRegExp,
 } from "./animationShorthandUtil";
 import { Animation, AnimationPart } from "./animationTypes";
 
@@ -15,7 +15,7 @@ const defaultValue = (): Animation => ({
   duration: 0,
   iterations: 1,
   name: null,
-  timingFunction: "ease"
+  timingFunction: "ease",
 });
 
 const TIMING_FUNCTION = 1 << 0;
@@ -28,7 +28,7 @@ const getAnimationShorthand = (shorthandParts: string[]) => {
   const accum = defaultValue();
   let set = 0;
 
-  shorthandParts.forEach(part => {
+  shorthandParts.forEach((part) => {
     if (!(set & TIMING_FUNCTION) && easingRegExp.test(part)) {
       accum.timingFunction = part as any;
       set &= TIMING_FUNCTION;
@@ -54,7 +54,7 @@ const getAnimationShorthand = (shorthandParts: string[]) => {
 
 export default (styles: AnimationPart[]): Animation => {
   let accum = defaultValue();
-  styles.forEach(style => {
+  styles.forEach((style) => {
     if (style == null) return;
 
     if (style._ != null) {

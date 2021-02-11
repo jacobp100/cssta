@@ -8,15 +8,15 @@ it("Fires animation on creation", () => {
   const keyframes = {
     test: [
       { time: 0, style: { color: "red" } },
-      { time: 1, style: { color: "blue" } }
-    ]
+      { time: 1, style: { color: "blue" } },
+    ],
   };
   const animation: Animation = {
     delay: 0,
     duration: 1000,
     iterations: 1,
     name: "test",
-    timingFunction: "linear"
+    timingFunction: "linear",
   };
 
   const startSpy = jest.spyOn(AnimatedNode.prototype, "start");
@@ -37,7 +37,7 @@ it("Fires animation on creation", () => {
   expect(animationStyle.color).toEqual({
     type: "interpolate",
     value: 0,
-    options: { inputRange: [0, 1], outputRange: ["red", "blue"] }
+    options: { inputRange: [0, 1], outputRange: ["red", "blue"] },
   });
   expect(startSpy).toHaveReturnedWith({
     type: "parallel",
@@ -45,9 +45,9 @@ it("Fires animation on creation", () => {
       {
         type: "timing",
         value: { type: "value", value: 0 },
-        options: { delay: 0, duration: 1000, easing: "linear", toValue: 1 }
-      }
-    ]
+        options: { delay: 0, duration: 1000, easing: "linear", toValue: 1 },
+      },
+    ],
   });
   expect(setValueSpy).toHaveBeenCalledWith(0);
   expect(setValueSpy).toHaveReturnedWith({ type: "value", value: 0 });
@@ -61,8 +61,8 @@ it("Handles no animation", () => {
   const keyframes = {
     test: [
       { time: 0, style: { color: "red" } },
-      { time: 1, style: { color: "blue" } }
-    ]
+      { time: 1, style: { color: "blue" } },
+    ],
   };
 
   const startSpy = jest.spyOn(AnimatedNode.prototype, "start");
@@ -89,15 +89,15 @@ it("Handles going from no animation to an animation", () => {
   const keyframes = {
     test: [
       { time: 0, style: { color: "red" } },
-      { time: 1, style: { color: "blue" } }
-    ]
+      { time: 1, style: { color: "blue" } },
+    ],
   };
   const animation: Animation = {
     delay: 0,
     duration: 1000,
     iterations: 1,
     name: "test",
-    timingFunction: "linear"
+    timingFunction: "linear",
   };
 
   const startSpy = jest.spyOn(AnimatedNode.prototype, "start");
@@ -120,7 +120,7 @@ it("Handles going from no animation to an animation", () => {
   expect(style[1].color).toEqual({
     type: "interpolate",
     value: 0,
-    options: { inputRange: [0, 1], outputRange: ["red", "blue"] }
+    options: { inputRange: [0, 1], outputRange: ["red", "blue"] },
   });
   expect(startSpy).toHaveReturnedWith({
     type: "parallel",
@@ -128,9 +128,9 @@ it("Handles going from no animation to an animation", () => {
       {
         type: "timing",
         value: { type: "value", value: 0 },
-        options: { delay: 0, duration: 1000, easing: "linear", toValue: 1 }
-      }
-    ]
+        options: { delay: 0, duration: 1000, easing: "linear", toValue: 1 },
+      },
+    ],
   });
   expect(setValueSpy).toHaveBeenCalledWith(0);
   expect(setValueSpy).toHaveReturnedWith({ type: "value", value: 0 });
@@ -144,26 +144,26 @@ it("Handles changing animation to an animation", () => {
   const keyframes = {
     test: [
       { time: 0, style: { color: "red" } },
-      { time: 1, style: { color: "blue" } }
+      { time: 1, style: { color: "blue" } },
     ],
     other: [
       { time: 0, style: { color: "orange" } },
-      { time: 1, style: { color: "purple" } }
-    ]
+      { time: 1, style: { color: "purple" } },
+    ],
   };
   const animation1: Animation = {
     delay: 0,
     duration: 1000,
     iterations: 1,
     name: "test",
-    timingFunction: "linear"
+    timingFunction: "linear",
   };
   const animation2: Animation = {
     delay: 0,
     duration: 2000,
     iterations: 1,
     name: "other",
-    timingFunction: "linear"
+    timingFunction: "linear",
   };
 
   const startSpy = jest.spyOn(AnimatedNode.prototype, "start");
@@ -185,7 +185,7 @@ it("Handles changing animation to an animation", () => {
   expect(animationStyle.color).toEqual({
     type: "interpolate",
     value: 0,
-    options: { inputRange: [0, 1], outputRange: ["red", "blue"] }
+    options: { inputRange: [0, 1], outputRange: ["red", "blue"] },
   });
   expect(startSpy).toHaveLastReturnedWith({
     type: "parallel",
@@ -193,9 +193,9 @@ it("Handles changing animation to an animation", () => {
       {
         type: "timing",
         value: { type: "value", value: 0 },
-        options: { delay: 0, duration: 1000, easing: "linear", toValue: 1 }
-      }
-    ]
+        options: { delay: 0, duration: 1000, easing: "linear", toValue: 1 },
+      },
+    ],
   });
   expect(setValueSpy).toHaveBeenLastCalledWith(0);
   expect(setValueSpy).toHaveLastReturnedWith({ type: "value", value: 0 });
@@ -206,7 +206,7 @@ it("Handles changing animation to an animation", () => {
   expect(animationStyle.color).toEqual({
     type: "interpolate",
     value: 0,
-    options: { inputRange: [0, 1], outputRange: ["orange", "purple"] }
+    options: { inputRange: [0, 1], outputRange: ["orange", "purple"] },
   });
   expect(startSpy).toHaveLastReturnedWith({
     type: "parallel",
@@ -214,9 +214,9 @@ it("Handles changing animation to an animation", () => {
       {
         type: "timing",
         value: { type: "value", value: 0 },
-        options: { delay: 0, duration: 2000, easing: "linear", toValue: 1 }
-      }
-    ]
+        options: { delay: 0, duration: 2000, easing: "linear", toValue: 1 },
+      },
+    ],
   });
   expect(setValueSpy).toHaveBeenLastCalledWith(0);
   expect(setValueSpy).toHaveLastReturnedWith({ type: "value", value: 0 });
@@ -230,15 +230,15 @@ it("Fires animation on creation", () => {
   const keyframes = {
     test: [
       { time: 0, style: { color: "red", opacity: 0 } },
-      { time: 1, style: { color: "blue", opacity: 1 } }
-    ]
+      { time: 1, style: { color: "blue", opacity: 1 } },
+    ],
   };
   const animation: Animation = {
     delay: 0,
     duration: 1000,
     iterations: 1,
     name: "test",
-    timingFunction: "linear"
+    timingFunction: "linear",
   };
 
   let animationStyle: any;
@@ -262,15 +262,15 @@ it("Handles looping", () => {
   const keyframes = {
     test: [
       { time: 0, style: { color: "red" } },
-      { time: 1, style: { color: "blue" } }
-    ]
+      { time: 1, style: { color: "blue" } },
+    ],
   };
   const animation: Animation = {
     delay: 0,
     duration: 1000,
     iterations: 3,
     name: "test",
-    timingFunction: "linear"
+    timingFunction: "linear",
   };
 
   const startSpy = jest.spyOn(AnimatedNode.prototype, "start");
@@ -297,19 +297,19 @@ it("Handles looping", () => {
                 delay: 0,
                 duration: 1000,
                 easing: "linear",
-                toValue: 1
-              }
+                toValue: 1,
+              },
             },
             {
               type: "timing",
               value: { type: "value", value: 0 },
-              options: { duration: 0, toValue: 0 }
-            }
-          ]
+              options: { duration: 0, toValue: 0 },
+            },
+          ],
         },
-        options: { iterations: 3 }
-      }
-    ]
+        options: { iterations: 3 },
+      },
+    ],
   });
 
   instance.unmount();
@@ -323,7 +323,7 @@ it("Handles no animation", () => {
     duration: 1000,
     iterations: 3,
     name: null,
-    timingFunction: "linear"
+    timingFunction: "linear",
   };
 
   const startSpy = jest.spyOn(AnimatedNode.prototype, "start");
@@ -343,20 +343,20 @@ it("Handles no animation", () => {
 
 it("Handles missing start frame", () => {
   const keyframes = {
-    test: [{ time: 1, style: { color: "blue" } }]
+    test: [{ time: 1, style: { color: "blue" } }],
   };
   const animation: Animation = {
     delay: 0,
     duration: 1000,
     iterations: 3,
     name: "test",
-    timingFunction: "linear"
+    timingFunction: "linear",
   };
 
   let animationStyle: any;
   const Test = () => {
     [, /* inputStyle */ animationStyle] = useAnimation(keyframes, animation, {
-      color: "red"
+      color: "red",
     });
     return null;
   };
@@ -369,9 +369,9 @@ it("Handles missing start frame", () => {
       value: 0,
       options: {
         inputRange: [0, 1],
-        outputRange: ["red", "blue"]
-      }
-    }
+        outputRange: ["red", "blue"],
+      },
+    },
   });
 
   instance.unmount();
@@ -379,20 +379,20 @@ it("Handles missing start frame", () => {
 
 it("Handles missing end frame", () => {
   const keyframes = {
-    test: [{ time: 0, style: { color: "blue" } }]
+    test: [{ time: 0, style: { color: "blue" } }],
   };
   const animation: Animation = {
     delay: 0,
     duration: 1000,
     iterations: 3,
     name: "test",
-    timingFunction: "linear"
+    timingFunction: "linear",
   };
 
   let animationStyle: any;
   const Test = () => {
     [, /* inputStyle */ animationStyle] = useAnimation(keyframes, animation, {
-      color: "red"
+      color: "red",
     });
     return null;
   };
@@ -405,9 +405,9 @@ it("Handles missing end frame", () => {
       value: 0,
       options: {
         inputRange: [0, 1],
-        outputRange: ["blue", "red"]
-      }
-    }
+        outputRange: ["blue", "red"],
+      },
+    },
   });
 
   instance.unmount();

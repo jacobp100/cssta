@@ -15,7 +15,7 @@ export default (babel: any, nodePath: any, cssNode: any, options?: Options) => {
     transitions,
     animations,
     keyframes,
-    exportedVariables
+    exportedVariables,
   } = cssOutput;
 
   if (transitions.length !== 0) {
@@ -35,7 +35,7 @@ export default (babel: any, nodePath: any, cssNode: any, options?: Options) => {
   const environment = createEnvironment(babel, path);
 
   const hasImportedVariables = styles.some(
-    rule =>
+    (rule) =>
       rule.type === StyleType.Tuples && rule.importedVariables.length !== 0
   );
 
@@ -59,7 +59,7 @@ export default (babel: any, nodePath: any, cssNode: any, options?: Options) => {
   );
 
   const styleVariable = style(babel, path, environment, {
-    styleSheetRuleExpressions
+    styleSheetRuleExpressions,
   });
 
   path.pushContainer("body", t.returnStatement(styleVariable));

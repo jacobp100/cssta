@@ -10,7 +10,7 @@ import { calcRe } from "./util";
 export enum ViewportMode {
   None = 0,
   SimpleLengthUnits = 1,
-  ComplexUnits = 2
+  ComplexUnits = 2,
 }
 
 export const getViewportMode = (rule: StyleTuplesDeclaration): ViewportMode =>

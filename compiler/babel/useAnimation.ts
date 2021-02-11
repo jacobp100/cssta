@@ -6,7 +6,7 @@ import {
   createTopLevelVariable,
   createVariable,
   jsonToNode,
-  getOrCreateImport
+  getOrCreateImport,
 } from "./util";
 
 export default (
@@ -21,7 +21,7 @@ export default (
 
   // FIXME: We could be more granular than useCustomPropertyShorthandParts whenever one part has a variable in
   const animationImportsVariables = animations.some(
-    animation => animation.importedVariables.length > 0
+    (animation) => animation.importedVariables.length > 0
   );
 
   let animationExpression: any;
@@ -108,7 +108,7 @@ export default (
         t.callExpression(useAnimationImport, [
           keyframesVariable,
           animationExpression,
-          styleVariable
+          styleVariable,
         ])
       )
     )

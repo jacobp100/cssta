@@ -9,11 +9,11 @@ it("Supports imported variables", () => {
   expect(code).toMatchInlineSnapshot(`
     "import React from 'react';
     import useCustomProperties from 'cssta/runtime/useCustomProperties';
-    import useCustomPropertyStyles from 'cssta/runtime/useCustomPropertyStyles';
+    import useCustomPropertyStyle from 'cssta/runtime/useCustomPropertyStyle';
     const unresolvedStyleTuples0 = [['width', 'var(--width)']];
     const Example = React.forwardRef((props, ref) => {
       const customProperties = useCustomProperties(null);
-      const styles = useCustomPropertyStyles(unresolvedStyleTuples0, customProperties);
+      const styles = useCustomPropertyStyle(unresolvedStyleTuples0, customProperties);
       const style = props.style != null ? [styles, props.style] : styles;
       return <Element {...props} ref={ref} style={style} />;
     });"
@@ -147,7 +147,7 @@ it("Supports rules where only some import variables", () => {
   expect(code).toMatchInlineSnapshot(`
     "import React from 'react';
     import useCustomProperties from 'cssta/runtime/useCustomProperties';
-    import useCustomPropertyStyles from 'cssta/runtime/useCustomPropertyStyles';
+    import useCustomPropertyStyle from 'cssta/runtime/useCustomPropertyStyle';
     const styles0 = {
       width: 100
     };
@@ -162,8 +162,8 @@ it("Supports rules where only some import variables", () => {
       ...props
     }, ref) => {
       const customProperties = useCustomProperties(null);
-      const styles = useCustomPropertyStyles(unresolvedStyleTuples0, customProperties);
-      const styles2 = useCustomPropertyStyles(unresolvedStyleTuples1, customProperties);
+      const styles = useCustomPropertyStyle(unresolvedStyleTuples0, customProperties);
+      const styles2 = useCustomPropertyStyle(unresolvedStyleTuples1, customProperties);
       const baseStyle = cond1 === true ? styles2 : cond2 === true ? styles1 : cond1 === true ? styles : styles0;
       const style = props.style != null ? [baseStyle, props.style] : baseStyle;
       return <Element {...props} ref={ref} style={style} />;
@@ -178,8 +178,8 @@ it("Supports global variables in config", () => {
 
   const code = build(css, {
     globals: {
-      primary: "red"
-    }
+      primary: "red",
+    },
   });
   expect(code).toMatchInlineSnapshot(`
     "import React from 'react';
@@ -201,17 +201,17 @@ it("Omits missing globals", () => {
 
   const code = build(css, {
     globals: {
-      primary: "red"
-    }
+      primary: "red",
+    },
   });
   expect(code).toMatchInlineSnapshot(`
     "import React from 'react';
     import useCustomProperties from 'cssta/runtime/useCustomProperties';
-    import useCustomPropertyStyles from 'cssta/runtime/useCustomPropertyStyles';
+    import useCustomPropertyStyle from 'cssta/runtime/useCustomPropertyStyle';
     const unresolvedStyleTuples0 = [['color', 'red'], ['background', 'var(--secondary)']];
     const Example = React.forwardRef((props, ref) => {
       const customProperties = useCustomProperties(null);
-      const styles = useCustomPropertyStyles(unresolvedStyleTuples0, customProperties);
+      const styles = useCustomPropertyStyle(unresolvedStyleTuples0, customProperties);
       const style = props.style != null ? [styles, props.style] : styles;
       return <Element {...props} ref={ref} style={style} />;
     });"
@@ -226,8 +226,8 @@ it("Does not allow overwriting global variables", () => {
   expect(() => {
     build(css, {
       globals: {
-        primary: "red"
-      }
+        primary: "red",
+      },
     });
   }).toThrow(
     'Attempted to overwrite global variable "primary". Either change this variable, or remove it from the globals. See line `--primary: blue`'
@@ -243,9 +243,9 @@ it("Supports failing build on missing global", () => {
   expect(() => {
     build(css, {
       globals: {
-        primary: "red"
+        primary: "red",
       },
-      globalVarsOnly: true
+      globalVarsOnly: true,
     });
   }).toThrow(
     'Found variable "secondary". This was not defined in the globals, and `globalVarsOnly` is enabled. See line with `var(--secondary)`'
@@ -260,9 +260,9 @@ it("Does not fail failing build on missing global with globalVarsOnly if there i
 
   const code = build(css, {
     globals: {
-      primary: "red"
+      primary: "red",
     },
-    globalVarsOnly: true
+    globalVarsOnly: true,
   });
   expect(code).toMatchInlineSnapshot(`
     "import React from 'react';
@@ -289,7 +289,7 @@ it("Supports global variables with media queries", () => {
       @media (prefers-color-scheme: dark) {
         --primary: pink;
       }
-    `
+    `,
   });
   expect(code).toMatchInlineSnapshot(`
     "import React from 'react';

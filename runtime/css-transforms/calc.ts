@@ -50,7 +50,7 @@ const resolveAddSubtract = (value: string): Node | null => {
 
   return {
     value: match[2] === "+" ? lhs.value + rhs.value : lhs.value - rhs.value,
-    unit: lhs.unit
+    unit: lhs.unit,
   };
 };
 

@@ -13,7 +13,7 @@ it("Works with mixins", () => {
       const { tag, quasi: body } = path.node;
       const element = tag.arguments[0];
       buildElement(babel, path, element, body, { jsx: true });
-    }
+    },
   });
   const { code } = generate(ast);
   expect(code).toMatchInlineSnapshot(`
@@ -39,7 +39,7 @@ it("Works with conditional mixins", () => {
       const { tag, quasi: body } = path.node;
       const element = tag.arguments[0];
       buildElement(babel, path, element, body, { jsx: true });
-    }
+    },
   });
   const { code } = generate(ast);
   expect(code).toMatchInlineSnapshot(`
@@ -71,7 +71,7 @@ it("Works with multiple mixins", () => {
       const { tag, quasi: body } = path.node;
       const element = tag.arguments[0];
       buildElement(babel, path, element, body, { jsx: true });
-    }
+    },
   });
   const { code } = generate(ast);
   expect(code).toMatchInlineSnapshot(`
@@ -100,7 +100,7 @@ it("Gives sensible error message when using mixins incorrectly", () => {
         const { tag, quasi: body } = path.node;
         const element = tag.arguments[0];
         buildElement(babel, path, element, body, { jsx: true });
-      }
+      },
     });
   }).toThrow("Mixins should use interpolation (e.g. @include ${useStyles})");
 });

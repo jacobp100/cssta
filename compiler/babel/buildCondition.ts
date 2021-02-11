@@ -14,7 +14,7 @@ const combineLogicalValidators = (
   if (validators.length === 0) {
     throw new Error("Cannot construct logical validaton");
   }
-  const nodeValidators: string[] = validators.filter(v => v != null);
+  const nodeValidators: string[] = validators.filter((v) => v != null);
   if (nodeValidators.length === 0) return null;
   return nodeValidators
     .slice(1)
@@ -28,7 +28,7 @@ const createLogicalValidator = (babel: any, operator: string, nodes: Node[]) =>
   combineLogicalValidators(
     babel,
     operator,
-    nodes.map(node => createValidator(babel, node))
+    nodes.map((node) => createValidator(babel, node))
   ); // eslint-disable-line
 
 const createValidator = (babel: any, node: Node): Validator => {
@@ -78,7 +78,7 @@ const createValidator = (babel: any, node: Node): Validator => {
 const aspectRatioWH = ({ types: t }, str: string) => {
   const [w, h] = str
     .split("/")
-    .map(x => x.trim())
+    .map((x) => x.trim())
     .map(Number);
   return t.binaryExpression("/", t.numericLiteral(w), t.numericLiteral(h));
 };
@@ -195,7 +195,7 @@ const createMediaQueryValidator = (
     combineLogicalValidators(
       babel,
       "&&",
-      (queryPart.match(/\([^()]+\)/g) || []).map(query =>
+      (queryPart.match(/\([^()]+\)/g) || []).map((query) =>
         createMediaFeatureValidator(babel, query, environment)
       )
     );
@@ -217,14 +217,14 @@ export default (
   environment: Environment
 ) => {
   let selectorNode: Node;
-  selectorParser(node => {
+  selectorParser((node) => {
     selectorNode = node;
   }).processSync(selector);
   if (!selectorNode) throw new Error("Expected to parse selector");
 
   const validatorNode = combineLogicalValidators(babel, "&&", [
     createValidator(babel, selectorNode),
-    createMediaQueryValidator(babel, mediaQuery, environment)
+    createMediaQueryValidator(babel, mediaQuery, environment),
   ]);
 
   return validatorNode;

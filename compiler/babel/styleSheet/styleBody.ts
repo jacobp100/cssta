@@ -5,7 +5,7 @@ import { jsonToNode, getOrCreateImport } from "../util";
 import {
   getSubstitutionRegExp,
   containsSubstitution,
-  getStringWithSubstitutedValues
+  getStringWithSubstitutedValues,
 } from "./substitutionUtil";
 import unitTypes from "./simpleUnitTypes";
 import substituteSimpleUnit from "./substituteSimpleUnit";
@@ -13,7 +13,7 @@ import { calcRe } from "./util";
 
 enum InterpolationType {
   NoOrSimple,
-  Template
+  Template,
 }
 
 type StyleTupleGroup = {
@@ -38,7 +38,7 @@ const createStyleTupleGroups = (
   styleTuples: StyleTuple[]
 ) => {
   const groups = [] as StyleTupleGroup[];
-  styleTuples.forEach(styleTuple => {
+  styleTuples.forEach((styleTuple) => {
     const interpolationType = getInterpolationType(substitutionMap, styleTuple);
     const lastGroup = groups[groups.length - 1];
 
@@ -135,7 +135,7 @@ const transformStyleTupleGroup = (
       styleTuplesGroup.map(([prop, value]) =>
         t.arrayExpression([
           t.stringLiteral(getPropertyName(prop)),
-          getStringWithSubstitutedValues(babel, substitutionMap, value)
+          getStringWithSubstitutedValues(babel, substitutionMap, value),
         ])
       )
     );
@@ -153,7 +153,7 @@ export default (
 ) => {
   const { types: t } = babel;
   const tupleGroups = createStyleTupleGroups(substitutionMap, styleTuples);
-  const transformedGroups = tupleGroups.map(tupleGroup =>
+  const transformedGroups = tupleGroups.map((tupleGroup) =>
     transformStyleTupleGroup(babel, path, substitutionMap, tupleGroup)
   );
 

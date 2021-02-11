@@ -17,7 +17,7 @@ const build = (css: string, options = {}) => {
           options
         );
       }
-    }
+    },
   });
   const { code } = generate(ast);
   return code.replace(/"/g, "'");
@@ -49,12 +49,12 @@ it("Supports mixins with custom properties", () => {
   const code = build(css);
   expect(code).toMatchInlineSnapshot(`
     "import useCustomProperties from 'cssta/runtime/useCustomProperties';
-    import useCustomPropertyStyles from 'cssta/runtime/useCustomPropertyStyles';
+    import useCustomPropertyStyle from 'cssta/runtime/useCustomPropertyStyle';
     const unresolvedStyleTuples0 = [['color', 'var(--red)']];
 
     const Example = () => {
       const customProperties = useCustomProperties(null);
-      const styles = useCustomPropertyStyles(unresolvedStyleTuples0, customProperties);
+      const styles = useCustomPropertyStyle(unresolvedStyleTuples0, customProperties);
       const style = styles;
       return style;
     };"

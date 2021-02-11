@@ -59,15 +59,15 @@ export default (
   iterateChildren(root, nestNode);
 
   const propTypes = {};
-  const validateAndTransformSelectors = selectorParser(container => {
-    container.each(selector => {
+  const validateAndTransformSelectors = selectorParser((container) => {
+    container.each((selector) => {
       if (selector.type !== "selector") {
         throw new Error("Expected selector");
       }
 
       let didScopeNode = false;
 
-      selector.walk(node => {
+      selector.walk((node) => {
         if (node.type === "combinator" && !allowCombinators) {
           throw new Error("Invalid use of combinator in selector");
         } else if (node.type === "nesting") {
@@ -80,7 +80,7 @@ export default (
             ? node.parent.parent.parent
             : node.parent;
           const isTiedToNesting = nodeThatMustBeTiedToNesting.nodes.some(
-            child => child.type === "nesting"
+            (child) => child.type === "nesting"
           );
 
           if (!isTiedToNesting) {
@@ -127,7 +127,7 @@ export default (
     });
   });
 
-  root.walkRules(rule => {
+  root.walkRules((rule) => {
     if (!isDirectChildOfKeyframes(rule)) {
       rule.selector = validateAndTransformSelectors.processSync(rule.selector);
     }
