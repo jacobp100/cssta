@@ -85,6 +85,7 @@ const animate = (
         duration,
         delay,
         easing: easingFunctions[timingFunction],
+        useNativeDriver: false,
       });
     }
   );
