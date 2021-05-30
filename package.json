@@ -1,6 +1,6 @@
 {
   "name": "cssta",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "main": "index.js",
   "license": "MIT",
   "scripts": {
@@ -30,7 +30,8 @@
     "compiler/**/*.js",
     "runtime/**/*.js",
     "native.macro.js",
-    "babel-plugin.js"
+    "babel-plugin.js",
+    "native.d.ts"
   ],
   "devDependencies": {
     "@babel/core": "^7.7.5",
