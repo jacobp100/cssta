@@ -57,7 +57,7 @@
     "@types/react-native": "^0.60.25",
     "css-color-function": "^1.3.3",
     "css-to-react-native": "^3.0.0",
-    "postcss": "^7.0.24",
+    "postcss": "^7.0.36",
     "postcss-selector-parser": "^6.0.2"
   },
   "jest": {
